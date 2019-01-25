@@ -7066,7 +7066,6 @@ func saveAutoCompsBlob(w http.ResponseWriter, r *http.Request, uid string, acb [
 //redirects to Google login 
 func loginGoogle(w http.ResponseWriter, r *http.Request, urlStr string) {
 	c := appengine.NewContext(r)
-	
 	url, err := user.LoginURL(c, urlStr)
 	if err != nil {
 		 panic(err)
@@ -14927,15 +14926,29 @@ func ulapphOtto(w http.ResponseWriter, r *http.Request) {
 //D0075
 func execOtto(w http.ResponseWriter, r *http.Request, SID, DEBUG, key, val string) (resp string) {
 	c := appengine.NewContext(r)
-
+	//check first if SID or SID URL
+	c.Infof("execOtto()")
+	SID = html.EscapeString(SID)
+	c.Infof("SID: %v", SID)
+	FL_SID_URL := isValidUrl(w,r,SID)
+	c.Infof("FL_SID_URL: %v", FL_SID_URL)
 	cKey := fmt.Sprintf("ULAPPH_NLP_%v", SID)
 	thisCont := getStrMemcacheValueByKey(w,r,cKey)
 	if thisCont == "" {
-		//get the TDSMEDIA javascript
-		BLOB_KEY := contentCheckSid(w,r,SID)
-		blobChan := make(chan string)
-		go getBlobTextChan(w, r,blobChan, BLOB_KEY)
-		thisCont = <- blobChan
+		if FL_SID_URL == false {
+			//get the TDSMEDIA javascript
+			c.Infof("FL_SID_URL = false")
+			BLOB_KEY := contentCheckSid(w,r,SID)
+			blobChan := make(chan string)
+			go getBlobTextChan(w, r,blobChan, BLOB_KEY)
+			thisCont = <- blobChan
+		} else {
+			//get from remote site
+			c.Infof("FL_SID_URL = true")
+			STR_GET_REMOTE_DATA := SID
+			thisCont = fetchURL(w,r,STR_GET_REMOTE_DATA)
+		}
+		putStrToMemcacheWithExp(w,r,cKey,thisCont,GEN_CONTENT_EXPIRES)
 	}
 	if DEBUG == "Y" {
 	c.Infof("thisCont: %v", thisCont)
@@ -17776,6 +17789,11 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 				//do nothing
 				w.WriteHeader(200)
 				w.Write([]byte("Invalid operation. You are not logged in."))
+				url, err := user.LoginURL(c, r.URL.String())
+				if err == nil {
+					pStr := fmt.Sprintf("<a href=\"%v\">Click here</a> to login now!", url)
+					w.Write([]byte(pStr))
+				}
 				return
 			} else {
 				//D0074
@@ -36157,7 +36175,6 @@ func newAdsPos3(adsList, ADS_ID string) (newAds string) {
 
 //validates if a given string is a valid url 
 func validateURL(w http.ResponseWriter, r *http.Request, tURL string) {
- 
 	i := strings.Index(tURL, "http://")
 	j := strings.Index(tURL, "https://")
 	if i < 0 && j < 0 {
@@ -36169,6 +36186,15 @@ func validateURL(w http.ResponseWriter, r *http.Request, tURL string) {
 		http.Redirect(w, r, sysReq, http.StatusFound)
 		return
 	}
+}
+//check if url is valid
+func isValidUrl(w http.ResponseWriter, r *http.Request, tURL string) bool {
+	i := strings.Index(tURL, "http://")
+	j := strings.Index(tURL, "https://")
+	if i < 0 && j < 0 {
+		return false
+	}
+	return true
 }
 
 //handles /admin-slides handler
@@ -39696,6 +39722,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 	//D0075
 	nlpFunc := r.FormValue("nlpFunc")
 	c.Infof("nlpFunc: %v", nlpFunc)
+	//inpStr := strings.ToLower(r.FormValue("p"))
 	inpStr := r.FormValue("p")
 	c.Infof("inpStr: %v", inpStr)
 	uid := r.FormValue("UID")
@@ -47141,7 +47168,7 @@ const mediaSimpleGal1A = `
         <div class="container">
 			<div class="main">
 				<header class="clearfix">
-					<h1>ULAPPH Photo Gallery - {{.}} [<a href="#" onclick="reloadPG()">Reload</a>]<span>
+					<h1>{{.}}</h1>
 `
 var mediaSimpleGalHeaderB = template.Must(template.New("mediaSimpleGalHeaderB").Parse(mediaSimpleGal1B))
 const mediaSimpleGal1B = `
@@ -47163,11 +47190,6 @@ const mediaSimpleGal3 = `
 		<script src="/js/jquerypp.custom.js"></script>
 		<script src="/js/gamma.js"></script>
 		<script src="/js/gamma-settings.js"></script>
-		<script>
-		function reloadPG() {
-			window.location.reload(false);
-		}
-		</script>
 		<!--div>{{.}}</a-->
 	</body>
 </html>
@@ -61908,7 +61930,7 @@ function RunPrefixMethod(obj, method) {
 	while (p < pfx.length && !obj[m]) {
 		m = method;
 		if (pfx[p] == "") {
-			m = m.substr(0,1).toLowerCase() + m.substr(1);
+			m = m.substr(0,1).oLowerCase() + m.substr(1);
 		}
 		m = pfx[p] + m;
 		t = typeof obj[m];
@@ -75702,7 +75724,6 @@ func getBlobText(w http.ResponseWriter, r *http.Request, blobkey string) (blobTe
 			if STR_GET_REMOTE_DATA == "" {
 				bSrc.WriteString(fmt.Sprintf("%v\n", s.Text()))
 			}
-		//edwinxxx
 		case strings.HasPrefix(s.Text(), "#APPEND_URL_DATA ") || strings.HasPrefix(s.Text(), "#APPEND_URL_DATA: "):
 			STR_APPEND_REMOTE_DATA := ""
 			SPL := strings.Split(s.Text()," ")
@@ -75792,7 +75813,6 @@ func getBlobTextNoComms(w http.ResponseWriter, r *http.Request, blobkey string) 
 			if STR_GET_REMOTE_DATA == "" {
 				bSrc.WriteString(fmt.Sprintf("%v\n", s.Text()))
 			}
-		//edwinxxx
 		case strings.HasPrefix(s.Text(), "#APPEND_URL_DATA ") || strings.HasPrefix(s.Text(), "#APPEND_URL_DATA: "):
 			STR_APPEND_REMOTE_DATA := ""
 			SPL := strings.Split(s.Text()," ")
