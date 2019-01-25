@@ -40134,7 +40134,7 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	//checkReferrer(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	//_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 	_, uid := checkSession(w,r)
 	//c.Infof("%v", r)
 	//D0066
