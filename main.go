@@ -576,7 +576,7 @@ const (
     SYSMAIL = `demo.ulapph@gmail.com`
 	// advertisements email log
     ADSMAIL = `demo.ulapph@gmail.com`
-	// reports email log
+	// reports/bot email
     REPMAIL = `demo.ulapph@gmail.com`
 	// customer feedback email
     FDBKMAIL = `demo.ulapph@gmail.com`
@@ -10975,8 +10975,12 @@ func getTopicsSource(w http.ResponseWriter, r *http.Request, uid, unum string) (
 func getBotSource(w http.ResponseWriter, r *http.Request, uid, unum string) (sid string) {
 	cfgName := fmt.Sprintf("SYSTEM_BOT_%v_%v", unum, uid)
 	sid, _ = getTDSCNFG(w,r,0,cfgName)
+	if sid == "" {
+		uid = REPMAIL
+		cfgName := fmt.Sprintf("SYSTEM_BOT_%v_%v", unum, uid)
+		sid, _ = getTDSCNFG(w,r,0,cfgName)
+	}
 	return sid
-					
 }
 //displays the personal UWM settings
 func getPersonalWindows(w http.ResponseWriter, r *http.Request, uid, alFlag, SID string) {
