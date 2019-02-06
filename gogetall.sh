@@ -32,7 +32,7 @@ go get "github.com/edwindvinas/sprig"
 go get "github.com/cdipaolo/goml/text"
 go get "github.com/shixzie/nlp"
 go get "gopkg.in/jdkato/prose.v2"
-
+go get "github.com/schollz/closestmatch"
 
 echo "done!"
 

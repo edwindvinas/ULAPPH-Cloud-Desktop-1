@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+div.gallery {
+  border: 1px solid #ccc;
+}
+
+div.gallery:hover {
+  border: 1px solid #777;
+}
+
+div.gallery img {
+  width: 100%;
+  height: auto;
+}
+
+div.desc {
+  padding: 15px;
+  text-align: center;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.responsive {
+  padding: 0 6px;
+  float: left;
+  width: 24.99999%;
+}
+
+@media only screen and (max-width: 700px) {
+  .responsive {
+    width: 49.99999%;
+    margin: 6px 0;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .responsive {
+    width: 100%;
+  }
+}
+
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>
+</head>
+<body>
+
+<h2>ULAPPH Progressive Web Apps (PWA)</h2>
+<h4>This is a list of installable PWA apps for your mobile or desktop.</h4>
+
+<div class="responsive">
+  <div class="gallery">
+    <a target="_blank" href="/pwa/expenses/">
+      <img src="http://2.bp.blogspot.com/-SwM4_1F1EeU/TxxAOI30AmI/AAAAAAAAACI/CmepBUW5jC0/s1600/expense-manager-icon-256x256.png" alt="Cinque Terre" width="600" height="400">
+    </a>
+    <div class="desc">Expenses</div>
+  </div>
+</div>
+
+
+<div class="responsive">
+  <div class="gallery">
+    <a target="_blank" href="/chat-bubble/ulapphbot.html">
+      <img src="https://ps.w.org/artibot/assets/icon-256x256.png?rev=1903485" alt="Forest" width="600" height="400">
+    </a>
+    <div class="desc">ULAPPH Chatbot</div>
+  </div>
+</div>
+
+<div class="responsive">
+  <div class="gallery">
+    <a target="_blank" href="/pwa/virtualdoctor/ulapphbot.html">
+      <img src="https://www.parkhospital.in/wp-content/uploads/2016/03/lady-doctor.png" alt="Northern Lights" width="600" height="400">
+    </a>
+    <div class="desc">Virtual Doctor</div>
+  </div>
+</div>
+
+<div class="responsive">
+  <div class="gallery">
+    <a target="_blank" href="/pwa/cctv/ulapphbot.html">
+      <img src="https://www.shareicon.net/data/256x256/2015/11/06/667905_camera_512x512.png" alt="Mountains" width="600" height="400">
+    </a>
+    <div class="desc">CCTV</div>
+  </div>
+</div>
+
+<div class="clearfix"></div>
+
+<div style="padding:6px;">
+  <p>To install these apps, when you are prompted to Add to Home Screen, please click.</p>
+  <p>You can then access these apps from the mobile home screen.</p>
+</div>
+
+</body>
+</html>

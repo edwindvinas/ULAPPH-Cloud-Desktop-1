@@ -523,6 +523,7 @@ import (
 	//"image/png"
 	//D0075
 	"gopkg.in/jdkato/prose.v2"
+	"github.com/schollz/closestmatch"
 
 )
 //contants configs
@@ -1452,6 +1453,23 @@ type ProseDataNLP struct {
 //D0075
 type OttoDataNLP struct {
 	Input string `json:"input"`
+}
+
+//D0075
+type OttoAwareness struct {
+	OttoUserStatus string `json:"ottoUserStatus"`
+	OttoUserName string `json:"ottoUserName"`
+	OttoUserEmail string `json:"ottoUserEmail"`
+	OttoUserNick string `json:"ottoUserNick"`
+	OttoUserCountry string `json:"ottoUserCountry"`
+	OttoUserCity string `json:"ottoUserCity"`
+	OttoUserDeviceType string `json:"ottoUserDeviceType"`
+	OttoUserContext string `json:"ottoUserContext"`
+	OttoFillerStr1 string `json:"ottoFillerStr1"`
+	OttoFillerStr2 string `json:"ottoFillerStr2"`
+	OttoFillerStr3 string `json:"ottoFillerStr3"`
+	OttoFillerStr4 string `json:"ottoFillerStr4"`
+	OttoFillerStr5 string `json:"ottoFillerStr5"`
 }
 
 //D0069
@@ -3167,7 +3185,7 @@ func init() {
 		http.HandleFunc("/settings", settings)
 		http.HandleFunc("/settings-display-screen", settingsDisplayScreen)
 		//cron jobs
-		http.HandleFunc("/ulapph-router", ulapphRouter)		
+		http.HandleFunc("/ulapph-router", ulapphRouter)
 		//oauth2 handlers
 		http.HandleFunc("/oauth2/google/callback", handlerOuath2GoogleCallback)
 		http.HandleFunc("/oauth2/github/callback", handlerOuath2GithubCallback)
@@ -5785,20 +5803,15 @@ func registration(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, sysReq, http.StatusFound)	
 		return
 	}
- 
 }
- 
 func sysmsg(w http.ResponseWriter, r *http.Request) {
 	//c := appengine.NewContext(r)
-	
 	msgType := r.FormValue("msgTyp")
 	SID := r.FormValue("SID")
 	message := r.FormValue("message")
 	action := r.FormValue("action")
 	msgURL := r.FormValue("msgURL")
-	
 	switch {
-	
 		case action == "U00000":
 			if err := htmlHeaderModal.Execute(w, getBasicColors(w,r)); err != nil {
 			  panic(err)
@@ -5807,7 +5820,6 @@ func sysmsg(w http.ResponseWriter, r *http.Request) {
 			  panic(err)
 			}
 			fmt.Fprintf(w, "<div class=\"info\"><a href=\"/?q=home\">Click here</a> to login or register to %v.</div>", getSchemeUrl(w,r))
-			
 			if err := htmlFooterModal.Execute(w, ""); err != nil {
 			  panic(err)
 			}
@@ -6470,6 +6482,13 @@ func login(w http.ResponseWriter, r *http.Request) {
 	if u != nil {
 			
 		if lref != "" {
+			//append username
+			i := strings.Index(lref, "?")
+			if i == -1 {
+				lref = fmt.Sprintf("%v?UID=%v", lref, u.Email)
+			} else {
+				lref = fmt.Sprintf("%v&UID=%v", lref, u.Email)
+			}
 			http.Redirect(w, r, lref, http.StatusFound)
 			return
 		} else {
@@ -13673,7 +13692,12 @@ func showTopListMenu(w http.ResponseWriter, r *http.Request, mode string) {
 			BLOB_KEY, _, _, _, _, _, _, _, _, _, _ = getTDSMEDIABlobKey(w, r, docID)	
  
 			blobText := getBlobText(w, r, BLOB_KEY)
-			buf2.WriteString(fmt.Sprintf("%v\n", blobText))
+			if strings.Index(blobText, "quota") != -1 {
+				SYS_MENU := fetchURL(w,r,SYS_DEFAULT_MENU_GIT)
+				buf2.WriteString(fmt.Sprintf("%v\n", SYS_MENU))
+			} else {
+				buf2.WriteString(fmt.Sprintf("%v\n", blobText))
+			}
 		} else {
 			SYS_MENU := fetchURL(w,r,SYS_DEFAULT_MENU_GIT)
 			buf2.WriteString(fmt.Sprintf("%v\n", SYS_MENU))
@@ -14928,8 +14952,9 @@ func ulapphOtto(w http.ResponseWriter, r *http.Request) {
 
 }
 //D0075
-func execOtto(w http.ResponseWriter, r *http.Request, SID, DEBUG, key, val string) (resp string) {
+func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, DEBUG, key, val string) (resp string) {
 	c := appengine.NewContext(r)
+	//DEBUG = "Y"
 	//check first if SID or SID URL
 	c.Infof("execOtto()")
 	SID = html.EscapeString(SID)
@@ -14954,77 +14979,186 @@ func execOtto(w http.ResponseWriter, r *http.Request, SID, DEBUG, key, val strin
 		}
 		putStrToMemcacheWithExp(w,r,cKey,thisCont,GEN_CONTENT_EXPIRES)
 	}
-	if DEBUG == "Y" {
-	c.Infof("thisCont: %v", thisCont)
-	fmt.Fprintf(w,"%v\n", thisCont)
-	}
+	//c.Infof("thisCont: %v", thisCont)
+	//fmt.Fprintf(w,"%v\n", thisCont)
 
 	//start otto vm
 	vm := otto.New()
+	//edwinxxx
+	vm.Set("findFuzzyMatch", func(s,l string) []string {
+		//get from cache if available
+		c.Infof("ottoFunc: findFuzzyMatch")
+		c.Infof("search: %v", s)
+		SID := r.FormValue("SID")
+                cKey := fmt.Sprintf("ULAPPH_NLP_%v", SID)
+                c.Infof("cKey: %v", cKey)
+                thisCont := getStrMemcacheValueByKey(w,r,cKey)
+		dec := json.NewDecoder(strings.NewReader(thisCont))
+		entries := []ProseDataNLP{}
+		for {
+			ent := ProseDataNLP{}
+			err := dec.Decode(&ent)
+			if err != nil {
+				if err == io.EOF {
+					break
+				}
+				panic(err)
+			}
+			entries = append(entries, ent)
+		}
+		wordsToTest := []string{}
+		for _, entry := range entries {
+			if entry.Text != "" && entry.Help != "" && entry.IsRegexp == "fuzzy"{
+				wordsToTest = append(wordsToTest, fmt.Sprintf("%v@888@%v@888@%v", entry.Answer, entry.Text, entry.Help))
+			}
+		}
+		//find closest match
+		bagSizes := []int{2, 3, 4}
+		cm := closestmatch.New(wordsToTest, bagSizes)
+		//cmRes := cm.Closest(s)
+		resLimit, _ := strconv.Atoi(l)
+		if resLimit <= 0 {
+			resLimit = 3
+		}
+		cmRes := cm.ClosestN(s, resLimit)
+		cmResU := removeDuplicates(cmRes)
+		c.Infof("cmResU: %v", cmResU)
+		return cmResU
+	})
+	FL_CLEAR_KVO := false
+	vm.Set("clearConversation", func() string {
+		c.Infof("ottoFunc: clearConversation")
+		cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v", uid)
+		c.Infof("cKeyA: %v", cKeyA)
+		putStrToMemcacheWithExp(w,r,cKeyA,"",GEN_CONTENT_EXPIRES)
+		FL_CLEAR_KVO = true
+		return ""
+	})
+	vm.Set("httpGet", func(s string) string {
+	  c.Infof("ottoFunc: httpGet")
+	  client := urlfetch.Client(c)
+	  //r, err := http.Get(s)
+	  r, err := client.Get(s)
+	  if err != nil {
+	    panic(vm.MakeCustomError("IOError", "failed making http request"))
+	  }
 
-	vm.Set(key, val)
-	if DEBUG == "Y" {
-	fmt.Fprintf(w,"%v = %v\n", key, val)
+	  d, err := ioutil.ReadAll(r.Body)
+	  if err != nil {
+	    panic(vm.MakeCustomError("IOError", "failed reading body"))
+	  }
+
+	  return string(d)
+	})
+	vm.Set("httpPost", func(s, t, d string) string {
+	  c.Infof("ottoFunc: httpPost")
+	  // s - link
+	  // t - content type
+	  // d - data in string format
+	  client := urlfetch.Client(c)
+	  //r, err := http.Get(s)
+	  r, err := client.Post(s, t, strings.NewReader(d))
+	  if err != nil {
+	    panic(vm.MakeCustomError("IOError", "failed making http request"))
+	  }
+
+	  b, err := ioutil.ReadAll(r.Body)
+	  if err != nil {
+	    panic(vm.MakeCustomError("IOError", "failed reading body"))
+	  }
+
+	  return string(b)
+	})
+
+	cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v", uid)
+	c.Infof("cKeyA: %v", cKeyA)
+	thisOA := getStrMemcacheValueByKey(w,r,cKeyA)
+	c.Infof("thisOA: %v", thisOA)
+	//set kv object
+	c.Infof("set kvo: %v", thisOA)
+	if thisOA == "" {
+		thisOA = "{}"
 	}
+	vm.Set("kvo", thisOA)
+	//set input object
+	c.Infof("set key/val: %v", val)
+	vm.Set(key, val)
 
 	_, err := vm.Run(thisCont)
 	if err != nil {
-		if DEBUG == "Y" {
-		fmt.Fprintf(w,"ERROR: %v\n", err)
-		}
-		return
+		c.Errorf("ERROR: %v\n", err)
+		resp = fmt.Sprintf("<font color=\"red\">[%v] ERROR: %v</font>", SID, err)
+		return resp
 	}
-
+	//get updated kvo
+	c.Infof("GETTING UPDATED kvo...")
+	if KvoValue, err := vm.Get("kvo"); err == nil {
+	    if value_str, err := KvoValue.ToString(); err == nil {
+		c.Infof("kvo = %v", value_str)
+		//resp = value_str
+		if value_str != "" {
+			var kvo OttoAwareness
+			err := json.Unmarshal([]byte(value_str), &kvo)
+			if err != nil {
+				//panic(err)
+				value_str = "{}"
+			}
+		}
+		//save kvo to memcache
+		if FL_CLEAR_KVO  == false {
+		putStrToMemcacheWithExp(w,r,cKeyA,value_str,TOT_ONLINE_EXPIRES_MIN)
+		}
+	    }
+	}
+	//get log data 
+	c.Infof("GETTING UPDATED log...")
+	if value, err := vm.Get("log"); err == nil {
+	    if value_str, err := value.ToString(); err == nil {
+		c.Infof("***********OTTO EXEC LOGS START**************")
+		c.Infof("%v", value_str)
+		c.Infof("***********OTTO EXEC LOGS END**************")
+	    }
+	}
+	//c.Infof("resp: %v", resp)
+	//get output data
+	c.Infof("GETTING UPDATED output...")
 	if value, err := vm.Get("output"); err == nil {
 	    if value_str, err := value.ToString(); err == nil {
-		if DEBUG == "Y" {
-		fmt.Fprintf(w, "output = %v\n", value_str)
-		}
+		c.Infof("output = %v", value_str)
 		resp = value_str
 	    }
 	}
-	if DEBUG == "Y" {
 	c.Infof("resp: %v", resp)
-	}
 	return resp
 }
 
 
 //handles the /chat url which makes the firebase chat possible
 func ulapphChat(w http.ResponseWriter, r *http.Request) {
- 
 	if SYS_CHAT_REDIR != "" {
 		http.Redirect(w, r, SYS_CHAT_REDIR, http.StatusFound)
 		return
 	}
-	
 	c := appengine.NewContext(r)
 	u := user.Current(c)
 	h := r.Header
- 
 	//do we really need this for every chat message?
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
- 
 	uid := ""
 	if u != nil {
 		_, uid = checkSession(w,r)
 	}
-	
 	if uid == "" && u == nil {
-		
 		ipAdd := getIpAdd(w,r)
 		geoStr := getGeoString(w,r)
 		uid = fmt.Sprintf("guest-%v@%v", geoStr, ipAdd)
 	}
-	
 	CHAT_FUNC := r.FormValue("CHAT_FUNC")
 	UID := r.FormValue("UID")
 	NICK := r.FormValue("NICK")
 	MSG := r.FormValue("MESSAGE")
 	token := ""
-	
 	switch CHAT_FUNC {
-	
 		case "connectChatRoom":
 			//allow user to connect to chatroom link via mini-browser
 			if err := htmlWidgetBrowserCR.Execute(w, ""); err != nil {
@@ -15813,7 +15947,7 @@ func ulapphChatSender(w http.ResponseWriter, r *http.Request, UC_FUNC string, MS
 	}
 	
 }
- 
+
 //saved data to browser local storage
 func ulapphLocal(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
@@ -17793,11 +17927,11 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 				//do nothing
 				w.WriteHeader(200)
 				w.Write([]byte("Invalid operation. You are not logged in."))
-				url, err := user.LoginURL(c, r.URL.String())
-				if err == nil {
-					pStr := fmt.Sprintf("<a href=\"%v\">Click here</a> to login now!", url)
+				uReferer := r.Referer()
+				//if err == nil {
+					pStr := fmt.Sprintf("<a href=\"%v\">Click here</a> to login now!", uReferer)
 					w.Write([]byte(pStr))
-				}
+				//}
 				return
 			} else {
 				//D0074
@@ -39735,19 +39869,72 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 	c.Infof("FL_DEBUG: %v", FL_DEBUG)
 	switch nlpFunc {
 	case "nlpProse":
+		//Getting current user KVO data
+		cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v", uid)
+		c.Infof("cKeyA: %v", cKeyA)
+		thisOA := getStrMemcacheValueByKey(w,r,cKeyA)
+		c.Infof("thisOA: %v", thisOA)
+		//edwinxxx
+		var kvo OttoAwareness
+		err := json.Unmarshal([]byte(thisOA), &kvo)
+		if err == nil {
+			switch {
+			case kvo.OttoUserStatus != "":
+				//execute Otto directly
+				cKeyO := fmt.Sprintf("ULAPPH_NLP_DEF_OTTO_%v", uid)
+				c.Infof("cKeyO: %v", cKeyO)
+				defOttoJS := getStrMemcacheValueByKey(w,r,cKeyO)
+				c.Infof("defOttoJS: %v", defOttoJS)
+				if defOttoJS != "" {
+					c.Infof("Executing default OttoJS: %v", defOttoJS)
+					resp := execOtto(w,r, uid, defOttoJS, FL_DEBUG, "input", inpStr)
+					c.Infof("resp: %v", resp)
+					w.Write([]byte(resp))
+					return
+				}
+			}
+		} else {
+			cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v", uid)
+			c.Infof("cKeyA: %v", cKeyA)
+			g := OttoAwareness {
+				OttoUserStatus: "",
+				OttoUserName: "",
+				OttoUserEmail: "",
+				OttoUserNick: "",
+				OttoUserCountry: "",
+				OttoUserCity: "",
+				OttoUserDeviceType: "",
+				OttoUserContext: "",
+				OttoFillerStr1: "",
+				OttoFillerStr2: "",
+				OttoFillerStr3: "",
+				OttoFillerStr4: "",
+				OttoFillerStr5: "",
+			}
+			data, err := json.Marshal(g)
+			if err != nil {
+				//c.Infof("json.Marshal() Error: %v", err)
+			}
+			putBytesToMemcacheWithExp(w,r,cKeyA,data,GEN_CONTENT_EXPIRES)
+		}
+
 		//D0075
 		SID := r.FormValue("SID")
 		c.Infof("SID: %v", SID)
 		//get from cache if available
 		cKey := fmt.Sprintf("ULAPPH_NLP_%v", SID)
+		c.Infof("cKey: %v", cKey)
 		thisCont := getStrMemcacheValueByKey(w,r,cKey)
 		if thisCont == "" {
 			if SID == "ULAPPH-COMMON-KB" {
 				//SYS_COMMON_CHAT_KB
 				thisCont = fetchURL(w,r,SYS_COMMON_CHAT_KB)
+				if strings.Index(thisCont, "quota") != -1 {
+					thisCont = ""
+				}
 			} else {
 				BLOB_KEY := contentCheckSid(w,r,SID)
-				c.Infof("BLOB_KEY: %v", BLOB_KEY)
+				//c.Infof("BLOB_KEY: %v", BLOB_KEY)
 				//blobChan := make(chan []byte)
 				//go getBlobByteChan(w, r,blobChan, BLOB_KEY)
 				//thisCont = <- blobChan
@@ -39765,35 +39952,48 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		dec := json.NewDecoder(strings.NewReader(thisCont))
 		entries := []ProseDataNLP{}
 		for {
-		ent := ProseDataNLP{}
-		err := dec.Decode(&ent)
-		if err != nil {
-		    if err == io.EOF {
-			break
-		    }
-		    panic(err)
+			ent := ProseDataNLP{}
+			err = dec.Decode(&ent)
+			if err != nil {
+				if err == io.EOF {
+					break
+				}
+				panic(err)
+			}
+			entries = append(entries, ent)
 		}
-		entries = append(entries, ent)
+		//Get default Otto JS
+		cKeyO := fmt.Sprintf("ULAPPH_NLP_DEF_OTTO_%v", uid)
+		c.Infof("cKeyO: %v", cKeyO)
+		defOttoJS := getStrMemcacheValueByKey(w,r,cKeyO)
+		c.Infof("defOttoJS: %v", defOttoJS)
+		if defOttoJS == "" {
+			c.Infof("Finding default ottoJS...")
+			for _, entry := range entries {
+				if entry.Text == "" && entry.Help == "" && strings.Index(entry.Answer, "TDS") != -1 {
+					defOttoJS = entry.Answer
+					//cKey := fmt.Sprintf("ULAPPH_NLP_DEF_OTTO_%v", uid)
+					putStrToMemcacheWithoutExp(w,r,cKeyO,defOttoJS)
+					c.Infof("defOttoJS: %v", defOttoJS)
+					break
+				}
+			}
 		}
 		//c.Infof("entries: %v", entries)
-
 		// Create a new document with the default configuration:
 		doc, err := prose.NewDocument(inpStr)
 		if err != nil {
 		log.Fatal(err)
 		}
-
 		// Iterate over the doc's tokens:
+		var thisResp []string
 		for _, tok := range doc.Tokens() {
-			if FL_DEBUG == "Y" {
-			fmt.Fprintf(w, "****TOKENS****<br>")
-			fmt.Fprintf(w, "TEXT: %v TAG: %v LABEL: %v<br>", tok.Text, tok.Tag, tok.Label)
+			c.Infof("****TOKENS****<br>")
+			c.Infof("TEXT: %v TAG: %v LABEL: %v<br>", tok.Text, tok.Tag, tok.Label)
 			// Go NNP B-GPE
 			// is VBZ O
 			// an DT O
 			// ...
-
-			}
 			//check the ProseData
 			for _, entry := range entries {
 				switch entry.IsRegexp {
@@ -39805,10 +40005,8 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 					//var regIn = regexp.MustCompile(entry.Text)
 					//if regIn.MatchString(tok.Text) == true {
 					matched, err := regexp.MatchString(entry.Text, tok.Text)
-					if FL_DEBUG == "Y" {
-					c.Infof("entry.IsRegexp: true")
-					c.Infof("matched: %v [%v] [%v]", matched, entry.Text, tok.Text)
-					}
+					//c.Infof("entry.IsRegexp: true")
+					//c.Infof("matched: %v [%v] [%v]", matched, entry.Text, tok.Text)
 					if err != nil {
 						panic(err)
 					}
@@ -39816,23 +40014,44 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 						//w.Write([]byte(entry.Answer))
 						if entry.IsAnsOtto == "true" {
 							//call Otto API
-							resp := execOtto(w,r, entry.Answer, FL_DEBUG, "input", tok.Text)
+							resp := execOtto(w,r, uid,entry.Answer, FL_DEBUG, "input", tok.Text)
 							w.Write([]byte(resp))
 							return
 							break
 						} else {
-							w.Write([]byte(entry.Answer))
-							return
+							//w.Write([]byte(entry.Answer))
+							//return
+							thisResp = append(thisResp, entry.Answer)
 							break
+						}
+					} else {
+						//when there are lower/uppercase letters
+						matched, err := regexp.MatchString(entry.Text, strings.ToLower(tok.Text))
+						if err != nil {
+							panic(err)
+						}
+						if matched == true {
+							//w.Write([]byte(entry.Answer))
+							if entry.IsAnsOtto == "true" {
+								//call Otto API
+								resp := execOtto(w,r, uid,entry.Answer, FL_DEBUG, "input", tok.Text)
+								w.Write([]byte(resp))
+								return
+								break
+							} else {
+								//w.Write([]byte(entry.Answer))
+								thisResp = append(thisResp, entry.Answer)
+								//return
+								break
+							}
 						}
 					}
 				default:
-					if FL_DEBUG == "Y" {
-					c.Infof("default")
-					}
+					//c.Infof("default")
 					if entry.Text == tok.Text {
-						w.Write([]byte(entry.Answer))
-						return
+						//w.Write([]byte(entry.Answer))
+						thisResp = append(thisResp, entry.Answer)
+						//return
 					}
 				}
 			}
@@ -39840,21 +40059,17 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 
 		// Iterate over the doc's named-entities:
 		for _, ent := range doc.Entities() {
-			if FL_DEBUG == "Y" {
-			fmt.Fprintf(w, "****ENTITIES*****<br>")
-			fmt.Fprintf(w, "TEXT: %v LABEL: %v<br>", ent.Text, ent.Label)
+			c.Infof("****ENTITIES*****<br>")
+			c.Infof("TEXT: %v LABEL: %v<br>", ent.Text, ent.Label)
 			// Go GPE
 			// Google GPE
-			}
 		}
-
+		if len(thisResp) <= 0 {
 		// Iterate over the doc's sentences:
 		for _, sent := range doc.Sentences() {
-			if FL_DEBUG == "Y" {
-			fmt.Fprintf(w, "****SENTENCES****<br>")
-			fmt.Fprintf(w, "SENTENCE: %v<br>", sent.Text)
+			c.Infof("****SENTENCES****<br>")
+			c.Infof("SENTENCE: %v<br>", sent.Text)
 			// Go is an open-source programming language created at Google.
-			}
 			//check the ProseData
 			for _, entry := range entries {
 				switch entry.IsRegexp {
@@ -39867,10 +40082,8 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 					//var regIn = regexp.MustCompile(regExpStr)
 					//var regIn = regexp.MustCompile(entry.Text)
 					matched, err := regexp.MatchString(entry.Text, sent.Text)
-					if FL_DEBUG == "Y" {
-					c.Infof("entry.IsRegexp: true")
-					c.Infof("matched: %v [%v] [%v]", matched, entry.Text, sent.Text)
-					}
+					//c.Infof("entry.IsRegexp: true")
+					//c.Infof("matched: %v [%v] [%v]", matched, entry.Text, sent.Text)
 					if err != nil {
 						panic(err)
 					}
@@ -39879,28 +40092,87 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 						//w.Write([]byte(entry.Answer))
 						if entry.IsAnsOtto == "true" {
 							//call Otto API
-							resp := execOtto(w,r, entry.Answer, FL_DEBUG, "input", sent.Text)
+							resp := execOtto(w,r, uid,entry.Answer, FL_DEBUG, "input", sent.Text)
 							w.Write([]byte(resp))
 							return
 							break
 						} else {
-							w.Write([]byte(entry.Answer))
-							return
+							//w.Write([]byte(entry.Answer))
+							thisResp = append(thisResp, entry.Answer)
+							//return
 							break
+						}
+					}else{
+						matched, err := regexp.MatchString(entry.Text, strings.ToLower(sent.Text))
+						if err != nil {
+							panic(err)
+						}
+						if matched == true {
+						//if regIn.MatchString(sent.Text) == true {
+							//w.Write([]byte(entry.Answer))
+							if entry.IsAnsOtto == "true" {
+								//call Otto API
+								resp := execOtto(w,r, uid,entry.Answer, FL_DEBUG, "input", sent.Text)
+								w.Write([]byte(resp))
+								return
+								break
+							} else {
+								//w.Write([]byte(entry.Answer))
+								//return
+								thisResp = append(thisResp, entry.Answer)
+								break
+							}
 						}
 					}
 				default:
-					if FL_DEBUG == "Y" {
-					c.Infof("default")
-					}
+					//c.Infof("default")
 					if entry.Text == sent.Text {
-						w.Write([]byte(entry.Answer))
-						return
+						//w.Write([]byte(entry.Answer))
+						//return
+						thisResp = append(thisResp, entry.Answer)
 						break
 					}
 				}
 			}
 		}
+		}
+		//return first response if there is any
+		/*if len(thisResp) > 0  {
+			//thisResp = fmt.Sprintf("%v<br>", thisResp)
+			respString := strings.Join(thisResp,"@888@")
+			c.Infof("Initial response: %v", respString)
+			w.Write([]byte(respString))
+		}*/
+		//If first time to chat, attempt to start conversation
+		if defOttoJS != "" {
+			c.Infof("Attemp conversation... Executing default OttoJS: %v", defOttoJS)
+			resp := execOtto(w,r, uid, defOttoJS, FL_DEBUG, "input", inpStr)
+			thisResp = append(thisResp, resp)
+			respString := ""
+			if resp == "" {
+				respString = strings.Join(thisResp,"")
+			} else {
+				respString = strings.Join(thisResp,"@888@")
+			}
+			if respString != "" {
+			c.Infof("respString: %v", respString)
+			w.Write([]byte(respString))
+			return
+			}
+		} else {
+			respString := ""
+			if len(thisResp) > 0 {
+				respString = strings.Join(thisResp,"@888@")
+			} else {
+				respString = strings.Join(thisResp,"")
+			}
+			if respString != "" {
+			c.Infof("Initial response: %v", respString)
+			w.Write([]byte(respString))
+			return
+			}
+		}
+
 		w.Write([]byte("Sorry, I didn't get that."))
 		//w.Write([]byte("<ul>"))
 		//check the ProseData
@@ -61586,6 +61858,7 @@ var htmlEditorBody = template.Must(template.New("htmlEditorBody").Parse(`
 		<a href="/articles?CATEGORY=desktop0">
 			<img src="https://lh3.googleusercontent.com/7G4vkwZb9Y_jc5eZhub_RGUQeK1iMWPyviFL2inWI9yeAtMcPKIsA2VQSTCDZYy5Gujuvr1KKQ5tRJpHnD0CUsz5YwgZsg" title="Articles Home" height="40" width="40"></a>
 		<a href="/media?q=desktop0"><img src="/img/ulapph-icons-media.png" title="Media Home" height="40" width="40"></a>
+		<a href="#" onclick="env.saveData(0); return false;"><img id="saveicon" src="/img/cloud-save.png" width="35" height="35" title="Update Cloud"></a>
       </td>
     </tr>
     <tr>

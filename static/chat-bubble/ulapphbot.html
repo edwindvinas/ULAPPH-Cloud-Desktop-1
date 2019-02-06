@@ -7,6 +7,9 @@
 	<!-- for mobile screens -->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- pwa manifest -->
+    <link rel="manifest" href="/chat-bubble/manifest.json?v=2">
+
 	<!-- stylesheets are conveniently separated into components -->
 	<link rel="stylesheet" media="all" href="/lib/css/chat-bubble/setup.css">
 	<link rel="stylesheet" media="all" href="/lib/css/chat-bubble/says.css">
@@ -25,8 +28,27 @@
 		width: calc(100% - 30px);
 	}
 	</style>
+    <script>
+        function redirectLogin() {
+            var urlParams;
+            var match,
+                    pl     = /\+/g,  // Regex for replacing addition symbol with a space
+                    search = /([^&=]+)=?([^&]*)/g,
+                    decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+                    query  = window.location.search.substring(1);
+
+            urlParams = {};
+            while (match = search.exec(query))
+            urlParams[decode(match[1])] = decode(match[2]);
+            if (urlParams["UID"] == "") {
+                var root = location.protocol + '//' + location.host;
+                var redURL = root + "/login?continue=" + location.href;
+                location.href= redURL;
+            }
+        };
+    </script>
 </head>
-<body>
+<body onload="redirectLogin()">
 
 <!-- container element for chat window -->
 <div id="chat"></div>
@@ -198,9 +220,13 @@ var convo = {
 	      question: "Tools",
 	      answer: "funcShowTools"
 	    },
-	       {
+	    {
 	      question: "CCTV",
 	      answer: "funcCCTVtools"
+	    },
+	    {
+	      question: "PWA",
+	      answer: "funcPwaApps"
 	    }
 	  ]
 	},
@@ -864,16 +890,33 @@ funcCallNlpBackendNow = function (msg) {
 					chatWindow.talk(convo, currVal);
 					break;
 				default:
-				  chatWindow.talk(
-				    {
-				      "i-dont-get-it": {
-				        says: [currVal],
-				        //reply: o.convo[o.standingAnswer].reply
-				        reply: []
-				      }
-				    },
-				    "i-dont-get-it"
-				  )
+				    console.log("currVal: " + currVal);
+				    var res = currVal.split("@888@");
+				    if (res.length > 0) {
+                        var i;
+                        for (i = 0; i < res.length; i++) { 
+                          var thisResp = res[i];
+            				  chatWindow.talk(
+            				    {
+            				      "default-response": {
+            				        says: [thisResp],
+            				        reply: []
+            				      }
+            				    },
+            				    "default-response"
+            				  )
+                        }
+                    } else {
+        				  chatWindow.talk(
+        				    {
+        				      "default-response": {
+        				        says: [currVal],
+        				        reply: []
+        				      }
+        				    },
+        				    "default-response"
+        				  )
+                    }
 			}
 			return;
 		}
@@ -1347,6 +1390,10 @@ function toolsRecentAll() {
 	window.open("/tools?FUNC=ALL_RECENT");
 }
 
+function funcPwaApps() {
+	window.open("/pwa/");
+}
+
 funcNewCCTV = function () {
     var ustr = makeid();
     var msg = "<a href=\"/tools?FUNC=MIRROR2&v=" + ustr +"\" target=\"smallCCTV\">Small CCTV Camera</a><br><a href=\"/tools?FUNC=MIRROR&v=" + ustr + "\" target=\"bigCCTV\">Big CCTV Camera</a>";
@@ -1392,4 +1439,6 @@ function reloadPage() {
 // pass JSON to your function and you're done!
 chatWindow.talk(convo)
 </script>
+<!--pwa service worker registration-->
+<script src="/chat-bubble/main.js"></script>
 </body>
