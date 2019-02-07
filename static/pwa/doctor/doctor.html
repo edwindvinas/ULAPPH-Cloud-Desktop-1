@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ULAPPH Video</title>
+	<title>ULAPPH Doctor</title>
 
 	<!-- for mobile screens -->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- pwa manifest -->
-    <link rel="manifest" href="/pwa/video/manifest.json?v=1">
+    <link rel="manifest" href="/pwa/doctor/manifest.json?v=1">
 
 	<!-- stylesheets are conveniently separated into components -->
 	<link rel="stylesheet" media="all" href="/lib/css/chat-bubble/setup.css">
@@ -179,19 +179,19 @@ var chatWindow = new Bubbles(document.getElementById("chat"), "chatWindow", {
 var botUrl = window.location.href;
 var convo = {
   ice: {
-    says: ["Hi, I'm ULAPPH Video Bot!", 
-    		"<a href=\"" + botUrl + "\" title=\"Click to restart ULAPPH bot!\"><img src=\"/pwa/video/video.gif\"></a>", 
+    says: ["Hi, I'm ULAPPH Doctor Bot!", 
+    		"<a href=\"" + botUrl + "\" title=\"Click to restart ULAPPH bot!\"><img src=\"/pwa/doctor/doctor.gif\"></a>", 
     		"Type any text or click button below."
     	],
 	  reply: [
         {
-            question: "Open VideoPlayer",
-            answer: "funcVideoPlayer"
+            question: "Doctor Scott",
+            answer: "funcDoctorScott"
         },
-        {
-            question: "User Guide",
-            answer: "funcUserGuide"
-        }
+	    {
+	      question: "User Guide",
+	      answer: "funcUserGuide"
+	    }
 	  ]
   },
   "nlp-success-invalid-function": {
@@ -226,8 +226,8 @@ var convo = {
     } // end conversation object
 }
 
-funcVideoPlayer = function () {
-    location.href="/media?FUNC_CODE=UVP";
+funcDoctorScott = function () {
+    location.href="https://edwin-daen-vinas.appspot.com/bot?bFunc=bchat&u=47";
     return;
 }
   
@@ -235,5 +235,5 @@ funcVideoPlayer = function () {
 chatWindow.talk(convo)
 </script>
 <!--pwa service worker registration-->
-<script src="/pwa/video/main.js"></script>
+<script src="/pwa/doctor/main.js"></script>
 </body>

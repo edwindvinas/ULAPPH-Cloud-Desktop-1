@@ -28293,7 +28293,6 @@ func social(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("ok"))
 			return
 		//D0073
-		//edwinxxx
 		case "get-tot-slides":
 			//D0073
 			cat := r.FormValue("cat")
