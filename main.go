@@ -28292,13 +28292,13 @@ func social(w http.ResponseWriter, r *http.Request) {
 			writeHTMLHeader(w, 200)
 			w.Write([]byte("ok"))
 			return
-			
 		//D0073
 		case "get-tot-slides":
 			//D0073
 			cat := r.FormValue("cat")
 			if cat != "" {
 				//show stats
+				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
 				showDesktopStats(w,r,"TDSSLIDE",cat,r.FormValue("catname"))
 				return
 			}
@@ -28309,12 +28309,12 @@ func social(w http.ResponseWriter, r *http.Request) {
 			writeHTMLHeader(w, 200)
 			w.Write([]byte(count))
 			return
-			
 		case "get-tot-articles":
 			//D0073
 			cat := r.FormValue("cat")
 			if cat != "" {
 				//show stats
+				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
 				showDesktopStats(w,r,"TDSARTL",cat,r.FormValue("catname"))
 				return
 			}
@@ -28325,12 +28325,12 @@ func social(w http.ResponseWriter, r *http.Request) {
 			writeHTMLHeader(w, 200)
 			w.Write([]byte(count))
 			return
-			
 		case "get-tot-media":
 			//D0073
 			cat := r.FormValue("cat")
 			if cat != "" {
 				//show stats
+				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
 				showDesktopStats(w,r,"TDSMEDIA",cat,r.FormValue("catname"))
 				return
 			}
@@ -28341,7 +28341,6 @@ func social(w http.ResponseWriter, r *http.Request) {
 			writeHTMLHeader(w, 200)
 			w.Write([]byte(count))
 			return
-			
 		case "get-tot-users":
 			q := datastore.NewQuery("TDSUSERS")
 			//c.Errorf("[S0205]")

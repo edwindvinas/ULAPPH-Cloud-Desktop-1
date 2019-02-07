@@ -1,14 +1,14 @@
 {
-"short_name": "CCTV",
-"name": "CCTV ChatBot",
+"short_name": "UWM",
+"name": "UWM",
 "icons": [
 {
-"src": "cctv-144.png",
+"src": "uwm-144.png",
 "sizes": "144x144",
 "type": "image/png"
 },
 {
-"src": "cctv-512.png",
+"src": "uwm-512.png",
 "sizes": "512x512",
 "type": "image/png"
 }
@@ -16,5 +16,5 @@
 "theme_color": "#50d29d",
 "background_color": "#50d29d",
 "display": "standalone",
-"start_url": "/pwa/cctv/ulapphbot.html"
+"start_url": "/pwa/uwm/uwm.html"
 }

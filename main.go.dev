@@ -14984,7 +14984,6 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, DEBUG, key, val s
 
 	//start otto vm
 	vm := otto.New()
-	//edwinxxx
 	vm.Set("findFuzzyMatch", func(s,l string) []string {
 		//get from cache if available
 		c.Infof("ottoFunc: findFuzzyMatch")
@@ -28293,13 +28292,14 @@ func social(w http.ResponseWriter, r *http.Request) {
 			writeHTMLHeader(w, 200)
 			w.Write([]byte("ok"))
 			return
-			
 		//D0073
+		//edwinxxx
 		case "get-tot-slides":
 			//D0073
 			cat := r.FormValue("cat")
 			if cat != "" {
 				//show stats
+				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
 				showDesktopStats(w,r,"TDSSLIDE",cat,r.FormValue("catname"))
 				return
 			}
@@ -28310,12 +28310,12 @@ func social(w http.ResponseWriter, r *http.Request) {
 			writeHTMLHeader(w, 200)
 			w.Write([]byte(count))
 			return
-			
 		case "get-tot-articles":
 			//D0073
 			cat := r.FormValue("cat")
 			if cat != "" {
 				//show stats
+				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
 				showDesktopStats(w,r,"TDSARTL",cat,r.FormValue("catname"))
 				return
 			}
@@ -28326,12 +28326,12 @@ func social(w http.ResponseWriter, r *http.Request) {
 			writeHTMLHeader(w, 200)
 			w.Write([]byte(count))
 			return
-			
 		case "get-tot-media":
 			//D0073
 			cat := r.FormValue("cat")
 			if cat != "" {
 				//show stats
+				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
 				showDesktopStats(w,r,"TDSMEDIA",cat,r.FormValue("catname"))
 				return
 			}
@@ -28342,7 +28342,6 @@ func social(w http.ResponseWriter, r *http.Request) {
 			writeHTMLHeader(w, 200)
 			w.Write([]byte(count))
 			return
-			
 		case "get-tot-users":
 			q := datastore.NewQuery("TDSUSERS")
 			//c.Errorf("[S0205]")
@@ -39874,7 +39873,6 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		c.Infof("cKeyA: %v", cKeyA)
 		thisOA := getStrMemcacheValueByKey(w,r,cKeyA)
 		c.Infof("thisOA: %v", thisOA)
-		//edwinxxx
 		var kvo OttoAwareness
 		err := json.Unmarshal([]byte(thisOA), &kvo)
 		if err == nil {

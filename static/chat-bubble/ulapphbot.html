@@ -168,15 +168,6 @@ var convo = {
     	],
 	  reply: [
 	    {
-	      question: "Find out more...",
-	      answer: "what-bot-can-do"
-	    }
-	  ]
-  },
-  "what-bot-can-do": {
-	  says: ["Click anything below:"],
-	  reply: [
-	    {
 	      question: "List functions",
 	      answer: "iceListFunctions"
 	    },
@@ -229,7 +220,7 @@ var convo = {
 	      answer: "funcPwaApps"
 	    }
 	  ]
-	},
+  },
   "iceListFunctions": {
     says: ["Here are some text you can type:",
     			"<i>view/update/edit the slide num X</i>",
@@ -1391,7 +1382,18 @@ function toolsRecentAll() {
 }
 
 function funcPwaApps() {
-	window.open("/pwa/");
+    var rootPath = location.protocol + '//' + location.host + "/pwa/";
+    var qrLink = "https://chart.googleapis.com/chart?cht=qr&chs=340x340&chl=" + rootPath+ "&choe=UTF-8";
+    var msg = "For desktops, <a href=\"/pwa/\" target=\"pwa\">click here</a>. <br>For Android/IOS devices, scan below qr code.<br><br><img src=" + qrLink + "></img>";
+	  chatWindow.talk(
+	    {
+	      "funcPwaAppsRes": {
+	        says: [msg],
+	        reply: []
+	      }
+	    },
+	    "funcPwaAppsRes"
+	  )
 }
 
 funcNewCCTV = function () {
