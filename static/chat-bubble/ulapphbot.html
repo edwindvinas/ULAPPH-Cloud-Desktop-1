@@ -346,10 +346,14 @@ var convo = {
 	      question: "Capture CCTVs",
 	      answer: "funcCaptureCCTV"
 	    },
-                {
-              question: "Review CCTVs",
-              answer: "funcReviewCCTV"
-            }
+        {
+            question: "Review CCTVs",
+            answer: "funcReviewCCTV"
+        },
+        {
+            question: "Recent CCTVs",
+            answer: "funcRecentCCTV"
+        }
 		]
   },
   "funcGamesLotto": {
@@ -1064,9 +1068,12 @@ funcShowCCTV = function () {
 							  question: "Capture CCTVs",
 							  answer: "funcCaptureCCTV"
 						    },{
-                                                          question: "Review CCTVs",
-                                                          answer: "funcReviewCCTV"
-                                                    }]
+                                question: "Review CCTVs",
+                                answer: "funcReviewCCTV"
+                            },{
+                                question: "Recent CCTVs",
+                                answer: "funcRecentCCTV"
+                            }]
 					  }
 					},
 					"cctv-cameras"
@@ -1109,9 +1116,12 @@ funcCaptureCCTV = function () {
 							  question: "Capture CCTVs",
 							  answer: "funcCaptureCCTV"
 						    },{
-                                                          question: "Review CCTVs",
-                                                          answer: "funcReviewCCTV"
-                                                    }]
+                                question: "Review CCTVs",
+                                answer: "funcReviewCCTV"
+                            },{
+                                question: "Recent CCTVs",
+                                answer: "funcRecentCCTV"
+                            }]
 					  }
 					},
 					"cctv-cameras"
@@ -1154,9 +1164,60 @@ funcReviewCCTV = function () {
 							  question: "Capture CCTVs",
 							  answer: "funcCaptureCCTV"
 						    },{
-                                                          question: "Review CCTVs",
-                                                          answer: "funcReviewCCTV"
-                                                    }]
+                                question: "Review CCTVs",
+                                answer: "funcReviewCCTV"
+                            },{
+                                question: "Recent CCTVs",
+                                answer: "funcRecentCCTV"
+                            }]
+					  }
+					},
+					"cctv-cameras"
+				)
+			}
+			return;
+		}
+	  }
+}
+
+funcRecentCCTV = function () {
+	//reviewing cctv function
+    if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xhr5=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xhr5=new ActiveXObject('MSXML2.XMLHTTP.3.0');
+	  } 
+	console.log("Capturing cctv cameras...");
+	xhr5.open("GET","/directory?DIR_FUNC=cctv-recent&recent_num=15"); 
+	xhr5.send();
+	
+	 xhr5.onreadystatechange=function(convo)
+	  {
+	  if (xhr5.readyState==4 && xhr5.status==200)
+		{
+		var currVal = xhr5.responseText;
+			console.log(currVal);
+			  if (currVal != "") {
+				  chatWindow.talk(
+					{
+					  "cctv-cameras": {
+					  says: [currVal],
+						reply: [{
+						      question: "Show CCTVs",
+						      answer: "funcShowCCTV"
+						    },{
+							  question: "Capture CCTVs",
+							  answer: "funcCaptureCCTV"
+						    },{
+                                question: "Review CCTVs",
+                                answer: "funcReviewCCTV"
+                            },{
+                                question: "Recent CCTVs",
+                                answer: "funcRecentCCTV"
+                            }]
 					  }
 					},
 					"cctv-cameras"

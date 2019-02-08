@@ -1457,14 +1457,18 @@ type OttoDataNLP struct {
 
 //D0075
 type OttoAwareness struct {
+	OttoBotName string `json:"ottoBotName"`
 	OttoUserStatus string `json:"ottoUserStatus"`
 	OttoUserName string `json:"ottoUserName"`
 	OttoUserEmail string `json:"ottoUserEmail"`
 	OttoUserNick string `json:"ottoUserNick"`
+	OttoUserGender string `json:"ottoUserGender"`
+	OttoUserAge string `json:"ottoUserAge"`
 	OttoUserCountry string `json:"ottoUserCountry"`
 	OttoUserCity string `json:"ottoUserCity"`
 	OttoUserDeviceType string `json:"ottoUserDeviceType"`
 	OttoUserContext string `json:"ottoUserContext"`
+	//dummy fields
 	OttoFillerStr1 string `json:"ottoFillerStr1"`
 	OttoFillerStr2 string `json:"ottoFillerStr2"`
 	OttoFillerStr3 string `json:"ottoFillerStr3"`
@@ -14952,7 +14956,7 @@ func ulapphOtto(w http.ResponseWriter, r *http.Request) {
 
 }
 //D0075
-func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, DEBUG, key, val string) (resp string) {
+func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, DEBUG, key, val string) (resp string) {
 	c := appengine.NewContext(r)
 	//DEBUG = "Y"
 	//check first if SID or SID URL
@@ -14984,16 +14988,47 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, DEBUG, key, val s
 
 	//start otto vm
 	vm := otto.New()
-	vm.Set("findFuzzyMatch", func(s,l string) []string {
+	vm.Set("ottoFuncNlpGetName", func(s string) (name string){
+		c.Infof("ottoFunc: ottoFuncNlpGetName")
+		c.Infof("input: %v", s)
+		doc, err := prose.NewDocument(s)
+		if err != nil {
+			return ""
+		}
+		// Iterate over the doc's tokens:
+		ctr := 0
+		mf := false
+		for _, tok := range doc.Tokens() {
+			c.Infof("TEXT: %v TAG: %v LABEL: %v<br>", tok.Text, tok.Tag, tok.Label)
+			if (tok.Tag == "NNP" || tok.Tag == "NN") && ctr == 0 {
+				ctr++
+				name = tok.Text
+				mf = true
+			} else if (tok.Tag == "NNP" || tok.Tag == "NN") && ctr > 0 {
+				name = fmt.Sprintf("%v %v", name, tok.Text)
+				mf = true
+			} else {
+				if mf == true {
+					break
+				}
+			}
+		}
+		if ctr <= 0 {
+			return ""
+		}
+		c.Infof("name: %v", name)
+		return name
+	})
+	vm.Set("ottoFuncFindFuzzyMatch", func(s,l string) []string {
 		//get from cache if available
-		c.Infof("ottoFunc: findFuzzyMatch")
+		c.Infof("ottoFunc: ottoFuncFindFuzzyMatch")
 		c.Infof("search: %v", s)
 		SID := r.FormValue("SID")
                 cKey := fmt.Sprintf("ULAPPH_NLP_%v", SID)
                 c.Infof("cKey: %v", cKey)
                 thisCont := getStrMemcacheValueByKey(w,r,cKey)
 		dec := json.NewDecoder(strings.NewReader(thisCont))
-		entries := []ProseDataNLP{}
+		proses := []ProseDataNLP{}
 		for {
 			ent := ProseDataNLP{}
 			err := dec.Decode(&ent)
@@ -15003,12 +15038,12 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, DEBUG, key, val s
 				}
 				panic(err)
 			}
-			entries = append(entries, ent)
+			proses = append(proses, ent)
 		}
 		wordsToTest := []string{}
-		for _, entry := range entries {
-			if entry.Text != "" && entry.Help != "" && entry.IsRegexp == "fuzzy"{
-				wordsToTest = append(wordsToTest, fmt.Sprintf("%v@888@%v@888@%v", entry.Answer, entry.Text, entry.Help))
+		for _, p := range proses {
+			if p.Text != "" && p.Help != "" && p.IsRegexp == "fuzzy"{
+				wordsToTest = append(wordsToTest, fmt.Sprintf("%v@888@%v@888@%v", p.Answer, p.Text, p.Help))
 			}
 		}
 		//find closest match
@@ -15017,24 +15052,46 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, DEBUG, key, val s
 		//cmRes := cm.Closest(s)
 		resLimit, _ := strconv.Atoi(l)
 		if resLimit <= 0 {
-			resLimit = 3
+			resLimit = 1
 		}
+		//find closest match
 		cmRes := cm.ClosestN(s, resLimit)
-		cmResU := removeDuplicates(cmRes)
-		c.Infof("cmResU: %v", cmResU)
-		return cmResU
+		c.Infof("cmRes: %v", cmRes)
+		return cmRes
 	})
 	FL_CLEAR_KVO := false
-	vm.Set("clearConversation", func() string {
-		c.Infof("ottoFunc: clearConversation")
-		cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v", uid)
+	vm.Set("ottoFuncClearConversation", func() string {
+		c.Infof("ottoFunc: ottoFuncClearConversation")
+		cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v", uid, bName)
 		c.Infof("cKeyA: %v", cKeyA)
-		putStrToMemcacheWithExp(w,r,cKeyA,"",GEN_CONTENT_EXPIRES)
+		g := OttoAwareness {
+			OttoBotName: bName,
+			OttoUserStatus: "",
+			OttoUserName: "",
+			OttoUserEmail: "",
+			OttoUserNick: "",
+			OttoUserAge: "",
+			OttoUserGender: "",
+			OttoUserCountry: "",
+			OttoUserCity: "",
+			OttoUserDeviceType: "",
+			OttoUserContext: "",
+			OttoFillerStr1: "",
+			OttoFillerStr2: "",
+			OttoFillerStr3: "",
+			OttoFillerStr4: "",
+			OttoFillerStr5: "",
+		}
+		data, err := json.Marshal(g)
+		if err != nil {
+			c.Errorf("json.Marshal() Error: %v", err)
+		}
+		putBytesToMemcacheWithExp(w,r,cKeyA,data,GEN_CONTENT_EXPIRES)
 		FL_CLEAR_KVO = true
 		return ""
 	})
-	vm.Set("httpGet", func(s string) string {
-	  c.Infof("ottoFunc: httpGet")
+	vm.Set("ottoFunchttpGet", func(s string) string {
+	  c.Infof("ottoFunc: ottoFunchttpGet")
 	  client := urlfetch.Client(c)
 	  //r, err := http.Get(s)
 	  r, err := client.Get(s)
@@ -15049,8 +15106,8 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, DEBUG, key, val s
 
 	  return string(d)
 	})
-	vm.Set("httpPost", func(s, t, d string) string {
-	  c.Infof("ottoFunc: httpPost")
+	vm.Set("ottoFuncHttpPost", func(s, t, d string) string {
+	  c.Infof("ottoFunc: ottoFuncHttpPost")
 	  // s - link
 	  // t - content type
 	  // d - data in string format
@@ -15069,7 +15126,7 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, DEBUG, key, val s
 	  return string(b)
 	})
 
-	cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v", uid)
+	cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v", uid, bName)
 	c.Infof("cKeyA: %v", cKeyA)
 	thisOA := getStrMemcacheValueByKey(w,r,cKeyA)
 	c.Infof("thisOA: %v", thisOA)
@@ -17859,6 +17916,67 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 	//serve real people only
 	FL_IS_BOT := isBot(w,r)
 	switch DIR_FUNC {
+		case "cctv-recent":
+			recent_num := r.FormValue("recent_num")
+			_, uid := checkSession(w,r)
+			if uid == "" {
+				//do nothing
+				w.WriteHeader(200)
+				w.Write([]byte("invalid operation"))
+				return
+			} else {
+				//D0074
+				cKey := fmt.Sprintf("LIST_ALL_CCTV_ACTIVE_%v", SYS_SERVER_NAME)
+				//c.Infof("cKey: %v", cKey)
+				cctv_list := getStrMemcacheValueByKey(w,r,cKey)
+				if strings.TrimSpace(cctv_list) == "" {
+					//cfgName := fmt.Sprintf("PERSONAL_CCTV_LIST_%v", uid)
+					cfgName := fmt.Sprintf("PERSONAL_CCTV_LIST_%v", SYS_SERVER_NAME)
+					cctv_list, _ = getTDSCNFG(w,r,0,cfgName)
+					putStrToMemcacheWithoutExp(w,r,cKey,cctv_list)
+				}
+				//c.Infof("cctv_list: %v", cctv_list)
+				SPL := strings.Split(cctv_list, "@888@")
+				ctr := 0
+				wstr := ""
+				wLinks := "<ul>"
+				wLinkso := "<ul>"
+				for i:=0;i<len(SPL);i++ {
+					if SPL[i] != "" {
+						cKeyTS := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", SPL[i])
+						catLastUpload := getStrMemcacheValueByKey(w,r,cKeyTS)
+						//c.Infof("catLastUpload: %v", catLastUpload)
+						timestamp := stmpHumanize(catLastUpload)
+						m := strings.Index(timestamp, "hour")
+						if m != -1 {
+							//cctv may be outdated
+							wstr = fmt.Sprintf("%v<br>%v", wstr, SPL[i])
+							catDesc := deskNum2Name(w,r,SPL[i])
+							thisLink := fmt.Sprintf("/media?FUNC_CODE=VIEW_THUMBS&PROC=Y&RECENT=%v&cont_type=TDSMEDIA&cont_cat=%v&cat_name=%v", recent_num, SPL[i], catDesc)
+							wLinkso = fmt.Sprintf("%v<li><a href=\"%v\" target=\"%v\">%v</a></li>", wLinkso, thisLink, SPL[i], catDesc)
+						} else {
+							ctr++
+							catDesc := deskNum2Name(w,r,SPL[i])
+							//thisLink := fmt.Sprintf("/social?SO_FUNC=get-tot-media&cat=%v&catname=%v", SPL[i], catDesc)
+							thisLink := fmt.Sprintf("/media?FUNC_CODE=VIEW_THUMBS&PROC=Y&RECENT=%v&cont_type=TDSMEDIA&cont_cat=%v&cat_name=%v", recent_num, SPL[i], catDesc)
+							wLinks = fmt.Sprintf("%v<li><a href=\"%v\" target=\"%v\">%v</a></li>", wLinks, thisLink, SPL[i], catDesc)
+						}
+					}
+				}
+				wLinks = fmt.Sprintf("%v</ul>", wLinks)
+				wLinkso = fmt.Sprintf("%v</ul>", wLinkso)
+				w.WriteHeader(200)
+				if ctr > 0 {
+					w.Write([]byte(fmt.Sprintf("You may review the following %v cameras!<br>", ctr)))
+					w.Write([]byte(wLinks))
+					if wstr != "" {
+						w.Write([]byte(fmt.Sprintf("<br>Warning: These are not updated: %v<br>", wstr)))
+						w.Write([]byte(wLinkso))
+					}
+				} else {
+					w.Write([]byte(fmt.Sprintf("No cameras available!")))
+				}
+			}
 		//D0074
 		case "cctv-review":
 			_, uid := checkSession(w,r)
@@ -19729,8 +19847,15 @@ func timelineAddEventMedia(w http.ResponseWriter, r *http.Request, uid, GROUP_ID
 }
 //D0072
 func photoGalleryShowMedia(w http.ResponseWriter, r *http.Request, uid, GROUP_ID, contCat string, start, end int, p *TDSMEDIA) {
+	//c := appengine.NewContext(r)
+	//c.Infof("photoGalleryShowMedia called")
+	//c.Infof("uid: %v", uid)
+	//c.Infof("GROUP_ID: %v", GROUP_ID)
+	//c.Infof("contCat: %v", contCat)
+	//c.Infof("start: %v", start)
+	//c.Infof("end: %v", end)
 	thisDU := str2int(p.DT_UPLOAD)
-	if thisDU >= start && thisDU <= end && (p.AUTHOR == uid || GROUP_ID == "GRP_ADMIN" || GROUP_ID == "GRP_USER") {
+	if ((start <= 0 && end <= 0) || (thisDU >= start && thisDU <= end)) && (p.AUTHOR == uid || GROUP_ID == "GRP_ADMIN" || GROUP_ID == "GRP_USER") {
 		var buffer3 bytes.Buffer
 		imgAlt := "img01"
 		buffer3.WriteString(fmt.Sprintf("<li>"))
@@ -23174,29 +23299,24 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 					return						
 				}
 			}
-			
 			_, uid := checkSession(w,r)
-			
 			//perform bleve search
 			bleveSearch(w,r,uid,IDX_TARGET,SID,SEARCH_KEY)
 			return
-			
 		//Search took x.x secs with x results from 1 site
 		default:
 			if SYS_SITE_PRIVATE == true {
 				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 			}
-			
 			t := time.Now().Local()
 			start := fmt.Sprintf(t.Format("20060102150405"))
- 			stat := Search {
+			stat := Search {
 				Mode: "Site Search",
 				Start: start,
 				End: "",
 				Results: 0,
-				Sites: 1,			
+				Sites: 1,
 			}
- 
 			//search is internal
 			SEARCH_KEY := r.FormValue("s")
 			if SEARCH_FUNC == "basic" && SEARCH_TARGET == "" {
@@ -23375,12 +23495,10 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 //handles bleve search which is capable of searching inside a document line by line 
 func bleveSearch(w http.ResponseWriter, r *http.Request, uid, IDX_TARGET, SID, SEARCH_KEY string) {
 	c := appengine.NewContext(r)
-	
 	if SEARCH_KEY == "" {
 		bleveSearchOut(w,r,uid,IDX_TARGET,SID,"","","",SEARCH_KEY,nil)
 		return
 	}
-	
 	// open a new index
 	mapping := bleve.NewIndexMapping()
 	inBlev, err := bleve.NewMemOnly(mapping)
@@ -23388,46 +23506,33 @@ func bleveSearch(w http.ResponseWriter, r *http.Request, uid, IDX_TARGET, SID, S
 		fmt.Println(err)
 		return
 	}
- 
 	//open index
 	index, err := search.Open(IDX_TARGET)
 	if err != nil {
 		 //panic(err)
 	}
-	
 	var p IDX_TDSSLIDE
 	err = index.Get(c, SID, &p)
 	if err != nil {
 		return
 	}
-	
-	FL_SEARCH_OK := false	
-	
+	FL_SEARCH_OK := false
 	switch {
-	
 		case p.FL_SHARED == "Y" && (p.DOC_STAT == "Premium" || p.DOC_STAT == "Worldwide" || p.DOC_STAT == "ULAPPH Only" || (p.DOC_STAT == "Personal" && p.DOC_AUTHOR == uid)):
 			FL_SEARCH_OK = true
- 
 		case p.FL_SHARED == "Y" && (p.DOC_STAT == "Premium" || p.DOC_STAT == "Worldwide" || p.DOC_STAT == "ULAPPH Only"):
 			FL_SEARCH_OK = true
-			
 		case p.DOC_AUTHOR == uid:
 			FL_SEARCH_OK = true
-			
 		case p.FL_SHARED == "Y" && (p.DOC_STAT == "Premium" || p.DOC_STAT == "Worldwide" || p.DOC_STAT == "ULAPPH Only" || p.DOC_AUTHOR == uid):
 			FL_SEARCH_OK = true
-			
 		case p.DOC_AUTHOR == uid:
 			FL_SEARCH_OK = true
-			
 		case p.FL_SHARED == "Y" && (p.DOC_STAT == "Premium" || p.DOC_STAT == "Worldwide"):
-			FL_SEARCH_OK = true	
+			FL_SEARCH_OK = true
 	}
-	
 	if FL_SEARCH_OK == true {
-		
 		switch {
-			
 			case IDX_TARGET == "IDX_TDSSLIDE" || IDX_TARGET == "IDX_TDSARTL":
 				SPL := strings.Split(SID,"-")
 				DOC_ID := "0"
@@ -23435,7 +23540,6 @@ func bleveSearch(w http.ResponseWriter, r *http.Request, uid, IDX_TARGET, SID, S
 					DOC_ID = SPL[1]
 				}
 				docID := str2int(DOC_ID)
-				
 				blobkey := ""
 				if IDX_TARGET == "IDX_TDSSLIDE" {
 					blobkey, _, _, _, _, _, _, _, _, _  = getTDSSLIDEBlobKey(w, r, docID)
@@ -23443,7 +23547,6 @@ func bleveSearch(w http.ResponseWriter, r *http.Request, uid, IDX_TARGET, SID, S
 					blobkey, _, _, _, _, _, _, _, _ = getTDSARTLBlobKey(w, r, docID)
 				}
 				blobByte := getBlobByte(w, r, blobkey)
- 
 				//for every section, add to index
 				scanner := bufio.NewScanner(bytes.NewReader(blobByte))
 				thisText := ""
@@ -23460,7 +23563,7 @@ func bleveSearch(w http.ResponseWriter, r *http.Request, uid, IDX_TARGET, SID, S
 									Text: thisText,
 								}
 								// index some data
-								inBlev.Index(fmt.Sprintf("id%v:line%v",i,l), d)								
+								inBlev.Index(fmt.Sprintf("id%v:line%v",i,l), d)
 							}
 							thisText = ""
 							i++
@@ -23468,27 +23571,21 @@ func bleveSearch(w http.ResponseWriter, r *http.Request, uid, IDX_TARGET, SID, S
 							thisText = fmt.Sprintf("%v\n%v", thisText, scanner.Text())
 						}
 					}
-				}			
-		
+				}
 			default:
-			
 				d := Bleve {
 					Name: "TDSMEDIA",
 					Text: fmt.Sprintf("%v - %v", p.DOC_TITLE, p.DOC_DESC),
 				}
-								
 				// index some data
 				inBlev.Index("id", d)
-				
 				d = Bleve {
 					Name: "TDSMEDIA",
 					Text: p.DOC_CONTENT_TEXT,
 				}
-				
 				// index some data
 				inBlev.Index("id2", d)
 		}
- 
 		// search for some text
 		query := bleve.NewMatchQuery(SEARCH_KEY)
 		search := bleve.NewSearchRequest(query)
@@ -23499,11 +23596,9 @@ func bleveSearch(w http.ResponseWriter, r *http.Request, uid, IDX_TARGET, SID, S
 			return
 		}
 		bleveSearchOut(w,r,uid,IDX_TARGET,SID,SEARCH_KEY,p.DOC_TITLE, p.DOC_DESC,p.CONTENT_URL,searchResults)
-		
 	} else {
 		fmt.Fprintf(w, "Insufficient privilege to search this document!")
 	}
-	
 }
 
 //handles blevesearch output 
@@ -39863,17 +39958,21 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 	c.Infof("inpStr: %v", inpStr)
 	uid := r.FormValue("UID")
 	c.Infof("uid: %v", uid)
+	bName := r.FormValue("BN")
+	c.Infof("BN: %v", bName)
 	FL_DEBUG := r.FormValue("DEBUG")
 	c.Infof("FL_DEBUG: %v", FL_DEBUG)
+	//Getting current user KVO data
+	cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v", uid, bName)
+	c.Infof("cKeyA: %v", cKeyA)
+	thisOA := getStrMemcacheValueByKey(w,r,cKeyA)
+	c.Infof("thisOA: %v", thisOA)
+	var kvo OttoAwareness
+	err := json.Unmarshal([]byte(thisOA), &kvo)
+	c.Infof("kvo: %+v", kvo)
+
 	switch nlpFunc {
 	case "nlpProse":
-		//Getting current user KVO data
-		cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v", uid)
-		c.Infof("cKeyA: %v", cKeyA)
-		thisOA := getStrMemcacheValueByKey(w,r,cKeyA)
-		c.Infof("thisOA: %v", thisOA)
-		var kvo OttoAwareness
-		err := json.Unmarshal([]byte(thisOA), &kvo)
 		if err == nil {
 			switch {
 			case kvo.OttoUserStatus != "":
@@ -39884,20 +39983,28 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 				c.Infof("defOttoJS: %v", defOttoJS)
 				if defOttoJS != "" {
 					c.Infof("Executing default OttoJS: %v", defOttoJS)
-					resp := execOtto(w,r, uid, defOttoJS, FL_DEBUG, "input", inpStr)
+					resp := execOtto(w,r, uid, defOttoJS, bName, FL_DEBUG, "input", inpStr)
 					c.Infof("resp: %v", resp)
-					w.Write([]byte(resp))
+					err := nlpProseFormatTemplateResponse(w,r,resp,kvo)
+					if err != nil {
+						c.Infof("ERROR: %v", err)
+					}
+					//w.Write([]byte(resp))
 					return
 				}
 			}
 		} else {
-			cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v", uid)
-			c.Infof("cKeyA: %v", cKeyA)
+			c.Infof("kvo unmarshal error: %v", err)
+			//cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v", uid)
+			//c.Infof("cKeyA: %v", cKeyA)
 			g := OttoAwareness {
+				OttoBotName: bName,
 				OttoUserStatus: "",
 				OttoUserName: "",
 				OttoUserEmail: "",
 				OttoUserNick: "",
+				OttoUserAge: "",
+				OttoUserGender: "",
 				OttoUserCountry: "",
 				OttoUserCity: "",
 				OttoUserDeviceType: "",
@@ -39910,7 +40017,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 			}
 			data, err := json.Marshal(g)
 			if err != nil {
-				//c.Infof("json.Marshal() Error: %v", err)
+				c.Errorf("json.Marshal() Error: %v", err)
 			}
 			putBytesToMemcacheWithExp(w,r,cKeyA,data,GEN_CONTENT_EXPIRES)
 		}
@@ -40011,8 +40118,12 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 						//w.Write([]byte(entry.Answer))
 						if entry.IsAnsOtto == "true" {
 							//call Otto API
-							resp := execOtto(w,r, uid,entry.Answer, FL_DEBUG, "input", tok.Text)
-							w.Write([]byte(resp))
+							resp := execOtto(w,r, uid,entry.Answer, bName, FL_DEBUG, "input", tok.Text)
+							//w.Write([]byte(resp))
+							err := nlpProseFormatTemplateResponse(w,r,resp,kvo)
+							if err != nil {
+								c.Infof("ERROR: %v", err)
+							}
 							return
 							break
 						} else {
@@ -40031,8 +40142,12 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 							//w.Write([]byte(entry.Answer))
 							if entry.IsAnsOtto == "true" {
 								//call Otto API
-								resp := execOtto(w,r, uid,entry.Answer, FL_DEBUG, "input", tok.Text)
-								w.Write([]byte(resp))
+								resp := execOtto(w,r, uid,entry.Answer, bName, FL_DEBUG, "input", tok.Text)
+								//w.Write([]byte(resp))
+								err := nlpProseFormatTemplateResponse(w,r,resp,kvo)
+								if err != nil {
+									c.Infof("ERROR: %v", err)
+								}
 								return
 								break
 							} else {
@@ -40089,8 +40204,12 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 						//w.Write([]byte(entry.Answer))
 						if entry.IsAnsOtto == "true" {
 							//call Otto API
-							resp := execOtto(w,r, uid,entry.Answer, FL_DEBUG, "input", sent.Text)
-							w.Write([]byte(resp))
+							resp := execOtto(w,r, uid,entry.Answer, bName, FL_DEBUG, "input", sent.Text)
+							//w.Write([]byte(resp))
+							err := nlpProseFormatTemplateResponse(w,r,resp,kvo)
+							if err != nil {
+								c.Infof("ERROR: %v", err)
+							}
 							return
 							break
 						} else {
@@ -40109,8 +40228,12 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 							//w.Write([]byte(entry.Answer))
 							if entry.IsAnsOtto == "true" {
 								//call Otto API
-								resp := execOtto(w,r, uid,entry.Answer, FL_DEBUG, "input", sent.Text)
-								w.Write([]byte(resp))
+								resp := execOtto(w,r, uid,entry.Answer, bName, FL_DEBUG, "input", sent.Text)
+								//w.Write([]byte(resp))
+								err := nlpProseFormatTemplateResponse(w,r,resp,kvo)
+								if err != nil {
+									c.Infof("ERROR: %v", err)
+								}
 								return
 								break
 							} else {
@@ -40143,7 +40266,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		//If first time to chat, attempt to start conversation
 		if defOttoJS != "" {
 			c.Infof("Attemp conversation... Executing default OttoJS: %v", defOttoJS)
-			resp := execOtto(w,r, uid, defOttoJS, FL_DEBUG, "input", inpStr)
+			resp := execOtto(w,r, uid, defOttoJS, bName, FL_DEBUG, "input", inpStr)
 			thisResp = append(thisResp, resp)
 			respString := ""
 			if resp == "" {
@@ -40152,9 +40275,13 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 				respString = strings.Join(thisResp,"@888@")
 			}
 			if respString != "" {
-			c.Infof("respString: %v", respString)
-			w.Write([]byte(respString))
-			return
+				c.Infof("respString: %v", respString)
+				//w.Write([]byte(respString))
+				err := nlpProseFormatTemplateResponse(w,r,respString,kvo)
+				if err != nil {
+					c.Infof("ERROR: %v", err)
+				}
+				return
 			}
 		} else {
 			respString := ""
@@ -40164,9 +40291,13 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 				respString = strings.Join(thisResp,"")
 			}
 			if respString != "" {
-			c.Infof("Initial response: %v", respString)
-			w.Write([]byte(respString))
-			return
+				c.Infof("Initial response: %v", respString)
+				//w.Write([]byte(respString))
+				err := nlpProseFormatTemplateResponse(w,r,respString,kvo)
+				if err != nil {
+					c.Infof("ERROR: %v", err)
+				}
+				return
 			}
 		}
 
@@ -40238,6 +40369,32 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+
+//reformat nlp response
+func nlpProseFormatTemplateResponse(w http.ResponseWriter, r *http.Request, resRaw string, p OttoAwareness) error {
+    //c := appengine.NewContext(r)
+    //c.Infof("nlpProseFormatTemplateResponse()")
+    //c.Infof("resRaw: %v", resRaw)
+    //c.Infof("kvo: %v", p)
+
+    tmpl := template.New("test")
+    //parse some content and generate a template
+    tmpl, err := tmpl.Parse(resRaw)
+    if err != nil {
+        //log.Fatal("Error Parsing template: ", err)
+        return fmt.Errorf("Error Parsing template: ", err)
+        //return
+    }
+    err1 := tmpl.Execute(w, p)
+    if err1 != nil {
+        //log.Fatal("Error executing template: ", err1)
+        return fmt.Errorf("Error executing template: ", err1)
+
+    }
+    return nil
+}
+
 //D0068
 func nlpAcbSearch(w http.ResponseWriter, r *http.Request, uid, target string) (string) {
 	c := appengine.NewContext(r)
@@ -43675,9 +43832,13 @@ func media(w http.ResponseWriter, r *http.Request) {
 						contType := r.FormValue("cont_type")
 						contCat := r.FormValue("cont_cat")
 						kword := r.FormValue("kword")
+						RECENT := r.FormValue("RECENT")
+						start_year := ""
+						if RECENT == "" {
 						//get year
 						SPL := strings.Split(start_date, ", ")
-						start_year := SPL[1]
+						start_year = SPL[1]
+						}
 						//c.Infof("kword: %v", kword)
 						//c.Infof("start_year: %v", start_year)
 						//c.Infof("start_date: %v", start_date)
@@ -43699,6 +43860,10 @@ func media(w http.ResponseWriter, r *http.Request) {
 						//c.Infof("start_rt2: %v", start_rt2)
 						start := str2int(start_rt1)
 						end := str2int(start_rt2)
+						if RECENT != "" {
+							start = 0
+							end = 0
+						}
 						//if err := mediaSimpleGalHeaderA.Execute(w, start_year); err != nil {
 						pgtitle := deskNum2Name(w,r,contCat)
 						if err := mediaSimpleGalHeaderA.Execute(w, pgtitle); err != nil {
@@ -43713,8 +43878,12 @@ func media(w http.ResponseWriter, r *http.Request) {
 							if contCat != "" {
 							q = datastore.NewQuery("TDSMEDIA").Filter("CATEGORY =", contCat).Filter("YEAR =", start_year)
 							}
+							if RECENT != "" {
+								numRecent, _ := strconv.Atoi(RECENT)
+								q = datastore.NewQuery("TDSMEDIA").Filter("CATEGORY =", contCat).Limit(numRecent)
+							}
 							recCount,_ := q.Count(c)
-							//c.Infof("media: %v", recCount)
+							c.Infof("media: %v", recCount)
 							//c.Infof("uid: %v", uid)
 							media := make([]TDSMEDIA, 0, recCount)
 							if _, err := q.GetAll(c, &media); err != nil {
@@ -43815,6 +43984,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 
 							default:
 								for _, p := range media{
+									//c.Infof("photoGalleryShowMedia()")
 									if kword != "" {
 										i := strings.Index(strings.ToUpper(p.TITLE), strings.ToUpper(kword))
 										j := strings.Index(strings.ToUpper(p.DESC), strings.ToUpper(kword))
