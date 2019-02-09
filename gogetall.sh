@@ -33,6 +33,7 @@ go get "github.com/cdipaolo/goml/text"
 go get "github.com/shixzie/nlp"
 go get "gopkg.in/jdkato/prose.v2"
 go get "github.com/schollz/closestmatch"
+go get "github.com/mvdan/xurls"
 
 echo "done!"
 

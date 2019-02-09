@@ -102,6 +102,13 @@ indexes:
   ancestor: yes
   properties:
   - name: MEDIA_ID
+  - name: CATEGORY
+    direction: desc
+
+- kind: TDSMEDIA
+  ancestor: yes
+  properties:
+  - name: MEDIA_ID
   - name: YEAR
   - name: DT_UPLOAD
     direction: asc

@@ -524,6 +524,7 @@ import (
 	//D0075
 	"gopkg.in/jdkato/prose.v2"
 	"github.com/schollz/closestmatch"
+	"github.com/mvdan/xurls"
 
 )
 //contants configs
@@ -43834,10 +43835,13 @@ func media(w http.ResponseWriter, r *http.Request) {
 						kword := r.FormValue("kword")
 						RECENT := r.FormValue("RECENT")
 						start_year := ""
+						FL_RECENT := false
 						if RECENT == "" {
 						//get year
 						SPL := strings.Split(start_date, ", ")
 						start_year = SPL[1]
+						} else {
+						FL_RECENT = true
 						}
 						//c.Infof("kword: %v", kword)
 						//c.Infof("start_year: %v", start_year)
@@ -43860,7 +43864,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 						//c.Infof("start_rt2: %v", start_rt2)
 						start := str2int(start_rt1)
 						end := str2int(start_rt2)
-						if RECENT != "" {
+						if  FL_RECENT == true {
 							start = 0
 							end = 0
 						}
@@ -43874,13 +43878,9 @@ func media(w http.ResponseWriter, r *http.Request) {
 						}
 						switch contType {
 						case "TDSMEDIA":
-							q := datastore.NewQuery("TDSMEDIA").Order("-MEDIA_ID").Limit(500)
-							if contCat != "" {
+							q := datastore.NewQuery("TDSMEDIA").Order("-MEDIA_ID").Limit(5000)
+							if contCat != "" && FL_RECENT == false {
 							q = datastore.NewQuery("TDSMEDIA").Filter("CATEGORY =", contCat).Filter("YEAR =", start_year)
-							}
-							if RECENT != "" {
-								numRecent, _ := strconv.Atoi(RECENT)
-								q = datastore.NewQuery("TDSMEDIA").Filter("CATEGORY =", contCat).Limit(numRecent)
 							}
 							recCount,_ := q.Count(c)
 							c.Infof("media: %v", recCount)
@@ -43983,6 +43983,8 @@ func media(w http.ResponseWriter, r *http.Request) {
 								return
 
 							default:
+								nRecCtr :=0
+								numRecent, _ := strconv.Atoi(RECENT)
 								for _, p := range media{
 									//c.Infof("photoGalleryShowMedia()")
 									if kword != "" {
@@ -43993,7 +43995,17 @@ func media(w http.ResponseWriter, r *http.Request) {
 										}
 
 									} else {
-										photoGalleryShowMedia(w,r,uid,GROUP_ID,contCat,start,end,&p)
+										if FL_RECENT == true {
+											if RECENT != "" && contCat == p.CATEGORY && nRecCtr <= numRecent {
+												nRecCtr++
+												photoGalleryShowMedia(w,r,uid,GROUP_ID,contCat,start,end,&p)
+												if nRecCtr >= numRecent {
+													break
+												}
+											}
+										} else {
+											photoGalleryShowMedia(w,r,uid,GROUP_ID,contCat,start,end,&p)
+										}
 									}
 								}
 							}
@@ -70705,7 +70717,7 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 		//for slides
 		case "UPD-FROM-EDITOR":
 			//DESKTOP := pVals["DESKTOP"]
-			blobkey := string(file[0].BlobKey)			
+			blobkey := string(file[0].BlobKey)
 			SID_R := fmt.Sprintf("%v", pVals["SID"])
 			SID_R2 := strings.Replace(SID_R, "[", "", -1)
 			SID := strings.Replace(SID_R2, "]", "", -1)
@@ -70717,35 +70729,38 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 			}
 			DOC_ID := 0
 			SPL := strings.Split(SID,"-")
- 
 			FL_SUCCESS := false
 			if len(SPL) > 1 {
- 
 				//TARGET := SPL[0]
 				DOC_nn := SPL[1]
 				DOC_ID = str2int(DOC_nn)
- 
 				dsKey := fmt.Sprintf("%d", DOC_ID)
 				key := datastore.NewKey(c, "TDSSLIDE", dsKey, 0, nil)
 				q := datastore.NewQuery("TDSSLIDE").Filter("__key__ =", key)
 				//c.Errorf("[S0595]")
- 
 				slide := make([]TDSSLIDE, 0, 1)
 				if _, err := q.GetAll(c, &slide); err != nil {
 					 panic(err)
 					//return
 				  }
-				
 				thisID := 0
 				for _, p := range slide{
-					
 					oldBlob := p.BLOB_URL
 					p.BLOB_URL = blobkey
 					//copy existing fields
 					TITLE := p.TITLE
 					FL_SHARED := p.FL_SHARED
 					DOC_STAT := p.DOC_STAT
-					TAGS := p.TAGS
+					TAGS := ""
+					if p.TAGS == "/img/NoImageAvailable.png" {
+						thisImgUrl := getBlobTextFirstImageUrl(w,r,blobkey)
+						if thisImgUrl != "" {
+							TAGS = thisImgUrl
+							p.TAGS = thisImgUrl
+						} else {
+							TAGS = p.TAGS
+						}
+					}
 					//t := time.Now().Local()
 					//tstamp := t.Format("20060102150405")
 					tstamp := getTimestamp()
@@ -70762,30 +70777,23 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 					if err != nil {
 						 panic(err)
 						//return
-					
 					}
 					//c.Errorf("[S0596]")
- 
 					//delete old blob
 					blobstore.Delete(c, appengine.BlobKey(oldBlob))
- 
 					//clear caches
 					SLIDES_CACHE_KEY := fmt.Sprintf("SLIDES_CACHE_%v", oldBlob)
-					_ = memcache.Delete(c,SLIDES_CACHE_KEY)	
- 
+					_ = memcache.Delete(c,SLIDES_CACHE_KEY)
 					ARTICLES_CACHE_KEY := fmt.Sprintf("ARTICLES_CACHE_%v", oldBlob)
-					_ = memcache.Delete(c,ARTICLES_CACHE_KEY)					
-					
+					_ = memcache.Delete(c,ARTICLES_CACHE_KEY)
 					//clear uloc cache
 					cKey := fmt.Sprintf("CACHE_ULOC_TDSSLIDE_%v", thisID)
 					putStrToMemcacheWithoutExp(w,r,cKey,"")
- 
 					//clear template cache if any
 					cKey = fmt.Sprintf("GO_TEMPLATE_TDSSLIDE-%v", thisID)
 					_ = memcache.Delete(c,cKey)
 
 					clearCachedSlideWebContents(w,r)
-					
 					//update cached details
 					if uid == "" && UID != "" {
 						uid = UID
@@ -70796,19 +70804,15 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 					TDSSLIDE_Cacher(w,r,thisID,blobkey,DOC_STAT,FL_SHARED,p.AUTHOR,FL_COUNTRY_SPECIFIC,TITLE,TAGS,p.SHARED_TO,p.MUSIC_ID,p.GET_NEXT)
 					//fmt.Fprintf(w, "Updated SID: %v BLOBKEY: %v.", SID, blobkey)
 					FL_SUCCESS = true
-					
 					go sendBroadcastsUpdSlide(w,r,uid,DOC_STAT, SID, TITLE, p.DESC, TAGS, p.CATEGORY)
- 
 					//update slide in existing search idx
 					thisIdxKey := fmt.Sprintf("TDSSLIDE-%d", thisID)
 					thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", thisID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
-					
 					//use go routine
 					//blobText = getBlobText(w, r, blobkey)
 					blobChan := make(chan string)
 					go getBlobTextChan(w, r,blobChan, blobkey)
 					blobText := <- blobChan
-					
 					if p.SYS_VER == 777 {
 						cStr := encrypter2(w,r,blobText,ENCRYPTION_KEY)
 						blobText = string(cStr)
@@ -70842,9 +70846,7 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 						//DATE_ADDED: 		tstamp,
 						DATE_UPDATED: 		tstamp,
 					}
- 
 					putSearchIndexS(w,r,"IDX_TDSSLIDE",thisIdxKey,slideIdx)
-					
 					//redURL := fmt.Sprintf("/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%v&SID=TDSSLIDE-%v", thisID, thisID)
 					redURL := fmt.Sprintf("/admin-slides?FUNC_CODE=VIEW&DOC_ID=%v&TITLE=%v&BLOB_KEY=%v&CATEGORY=%v", thisID, p.TITLE, p.BLOB_URL, p.CATEGORY)
 					fmt.Fprintf(w, "%v", redURL)
@@ -70885,7 +70887,13 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 					p.DESC = DESC
 					p.FL_SHARED = "N"
 					p.DOC_STAT = "Personal"
-					p.TAGS = "/img/NoImageAvailable.png"
+					//p.TAGS = "/img/NoImageAvailable.png"
+					thisImgUrl := getBlobTextFirstImageUrl(w,r,blobkey)
+					if thisImgUrl != "" {
+						p.TAGS = thisImgUrl
+					} else {
+						p.TAGS = "/img/NoImageAvailable.png"
+					}
 					p.FL_COUNTRY_SPECIFIC = ""
 					p.AUTHOR = uid
 					//t := time.Now().Local()
@@ -70905,30 +70913,23 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 					p.COMMENTS_BY = ""
 					p.SHARED_TO = ""
 					p.MUSIC_ID = 0
-					
 					thisKey := fmt.Sprintf("%d", thisID)
 					key := datastore.NewKey(c, "TDSSLIDE", thisKey, 0, nil)
 					_, err := datastore.Put(c, key, &p)
 					if err != nil {
 						 panic(err)
 						//return
-					
 					}
 					//c.Errorf("[S0598]")
- 
 					//clear autocomps
 					cKeyAll := fmt.Sprintf("AUTOCOMP_CACHE_%v", uid)
 					putStrToMemcacheWithoutExp(w,r,cKeyAll,"")
 
 					clearCachedSlideWebContents(w,r)
-					
 					FL_SUCCESS = true
-					
 					//update cached details
 					TDSSLIDE_Cacher(w,r,thisID,blobkey,p.DOC_STAT,p.FL_SHARED,uid,p.FL_COUNTRY_SPECIFIC,p.TITLE,p.TAGS,"",0,"")
-					
 					go sendBroadcastsUpdSlide(w,r,uid,p.DOC_STAT, fmt.Sprintf("TDSSLIDE-%v", thisID), p.TITLE, DESC, p.TAGS, p.CATEGORY)
- 
 					//update slide in existing search idx
 					//t := time.Now().Local()
 					//tstamp := t.Format("20060102150405")
@@ -70939,7 +70940,6 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 					blobChan := make(chan string)
 					go getBlobTextChan(w, r,blobChan, blobkey)
 					blobText := <- blobChan
- 
 					if p.SYS_VER == 777 {
 						cStr := encrypter2(w,r,blobText,ENCRYPTION_KEY)
 						blobText = string(cStr)
@@ -70973,15 +70973,12 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 						//DATE_ADDED: 		tstamp,
 						DATE_UPDATED: 		tstamp,
 					}
- 
 					putSearchIndexS(w,r,"IDX_TDSSLIDE",thisIdxKey,slideIdx)
 					redURL := fmt.Sprintf("/admin-slides?FUNC_CODE=VIEW&DOC_ID=%v&TITLE=%v&BLOB_KEY=%v&CATEGORY=%v", thisID, p.TITLE, p.BLOB_URL, p.CATEGORY)
 					fmt.Fprintf(w, "%v", redURL)
 					break
 				}
-			
 			}
-			
 			if FL_SUCCESS == false {
 				msgDtl := fmt.Sprintf("[U00174] ERROR: Problem with inserting or updating content. Consult system administrator.")
 				msgTyp := "error"
@@ -70989,9 +70986,8 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 				action := fmt.Sprintf("Apologies for this issue! <a href=\"%v\">Click here</a> to proceed to view other existing slides.", msgURL)
 				sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, msgURL, action)
 				http.Redirect(w, r, sysReq, http.StatusFound)
-				return			
+				return
 			}
-				
 		case "UPDATE":
 			//update slides 
 			blobkey := string(file[0].BlobKey)
@@ -71273,7 +71269,6 @@ func handleUploadArticles(w http.ResponseWriter, r *http.Request) {
 
 		//for articles
 		case "UPD-FROM-EDITOR":
- 
 			file := blobs["file"]
 			if len(file) == 0 {
 					////c.Errorf("no file uploaded")
@@ -71319,7 +71314,16 @@ func handleUploadArticles(w http.ResponseWriter, r *http.Request) {
 					TITLE := p.TITLE
 					FL_SHARED := p.FL_SHARED
 					DOC_STAT := p.DOC_STAT
-					TAGS := p.TAGS
+					TAGS := "" 
+					if p.TAGS == "/img/NoImageAvailable.png" {
+						thisImgUrl := getBlobTextFirstImageUrl(w,r,blobkey)
+						if thisImgUrl != "" {
+							TAGS = thisImgUrl
+							p.TAGS = thisImgUrl
+						} else {
+							TAGS = p.TAGS
+						}
+					}
 					AUTHOR = p.AUTHOR
 					FL_COUNTRY_SPECIFIC := p.FL_COUNTRY_SPECIFIC
 					//t := time.Now().Local()
@@ -71463,7 +71467,12 @@ func handleUploadArticles(w http.ResponseWriter, r *http.Request) {
 					p.DESC = DESC
 					p.FL_SHARED = "N"
 					p.DOC_STAT = "Personal"
-					p.TAGS = "/img/NoImageAvailable.png"
+					thisImgUrl := getBlobTextFirstImageUrl(w,r,blobkey)
+					if thisImgUrl != "" {
+						p.TAGS = thisImgUrl
+					} else {
+						p.TAGS = "/img/NoImageAvailable.png"
+					}
 					p.FL_COUNTRY_SPECIFIC = "N"
 					p.AUTHOR = uid
 					tstamp := getTimestamp()
@@ -76345,6 +76354,24 @@ func getBlobTextChan(w http.ResponseWriter, r *http.Request, blobChan chan strin
 	}
 	//return blobText
 	blobChan <- blobText
+}
+//gets contents of a blobkey and parse to get the first image encountered 
+func getBlobTextFirstImageUrl(w http.ResponseWriter, r *http.Request, BLOB_KEY string) (imgUrl string) {
+	c := appengine.NewContext(r)
+	reader := blobstore.NewReader(c, appengine.BlobKey(BLOB_KEY))
+	s := bufio.NewScanner(reader)
+	for s.Scan() {
+		if strings.Index(s.Text(), ".image ") != -1 {
+			thisUrls := xurls.Strict().FindAllString(s.Text(), -1)
+			if len(thisUrls) > 0 {
+				return thisUrls[0]
+			}
+		}
+	}
+	if err := s.Err(); err != nil {
+		imgUrl = ""
+	}
+	return imgUrl
 }
 
 //gets contents of a blobkey and parse to get the premium cost custom for the content 
