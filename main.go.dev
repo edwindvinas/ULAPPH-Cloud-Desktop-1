@@ -13871,52 +13871,38 @@ func getCategoriesBytes(w http.ResponseWriter, r *http.Request) ([]byte){
 	}
 	return nil
 }
-
-
 //gets the categories list from media file
 //connected to how the all desktops are listed 
 func getCategories(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	
 	cKey := "CATEGORY_LIST"
 	CATEGORY_LIST := ""
 	CATEGORY_LIST = getStrMemcacheValueByKey(w,r,cKey)
-	
 	if CATEGORY_LIST == "" {
-	
 		//get config id
 		docID := 0
 		cfgName := "SYSTEM_Category_List_Media_ID"
 		_, docID = getTDSCNFG(w,r,1,cfgName)
- 
 		BLOB_KEY := ""
-		BLOB_KEY, _, _, _, _, _, _, _, _, _, _ = getTDSMEDIABlobKey(w, r, docID)	
-		
- 
+		BLOB_KEY, _, _, _, _, _, _, _, _, _, _ = getTDSMEDIABlobKey(w, r, docID)
 		var buf bytes.Buffer
 		reader := blobstore.NewReader(c, appengine.BlobKey(BLOB_KEY))
 		s := bufio.NewScanner(reader)
-		
 		//secCtr := 0
 		for s.Scan() {
 			buf.WriteString(fmt.Sprintf("%v\n", s.Text()))
 		}
 		//update cache
 		putBytesToMemcacheWithoutExp(w,r,cKey,buf.Bytes())
- 
 		writeHTMLHeader(w, 200)
 		w.Write(buf.Bytes())
 		return
-	
 	} else {
 		writeHTMLHeader(w, 200)
 		w.Write([]byte(CATEGORY_LIST))
 		return
-	
 	}
- 
 }
- 
 //handles the /cache url
 //used for caching using app cache 
 func ulapphCache(w http.ResponseWriter, r *http.Request) {
@@ -14957,7 +14943,7 @@ func ulapphOtto(w http.ResponseWriter, r *http.Request) {
 
 }
 //D0075
-func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, DEBUG, key, val string) (resp string) {
+func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, DEBUG, key, val string) (resp string) {
 	c := appengine.NewContext(r)
 	//DEBUG = "Y"
 	//check first if SID or SID URL
@@ -14986,39 +14972,28 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, DEBUG, key
 	}
 	//c.Infof("thisCont: %v", thisCont)
 	//fmt.Fprintf(w,"%v\n", thisCont)
-
+	//edwinxxx
 	//start otto vm
 	vm := otto.New()
-	vm.Set("ottoFuncNlpGetName", func(s string) (name string){
-		c.Infof("ottoFunc: ottoFuncNlpGetName")
-		c.Infof("input: %v", s)
-		doc, err := prose.NewDocument(s)
+	vm.Set("ottoFuncNlpProseExecWithTokens", func(kb, input string) []string {
+		c.Infof("ottoFunc: ottoFuncNlpProseExecWithTokens")
+		c.Infof("input: %v", input)
+		doc, err := prose.NewDocument(input)
 		if err != nil {
-			return ""
+			return []string{"error"}
 		}
-		// Iterate over the doc's tokens:
-		ctr := 0
-		mf := false
+		c.Infof("doc: %#v", doc)
+		var thisResp []string
 		for _, tok := range doc.Tokens() {
-			c.Infof("TEXT: %v TAG: %v LABEL: %v<br>", tok.Text, tok.Tag, tok.Label)
-			if (tok.Tag == "NNP" || tok.Tag == "NN") && ctr == 0 {
-				ctr++
-				name = tok.Text
-				mf = true
-			} else if (tok.Tag == "NNP" || tok.Tag == "NN") && ctr > 0 {
-				name = fmt.Sprintf("%v %v", name, tok.Text)
-				mf = true
-			} else {
-				if mf == true {
-					break
-				}
-			}
+			//c.Infof("TEXT: %v TAG: %v LABEL: %v<br>", tok.Text, tok.Tag, tok.Label)
+			thisTok := fmt.Sprintf("%v@777@%v@777@%v", tok.Text, tok.Tag, tok.Label)
+			thisResp = append(thisResp, thisTok) 
 		}
-		if ctr <= 0 {
-			return ""
-		}
-		c.Infof("name: %v", name)
-		return name
+		justString := strings.Join(thisResp,"@888@")
+		c.Infof("Executing OttoJS: %v", kb)
+		resp := execOtto(w,r, uid, kb, bName, devID, "N", "input", justString)
+		c.Infof("resp: %v", resp)
+		return []string{resp}
 	})
 	vm.Set("ottoFuncFindFuzzyMatch", func(s,l string) []string {
 		//get from cache if available
@@ -15044,7 +15019,7 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, DEBUG, key
 		wordsToTest := []string{}
 		for _, p := range proses {
 			if p.Text != "" && p.Help != "" && p.IsRegexp == "fuzzy"{
-				wordsToTest = append(wordsToTest, fmt.Sprintf("%v@888@%v@888@%v", p.Answer, p.Text, p.Help))
+				wordsToTest = append(wordsToTest, fmt.Sprintf("%v@888@%v@888@%v@888@%v", p.Answer, p.Text, p.Help, p.IsAnsOtto))
 			}
 		}
 		//find closest match
@@ -15063,7 +15038,7 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, DEBUG, key
 	FL_CLEAR_KVO := false
 	vm.Set("ottoFuncClearConversation", func() string {
 		c.Infof("ottoFunc: ottoFuncClearConversation")
-		cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v", uid, bName)
+		cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v_%v", uid, bName, devID)
 		c.Infof("cKeyA: %v", cKeyA)
 		g := OttoAwareness {
 			OttoBotName: bName,
@@ -15127,7 +15102,7 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, DEBUG, key
 	  return string(b)
 	})
 
-	cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v", uid, bName)
+	cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v_%v", uid, bName, devID)
 	c.Infof("cKeyA: %v", cKeyA)
 	thisOA := getStrMemcacheValueByKey(w,r,cKeyA)
 	c.Infof("thisOA: %v", thisOA)
@@ -34601,16 +34576,15 @@ func getDefUwms(w http.ResponseWriter, r *http.Request) string {
 		buf.WriteString(fmt.Sprintf("</script>"))
 
 		//display country chat (users same country would meet!)
-		buf.WriteString(fmt.Sprintf("<input type=\"hidden\" value=\"'/chat?pubchan=country', 500, 300, 'left', 'top', {title: 'Chat Countrywide', icon: '/img/jswm-web.png'}\" size=\"60\" id=\"chat777c\" />"))
-		buf.WriteString(fmt.Sprintf("<script type=\"text/javascript\">"))
-		buf.WriteString(fmt.Sprintf("	if (localStorage['chat'] != 'N' && document.getElementById('desktop').value == 'uwm') { eval('windowManager.openURI(' + $('chat777c').value + ');'); }"))
-		buf.WriteString(fmt.Sprintf("</script>"))
- 
+		//buf.WriteString(fmt.Sprintf("<input type=\"hidden\" value=\"'/chat?pubchan=country', 500, 300, 'left', 'top', {title: 'Chat Countrywide', icon: '/img/jswm-web.png'}\" size=\"60\" id=\"chat777c\" />"))
+		//buf.WriteString(fmt.Sprintf("<script type=\"text/javascript\">"))
+		//buf.WriteString(fmt.Sprintf("	if (localStorage['chat'] != 'N' && document.getElementById('desktop').value == 'uwm') { eval('windowManager.openURI(' + $('chat777c').value + ');'); }"))
+		//buf.WriteString(fmt.Sprintf("</script>"))
 		//display country chat (users same site would meet!)
-		buf.WriteString(fmt.Sprintf("<input type=\"hidden\" value=\"'/chat?pubchan=public', 500, 300, 'left', 'top', {title: 'Chat Public', icon: '/img/jswm-web.png'}\" size=\"60\" id=\"chat777s\" />"))
-		buf.WriteString(fmt.Sprintf("<script type=\"text/javascript\">"))
-		buf.WriteString(fmt.Sprintf("	if (localStorage['chat'] != 'N' && document.getElementById('desktop').value == 'uwm') { eval('windowManager.openURI(' + $('chat777s').value + ');'); }"))
-		buf.WriteString(fmt.Sprintf("</script>"))
+		//buf.WriteString(fmt.Sprintf("<input type=\"hidden\" value=\"'/chat?pubchan=public', 500, 300, 'left', 'top', {title: 'Chat Public', icon: '/img/jswm-web.png'}\" size=\"60\" id=\"chat777s\" />"))
+		//buf.WriteString(fmt.Sprintf("<script type=\"text/javascript\">"))
+		//buf.WriteString(fmt.Sprintf("	if (localStorage['chat'] != 'N' && document.getElementById('desktop').value == 'uwm') { eval('windowManager.openURI(' + $('chat777s').value + ');'); }"))
+		//buf.WriteString(fmt.Sprintf("</script>"))
 
 		//display people
 		buf.WriteString(fmt.Sprintf("<input type=\"hidden\" value=\"'/directory?DIR_FUNC=sessions', 500, 300, 'left', 'top', {title: 'Online Users', icon: '/img/jswm-web.png'}\" size=\"60\" id=\"online777\" />"))
@@ -37156,7 +37130,6 @@ func adminSlides(w http.ResponseWriter, r *http.Request) {
 								if err != nil {
 										////c.Errorf("%v", err)
 								}
- 
 								err = rootTemplateSlideU2.Execute(w, slide)
 								if err != nil {
 										////c.Errorf("%v", err)
@@ -39961,10 +39934,12 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 	c.Infof("uid: %v", uid)
 	bName := r.FormValue("BN")
 	c.Infof("BN: %v", bName)
+	devID := r.FormValue("DID")
+	c.Infof("devID: %v", devID)
 	FL_DEBUG := r.FormValue("DEBUG")
 	c.Infof("FL_DEBUG: %v", FL_DEBUG)
 	//Getting current user KVO data
-	cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v", uid, bName)
+	cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v_%v", uid, bName, devID)
 	c.Infof("cKeyA: %v", cKeyA)
 	thisOA := getStrMemcacheValueByKey(w,r,cKeyA)
 	c.Infof("thisOA: %v", thisOA)
@@ -39984,9 +39959,9 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 				c.Infof("defOttoJS: %v", defOttoJS)
 				if defOttoJS != "" {
 					c.Infof("Executing default OttoJS: %v", defOttoJS)
-					resp := execOtto(w,r, uid, defOttoJS, bName, FL_DEBUG, "input", inpStr)
+					resp := execOtto(w,r, uid, defOttoJS, bName, devID, FL_DEBUG, "input", inpStr)
 					c.Infof("resp: %v", resp)
-					err := nlpProseFormatTemplateResponse(w,r,resp,kvo)
+					err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
 					if err != nil {
 						c.Infof("ERROR: %v", err)
 					}
@@ -39996,7 +39971,6 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			c.Infof("kvo unmarshal error: %v", err)
-			//cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v", uid)
 			//c.Infof("cKeyA: %v", cKeyA)
 			g := OttoAwareness {
 				OttoBotName: bName,
@@ -40119,9 +40093,9 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 						//w.Write([]byte(entry.Answer))
 						if entry.IsAnsOtto == "true" {
 							//call Otto API
-							resp := execOtto(w,r, uid,entry.Answer, bName, FL_DEBUG, "input", tok.Text)
+							resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", tok.Text)
 							//w.Write([]byte(resp))
-							err := nlpProseFormatTemplateResponse(w,r,resp,kvo)
+							err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
 							if err != nil {
 								c.Infof("ERROR: %v", err)
 							}
@@ -40143,9 +40117,9 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 							//w.Write([]byte(entry.Answer))
 							if entry.IsAnsOtto == "true" {
 								//call Otto API
-								resp := execOtto(w,r, uid,entry.Answer, bName, FL_DEBUG, "input", tok.Text)
+								resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", tok.Text)
 								//w.Write([]byte(resp))
-								err := nlpProseFormatTemplateResponse(w,r,resp,kvo)
+								err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
 								if err != nil {
 									c.Infof("ERROR: %v", err)
 								}
@@ -40205,9 +40179,9 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 						//w.Write([]byte(entry.Answer))
 						if entry.IsAnsOtto == "true" {
 							//call Otto API
-							resp := execOtto(w,r, uid,entry.Answer, bName, FL_DEBUG, "input", sent.Text)
+							resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", sent.Text)
 							//w.Write([]byte(resp))
-							err := nlpProseFormatTemplateResponse(w,r,resp,kvo)
+							err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
 							if err != nil {
 								c.Infof("ERROR: %v", err)
 							}
@@ -40229,9 +40203,9 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 							//w.Write([]byte(entry.Answer))
 							if entry.IsAnsOtto == "true" {
 								//call Otto API
-								resp := execOtto(w,r, uid,entry.Answer, bName, FL_DEBUG, "input", sent.Text)
+								resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", sent.Text)
 								//w.Write([]byte(resp))
-								err := nlpProseFormatTemplateResponse(w,r,resp,kvo)
+								err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
 								if err != nil {
 									c.Infof("ERROR: %v", err)
 								}
@@ -40267,7 +40241,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		//If first time to chat, attempt to start conversation
 		if defOttoJS != "" {
 			c.Infof("Attemp conversation... Executing default OttoJS: %v", defOttoJS)
-			resp := execOtto(w,r, uid, defOttoJS, bName, FL_DEBUG, "input", inpStr)
+			resp := execOtto(w,r, uid, defOttoJS, bName, devID, FL_DEBUG, "input", inpStr)
 			thisResp = append(thisResp, resp)
 			respString := ""
 			if resp == "" {
@@ -40278,7 +40252,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 			if respString != "" {
 				c.Infof("respString: %v", respString)
 				//w.Write([]byte(respString))
-				err := nlpProseFormatTemplateResponse(w,r,respString,kvo)
+				err := nlpProseFormatTemplateResponse(w,r,bName,respString,kvo)
 				if err != nil {
 					c.Infof("ERROR: %v", err)
 				}
@@ -40294,7 +40268,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 			if respString != "" {
 				c.Infof("Initial response: %v", respString)
 				//w.Write([]byte(respString))
-				err := nlpProseFormatTemplateResponse(w,r,respString,kvo)
+				err := nlpProseFormatTemplateResponse(w,r,bName,respString,kvo)
 				if err != nil {
 					c.Infof("ERROR: %v", err)
 				}
@@ -40371,13 +40345,16 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
+//edwinxxx
 //reformat nlp response
-func nlpProseFormatTemplateResponse(w http.ResponseWriter, r *http.Request, resRaw string, p OttoAwareness) error {
+func nlpProseFormatTemplateResponse(w http.ResponseWriter, r *http.Request, bName, resRaw string, p OttoAwareness) error {
     //c := appengine.NewContext(r)
     //c.Infof("nlpProseFormatTemplateResponse()")
     //c.Infof("resRaw: %v", resRaw)
     //c.Infof("kvo: %v", p)
+    if p.OttoBotName == "" {
+	p.OttoBotName = bName
+    }
 
     tmpl := template.New("test")
     //parse some content and generate a template
@@ -43756,10 +43733,9 @@ func media(w http.ResponseWriter, r *http.Request) {
 					CATEGORY := r.FormValue("CATEGORY")
 					DATA_TYPE := r.FormValue("DATA_TYPE")
 					FL_ADD_WP := r.FormValue("FL_ADD_WP")
-					
 					if err := multiUploaderImagesHdr2.Execute(w, CATEGORY); err != nil {
 						panic(err)
-					}	
+					}
 					for i := 1; i <= MAX_DRAG_DROP_FILES; i++ {
 						csn2 := getUpUrlString(w,r,"/upload-media")
 						uploadURL3, err := blobstore.UploadURL(c, csn2, nil)
@@ -43770,7 +43746,6 @@ func media(w http.ResponseWriter, r *http.Request) {
 						if err := multiUploaderImagesForm.Execute(w, uploadURL3); err != nil {
 							panic(err)
 						}
-					
 						TEMPDATA := TEMPSTRUCT2{
 							STR_FILLER1: TITLE,
 							STR_FILLER2: DESC,
@@ -43785,12 +43760,9 @@ func media(w http.ResponseWriter, r *http.Request) {
 					if err := htmlFooterModal.Execute(w, ""); err != nil {
 						panic(err)
 					}
-									
 				case "SET_MULTI_IMAGE_UPLOAD":
-				
 					//prep mime list
 					_, _ = getMimeType(w,r,path.Ext(""))
-					
 					if err := multiUploaderImagesHdr.Execute(w, ""); err != nil {
 						panic(err)
 					}
@@ -46820,7 +46792,7 @@ $(document).ready(function() {
 </head>
  
 <body>
-<h3><font color="blue">ULAPPH Overall Whats New</font></h3>
+<h3><font color="blue">ULAPPH Overall Whats New</font> [<a href="https://ulapph-sites.appspot.com/social?SO_FUNC=show-trending">Trending</a>]</h3>
 <hr>
 `
 
@@ -47382,6 +47354,8 @@ const iconsSettingsTemplateHeaderHTMLMDUAdmin = `
 	<script type="text/javascript" language="javascript" src="/js/jquery-1.11.3.min.js"></script>
 	<script type="text/javascript" language="javascript" src="/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" language="javascript" src="/js/table-demo.js"></script>
+	<link rel="stylesheet" href="/lib/css/sol/sol.css">
+	<script type="text/javascript" src="/lib/js/sol/sol.js"></script>
 	<script type="text/javascript" class="init">
  
 $(document).ready(function() {
@@ -47455,6 +47429,9 @@ const iconsSettingsTemplateHeaderHTMLSLU = `
 	<script type="text/javascript" language="javascript" src="/js/jquery-1.11.1.min.js"></script>
 	<script type="text/javascript" language="javascript" src="/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" language="javascript" src="/js/table-demo.js"></script>
+	<script src="/js/jquery-1.11.1.min.js"></script>
+	<link rel="stylesheet" href="/lib/css/sol/sol.css">
+	<script type="text/javascript" src="/lib/js/sol/sol.js"></script>
 	<script type="text/javascript" class="init">
 		$(document).ready(function() {
 			$('#example').dataTable();
@@ -47509,6 +47486,9 @@ const iconsSettingsTemplateHeaderHTMLSLA = `
 	<script type="text/javascript" language="javascript" src="/js/jquery-1.11.1.min.js"></script>
 	<script type="text/javascript" language="javascript" src="/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" language="javascript" src="/js/table-demo.js"></script>
+	<script src="/js/jquery-1.11.1.min.js"></script>
+	<link rel="stylesheet" href="/lib/css/sol/sol.css">
+	<script type="text/javascript" src="/lib/js/sol/sol.js"></script>
 	<script type="text/javascript" class="init">
 	$(document).ready(function() {
 		$('#example').dataTable();
@@ -49275,7 +49255,7 @@ const mediaSettingsTemplateTableHTMLFooter9 = `
 <script src="/js/pulldown-tabzilla-dynamic.js"></script>
 	<hr>
 	<h3>[ <a href="/slides">Slides</a> ] [ <a href="/articles">Articles</a> ] [ <a href="/media">Media</a> ]</h3>
-	&copy; 2014-2018 ULAPPH Cloud Desktop. All rights reserved.
+	&copy; 2014-2019 ULAPPH Cloud Desktop. All rights reserved.
     <br>
     <a href="https://goo.gl/8PJbT8"><img src="https://lh3.googleusercontent.com/rWg64BhkoZePFav1Piw-3GUL8HpG0_Bz3fjhw6vbPDjcAIrkFGfJFU0E3uEOEc6xN5RfAnBxUH1sJ2onP4tnDfs9bOpn4Bs" width=50 height=50></a>
     <a href="https://golang.org/"><img src="/img/gopher.png" width=50 height=40></a><a href="https://cloud.google.com/"><img src="/img/google-cloud.png" width=50 height=50></a>	
@@ -49371,7 +49351,7 @@ const rootTemplateSetDnLogin = `
 		<form action="/settings-display-screen" method="POST" enctype="multipart/form-data">
 		<input type="hidden" name="imageURL" value="{{.}}">
 		<input type="hidden" name="setWallpaper" value="setDNWP">
-		<select name="desktop-name">
+		<select name="desktop-name" id="CATEGORY">
  
 `
  
@@ -49509,11 +49489,17 @@ const rootTemplateSlidesCategoryChoiceB = `
 				};
 			</script>
 `
- 
+
 var rootTemplateMultiUploadForm = template.Must(template.New("rootTemplateMultiUploadForm").Parse(rootTemplateMultiUploadFormB))
  
 const rootTemplateMultiUploadFormB = `
 			</select>
+			<script type="text/javascript">
+			    $(function() {
+				// initialize sol
+				$('#CATEGORY').searchableOptionList();
+			    });
+			</script>
 			<br>
 			<input type="submit" name="submit" value="Proceed">
 			</form>
@@ -49679,7 +49665,7 @@ const rootTemplateHTMLMediaA = `
 			<a href="#close" title="Close" class="close">X</a>
 			<h3>Upload a new Image</h3>
 			<form action="{{.}}" method="POST" enctype="multipart/form-data">
-			Category: <select name="CATEGORY">
+			Category: <select name="CATEGORY" id="CATEGORY">
 `
 var rootTemplateMediaA2 = template.Must(template.New("rootTemplateMediaA2").Parse(rootTemplateHTMLMediaA2))
  
@@ -49714,7 +49700,7 @@ const rootTemplateHTMLMediaB = `
 			<a href="#close" title="Close" class="close">X</a>
 			<h3>Upload a new Text File</h3>
 			<form action="{{.}}" method="POST" enctype="multipart/form-data">
-			Category:		<select name="CATEGORY">
+			Category:		<select name="CATEGORY" id="CATEGORY">
 `
  
 var rootTemplateMediaB2 = template.Must(template.New("rootTemplateMediaB2").Parse(rootTemplateHTMLMediaB2))
@@ -49813,7 +49799,7 @@ const rootTemplateHTMLMediaV2 = `
 	    </div>
     </div>	
 `
- 
+
 var rootTemplateMediaC1 = template.Must(template.New("rootTemplateMediaC1").Parse(rootTemplateHTMLMediaC1))
  
 const rootTemplateHTMLMediaC1 = `
@@ -49836,7 +49822,7 @@ const rootTemplateHTMLMediaC2 = `
 			Data Type: <input type="text" id="DATA_TYPE" name="DATA_TYPE" maxlength="300" value="{{.DATA_TYPE}}"><br>
 			Mime Type: <input type="text" id="MIME_TYPE" name="MIME_TYPE" maxlength="300" value="{{.MIME_TYPE}}"><a href="https://golang.org/misc/nacl/testdata/mime.types?m=text" target="mlist">List</a><br>
 			Author: <input type="text" id="AUTHOR" name="AUTHOR" maxlength="300" value="{{.AUTHOR}}"><br>
-			Category: 		<select name="CATEGORY">
+			Category: 		<select name="CATEGORY" id="CATEGORY">
  
 	{{end}}	
 `
@@ -49865,6 +49851,11 @@ const rootTemplateHTMLMediaC3 = `
 			<br><input type="submit" name="submit" value="Update Media">
 			</form>
 	    </div>
+			<script type="text/javascript">
+			    $(function() {
+				$('#CATEGORY').searchableOptionList();
+			    });
+			</script>
    </div>
 	{{end}}	
 `
@@ -50051,7 +50042,7 @@ const rootTemplateHTMLSlideU2 = `
 			<input type="hidden" name="FUNC_CODE" value="UPDATE2">
 			File Title: <input type="text" name="TITLE" maxlength="200" value="{{.TITLE}}">Note: Sample Slides Name <br>
 			File Desc: <input type="text" id="DESC" name="DESC" maxlength="300" value="{{.DESC}}">Note: Some slides description. <br>
-			Category: 		<select name="CATEGORY">
+			Category: 		<select name="CATEGORY" id="CATEGORY">
  
 {{end}}
 `
@@ -50088,6 +50079,12 @@ const rootTemplateHTMLSlideU3 = `
 			<textarea  name="FL_COUNTRY_SPECIFIC" value="{{.FL_COUNTRY_SPECIFIC}}" maxlength="200" rows="10" cols="20"/>{{.FL_COUNTRY_SPECIFIC}}</textarea>
 			<br><input type="submit" name="submit" value="Update Slide">
 			</form>
+			<script type="text/javascript">
+			    $(function() {
+				
+				$('#CATEGORY').searchableOptionList();
+			    });
+			</script>
 	    </div>
     </div>
 {{end}}
@@ -50102,7 +50099,7 @@ const rootTemplateHTMLArticleU2 = `
 			<input type="hidden" name="FUNC_CODE" value="UPDATE2">
 			File Title: <input type="text" name="TITLE" maxlength="200" value="{{.TITLE}}">Note: Sample Articles Name <br>
 			File Desc: <input type="text" id="DESC" name="DESC" maxlength="300" value="{{.DESC}}">Note: Some article description. <br>
-			Category:<select name="CATEGORY">
+			Category:<select name="CATEGORY" id="CATEGORY">
  
 {{end}}
 `
@@ -50138,6 +50135,12 @@ const rootTemplateHTMLArticleU3 = `
 			<textarea  name="FL_COUNTRY_SPECIFIC" value="{{.FL_COUNTRY_SPECIFIC}}" maxlength="200" rows="10" cols="20"/>{{.FL_COUNTRY_SPECIFIC}}</textarea>
 			<br><input type="submit" name="submit" value="Update Article">
 			</form>
+			<script type="text/javascript">
+			    $(function() {
+				
+				$('#CATEGORY').searchableOptionList();
+			    });
+			</script>
 	    </div>
     </div>
 {{end}}
@@ -61109,7 +61112,7 @@ var userAccessTemplateMobileRootSearch = template.Must(template.New("userAccessT
     <title>Search::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
@@ -61180,7 +61183,7 @@ var userAccessTemplateMobileRootAll = template.Must(template.New("userAccessTemp
     <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />   	
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />   	
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
@@ -61256,7 +61259,7 @@ var userAccessTemplateMobileDesktop0 = template.Must(template.New("userAccessTem
     <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." /> 	
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." /> 	
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
@@ -61322,7 +61325,7 @@ var userAccessTemplateDesktop0Head1 = template.Must(template.New("userAccessTemp
     <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -61337,7 +61340,7 @@ var userAccessTemplateDesktopNHead1 = template.Must(template.New("userAccessTemp
     <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -61447,7 +61450,7 @@ var userAccessTemplateDesktop0Part1 = template.Must(template.New("userAccessTemp
     <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -61462,7 +61465,7 @@ var userAccessTemplateDesktop0Part1a = template.Must(template.New("userAccessTem
     <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -61765,7 +61768,7 @@ var htmlHeaderModal = template.Must(template.New("htmlHeaderModal").Parse(`
     <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -61797,7 +61800,7 @@ var mobileControl = template.Must(template.New("mobileControl").Parse(`
     <title>MC::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -61930,7 +61933,7 @@ var htmlHeaderModalProfile = template.Must(template.New("htmlHeaderModalProfile"
     <title>Profile::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -61990,7 +61993,7 @@ var htmlEditorHeader = template.Must(template.New("htmlEditorHeader").Parse(`
     <title>Editor::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -62478,7 +62481,7 @@ var htmlEditorHeaderReader = template.Must(template.New("htmlEditorHeaderReader"
     <title>Editor::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -62856,7 +62859,7 @@ var htmlHeaderModalAds = template.Must(template.New("htmlHeaderModalAds").Parse(
     <title>Ads::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -62879,7 +62882,7 @@ var htmlHeaderAdmin = template.Must(template.New("htmlHeaderAdmin").Parse(`
     <title>Admin::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -62908,7 +62911,7 @@ var htmlHeaderSearchGlow = template.Must(template.New("htmlHeaderSearchGlow").Pa
     <title>Search::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -62929,7 +62932,7 @@ var htmlHeaderFB = template.Must(template.New("htmlHeaderFB").Parse(`
     <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
@@ -63281,7 +63284,7 @@ var htmlQuickSearchForms = template.Must(template.New("htmlQuickSearchForms").Pa
  
 var htmlFooterSearch = template.Must(template.New("htmlFooterSearch").Parse(`
 	<hr>
-	&copy; 2014-2018 ULAPPH Cloud Desktop. All rights reserved.
+	&copy; 2014-2019 ULAPPH Cloud Desktop. All rights reserved.
     <br>
     <a href="https://goo.gl/8PJbT8"><img src="https://lh3.googleusercontent.com/rWg64BhkoZePFav1Piw-3GUL8HpG0_Bz3fjhw6vbPDjcAIrkFGfJFU0E3uEOEc6xN5RfAnBxUH1sJ2onP4tnDfs9bOpn4Bs" width=50 height=50></a>	
 	<a href="https://golang.org/"><img src="/img/gopher.png" width=50 height=40></a><a href="https://cloud.google.com/"><img src="/img/google-cloud.png" width=50 height=50></a>
@@ -63295,7 +63298,7 @@ var htmlHeaderGB = template.Must(template.New("htmlHeaderGB").Parse(`
     <title>Guestbook::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -63340,7 +63343,7 @@ var htmlHeaderGBSocial = template.Must(template.New("htmlHeaderGBSocial").Parse(
     <title>Discussion::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -63427,7 +63430,7 @@ var htmlHeaderGBChannel = template.Must(template.New("htmlHeaderGBChannel").Pars
     <title>Guestbook::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -63490,7 +63493,7 @@ var htmlHeaderModalRefresh = template.Must(template.New("htmlHeaderModalRefresh"
     <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
@@ -63514,7 +63517,7 @@ var htmlHeaderModalRefreshNo = template.Must(template.New("htmlHeaderModalRefres
     <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -63536,7 +63539,7 @@ var htmlHeaderModalRefreshNoHome = template.Must(template.New("htmlHeaderModalRe
     <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -63565,7 +63568,7 @@ var htmlHeaderModalBlink = template.Must(template.New("htmlHeaderModalBlink").Pa
     <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
@@ -63622,7 +63625,7 @@ var htmlHeaderModalBlinkColor = template.Must(template.New("htmlHeaderModalBlink
     <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
@@ -63683,7 +63686,7 @@ const htmlHeaderGoogleMapsC = `
     <title>Google Maps::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
@@ -63755,7 +63758,7 @@ var htmlHeaderModalBlinkColorLinkify = template.Must(template.New("htmlHeaderMod
     <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
@@ -63842,7 +63845,7 @@ var htmlFooterBasic = template.Must(template.New("htmlFooterBasic").Parse(`
 var htmlFooterModal = template.Must(template.New("htmlFooterModal").Parse(`
     <br>
 	<br>
-	&copy; 2014-2018 ULAPPH Cloud Desktop. All rights reserved.
+	&copy; 2014-2019 ULAPPH Cloud Desktop. All rights reserved.
     <br>
     <br>
     <a href="https://goo.gl/8PJbT8"><img src="https://lh3.googleusercontent.com/rWg64BhkoZePFav1Piw-3GUL8HpG0_Bz3fjhw6vbPDjcAIrkFGfJFU0E3uEOEc6xN5RfAnBxUH1sJ2onP4tnDfs9bOpn4Bs" width=50 height=50></a>
@@ -63872,7 +63875,7 @@ var htmlFooterModalKnock = template.Must(template.New("htmlFooterModal").Parse(`
 	</script>
     <br>
 	<br>
-	&copy; 2014-2018 ULAPPH Cloud Desktop. All rights reserved.
+	&copy; 2014-2019 ULAPPH Cloud Desktop. All rights reserved.
     <br>
     <br>
     <a href="https://goo.gl/8PJbT8"><img src="https://lh3.googleusercontent.com/rWg64BhkoZePFav1Piw-3GUL8HpG0_Bz3fjhw6vbPDjcAIrkFGfJFU0E3uEOEc6xN5RfAnBxUH1sJ2onP4tnDfs9bOpn4Bs" width=50 height=50></a>
@@ -64443,7 +64446,7 @@ var playGoBody = template.Must(template.New("playGoBody").Parse(`
 var htmlFooterModalTools = template.Must(template.New("htmlFooterModalTools").Parse(`
     <br>
 	<br>
-	&copy; 2014-2018 ULAPPH Cloud Desktop. All rights reserved.
+	&copy; 2014-2019 ULAPPH Cloud Desktop. All rights reserved.
     <br>
     <br>
     <a href="https://goo.gl/8PJbT8"><img src="https://lh3.googleusercontent.com/rWg64BhkoZePFav1Piw-3GUL8HpG0_Bz3fjhw6vbPDjcAIrkFGfJFU0E3uEOEc6xN5RfAnBxUH1sJ2onP4tnDfs9bOpn4Bs" width=50 height=50></a>
@@ -64744,7 +64747,7 @@ var userAccessTemplateDesktopNPart1 = template.Must(template.New("userAccessTemp
     <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -64760,7 +64763,7 @@ var userAccessTemplateDesktopNPart1a = template.Must(template.New("userAccessTem
     <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -64774,7 +64777,7 @@ var userAccessTemplateUWMPart1 = template.Must(template.New("userAccessTemplateU
     <title>UWM::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-    <meta name="copyright" content="Copyright 2014-2018 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
@@ -64876,7 +64879,7 @@ var userRegistrationTemplate = template.Must(template.New("userRegistrationTempl
 	<p>
     <div class="success2"><h3><a href="#register">Click here</a> to register!</h3></div>
 	<hr>
-	&copy; 2014-2018 ULAPPH Cloud Desktop. All rights reserved.
+	&copy; 2014-2019 ULAPPH Cloud Desktop. All rights reserved.
     <br>
     <a href="https://goo.gl/8PJbT8"><img src="https://lh3.googleusercontent.com/rWg64BhkoZePFav1Piw-3GUL8HpG0_Bz3fjhw6vbPDjcAIrkFGfJFU0E3uEOEc6xN5RfAnBxUH1sJ2onP4tnDfs9bOpn4Bs" width=50 height=50></a>
     <a href="https://golang.org/"><img src="/img/gopher.png" width=50 height=40></a><a href="https://cloud.google.com/"><img src="/img/google-cloud.png" width=50 height=50></a>
@@ -67654,7 +67657,7 @@ var desktopBodyTabzillaTemplateMobilePublic = template.Must(template.New("deskto
 `))
  
 var desktopBodyTabzillaTemplateMobilePublicChan = template.Must(template.New("desktopBodyTabzillaTemplateMobilePublicChan").Parse(`
-<center>&copy; 2014-2018 ULAPPH Cloud Desktop. All rights reserved.</center>
+<center>&copy; 2014-2019 ULAPPH Cloud Desktop. All rights reserved.</center>
 <center><a href="https://goo.gl/8PJbT8" title="ULAPPH Cloud Desktop Documentation">Powered by ULAPPH Cloud Desktop</a></center>
 <br>
 <script src="/js/pulldown-tabzilla-dynamic.js"></script>
@@ -67671,7 +67674,7 @@ var generalFooterBodyHTMLzilla = template.Must(template.New("generalFooterBodyHT
 <script src="/js/pulldown-tabzilla-dynamic.js"></script>
 	<br>
 	<br>
-	&copy; 2014-2018 ULAPPH Cloud Desktop. All rights reserved.
+	&copy; 2014-2019 ULAPPH Cloud Desktop. All rights reserved.
     <br>
     <a href="https://goo.gl/8PJbT8"><img src="https://lh3.googleusercontent.com/rWg64BhkoZePFav1Piw-3GUL8HpG0_Bz3fjhw6vbPDjcAIrkFGfJFU0E3uEOEc6xN5RfAnBxUH1sJ2onP4tnDfs9bOpn4Bs" width=50 height=50></a>	
 	<a href="https://golang.org/"><img src="/img/gopher.png" width=50 height=40></a><a href="https://cloud.google.com/"><img src="/img/google-cloud.png" width=50 height=50></a>
@@ -67739,7 +67742,7 @@ var guestbookTemplateFeedback = template.Must(template.New("guestbookTemplateFee
 	
 var outputFooterTemplate = template.Must(template.New("outputFooterTemplate").Parse(`
     <hr>
-	&copy; 2014-2018 ULAPPH Cloud Desktop. All rights reserved.
+	&copy; 2014-2019 ULAPPH Cloud Desktop. All rights reserved.
     <br>
     <a href="https://goo.gl/8PJbT8"><img src="https://lh3.googleusercontent.com/rWg64BhkoZePFav1Piw-3GUL8HpG0_Bz3fjhw6vbPDjcAIrkFGfJFU0E3uEOEc6xN5RfAnBxUH1sJ2onP4tnDfs9bOpn4Bs" width=50 height=50></a>	
 	<a href="https://golang.org/"><img src="/img/gopher.png" width=50 height=40></a><a href="https://cloud.google.com/"><img src="/img/google-cloud.png" width=50 height=50></a>
@@ -67774,7 +67777,7 @@ var umpFooterTemplate = template.Must(template.New("umpFooterTemplate").Parse(`
     <hr>
 	<h3>[ <a href="/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD">Upload</a> ] [ <a href="/infodb?DB_FUNC=MEDIA&CATEGORY=ALL_{{.}}">View All {{.}}</a> ]</h3>
 	<hr>
-	&copy; 2014-2018 ULAPPH Cloud Desktop. All rights reserved.
+	&copy; 2014-2019 ULAPPH Cloud Desktop. All rights reserved.
     <br>
     <a href="https://goo.gl/8PJbT8"><img src="https://lh3.googleusercontent.com/rWg64BhkoZePFav1Piw-3GUL8HpG0_Bz3fjhw6vbPDjcAIrkFGfJFU0E3uEOEc6xN5RfAnBxUH1sJ2onP4tnDfs9bOpn4Bs" width=50 height=50></a>	
 	<a href="https://golang.org/"><img src="/img/gopher.png" width=50 height=40></a><a href="https://cloud.google.com/"><img src="/img/google-cloud.png" width=50 height=50></a>
@@ -67784,7 +67787,7 @@ var umpFooterTemplate = template.Must(template.New("umpFooterTemplate").Parse(`
  
 var yvpFooterTemplate = template.Must(template.New("yvpFooterTemplate").Parse(`
 	<hr>
-	&copy; 2014-2018 ULAPPH Cloud Desktop. All rights reserved.
+	&copy; 2014-2019 ULAPPH Cloud Desktop. All rights reserved.
     <br>
     <a href="https://goo.gl/8PJbT8"><img src="https://lh3.googleusercontent.com/rWg64BhkoZePFav1Piw-3GUL8HpG0_Bz3fjhw6vbPDjcAIrkFGfJFU0E3uEOEc6xN5RfAnBxUH1sJ2onP4tnDfs9bOpn4Bs" width=50 height=50></a>	
 	<a href="https://golang.org/"><img src="/img/gopher.png" width=50 height=40></a><a href="https://cloud.google.com/"><img src="/img/google-cloud.png" width=50 height=50></a>
@@ -67795,7 +67798,7 @@ var yvpFooterTemplate = template.Must(template.New("yvpFooterTemplate").Parse(`
 var outputFooterTemplateChannel = template.Must(template.New("outputFooterTemplateChannel").Parse(`
 	[<a href="/guestbook?GB_FUNC=DELETE_ALL">Delete All Messages</a>] [<a href="/guestbook?GB_FUNC=READ_ALL">Mark all Read</a>]
     <hr>
-	&copy; 2014-2018 ULAPPH Cloud Desktop. All rights reserved.
+	&copy; 2014-2019 ULAPPH Cloud Desktop. All rights reserved.
     <br>
     <a href="https://goo.gl/8PJbT8"><img src="https://lh3.googleusercontent.com/rWg64BhkoZePFav1Piw-3GUL8HpG0_Bz3fjhw6vbPDjcAIrkFGfJFU0E3uEOEc6xN5RfAnBxUH1sJ2onP4tnDfs9bOpn4Bs" width=50 height=50></a>	
 	<a href="https://golang.org/"><img src="/img/gopher.png" width=50 height=40></a><a href="https://cloud.google.com/"><img src="/img/google-cloud.png" width=50 height=50></a>
@@ -67813,14 +67816,14 @@ var outputFooterTemplateToken = template.Must(template.New("outputFooterTemplate
 	<script src="/js/channel-token.js" type="text/javascript"></script>
 	<script src="/js/channel-firebase.js"></script>
     <hr>
-	&copy; 2014-2018 ULAPPH Cloud Desktop. All rights reserved.
+	&copy; 2014-2019 ULAPPH Cloud Desktop. All rights reserved.
     <br>
     <a href="https://goo.gl/8PJbT8"><img src="https://lh3.googleusercontent.com/rWg64BhkoZePFav1Piw-3GUL8HpG0_Bz3fjhw6vbPDjcAIrkFGfJFU0E3uEOEc6xN5RfAnBxUH1sJ2onP4tnDfs9bOpn4Bs" width=50 height=50></a>	
 	<a href="https://golang.org/"><img src="/img/gopher.png" width=50 height=40></a><a href="https://cloud.google.com/"><img src="/img/google-cloud.png" width=50 height=50></a>
   </body>
 </html>
 `))
- 
+
 var multiUploaderImagesHdr = template.Must(template.New("multiUploaderImagesHdr").Parse(`
 <!DOCTYPE html>
  
@@ -67830,7 +67833,11 @@ var multiUploaderImagesHdr = template.Must(template.New("multiUploaderImagesHdr"
 <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <script src="/js/dropzone.js"></script>
+<link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/dropzone.css">
+<script src="/js/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet" href="/lib/css/sol/sol.css">
+<script type="text/javascript" src="/lib/js/sol/sol.js"></script>
 <body>
 <a href="/contents?q=home"><img src="/img/home.png" title="All Contents" height="40" width="40"></a> <a href="/infodb?DB_FUNC=MEDIA&CATEGORY=ALL_RECENT"><img src="/img/recent.png" title="Recent" height="40" width="40"></a> <a href="/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD"><img src="https://lh3.googleusercontent.com/cIVQhhLxXgP7J2ERCOfcDc7_jijzAa4QSICwX_QhrT9GG5n_pKKatFrZjXPFORFTGnljcOx98SMP9VUoK0jynKsGkMGeSg" title="Upload More..." height="40" width="40"></a>
 <p>
@@ -67863,9 +67870,10 @@ var multiUploaderImagesHdr = template.Must(template.New("multiUploaderImagesHdr"
 	  <option value="video">Video</option>
 	</select><br>
   ADD TO WALLPAPERS: <input type="checkbox" name="FL_ADD_WP"> (For images only)<br>
-  CATEGORY: <select name="CATEGORY"><br>
+  CATEGORY: <select name="CATEGORY" id="CATEGORY"><br>
+			<option value="Select Category">Select Category</option>
 `))
- 
+
 var multiUploaderImagesHdr2 = template.Must(template.New("multiUploaderImagesHdr2").Parse(`
 <!DOCTYPE html>
  
@@ -67884,7 +67892,7 @@ var multiUploaderImagesHdr2 = template.Must(template.New("multiUploaderImagesHdr
 <div id="status-area">
 </div>
 `))
- 
+
 var multiUploaderImagesForm = template.Must(template.New("multiUploaderImagesForm").Parse(`
 <form action="{{.}}" class="dropzone">
 `))
@@ -70716,7 +70724,6 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 
 		//for slides
 		case "UPD-FROM-EDITOR":
-			//edwinxxx
 			//DESKTOP := pVals["DESKTOP"]
 			blobkey := string(file[0].BlobKey)
 			SID_R := fmt.Sprintf("%v", pVals["SID"])
@@ -70762,7 +70769,6 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 							TAGS = p.TAGS
 						}
 					}
-					//edwinxxx
 					//t := time.Now().Local()
 					//tstamp := t.Format("20060102150405")
 					tstamp := getTimestamp()
@@ -70889,7 +70895,6 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 					p.DESC = DESC
 					p.FL_SHARED = "N"
 					p.DOC_STAT = "Personal"
-					//edwinxxx
 					//p.TAGS = "/img/NoImageAvailable.png"
 					thisImgUrl := getBlobTextFirstImageUrl(w,r,blobkey)
 					if thisImgUrl != "" {
@@ -71272,7 +71277,6 @@ func handleUploadArticles(w http.ResponseWriter, r *http.Request) {
 
 		//for articles
 		case "UPD-FROM-EDITOR":
-			//edwinxxx
 			file := blobs["file"]
 			if len(file) == 0 {
 					////c.Errorf("no file uploaded")
@@ -71318,7 +71322,6 @@ func handleUploadArticles(w http.ResponseWriter, r *http.Request) {
 					TITLE := p.TITLE
 					FL_SHARED := p.FL_SHARED
 					DOC_STAT := p.DOC_STAT
-					//edwinxxx
 					TAGS := "" 
 					if p.TAGS == "/img/NoImageAvailable.png" {
 						thisImgUrl := getBlobTextFirstImageUrl(w,r,blobkey)
@@ -76360,7 +76363,6 @@ func getBlobTextChan(w http.ResponseWriter, r *http.Request, blobChan chan strin
 	//return blobText
 	blobChan <- blobText
 }
-//edwinxxx
 //gets contents of a blobkey and parse to get the first image encountered 
 func getBlobTextFirstImageUrl(w http.ResponseWriter, r *http.Request, BLOB_KEY string) (imgUrl string) {
 	c := appengine.NewContext(r)
@@ -81896,8 +81898,8 @@ func Shuffle(slice interface{}) {
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // ULAPPH CLOUD DESKTOP SYSTEM
 // ULAPPH Cloud Desktop is a web-based desktop that runs on Google cloud platform and accessible via browsers on different PC and mobile devices.
-// COPYRIGHT (c) 2014-2018 Edwin D. Vinas, Ulapph Cloud Desktop System
-// COPYRIGHT (c) 2017-2018 Accenture, Opensource Version
+// COPYRIGHT (c) 2014-2017 Edwin D. Vinas, Ulapph Cloud Desktop System
+// COPYRIGHT (c) 2017-2019 Accenture, Opensource Version
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //// END OF CODES //////////////////////////
 

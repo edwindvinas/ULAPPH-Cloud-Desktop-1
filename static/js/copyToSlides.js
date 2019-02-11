@@ -6,13 +6,13 @@ function copyToSlides(type, link, caption, mid) {
 	
 	switch (type) {
 		case "image":		
-			e.innerHTML = currHTML + "<br>* <br>" + ".image " + link + " " + "400 800" + "<br>" + ".caption " + caption + "<br>";	
+			e.innerHTML = currHTML + "<br>* <br>" + ".image " + link + " " + "600 900" + "<br>" + ".caption " + caption + "<br>";	
 			break;
 		case "music":		
-			e.innerHTML = currHTML + "<br>* <br>" + ".iframe " + link + " " + "400 800" + "<br>" + ".caption " + caption + "<br>";	
+			e.innerHTML = currHTML + "<br>* <br>" + ".iframe " + link + " " + "600 900" + "<br>" + ".caption " + caption + "<br>";	
 			break;
 		case "video":		
-			e.innerHTML = currHTML + "<br>* <br>" + ".iframe " + link + " " + "400 800" + "<br>" + ".caption " + caption + "<br>";	
+			e.innerHTML = currHTML + "<br>* <br>" + ".iframe " + link + " " + "600 900" + "<br>" + ".caption " + caption + "<br>";	
 			break; 
 	}
 	var strs = 'iurl_' + mid + 's';
