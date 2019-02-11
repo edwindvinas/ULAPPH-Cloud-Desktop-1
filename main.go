@@ -14970,6 +14970,10 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, DEB
 		}
 		putStrToMemcacheWithExp(w,r,cKey,thisCont,GEN_CONTENT_EXPIRES)
 	}
+	if thisCont == "" {
+		c.Errorf("execOtto Error: empty SID: %v", SID)
+		return ""
+	}
 	//c.Infof("thisCont: %v", thisCont)
 	//fmt.Fprintf(w,"%v\n", thisCont)
 	//start otto vm
@@ -14979,6 +14983,7 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, DEB
 		c.Infof("input: %v", input)
 		doc, err := prose.NewDocument(input)
 		if err != nil {
+			c.Errorf("Prose error: %v", err)
 			return []string{"error"}
 		}
 		c.Infof("doc: %#v", doc)
@@ -40346,7 +40351,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 
 //reformat nlp response
 func nlpProseFormatTemplateResponse(w http.ResponseWriter, r *http.Request, bName, resRaw string, p OttoAwareness) error {
-    //c := appengine.NewContext(r)
+    c := appengine.NewContext(r)
     //c.Infof("nlpProseFormatTemplateResponse()")
     //c.Infof("resRaw: %v", resRaw)
     //c.Infof("kvo: %v", p)
@@ -40359,12 +40364,14 @@ func nlpProseFormatTemplateResponse(w http.ResponseWriter, r *http.Request, bNam
     tmpl, err := tmpl.Parse(resRaw)
     if err != nil {
         //log.Fatal("Error Parsing template: ", err)
+        c.Errorf("Error Parsing template: %v", err)
         return fmt.Errorf("Error Parsing template: ", err)
         //return
     }
     err1 := tmpl.Execute(w, p)
     if err1 != nil {
         //log.Fatal("Error executing template: ", err1)
+        c.Errorf("Error executing template: %v", err1)
         return fmt.Errorf("Error executing template: ", err1)
 
     }
