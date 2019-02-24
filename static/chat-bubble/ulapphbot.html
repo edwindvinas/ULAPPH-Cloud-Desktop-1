@@ -327,6 +327,10 @@ var convo = {
 		{
 	      question: "Remote Control",
 	      answer: "funcRemoteControl"
+	    },	
+		{
+	      question: "Text to Speech",
+	      answer: "funcTextToSpeech"
 	    }
 		]
   },
@@ -674,6 +678,19 @@ funcRemoteControl = function () {
 	      }
 	    },
 	    "funcRemoteControlRes"
+	  )
+}
+
+funcTextToSpeech = function () {
+    var msg = "<a href=\"/editor?EDIT_FUNC=TEXT-TO-SPEECH\" target=\"t2s\">Text to Speech</a>";
+	  chatWindow.talk(
+	    {
+	      "funcTTSRes": {
+	        says: [msg],
+	        reply: []
+	      }
+	    },
+	    "funcTTSRes"
 	  )
 }
 
@@ -1445,7 +1462,7 @@ function toolsRecentAll() {
 function funcPwaApps() {
     var rootPath = location.protocol + '//' + location.host + "/pwa/";
     var qrLink = "https://chart.googleapis.com/chart?cht=qr&chs=340x340&chl=" + rootPath+ "&choe=UTF-8";
-    var msg = "For desktops, <a href=\"/pwa/\" target=\"pwa\">click here</a>. <br>For Android/IOS devices, scan below qr code.<br><br><img src=" + qrLink + "></img>";
+    var msg = "To view list of all PWA, <a href=\"/pwa/\" target=\"pwa\">click here</a>. <br>For Android/IOS devices, scan below qr code.<br><br><img src=" + qrLink + "></img>";
 	  chatWindow.talk(
 	    {
 	      "funcPwaAppsRes": {

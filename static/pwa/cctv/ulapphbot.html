@@ -307,34 +307,46 @@ funcCaptureCCTV = function () {
 	  {
 	  if (xhr5.readyState==4 && xhr5.status==200)
 		{
-		var currVal = xhr5.responseText;
-			console.log(currVal);
-			  if (currVal != "") {
-				  chatWindow.talk(
-					{
-					  "cctv-cameras": {
-					  says: [currVal],
-						reply: [{
-						      question: "Show CCTVs",
-						      answer: "funcShowCCTV"
-						    },{
-							  question: "Capture CCTVs",
-							  answer: "funcCaptureCCTV"
-						    },{
-                                question: "Review CCTVs",
-                                answer: "funcReviewCCTV"
-                            },{
-                                question: "Recent CCTVs",
-                                answer: "funcRecentCCTV"
-                            }]
-					  }
-					},
-					"cctv-cameras"
-				)
-			}
-			return;
+            var currVal1 = xhr5.responseText;
+            console.log(currVal1);
+            //get the latest images
+            console.log("Showing cctv cameras...");
+            xhr5.open("GET","/directory?DIR_FUNC=cctv"); 
+            xhr5.send();
+            xhr5.onreadystatechange=function(convo)
+            {
+            if (xhr5.readyState==4 && xhr5.status==200)
+                {
+                var currVal = xhr5.responseText;
+                    console.log(currVal);
+                    if (currVal != "") {
+                        chatWindow.talk(
+                            {
+                            "cctv-cameras": {
+                                says: [currVal1, currVal],
+                                    reply: [{
+                                        question: "Show CCTVs",
+                                        answer: "funcShowCCTV"
+                                        },{
+                                        question: "Capture CCTVs",
+                                        answer: "funcCaptureCCTV"
+                                        },{
+                                            question: "Review CCTVs",
+                                            answer: "funcReviewCCTV"
+                                        },{
+                                            question: "Recent CCTVs",
+                                            answer: "funcRecentCCTV"
+                                        }]
+                                }
+                            },
+                            "cctv-cameras"
+                        )
+                    }
+                }
+            }
+            return;
 		}
-	  }
+	}
 }
 
 funcReviewCCTV = function () {
@@ -396,7 +408,7 @@ funcRecentCCTV = function () {
 	  xhr5=new ActiveXObject('MSXML2.XMLHTTP.3.0');
 	  } 
 	console.log("Capturing cctv cameras...");
-	xhr5.open("GET","/directory?DIR_FUNC=cctv-recent&recent_num=15"); 
+	xhr5.open("GET","/directory?DIR_FUNC=cctv-recent&recent_num=20"); 
 	xhr5.send();
 	
 	 xhr5.onreadystatechange=function(convo)

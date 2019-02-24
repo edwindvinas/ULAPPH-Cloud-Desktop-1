@@ -18074,7 +18074,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 						w.Write([]byte(fmt.Sprintf("<br>Warning: These are not updated: %v", wstr)))
 					}
 				} else {
-					w.Write([]byte(fmt.Sprintf("No cameras available!")))
+					w.Write([]byte(fmt.Sprintf("Sorry, No cameras available!")))
 				}
 				return
 			}
@@ -18116,7 +18116,9 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 						//c.Infof("catLastUpload: %v", catLastUpload)
 						timestamp := stmpHumanize(catLastUpload)
 						//c.Infof("timestamp: %v", timestamp)
+						if catLastImage != "" {
 						buf.WriteString(fmt.Sprintf("<a href=\"%v\" target=\"%v\" title=\"%v\"><img src=\"%v\">%v<br>", catLastImage, catLastUpload, dCat, catLastImage, timestamp))
+						}
 					}
 				}
 				if ctr > 0 {
@@ -70190,7 +70192,7 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 				cKeyClu := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", CATEGORY)
 				//c.Infof("cKeyClu: %v", cKeyClu)
 				//c.Infof("tstamp: %v", tstamp)
-				putStrToMemcacheWithoutExp(w,r,cKeyClu,tstamp)
+				putStrToMemcacheWithExp(w,r,cKeyClu,tstamp,GEN_CONTENT_EXPIRES4)
 				if STRUWMI == "Y" {
 					//c.Infof("STRUWMI...")
 					laterUpdateCctvList.Call(c, uid, CATEGORY)
@@ -70531,7 +70533,7 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 			cKeyClu := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", CATEGORY)
 			//c.Infof("cKeyClu: %v", cKeyClu)
 			//c.Infof("tstamp: %v", tstamp)
-			putStrToMemcacheWithoutExp(w,r,cKeyClu,tstamp)
+			putStrToMemcacheWithExp(w,r,cKeyClu,tstamp,GEN_CONTENT_EXPIRES4)
 			//D0074
 			if STRUWMI == "Y" {
 				//c.Infof("STRUWMI...")
@@ -72010,7 +72012,7 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 					cKeyClu := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", p.CATEGORY)
 					//c.Infof("cKeyClu: %v", cKeyClu)
 					//c.Infof("tstamp: %v", tstamp)
-					putStrToMemcacheWithoutExp(w,r,cKeyClu,tstamp)
+					putStrToMemcacheWithExp(w,r,cKeyClu,tstamp,GEN_CONTENT_EXPIRES4)
 					//D0068
 					thisCont := ""
 					TITLE := strings.Replace(p.TITLE, "_", " ", -1)
@@ -72235,7 +72237,7 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 					cKeyClu := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", CATEGORY)
 					//c.Infof("cKeyClu: %v", cKeyClu)
 					//c.Infof("tstamp: %v", tstamp)
-					putStrToMemcacheWithoutExp(w,r,cKeyClu,tstamp)
+					putStrToMemcacheWithExp(w,r,cKeyClu,tstamp,GEN_CONTENT_EXPIRES4)
 					p.NUM_LIKES = 0
 					p.NUM_COMMENTS = 0
 					p.LIKED_BY = ""
