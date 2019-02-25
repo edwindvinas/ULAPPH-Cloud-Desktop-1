@@ -54499,7 +54499,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
     }
 	//cache it first
 	data,_ := json.Marshal(dks)
-	putBytesToMemcacheWithExp(w,r,cKeyC,data,600)
+	putBytesToMemcacheWithExp(w,r,cKeyC,data,60)
 	w.Write(data)
 	return
 }
@@ -65701,9 +65701,9 @@ var desktopBody2Template = template.Must(template.New("desktopBody2Template").Pa
 		
 		{{if eq .STR_FILLER4 "false" }}
 		<li class="here" id="stm-scalc">
-			<input type="hidden" value="'https://scientific-calculator.appspot.com/', 500, 300, 'left', 'top', {title: 'Calculator', icon: '/img/jswm-web.png'}" size="60" id="scalc" />
+			<input type="hidden" value="'/pwa/', 500, 300, 'left', 'top', {title: 'PWA Apps', icon: '/img/jswm-web.png'}" size="60" id="scalc" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('scalc').value + ');');">
-				<img src="/img/calc.png" width="20" height="20" title="Calculator">
+				<img src="/img/calc.png" width="20" height="20" title="PWA Apps">
 				</img>
 			</a>		
 		</li>
@@ -66054,9 +66054,9 @@ var desktopBody2TemplateNoSticky = template.Must(template.New("desktopBody2Templ
 		
 		{{if eq .STR_FILLER4 "false" }}
 		<li class="here" id="stm-scalc">
-			<input type="hidden" value="'https://scientific-calculator.appspot.com/', 500, 300, 'left', 'top', {title: 'Calculator', icon: '/img/jswm-web.png'}" size="60" id="scalc" />
+			<input type="hidden" value="'/pwa/', 500, 300, 'left', 'top', {title: 'PWA Apps', icon: '/img/jswm-web.png'}" size="60" id="scalc" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('scalc').value + ');');">
-				<img src="/img/calc.png" width="20" height="20" title="Calculator">
+				<img src="/img/calc.png" width="20" height="20" title="PWA Apps">
 				</img>
 			</a>		
 		</li>

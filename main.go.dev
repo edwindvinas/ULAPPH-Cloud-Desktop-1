@@ -22704,7 +22704,6 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 			writeHTMLHeader(w, 200)
 			w.Write([]byte(HOST_LIST))
 			return
-		//edwinxxx
 		case SEARCH_FUNC == "GET_MAP_LIST":
 			if r.FormValue("esk") != EXT_SEARCH_GEN_KEY {
 				fmt.Printf("Unauthorized access")
@@ -26946,21 +26945,6 @@ func listDesktopsIcons(w http.ResponseWriter, r *http.Request, uid string) []Ico
 	}
 	return dks
 }
-//edwinxxx
-//Display humanized form for the timestamp like 2006-01-02 15:04:05.999999999 -0700 MST
-func nowHumanize(date string) (fTime string) {
-	if date != "" {
-		//2019-02-25 13:14:31.843243157 +0000 UTC m=+7417.357562664
-		t2, err := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", date)
-			if err != nil {
-					fmt.Println("parse error", err.Error())
-			}
-		fTime = fmt.Sprintf("%s", humanize.Time(t2))
-	} else {
-		fTime = "unknown"
-	}
-	return fTime
-}
 
 //Display humanized form of timestamp like 20150316022627 
 func stmpHumanize(tStr string) (fTime string) {
@@ -28334,7 +28318,6 @@ func social(w http.ResponseWriter, r *http.Request) {
 		case "proc-broadcast-presence":
 			procBroadcastPresence2(w,r)
 			return
-		//edwinxxx
 		case "proc-broadcast-location":
 			xcus := r.FormValue("custom")
 			xuid := r.FormValue("uid")
@@ -28358,7 +28341,6 @@ func social(w http.ResponseWriter, r *http.Request) {
 				if len(SPL) > 0 {
 					if xuid == SPL[0] && xhost == SPL[1] {
 					//replace
-						//edwinxxx
 						buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v\n", xuid, xhost, xll, getTimestamp()))
 						FL_OK = true
 					} else {
@@ -54409,7 +54391,6 @@ func showOverallRobot(w http.ResponseWriter, r *http.Request, target string) {
 	w.Write([]byte(fmt.Sprintf("<html><head><META http-equiv=\"refresh\" content=\"300;URL=/directory?DIR_FUNC=%v\"></head><body><img src=\"/img/cat_sleep.png\" width=150 height=150 title=\"No one online now!\"></body></html>", target)))
 	return
 }
-//edwinxxx
 //shows overall map
 func showOverallMap(w http.ResponseWriter, r *http.Request) {
     c := appengine.NewContext(r)
@@ -54470,7 +54451,6 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 						Placement:		"GAE",
 						Brand:			"ULAPPH",
 						Model:			"Cloud Desktop",
-						//edwinxxx
 						AntennaModel:	stmpHumanize(XTMP),
 						Username:		XUID,
 					}
@@ -54510,7 +54490,6 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 					Placement:		"GAE",
 					Brand:			"ULAPPH",
 					Model:			"Cloud Desktop",
-					//edwinxxx
 					AntennaModel:	stmpHumanize(tsmtp),
 					Username:		tKey,
 				}
@@ -54520,7 +54499,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
     }
 	//cache it first
 	data,_ := json.Marshal(dks)
-	putBytesToMemcacheWithExp(w,r,cKeyC,data,600)
+	putBytesToMemcacheWithExp(w,r,cKeyC,data,60)
 	w.Write(data)
 	return
 }
@@ -65722,9 +65701,9 @@ var desktopBody2Template = template.Must(template.New("desktopBody2Template").Pa
 		
 		{{if eq .STR_FILLER4 "false" }}
 		<li class="here" id="stm-scalc">
-			<input type="hidden" value="'https://scientific-calculator.appspot.com/', 500, 300, 'left', 'top', {title: 'Calculator', icon: '/img/jswm-web.png'}" size="60" id="scalc" />
+			<input type="hidden" value="'/pwa/', 500, 300, 'left', 'top', {title: 'PWA Apps', icon: '/img/jswm-web.png'}" size="60" id="scalc" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('scalc').value + ');');">
-				<img src="/img/calc.png" width="20" height="20" title="Calculator">
+				<img src="/img/calc.png" width="20" height="20" title="PWA Apps">
 				</img>
 			</a>		
 		</li>
@@ -66075,9 +66054,9 @@ var desktopBody2TemplateNoSticky = template.Must(template.New("desktopBody2Templ
 		
 		{{if eq .STR_FILLER4 "false" }}
 		<li class="here" id="stm-scalc">
-			<input type="hidden" value="'https://scientific-calculator.appspot.com/', 500, 300, 'left', 'top', {title: 'Calculator', icon: '/img/jswm-web.png'}" size="60" id="scalc" />
+			<input type="hidden" value="'/pwa/', 500, 300, 'left', 'top', {title: 'PWA Apps', icon: '/img/jswm-web.png'}" size="60" id="scalc" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('scalc').value + ');');">
-				<img src="/img/calc.png" width="20" height="20" title="Calculator">
+				<img src="/img/calc.png" width="20" height="20" title="PWA Apps">
 				</img>
 			</a>		
 		</li>
