@@ -26946,20 +26946,6 @@ func listDesktopsIcons(w http.ResponseWriter, r *http.Request, uid string) []Ico
 	return dks
 }
 
-//Display humanized form for the timestamp like 2006-01-02 15:04:05.999999999 -0700 MST
-func nowHumanize(date string) (fTime string) {
-	if date != "" {
-		t2, err := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", date)
-			if err != nil {
-					fmt.Println("parse error", err.Error())
-			}
-		fTime = fmt.Sprintf("%s", humanize.Time(t2))
-	} else {
-		fTime = "unknown"
-	}
-	return fTime
-}
-
 //Display humanized form of timestamp like 20150316022627 
 func stmpHumanize(tStr string) (fTime string) {
 	if tStr != "" {
@@ -28355,7 +28341,7 @@ func social(w http.ResponseWriter, r *http.Request) {
 				if len(SPL) > 0 {
 					if xuid == SPL[0] && xhost == SPL[1] {
 					//replace
-						buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v\n", xuid, xhost, xll, time.Now()))
+						buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v\n", xuid, xhost, xll, getTimestamp()))
 						FL_OK = true
 					} else {
 						buffer3.WriteString(fmt.Sprintf("%v\n", scanner.Text()))
@@ -28363,7 +28349,7 @@ func social(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 			if FL_OK == false {
-				buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v\n", xuid, xhost, xll, time.Now()))
+				buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v\n", xuid, xhost, xll, getTimestamp()))
 			}
 			putStrToMemcacheWithoutExp(w,r,cKey,buffer3.String())
 			return
@@ -54465,7 +54451,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 						Placement:		"GAE",
 						Brand:			"ULAPPH",
 						Model:			"Cloud Desktop",
-						AntennaModel:	nowHumanize(XTMP),
+						AntennaModel:	stmpHumanize(XTMP),
 						Username:		XUID,
 					}
 					dks = append(dks, p)
@@ -54504,7 +54490,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 					Placement:		"GAE",
 					Brand:			"ULAPPH",
 					Model:			"Cloud Desktop",
-					AntennaModel:	nowHumanize(tsmtp),
+					AntennaModel:	stmpHumanize(tsmtp),
 					Username:		tKey,
 				}
 				dks = append(dks, p)
@@ -64821,7 +64807,7 @@ var userAccessTemplateDesktopNPart3jswm = template.Must(template.New("userAccess
 		};
 	</script>
   </head>
-  <body>
+  <body onload="geoloc()">
 `))
  
 var loginUserTemplate = template.Must(template.New("loginUserTemplate").Parse(`

@@ -59,9 +59,12 @@ function success(position) {
 	  {// code for IE6, IE5
 	  cxhr2=new ActiveXObject('MSXML2.XMLHTTP.3.0');
 	  } 
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
 	console.log("latitude: "+latitude);
 	console.log("longitude: "+longitude);
-	var gpsURL = "/gps?lat=" + position.coords.latitude + '&lon=' + position.coords.longitude;
+    console.log("maploc: "+latitude+","+longitude);
+	var gpsURL = "/gps?lat=" + latitude + '&lon=' + longitude;
 	cxhr2.open("POST", gpsURL, true); 
 	cxhr2.send();
 	 cxhr2.onreadystatechange=function()
@@ -79,6 +82,7 @@ function success(position) {
 };
 
 function error(msg) {
+console.log("Client geolocation failed!");
 /*
 	console.log("Geo location failed!");
     if (window.XMLHttpRequest)
