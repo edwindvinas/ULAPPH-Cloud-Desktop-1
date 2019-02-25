@@ -4,6 +4,7 @@
 	 white-space: -pre-wrap;      /* Opera 4-6 */
 	 white-space: -o-pre-wrap;    /* Opera 7 */
 	 word-wrap: break-word;       /* Internet Explorer 5.5+ */
+     font-size: 30px;
 	}
 	.Read blockquote {
 	background:#f9f9f9;

@@ -59,6 +59,8 @@ function success(position) {
 	  {// code for IE6, IE5
 	  cxhr2=new ActiveXObject('MSXML2.XMLHTTP.3.0');
 	  } 
+	console.log("latitude: "+latitude);
+	console.log("longitude: "+longitude);
 	var gpsURL = "/gps?lat=" + position.coords.latitude + '&lon=' + position.coords.longitude;
 	cxhr2.open("POST", gpsURL, true); 
 	cxhr2.send();
@@ -77,6 +79,7 @@ function success(position) {
 };
 
 function error(msg) {
+/*
 	console.log("Geo location failed!");
     if (window.XMLHttpRequest)
 	  {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -101,6 +104,7 @@ function error(msg) {
 		}
 	 }
 	return;
+*/
 }
 
 function geoloc() {

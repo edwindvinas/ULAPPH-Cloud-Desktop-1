@@ -90,7 +90,21 @@
 </form>
   <hr>
   <div id="desktopLinks"></div>
-<!--append links-->
+    <!--append links-->
+  <hr>
+  <div id="wallpLinks"></div>
+    <!--add shortcut to wallpaper-->
+<script>
+    var root = location.protocol + '//' + location.host;
+    var wallpUrl = localStorage[root+"UWM_WALLP"+"uwm"+{{.STR_FILLER2}}];
+    if (wallpUrl !== "") {
+        var qrLink = "https://chart.googleapis.com/chart?cht=qr&chs=340x340&chl=" + wallpUrl+ "&choe=UTF-8";
+        var shLink = root+"/share?SH_FUNC=all&title=ULAPPHSocial&url="+wallpUrl;
+        var qrLinkS = "https://chart.googleapis.com/chart?cht=qr&chs=340x340&chl=" + shLink+ "&choe=UTF-8";
+        var wallpDiv = "<h1>Wallpaper</h1><ul><li><a href=\""+wallpUrl+"\">View Image Link</a></li><li><a href=\""+qrLink+"\">Scan QR Only</a></li><li><a href=\""+qrLinkS+"\">Scan QR & Share</a></li></ul>";
+        document.getElementById("wallpLinks").innerHTML = wallpDiv;
+    }
+</script>
 <script>
 	//parse URL values
 	var urlParams;

@@ -40,23 +40,6 @@ function intervalTrigger() {
   }, 60000 );
 };
 
-/* setInterval(function(){
-	//sync in ulapph
-	//alertify.set({ delay: 3000 });
-	//alertify.success("Changing wallpaper...");
-	var em = document.getElementById("mode");
-	if (em.value == "full" || em.value == "guest" || em.value == "qr") {
-		//check if fixed wallpaper is set
-		var bgImgUrl = document.getElementById("DEFAULT_WALLPAPER").value;
-		if (bgImgUrl != "") {
-			//fix the wallpaper
-			document.getElementById('page').style.backgroundImage = "url(" + bgImgUrl + ")";
-		} else {
-			changWP();
-		}
-	}
-},60000); */
-
 function changWP()
 {
 	if (isActive == false) {
@@ -103,6 +86,9 @@ function changWP()
 			ranVal = SPL[0];
 			if (ValidURL(bgImgUrl) == true) {
 				document.getElementById('page').style.backgroundImage = "url(" + bgImgUrl + ")";
+				//save local storage
+				var root = location.protocol + '//' + location.host;
+				localStorage[root+"UWM_WALLP"+desktop] = bgImgUrl;
 			}
 			//update hidden value ranval
 			var rn = document.getElementById("ranid")
