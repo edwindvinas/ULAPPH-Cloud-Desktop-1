@@ -27254,27 +27254,20 @@ func putBytesToMemcacheWithoutExp(w http.ResponseWriter, r *http.Request,cKey st
 //handles /guestbook processing
 //users can send messages via guestbook 
 func guestbook(w http.ResponseWriter, r *http.Request) {
-	
-	checkReferrer(w,r)
-	
+	//checkReferrer(w,r)
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	c := appengine.NewContext(r)
- 
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
- 
 	UID := fmt.Sprintf("%v",r.FormValue("UID"))
 	GB_FUNC := r.FormValue("GB_FUNC")
-	
 	if GB_FUNC == "KNOCK" {
-		
 		if strings.Index(UID, "|") != -1 && strings.Index(UID, "http") != -1 {
 			//send to remote
 			SPL := strings.Split(UID,"|")
 			getDataStr := fmt.Sprintf("%v/guestbook?GB_FUNC=KNOCK&UID=%v", SPL[1], SPL[0])
 			http.Redirect(w, r, getDataStr, http.StatusFound)
-			return	
+			return
 		}
-		
 		_, uid := checkSession(w,r)
 		if uid == "" {
 			uid = getGeoString(w,r)
@@ -54080,7 +54073,7 @@ func procBroadcastPresence2(w http.ResponseWriter, r *http.Request) {
 	msgDtl3 := ""
 	
 	if uid != "ZZ...user" {
-		msgDtl3 = fmt.Sprintf("[P01]PRESENCE: <hr><a href=\"#\" onclick=\"openWindow('%vchat?CHAT_FUNC=newChatRoom&INVITE=%v','Presence'); return false\"><img src=\"%v\" width=60 height=60></img></a><img src=\"%v\" width=48 height=30> %v is active! (%v) <hr> [<a href=\"#\" onclick=\"openWindow('%vcontents?q=home','Presence'); return false\">Contents</a>] [<a href=\"#\" onclick=\"openWindow('%vuwm','Presence'); return false\">UWM</a>] [<a href=\"#\" onclick=\"openWindow('%vguestbook?GB_FUNC=GB_OWNER','Presence'); return false\">GB</a>] [<a href=\"#\" onclick=\"openWindow('%vchat?CHAT_FUNC=newChatRoom&INVITE=%v','Presence'); return false\">Private Chat</a>] [<a href=\"#\" onclick=\"openWindow('%vlogout','Presence'); return false\">Logout</a>] - seen at <a href=\"#\" onclick=\"openWindow('%v','Presence'); return false\">%v</a> using %v OS and %v browser with IP %v [<a href=\"#\" onclick=\"openWindow('%vadmin-setup?ADMIN_FUNC=BLOCK_IP&ip=%v','Presence'); return false\">Block</a>]", host, uid, pic, countryPic, uid, cont, host, host, host, host, uid, host, host, host, os, browser, ip, host, ip)
+		msgDtl3 = fmt.Sprintf("[P01]PRESENCE: <hr><a href=\"%vchat?CHAT_FUNC=newChatRoom&INVITE=%v\" target=\"temp\"><img src=\"%v\" width=60 height=60></img></a><img src=\"%v\" width=48 height=30> %v is active! (%v) <hr> [<a href=\"%vcontents?q=home\" target=\"temp\">Contents</a>] [<a href=\"%vuwm\" target=\"temp\">UWM</a>] [<a href=\"%vguestbook?GB_FUNC=GB_OWNER\" target=\"temp\">GB</a>] [<a href=\"%vchat?CHAT_FUNC=newChatRoom&INVITE=%v\" target=\"temp\">Private Chat</a>] [<a href=\"%vlogout\" target=\"temp\">Logout</a>] - seen at <a href=\"%v\" target=\"temp\">%v</a> using %v OS and %v browser with IP %v [<a href=\"%vadmin-setup?ADMIN_FUNC=BLOCK_IP&ip=%v\" target=\"temp\">Block</a>]", host, uid, pic, countryPic, uid, cont, host, host, host, host, uid, host, host, host, os, browser, ip, host, ip)
 		sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", "" ,"")
 		//return
 		
