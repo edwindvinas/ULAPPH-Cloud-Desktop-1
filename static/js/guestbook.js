@@ -1,3 +1,57 @@
+function checkMessages() {
+	var aUser = document.getElementById("chan-id");
+	if (aUser.value == "") {
+		return;
+	}
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xmlhttpgbm=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xmlhttpgbm=new ActiveXObject('MSXML2.XMLHTTP.3.0');
+	  }
+	  
+	chk_url = '/people?PEOPLE_FUNC=CHECK-GBM';
+	xmlhttpgbm.open("GET",chk_url,true);
+	xmlhttpgbm.send();
+	
+	 xmlhttpgbm.onreadystatechange=function()
+	  {
+	  if (xmlhttpgbm.readyState==4 && xmlhttpgbm.status==200)
+		{
+		var currVal = xmlhttpgbm.responseText;
+			if (currVal != "") {
+				var msgText = "<a href='#' onclick='reloadGB();return false;'><img src='/img/newmessage.gif' height='50' width='100'></img><br></a>" + currVal;				
+				alertify.set({ delay: 15000 });
+				alertify.success(msgText); 
+
+                var r = document.getElementById("ringtone");
+                var ringTone = r.value;
+                if (r.value === "") {
+                    var root = location.protocol + '//' + location.host;
+                    ringTone = root + "/audio/newmsg - long.ogg";
+                }
+				var aSound = document.createElement('audio');
+				soundManager.createSound({
+					id: 'mySoundGB',
+					volume: 90,
+					url: ringTone
+				});
+                soundManager.play('mySoundGB');
+				return;
+			}
+		return;
+		}
+	 }
+	 return;
+};
+
+function reloadGB() {
+    location.href = '/guestbook?GB_FUNC=GB_OWNER';
+    return;
+}
+
 function deleteMessage(mid) {
 	var xmlhttp;
 

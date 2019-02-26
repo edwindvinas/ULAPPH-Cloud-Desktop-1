@@ -27302,11 +27302,8 @@ func guestbook(w http.ResponseWriter, r *http.Request) {
 			GB_FUNC = "GB_NOT_OWNER"
 		}
 	}
- 
 	switch GB_FUNC {
-			
 		case "GB_OWNER":
-		
 			q := datastore.NewQuery("Greeting").Order("-Date").Limit(100)
 			//c.Errorf("[S0191]")
 			greetings := make([]Greeting, 0, 100)
@@ -27318,7 +27315,6 @@ func guestbook(w http.ResponseWriter, r *http.Request) {
 			}
 			//sort.Sort(ByDate(greetings))
 			RINGTONE_URL := getRingtone(w, r, uid)
-			
 			TEMPDATA := TEMPSTRUCT{
 				STR_FILLER1: uid,
 				STR_FILLER2: RINGTONE_URL,
@@ -27329,7 +27325,6 @@ func guestbook(w http.ResponseWriter, r *http.Request) {
 			GUESTBOOK_CONTL := ""
 			cKey := fmt.Sprintf("GUESTBOOK_CONT_%s", UID)
 			GUESTBOOK_CONTL = getStrMemcacheValueByKey(w,r,cKey)
-	
 			PROFILE_PIC_URLME := getProfilePic(w, r, uid)
 			soundPrefChan := make(chan string)
 			soundPrefChanDone := make(chan bool)
@@ -27351,7 +27346,6 @@ func guestbook(w http.ResponseWriter, r *http.Request) {
 					if i <= 0 {
 						contHTML = fmt.Sprintf("%v <a href=\"/guestbook?UID=%v&GB_FUNC=FILTER\"><img src=\"%v\" width=50 height=50 title=\"%s\"></img></a>", contHTML, p.OutTo, PROFILE_PIC_URL, p.OutTo)
 					}
- 
 					fmt.Fprintf(w, "<b>%s</b><br>", humanize.Time(p.Date))
 					fmt.Fprintf(w, " <b>FROM: </b><a href=\"/people-edit?EditPeopleFunc=EditPeople&UID=%v&SID=%v\">%v</a></b> :: <a href=\"/guestbook?UID=%v&GB_FUNC=FILTER\">Filter</a> :: <a href=\"/guestbook?UID=%v&GB_FUNC=KNOCK\">Knock</a></p>", p.OutTo, p.OutTo, p.OutTo, p.OutTo, p.OutTo)
 						if p.Status == "" {
@@ -27363,11 +27357,10 @@ func guestbook(w http.ResponseWriter, r *http.Request) {
 							fmt.Fprintf(w, "<a href=\"#\" onclick=\"seenMessage('%v');return false;\"><img id=\"%vs\" src=\"/img/seen2.png\" width=50 height=50></a><a href=\"#\" onclick=\"deleteMessage('%v');return false;\"><img id=\"%v\" src=\"/img/delete.png\" width=50 height=50></img></a><img src=\"/img/incoming.png\" width=50 height=50>", p.MsgID, p.MsgID, p.MsgID, p.MsgID)
 						}
 					fmt.Fprintf(w, "<a href=\"/people-edit?EditPeopleFunc=EditPeople&UID=%v&SID=%v\"><img src=\"%v\" width=\"70\" height=\"70\"></a><img src=\"%v\" width=48 height=30>", p.OutTo, p.OutTo, PROFILE_PIC_URL, COUNTRY_PIC_URL)
-					
 					fmt.Fprintf(w, "<div class=\"%v\"><blockquote><pre>%v</pre></blockquote></div>", p.Status, html.EscapeString(p.Content))
 					fmt.Fprintf(w, "<form action=\"/guestbook\" method=\"post\">")
 					fmt.Fprintf(w, "  <input type=\"hidden\" name=\"UID\" value=\"%v\"></textarea>", p.OutTo)
-					fmt.Fprintf(w, "  <input type=\"hidden\" name=\"GB_FUNC\" value=\"SIGN\"></textarea>")	
+					fmt.Fprintf(w, "  <input type=\"hidden\" name=\"GB_FUNC\" value=\"SIGN\"></textarea>")
 					fmt.Fprintf(w, "  <textarea name=\"content\" rows=\"4\" cols=\"40\" maxlength=\"300\"></textarea>")
 					fmt.Fprintf(w, "  <br><input type=\"image\" name=\"submit\" src=\"/img/sendmsg.png\" with=100 height=40>")
 					fmt.Fprintf(w, "</form>")
@@ -27394,38 +27387,29 @@ func guestbook(w http.ResponseWriter, r *http.Request) {
 					}
 				//}
 			}
-			
-			
 			if err := outputFooterTemplateChannel.Execute(w, "test"); err != nil {
 				panic(err)
 			}
- 
 			UID = uid
 			//clear notification memcache
 			gbHTML := ""
- 			cKey = fmt.Sprintf("GUESTBOOK_MSGS_%s", UID)
+			cKey = fmt.Sprintf("GUESTBOOK_MSGS_%s", UID)
 			putStrToMemcacheWithoutExp(w,r,cKey,gbHTML)
- 
 			GUESTBOOK_NUM_MSG := "0"
 			cKey = fmt.Sprintf("GUESTBOOK_NUM_MSG_%s", UID)
 			putStrToMemcacheWithoutExp(w,r,cKey,GUESTBOOK_NUM_MSG)
- 
 			contHTML = ""
 			cKey = fmt.Sprintf("GUESTBOOK_CONT_%s", UID)
 			putStrToMemcacheWithoutExp(w,r,cKey,contHTML)
- 
 			cKey = fmt.Sprintf("GUESTBOOK_NEWM_%s", UID)
 			putStrToMemcacheWithoutExp(w,r,cKey,"")
- 
 			//refresh channel message
 			sendMessage(w, r, UID, "CH_MSG_NOTIFY", "", "", "","")
- 
 		case "GB_NOT_OWNER":
 			if err := htmlHeaderGB.Execute(w, ""); err != nil {
 			  panic(err)
 			}
 			PROFILE_PIC_URLOTH := getProfilePic(w, r, UID)
-			
 			TEMPDATA := TEMPSTRUCT{
 				STR_FILLER1: UID,
 				STR_FILLER2: PROFILE_PIC_URLOTH,
@@ -63192,7 +63176,6 @@ var htmlFooterSearch = template.Must(template.New("htmlFooterSearch").Parse(`
 	<a href="https://golang.org/"><img src="/img/gopher.png" width=50 height=40></a><a href="https://cloud.google.com/"><img src="/img/google-cloud.png" width=50 height=50></a>
 	<script src="/js/pulldown-tabzilla-dynamic.js"></script>
 `))
- 
 var htmlHeaderGB = template.Must(template.New("htmlHeaderGB").Parse(`
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
@@ -63329,7 +63312,6 @@ var htmlHeaderGBSocial = template.Must(template.New("htmlHeaderGBSocial").Parse(
 	</script>
 </html>
 `))
- 
 var htmlHeaderGBChannel = template.Must(template.New("htmlHeaderGBChannel").Parse(`
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
@@ -63357,9 +63339,9 @@ var htmlHeaderGBChannel = template.Must(template.New("htmlHeaderGBChannel").Pars
   <script src="/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/js/jquery-1.7.1.min.js"></script>
 	
-	<!--script type="text/javascript" src="/js/soundmanager2.js"></script-->
-	<!--link rel="stylesheet" href="/css/alertify.core.css" /-->
-	<!--link rel="stylesheet" href="/css/alertify.default.css" id="toggleCSS" /-->
+	<script type="text/javascript" src="/js/soundmanager2.js"></script>
+	<link rel="stylesheet" href="/css/alertify.core.css" />
+	<link rel="stylesheet" href="/css/alertify.default.css" id="toggleCSS" />
 	<!--script type="text/javascript" src="/js/vibrate.js"></script-->
   <script src="/js/jquery.linkify-1.0.js"></script>
   <script type="text/javascript" src="/js/guestbook.js"></script>
@@ -63375,27 +63357,15 @@ var htmlHeaderGBChannel = template.Must(template.New("htmlHeaderGBChannel").Pars
         });
     });
   </script>
-	<style>
-	#channel-area{
-		width: 100%;
-		position:relative;
-		vertical-align: top;
-		z-index:111;
-		bottom:0px;
-		left:0px;
-		padding:6px;
-		background-color:#44E61F;
-	}
-	</style>
         <style>
         textarea {
-           font-size: 25px;  
+           font-size: 25px;
         }
         </style>
 	<link rel="stylesheet" href="/css/blockquote2.css">
   <body>
 	<input type="hidden" id="chan-id" value="{{.STR_FILLER1}}">
-    <input type="hidden" id="ringtone" value="{{.STR_FILLER2}}">	
+    <input type="hidden" id="ringtone" value="{{.STR_FILLER2}}">
 `))
  
 var htmlHeaderModalRefresh = template.Must(template.New("htmlHeaderModalRefresh").Parse(`
@@ -67714,9 +67684,12 @@ var outputFooterTemplateChannel = template.Must(template.New("outputFooterTempla
     <br>
     <a href="https://goo.gl/8PJbT8"><img src="https://lh3.googleusercontent.com/rWg64BhkoZePFav1Piw-3GUL8HpG0_Bz3fjhw6vbPDjcAIrkFGfJFU0E3uEOEc6xN5RfAnBxUH1sJ2onP4tnDfs9bOpn4Bs" width=50 height=50></a>	
 	<a href="https://golang.org/"><img src="/img/gopher.png" width=50 height=40></a><a href="https://cloud.google.com/"><img src="/img/google-cloud.png" width=50 height=50></a>
-	<!--script src="/js/alertify.min.js"></script-->
+	<script src="/js/alertify.min.js"></script>
 	<!--script src="/js/channel.js" type="text/javascript"></script-->
 	<!--script src="/js/soundOnOff.js" type="text/javascript"></script-->
+	<script>
+		setInterval( function(){checkMessages();}, 10000);
+	</script>
   </body>
 </html>
 `))
