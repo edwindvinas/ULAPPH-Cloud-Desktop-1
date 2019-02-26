@@ -63320,7 +63320,6 @@ var htmlHeaderGBChannel = template.Must(template.New("htmlHeaderGBChannel").Pars
   <script type="text/javascript" language="javascript" src="/js/jquery-1.11.1.min.js"></script>
   <script src="/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/js/jquery-1.7.1.min.js"></script>
-	
 	<script type="text/javascript" src="/js/soundmanager2.js"></script>
 	<link rel="stylesheet" href="/css/alertify.core.css" />
 	<link rel="stylesheet" href="/css/alertify.default.css" id="toggleCSS" />
@@ -67527,6 +67526,7 @@ var desktopBodyTabzillaTemplateMobilePublicChan = template.Must(template.New("de
 <script src="/js/pulldown-tabzilla-dynamic.js"></script>
 	<script src="/js/alertify.min.js"></script>
 	<script src="/js/channel-public.js"></script>
+	<script src="/js/geolatlon.js"></script>
 	<!--script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid={{.}}"></script-->
 </body>
 </html>
@@ -67672,6 +67672,7 @@ var outputFooterTemplateChannel = template.Must(template.New("outputFooterTempla
 	<script>
 		setInterval( function(){checkMessages();}, 10000);
 	</script>
+	<script src="/js/geolatlon.js"></script>
   </body>
 </html>
 `))
