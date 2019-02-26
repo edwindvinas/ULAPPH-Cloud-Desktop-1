@@ -11553,7 +11553,6 @@ func runTopicsHaveNeed(w http.ResponseWriter, r *http.Request, UID, mode string)
 			pstr = x.I_NEED_TEXT
 		}
 	}
-						
 	s := bufio.NewScanner(strings.NewReader(pstr))
 
 	for s.Scan() {
@@ -11569,13 +11568,11 @@ func runTopicsHaveNeed(w http.ResponseWriter, r *http.Request, UID, mode string)
 	}
 }
 
-
 //function which serves the /wall url
 //used for sending messages or copying files via wall 
 func ulapphWall(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
-	
 	WALL_KEY := r.FormValue("wall_key")
 	if WALL_KEY != CMD_GEN_KEY {
 		msgDtl := fmt.Sprintf("[U00201] ERROR: Invalid operation.")
@@ -11583,30 +11580,22 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		action := "U00201"
 		sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, "", action)
 		http.Redirect(w, r, sysReq, http.StatusFound)
-		return		
+		return
 	}
 	_, uid := checkSession(w,r)
-	
 	WALL_FUNC := r.FormValue("WALL_FUNC")
- 
-	
 	SYS_RC_HOST_LIST := getWallHosts(w,r)
-	
 	switch {
-		
 	case WALL_FUNC == "SEND_MSG":
 		remHost := r.FormValue("remHost")
 		toUser := r.FormValue("remUser")
 		fromUser := r.FormValue("uid")
 		srcHost := r.FormValue("srcHost")
 		message := r.FormValue("wm")
-		
 		k, _ := url.Parse(remHost)
 		m, _ := url.Parse(getSchemeUrl(w,r))
-		
 		//save entry to guestbook
 		dsKey := getGuestbookKey(uid)
-		
 		g := Greeting{
 				MsgID: dsKey,
 				//MsgType: "Wall",
@@ -11618,7 +11607,7 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 				Status: "Unread",
 				OutTo: fmt.Sprintf("%v|%v", toUser, remHost),
 		}
-		if u := user.Current(c); u != nil {					
+		if u := user.Current(c); u != nil {
 				g.Author = fromUser
 		}
 		key := datastore.NewKey(c, "Greeting", dsKey, 0, nil)
@@ -11627,21 +11616,17 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 				 panic(err)
 		}
-		
 		//encode msg before sending
 		encMessage := base64.StdEncoding.EncodeToString([]byte(message))
-		
 		if k.Host == m.Host {
 			msgDtl := fmt.Sprintf("[U00164] ERROR: Cannot send to same ulapph site.")
 			fmt.Fprintf(w, "<font color=red>%v</font>", msgDtl)
- 
 		} else {
 			getDataStr := fmt.Sprintf("%v/wall?WALL_FUNC=SEND_MSG2&remHost=%v&fromUser=%v&srcHost=%v&toUser=%v&wm=%v&wall_key=%v", remHost, remHost, fromUser, srcHost, toUser, encMessage, CMD_GEN_KEY)
 			http.Redirect(w, r, getDataStr, http.StatusFound)
-			return				
+			return
 		}
 		return
-		
 	case WALL_FUNC == "SEND_MSG2":
 		toUser := r.FormValue("toUser")
 		fromUser := r.FormValue("fromUser")
@@ -11649,11 +11634,9 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		message := r.FormValue("wm")
 		//decode message
 		messageb, _ := base64.StdEncoding.DecodeString(message)
-		
 		//validate user
 		FUNC_CODE := "GET_GRP_ID"
 		FL_VALID_USER, _, _  , _ := usersProcessor(w, r, "au", fromUser, FUNC_CODE)
-		
 		if FL_VALID_USER != true {
 			msgDtl := fmt.Sprintf("[U00161] ERROR: Unregistered user (%v). Register first.", fromUser)
 			msgTyp := "error"
@@ -11661,12 +11644,10 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 			sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, "", action)
 			http.Redirect(w, r, sysReq, http.StatusFound)
 			return
-				
 		}
 		notifyGuestbook(w, r , "autoNotifyPeopleGB", toUser,  string(messageb), fmt.Sprintf("%v|%v", fromUser, fromUserHost))
 		fmt.Fprintf(w, "Wall message sent!<br><script>window.opener = self; window.close();</script>")
 		return
-		
 	case WALL_FUNC == "IDX_COPY":
 		//if copy initiated from search results
 		SOURCE_TBL := r.FormValue("SOURCE_TBL")
@@ -21221,6 +21202,7 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 				TEMPDATA := TEMPSTRUCT2{
 					STR_FILLER1: getSchemeUrl(w,r),
 					STR_FILLER2: uid,
+					STR_FILLER3: CMD_GEN_KEY,
 					HTM_FILLER1: template.HTML(SYS_RC_HOST_LIST),
 				}
 				if err := htmlWidgetWallMessage.Execute(w, &TEMPDATA); err != nil {
@@ -61790,20 +61772,20 @@ var mobileControl = template.Must(template.New("mobileControl").Parse(`
 var htmlWidgetCalendar = template.Must(template.New("htmlWidgetCalendar").Parse(`
 <iframe src="https://www.google.com/calendar/embed?height=300&amp;wkst=2&amp;bgcolor=%23ffffff&amp;src={{.}}&amp;color=%232952A3&amp;src=%23contacts%40group.v.calendar.google.com&amp;color=%232F6309&amp;src=tl.philippines%23holiday%40group.v.calendar.google.com&amp;color=%23875509&amp;ctz=Asia%2FManila" style="border:solid 1px #777" width="500" height="300" frameborder="0" scrolling="no"></iframe>
 `))
- 
 var htmlWidgetWallMessage = template.Must(template.New("User").Parse(`
 	<div>
 		<h1>WALL MESSAGE</h1>
 		<b>SEND MESSAGE TO ANOTHER ULAPPH WEBSITE...</b>
 		<hr>
 		Enter the target ULAPPH Host and target user.
-		<form name="account" action="/wall" method="post">			
+		<form name="account" action="/wall" method="post">
 			<select name="remHost"><option value="">Select</option>
 			{{.HTM_FILLER1}}
 			</select>
 			<br>ULAPPH Remote User: <input type="text" name="remUser" value="" maxlength="50"/> Ex: jane@gmail.com
 			<input type="hidden" name="srcHost" value="{{.STR_FILLER1}}">
 			<input type="hidden" name="uid" value="{{.STR_FILLER2}}">
+			<input type="hidden" name="wall_key" value="{{.STR_FILLER3}}">
 			<input type="hidden" name="WALL_FUNC" value="SEND_MSG">
 			<br>Message:<br>
 			<textarea name="wm" rows="4" cols="40" maxlength="500"></textarea>
