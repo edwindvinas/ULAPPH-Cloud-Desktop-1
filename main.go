@@ -42390,16 +42390,12 @@ func media(w http.ResponseWriter, r *http.Request) {
 		writeHTMLHeader(w, 200)
 		w.Write([]byte(thisMediaID))
 		return
- 
 	case FUNC_CODE == "PLAY":
- 
 		BLOB_KEY := r.FormValue("BLOB_KEY")
 		SID := r.FormValue("SID")
-		
 		if BLOB_KEY != "" {
 			i := strings.Index(BLOB_KEY, "GET_WALL:")
 			if i != -1 {
- 
 				SPL := strings.Split(BLOB_KEY,"GET_WALL:")
 				if len(SPL) > 1 {
 					linkedUrl := SPL[1]
@@ -42408,30 +42404,23 @@ func media(w http.ResponseWriter, r *http.Request) {
 					//return
 				}
 				return
-				
 			}
 			BLOB_KEY := contentCheckSid(w,r,SID)
 			blobstore.Send(w, appengine.BlobKey(BLOB_KEY))
 			return
 		} else {
- 
 			MEDIA_ID2 := r.FormValue("MEDIA_ID")
 			putStrToMemcacheWithoutExp(w,r,"LAST_TDSMEDIA",MEDIA_ID2)
 			MEDIA_ID := str2int(MEDIA_ID2)
 			//log media views
 			laterIncNumViewsSocial.Call(c, "", fmt.Sprintf("TDSMEDIA-%v", MEDIA_ID), "SO_INC_NUM_VIEWS")
-			
-			BLOB_KEY, _, _, AUTHOR, DOC_STAT, FL_SHARED, _, _, MIME_TYPE, _, SHARED_TO := getTDSMEDIABlobKey(w, r, MEDIA_ID)
- 
+			BLOB_KEY, _, _, AUTHOR, DOC_STAT, FL_SHARED, _, DATA_TYPE, MIME_TYPE, _, SHARED_TO := getTDSMEDIABlobKey(w, r, MEDIA_ID)
 			if BLOB_KEY == "" {
- 
 				return
 			}
- 
 			i := strings.Index(BLOB_KEY, "GET_WALL:")
 			if i != -1 {
 				SPL := strings.Split(BLOB_KEY,"GET_WALL:")
- 
 				if len(SPL) > 1 {
 					linkedUrl := SPL[1]
 					linkedUrl = strings.Replace(linkedUrl, "@888@", "&", -1)
@@ -42439,43 +42428,37 @@ func media(w http.ResponseWriter, r *http.Request) {
 					//return
 				}
 				return
-				
 			}
-			
 			FL_PROC_OK := false
-			
 			switch {
+				case DATA_TYPE == "music" || DATA_TYPE == "video":
+					//make music/video shared to registered users
+					_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+					FL_PROC_OK = true
 				case AUTHOR == uid:
 					FL_PROC_OK = true
-					
 				case DOC_STAT == "Premium" && uid != AUTHOR:
 					sysReq := fmt.Sprintf("/store?STO_FUNC=Premium&SID=TDSMEDIA-%v", MEDIA_ID)
 					http.Redirect(w, r, sysReq, http.StatusFound)
 					return
-					
 				case FL_SHARED == "N" || DOC_STAT == "Personal" && SHARED_TO == "":
 					isOk := checkPersonalAuthor(w,r,AUTHOR,fmt.Sprintf("TDSMEDIA-%v", MEDIA_ID), MEDIA_ID)
 					if isOk == true {
 						FL_PROC_OK = true
 					}
-				case DOC_STAT == "Personal" && SHARED_TO != "":	
+				case DOC_STAT == "Personal" && SHARED_TO != "":
 					isAllowed := checkPersonalAccess(w,r, AUTHOR, SHARED_TO, fmt.Sprintf("TDSMEDIA-%v", MEDIA_ID), MEDIA_ID)
 					if isAllowed == true {
 						FL_PROC_OK = true
 					}
-						
 				case DOC_STAT == "ULAPPH Only":
- 
 					_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
 					FL_PROC_OK = true
 					//return
- 
 				case DOC_STAT == "Worldwide":
 					FL_PROC_OK = true
 					//return
-					
 			}
-					
 			if FL_PROC_OK == true {
 				if MIME_TYPE != "" {
 					w.Header().Set("Content-Type",  MIME_TYPE)
@@ -44170,19 +44153,15 @@ func media(w http.ResponseWriter, r *http.Request) {
 						//c.Errorf("[S0376]")
 						if err != nil {
 							 panic(err)
-						
-						}		
- 
+						}
 						//clear cache
 						cKey := fmt.Sprintf("TDSMEDIA_MEDID_CACHE_%v", p.MEDIA_ID)
 						putStrToMemcacheWithoutExp(w,r,cKey,"")
-								
-						sysReq := fmt.Sprintf("/media?FUNC_CODE=VIEW&MEDIA_ID=%d", MEDIA_ID)	
+						sysReq := fmt.Sprintf("/media?FUNC_CODE=VIEW&MEDIA_ID=%d", MEDIA_ID)
 						http.Redirect(w, r, sysReq, http.StatusFound)
 						//return
 						break
 					}
-								
 				case "UMP":
 					updateUserActiveData(w, r, c, uid, "/media(ump)")
 					//also notify all users about this
@@ -73793,14 +73772,11 @@ func httpClient(r *http.Request) *http.Client {
 
 //returns media details given a media id
 func getTDSMEDIABlobKey(w http.ResponseWriter, r *http.Request, MEDIA_ID int) (BLOB_KEY, PROP, TITLE, AUTHOR, DOC_STAT, FL_SHARED, IMG_URL, DATA_TYPE, MIME_TYPE, DESC, SHARED_TO string) {
-	
 	//billing fix
 	if MEDIA_ID <= 0 {
 		return
 	}
-	
 	c := appengine.NewContext(r)
-	
 	cKey := fmt.Sprintf("TDSMEDIA_MEDID_CACHE_%v", MEDIA_ID)
 	TDSMEDIA_MEDID_CACHE := ""
 	FL_PROC_CACHE_OK := false
@@ -73808,7 +73784,6 @@ func getTDSMEDIABlobKey(w http.ResponseWriter, r *http.Request, MEDIA_ID int) (B
 	if TDSMEDIA_MEDID_CACHE != "" {
 		//get from cache
 		SPL := strings.Split(TDSMEDIA_MEDID_CACHE, CACHE_STORE_DELIM)
- 
 		if len(SPL) > 5 {
 			BLOB_KEY = SPL[0]
 			PROP = SPL[1]
