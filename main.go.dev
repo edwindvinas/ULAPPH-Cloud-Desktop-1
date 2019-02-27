@@ -890,6 +890,8 @@ const (
 	//D0076
 	//AutoML service account json
     AUTOML_SERVER_JSON = ``
+	//AutoML prediction
+    AUTOML_PREDICT_URL = `https://automl.googleapis.com/v1beta1/projects/edwin-daen-vinas/locations/us-central1/models/ICN2458485739611490668:predict`
 	//D0033
 	//MyDrives
 	//Google Drive
@@ -55288,7 +55290,7 @@ func queueAutoMLProc(w http.ResponseWriter, r *http.Request) {
 		//c.Infof("Payload: %#v", g)
 		data, _ := json.Marshal(g)
 		body := bytes.NewBuffer(data)
-		req, _ := http.NewRequest("POST", "https://automl.googleapis.com/v1beta1/projects/edwin-daen-vinas/locations/us-central1/models/ICN3334655851454517170:predict", body)
+		req, _ := http.NewRequest("POST", AUTOML_PREDICT_URL, body)
 		thisLength := strconv.Itoa(len(data))
 		req.Header.Set("Content-Length", thisLength)
 		req.Header.Set("Content-Type", "application/json")
