@@ -55504,7 +55504,7 @@ func struwmStreamMirrorToUwm(w http.ResponseWriter, r *http.Request, uid, STRUWM
 	putStrToMemcacheWithExp(w,r,cKey,SRC,GEN_CONTENT_EXPIRES)
 }
 //D0071
-func struwmPreviousImageCompare(w http.ResponseWriter, r *http.Request, uid, STRUWM, CATEGORY, SRC, TITLE string) (bool) {
+func struwmPreviousImageCompare(w http.ResponseWriter, r *http.Request, uid, STRUWM, AUTOML, CATEGORY, SRC, TITLE string) (bool) {
 	c := appengine.NewContext(r)
 	//get previous image
 	cKey := fmt.Sprintf("STRUWM-%v-previous-image", CATEGORY)
@@ -55544,8 +55544,8 @@ func struwmPreviousImageCompare(w http.ResponseWriter, r *http.Request, uid, STR
 		//c.Infof("distance[%v]: images are likely different", distance)
 		FL_INTRUDER = true
 	}
-
-	if FL_INTRUDER == true {
+	//D0076
+	if FL_INTRUDER == true && AUTOML == "Y" {
 		//D0076
 		//send image to AutoML
 		laterAutoML.Call(c, "CCTV", "cctvKitchenPersonDetected", uid, TITLE, STRUWM, SRC)
@@ -64582,6 +64582,7 @@ var htmlMirror = template.Must(template.New("htmlMirror").Parse(`
 		<br>Stream as wallpapers in UWM:<input type="text" name="uwm" id="uwm" value="" maxlength=50>
 		<br>Add image to TDSSLIDE-<input type="text" name="sid" id="sid" value="" maxlength=10>
 		<br>Fixed Capture Interval Only: <input type="checkbox" id="fixedcap" checked>
+		<br>Intruder Detection Enabled: <input type="checkbox" id="autoDetection" checked>
 	</div>
 	<script type="text/javascript" src="/js/html-mirror.js"></script>
 	<div id="results">Your captured image will appear here...</div>
@@ -64685,6 +64686,7 @@ var htmlMirror2 = template.Must(template.New("htmlMirror2").Parse(`
 		<br>Stream as wallpapers in UWM:<input type="text" name="uwm" id="uwm" value="" maxlength=50>
 		<br>Add image to TDSSLIDE-<input type="text" name="sid" id="sid" value="" maxlength=10>
 		<br>Fixed Capture Interval Only: <input type="checkbox" id="fixedcap" checked>
+		<br>Intruder Detection Enabled: <input type="checkbox" id="autoDetection" checked>
 	</div>
 	<!--script type="text/javascript" src="/js/html-mirror2.js"></script-->
 	<script type="text/javascript" src="/js/html-mirror.js"></script>
@@ -70157,6 +70159,10 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 		STRUWMI_R := r.FormValue("STRUWMI")
 		STRUWMI_R2 := strings.Replace(STRUWMI_R, "[", "", -1)
 		STRUWMI := strings.Replace(STRUWMI_R2, "]", "", -1)
+		//D0076
+		AUTOML_R := r.FormValue("AUTOML")
+                AUTOML_R2 := strings.Replace(AUTOML_R, "[", "", -1)
+                AUTOML := strings.Replace(AUTOML_R2, "]", "", -1)
 		OPT_R := r.FormValue("OPT")
 		OPT_R2 := strings.Replace(OPT_R, "[", "", -1)
 		OPT := strings.Replace(OPT_R2, "]", "", -1)		
@@ -70179,7 +70185,8 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 			sURL, _ := imageApi.ServingURL(c, appengine.BlobKey(blobkey), nil)
 			thisURL := sURL.String()
 			thisURL = getSchemeNewUrl(w,r,thisURL)
-			FL_IMAGE_CHANGED = struwmPreviousImageCompare(w, r, uid, STRUWM, CATEGORY, thisURL, TITLE)
+			//D0076
+			FL_IMAGE_CHANGED = struwmPreviousImageCompare(w, r, uid, STRUWM, AUTOML, CATEGORY, thisURL, TITLE)
 			if FL_IMAGE_CHANGED ==  false {
 				//delete imageServing
 				err := imageApi.DeleteServingURL(c, appengine.BlobKey(blobkey))
@@ -72631,11 +72638,12 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 			//D0066
 			STRUWM := pVals["STRUWM"]
 			STRUWMI := pVals["STRUWMI"]
+			AUTOML := pVals["AUTOML"]
 
 			OPT := pVals["OPT"]
 			//DESKTOP := pVals["DESKTOP"]
 			bKey := string(file[0].BlobKey)
-			reqStr := fmt.Sprintf("/serve-media/?DATA_TYPE=%s&TITLE=%s&DESC=%s&CATEGORY=%s&blobKey5=%v&FL_SHARED=%v&FILE_NAME=%v&MIME_TYPE=%v&FL_ADD_WP=%v&UID=%v&DOC_STAT=%v&EMBED=%v&OPT=%v&STRUWM=%v&STRUWMI=%v", TYPE, TITLE, DESC, CATEGORY, bKey, FL_SHARED, FILE_NAME, MIME_TYPE, FL_ADD_WP, UID, DOC_STAT, EMBED, OPT, STRUWM, STRUWMI)
+			reqStr := fmt.Sprintf("/serve-media/?DATA_TYPE=%s&TITLE=%s&DESC=%s&CATEGORY=%s&blobKey5=%v&FL_SHARED=%v&FILE_NAME=%v&MIME_TYPE=%v&FL_ADD_WP=%v&UID=%v&DOC_STAT=%v&EMBED=%v&OPT=%v&STRUWM=%v&STRUWMI=%v&AUTOML=%v", TYPE, TITLE, DESC, CATEGORY, bKey, FL_SHARED, FILE_NAME, MIME_TYPE, FL_ADD_WP, UID, DOC_STAT, EMBED, OPT, STRUWM, STRUWMI, AUTOML)
 			http.Redirect(w, r, reqStr, http.StatusFound)
 	
 	}

@@ -12,6 +12,8 @@ function loadSettings() {
 	document.getElementById("uwm").value = uwm;
 	var fcap = localStorage["mirror-fcap"];
 	document.getElementById("fixedcap").value = fcap;
+	var autoML = localStorage["mirror-autoDetection"];
+	document.getElementById("autoDetection").value = autoML;
 }
 
 function saveSettings() {
@@ -23,8 +25,9 @@ function saveSettings() {
 	localStorage["mirror-uwm"] = uwm;
 	var fcap = document.getElementById("fixedcap").value;
 	localStorage["mirror-fcap"] = fcap;
+	var autoML = document.getElementById("autoDetection").value;
+	localStorage["mirror-autoDetection"] = autoML;
 }
-
 
 function take_snapshot() {
 	document.body.style.background = "blue";

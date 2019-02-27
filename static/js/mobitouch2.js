@@ -142,6 +142,12 @@ function upload_ulapph() {
 			if (caption == "") {
 				caption = "ulapphMirrorImage "+"desktop"+streamUwm;
 			}
+			//autoML detection
+			if (document.getElementById("autoDetection").checked === true) {
+				fd.append("AUTOML", "Y");
+			} else {
+				fd.append("AUTOML", "N");
+			}
 			var urlParams;
 			var match,
 					pl     = /\+/g,  // Regex for replacing addition symbol with a space
