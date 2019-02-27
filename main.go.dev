@@ -389,6 +389,11 @@
 //REV DESC:	  	Update NLP using Prose 
 //REV AUTH:		Edwin D. Vinas
 /////////////////////////////////////////////////////////////////////////////////////////////////
+//REV ID: 		D0076
+//REV DATE: 		2019-Feb-27
+//REV DESC:	  	Integrated AutoML 
+//REV AUTH:		Edwin D. Vinas
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------
 //List of firebase channels
@@ -882,6 +887,9 @@ const (
     FIREBASE_URL = ``
 	//Firebase server json
     FIREBASE_SERVER_JSON = ``
+	//D0076
+	//AutoML service account json
+    AUTOML_SERVER_JSON = ``
 	//D0033
 	//MyDrives
 	//Google Drive
@@ -1475,6 +1483,20 @@ type OttoAwareness struct {
 	OttoFillerStr3 string `json:"ottoFillerStr3"`
 	OttoFillerStr4 string `json:"ottoFillerStr4"`
 	OttoFillerStr5 string `json:"ottoFillerStr5"`
+}
+
+//D0076
+//AutoML payload
+type AutoMLPayload struct {
+	Payload AmlPayload `json:"payload"`
+}
+
+type AmlPayload struct {
+	Image AmlImage `json:"image"`
+}
+
+type AmlImage struct {
+	ImageBytes []byte `json:"imageBytes"`
 }
 
 //D0069
@@ -3069,6 +3091,16 @@ var laterDeleteCctvImage = delay.Func("laterDeleteCctvImage", func(c appengine.C
 		panic(err)
 	}
 })
+//D0076
+//laterAutoML.Call(c, "CCTV", "cctvKitchenPersonDetected", SRC)
+// Exec later - delect person from cctv via automl 
+var laterAutoML = delay.Func("laterAutoML", func(c appengine.Context, FUNC, LABEL, UID, TITLE, STRUWM, IMG string) {
+	t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-automl-proc", map[string][]string{"FUNC": {FUNC}, "UID": {UID}, "IMG": {IMG}, "LABEL": {LABEL}, "TITLE": {TITLE}, "STRUWM": {STRUWM}})
+	if _, err := taskqueue.Add(c, t, ""); err != nil {
+		panic(err)
+	}
+})
+
 ///////////////////////////////////////////////////////////////
 // INIT / HANDLERS
 ///////////////////////////////////////////////////////////////
@@ -5323,22 +5355,20 @@ func sendChannelFirebase(w http.ResponseWriter, r *http.Request, topic string, p
 	if topic == "" || payload == nil {
 		return
 	}
-	
 	//set firebase api
-	rdr := strings.NewReader(FIREBASE_SERVER_JSON)		
+	rdr := strings.NewReader(FIREBASE_SERVER_JSON)
 	FIREBASE_KEY_JSON, err := ioutil.ReadAll(rdr)
 	if err != nil {
 		c.Errorf("[ioutil.ReadAll] ERROR: %v", err)
 		return
 	}
-	
 	ctx := newappengine.NewContext(r)
-    conf, err := google.JWTConfigFromJSON(FIREBASE_KEY_JSON, "https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/firebase.database")
-    if err != nil {
+	conf, err := google.JWTConfigFromJSON(FIREBASE_KEY_JSON, "https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/firebase.database")
+	if err != nil {
 		c.Errorf("[google.JWTConfigFromJSON] ERROR: %v", err)
 		return
-    }
-    //client := conf.Client(oauth2.NoContext)
+	}
+	//client := conf.Client(oauth2.NoContext)
 	client := conf.Client(ctx)
 	fb := firego.New(FIREBASE_URL , client)
 	_, err = fb.Child(topic).Push(string(payload))
@@ -16003,7 +16033,6 @@ func ulapphChatSender(w http.ResponseWriter, r *http.Request, UC_FUNC string, MS
 //saved data to browser local storage
 func ulapphLocal(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	
 	LS_FUNC := r.FormValue("LS_FUNC")
 	DOC_ID := r.FormValue("DOC_ID")
 	SID := r.FormValue("SID")
@@ -16011,7 +16040,6 @@ func ulapphLocal(w http.ResponseWriter, r *http.Request) {
 	TITLE = strings.Replace(TITLE, "_", " ", -1)
 	IMG_SRC := r.FormValue("IMG_SRC")
 	docID := str2int(DOC_ID)
-	
 	//use SID if available
 	if SID != "" {
 		SPL := strings.Split(SID,"-")
@@ -16020,7 +16048,6 @@ func ulapphLocal(w http.ResponseWriter, r *http.Request) {
 			DOC_ID = SPL[1]
 			docID = str2int(DOC_ID)
 		}
-		
 		if LS_FUNC == "" {		
 			switch TARGET {
 				case "TDSSLIDE":
@@ -16029,16 +16056,18 @@ func ulapphLocal(w http.ResponseWriter, r *http.Request) {
 					LS_FUNC = "ARTICLE_COPY"
 			}
 		}
-							
 	}
-	
-		
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	_, uid := checkSession(w,r)
 	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
-	
 	switch LS_FUNC {
-	
+		case "IMG2BYTE":
+			imgUrl := r.FormValue("imgUrl")
+			imgBytes := openImageURLtoBytes(w,r,imgUrl)
+			w.Header().Set("Content-Type", "application/octet-stream")
+			w.WriteHeader(200)
+			w.Write(imgBytes)
+			return
 		case "IDX_COPY":
 			//if copy initiated from search results
 			SOURCE_TBL := r.FormValue("SOURCE_TBL")
@@ -31003,6 +31032,9 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 			}
 			blobstore.Delete(c, appengine.BlobKey(BLOB_KEY))
+		//D0076
+		case "queue-automl-proc":
+			queueAutoMLProc(w,r)
 		case "queue-wget-url":
 			queueWgetUrl(w,r)
 		case "queue-notify-gb":
@@ -43204,6 +43236,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 									fmt.Fprintf(w, "<b>Blob Key:</b> %v<br>", p.BLOB_KEY)
 									fmt.Fprintf(w, "<b>Save to Local Storage:</b><a href=\"/uloc?LS_FUNC=MEDIA_IMAGE&MEDIA_ID=%v&SID=TDSMEDIA-%v&IMG_SRC=%v&TITLE=%v\"><img src=\"/img/uloc.png\" width=\"40\" height=\"40\"></img></a><br>", p.MEDIA_ID, p.MEDIA_ID, p.IMG_URL, p.TITLE)
 									fmt.Fprintf(w, "<b>Share to Social Media:</b><a href=\"/share?SH_FUNC=all&title=%v&url=%v\"><img src=\"/img/sharethis.png\" width=\"40\" height=\"40\"></img></a><br>", p.TITLE, p.IMG_URL)
+									fmt.Fprintf(w, "<b>Download as Bytes:</b><a download=\"TDSMEDIA-%v-bytes\" href=\"/uloc?LS_FUNC=IMG2BYTE&imgUrl=%v\">Download Image Bytes</a><br>", p.MEDIA_ID, p.IMG_URL)
 									//image
 									fmt.Fprintf(w, "<b>Wall Copy:</b> <a href=\"/wall?WALL_FUNC=MEDIA_COPY&MEDIA_ID=%v&SID=TDSMEDIA-%v&TITLE=%v&wall_key=%v\"><img src=\"/img/ucopy.png\" width=\"40\" height=\"40\"></img></a><br>", p.MEDIA_ID, p.MEDIA_ID, p.TITLE, CMD_GEN_KEY)
 									
@@ -43952,6 +43985,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 				case "ADD_REM_RAN_WP":
 					MEDIA_ID := r.FormValue("MEDIA_ID")
 					PROP := r.FormValue("PROP")
+					URL := r.FormValue("URL")
 					mediaID := str2int(MEDIA_ID)
 					cKey := ""
 					cKey2 := ""
@@ -43960,6 +43994,9 @@ func media(w http.ResponseWriter, r *http.Request) {
 					key := datastore.NewKey(c, "TDSMEDIA", dsKey, 0, nil)
 					q := datastore.NewQuery("TDSMEDIA").Filter("__key__ =", key)
 					//c.Errorf("[S0372]")
+					if URL != "" {
+						q = datastore.NewQuery("TDSMEDIA").Filter("IMG_URL =", URL)
+					}
 					media := make([]TDSMEDIA, 0, 1)
 					if _, err := q.GetAll(c, &media); err != nil {
 						panic(err)
@@ -43986,7 +44023,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 								putStrToMemcacheWithoutExp(w,r,cKey2,"")
 								//clear wallpaper list
 								putStrToMemcacheWithoutExp(w,r,cKey,"")
-								msgDtl := fmt.Sprintf("[U00162] SUCCESS: Image has been added in the random wallpapers.")
+								msgDtl := fmt.Sprintf("[U00162] SUCCESS: Image has been added/removed in the random wallpapers.")
 								msgTyp := "success"
 								msgURL := fmt.Sprintf("/%v#page", "desktop0")
 								action := "U00162"
@@ -55225,7 +55262,93 @@ func queueRatings(w http.ResponseWriter, r *http.Request) {
 			}	
 	}
 }
- 
+
+//D0076
+//process taskqueue to embed source to SIDs
+func queueAutoMLProc(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	c.Infof("queueAutoMLProc()")
+	AML_FUNC := r.FormValue("FUNC")
+	c.Infof("AML_FUNC: %v", AML_FUNC)
+	switch AML_FUNC {
+		case "CCTV":
+		//process cctv events
+		IMG := r.FormValue("IMG")
+		c.Infof("IMG: %v", IMG)
+		LABEL := r.FormValue("LABEL")
+		c.Infof("LABEL: %v", LABEL)
+		TITLE := r.FormValue("TITLE")
+		c.Infof("TITLE: %v", TITLE)
+		STRUWM := r.FormValue("STRUWM")
+		c.Infof("STRUWM: %v", STRUWM)
+		UID := r.FormValue("UID")
+		c.Infof("UID: %v", UID)
+		g := &AutoMLPayload{}
+		g.Payload.Image.ImageBytes = openImageURLtoBytes(w,r,IMG)
+		//c.Infof("Payload: %#v", g)
+		data, _ := json.Marshal(g)
+		body := bytes.NewBuffer(data)
+		req, _ := http.NewRequest("POST", "https://automl.googleapis.com/v1beta1/projects/edwin-daen-vinas/locations/us-central1/models/ICN3334655851454517170:predict", body)
+		thisLength := strconv.Itoa(len(data))
+		req.Header.Set("Content-Length", thisLength)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Accept", "application/json")
+		//set automl api
+		rdr := strings.NewReader(AUTOML_SERVER_JSON)
+		AUTOML_KEY_JSON, err := ioutil.ReadAll(rdr)
+		if err != nil {
+			c.Errorf("[ioutil.ReadAll] ERROR: %v", err)
+			return
+		}
+		ctx := newappengine.NewContext(r)
+		conf, err := google.JWTConfigFromJSON(AUTOML_KEY_JSON, "https://www.googleapis.com/auth/cloud-platform")
+		if err != nil {
+			c.Errorf("[google.JWTConfigFromJSON] ERROR: %v", err)
+			return
+		}
+		client := conf.Client(ctx)
+
+		//c.Infof("req: %v", req)
+		res, err := client.Do(req)
+		if err != nil {
+			c.Errorf("client.Do err: %v", err)
+		}
+		if res.StatusCode != 200 {
+			c.Infof("res: %v", res)
+			c.Infof("error posting data")
+		}else{
+			c.Infof("res: %v", res)
+			bodyBytes, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				//return
+				c.Errorf("ioutil.ReadAll err: %v", err)
+				return
+			} else {
+				c.Infof("response: %#v", string(bodyBytes))
+				data := map[string]interface{}{}
+				dec := json.NewDecoder(bytes.NewReader(bodyBytes))
+				dec.Decode(&data)
+				jq := jsonq.NewQuery(data)
+				jqVal, err := jq.String("payload", "0", "displayName")
+				if err != nil {
+					c.Errorf("ERROR: %v", err)
+				}
+				c.Infof("jqVal: %v", jqVal)
+				if jqVal == "cctvKitchenPersonDetected" {
+					//person was detected
+					CAPTION := fmt.Sprintf("Intruder detected in the %v", TITLE)
+					MESSAGE := fmt.Sprintf("<a href=\"#\" onclick=\"openWindow('%v','Previous'); return false\"><img src=\"%v\" width=\"100\" height=\"100\"></a><br>", IMG, IMG)
+					data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_ALARM@888@%v@888@%v", CAPTION, MESSAGE)
+					sendChannelMessage(w,r,UID,data)
+					c.Infof("Channel sent to: %v", UID)
+				}
+
+			}
+		}
+	}
+	return
+}
+
 //process taskqueue to embed source to SIDs
 func queueWgetUrl(w http.ResponseWriter, r *http.Request) {
  
@@ -55379,7 +55502,6 @@ func struwmStreamMirrorToUwm(w http.ResponseWriter, r *http.Request, uid, STRUWM
 	putStrToMemcacheWithExp(w,r,cKey,SRC,GEN_CONTENT_EXPIRES)
 }
 //D0071
-//func queueStruwmPreviousCompare(w http.ResponseWriter, r *http.Request) {
 func struwmPreviousImageCompare(w http.ResponseWriter, r *http.Request, uid, STRUWM, CATEGORY, SRC, TITLE string) (bool) {
 	c := appengine.NewContext(r)
 	//get previous image
@@ -55422,14 +55544,17 @@ func struwmPreviousImageCompare(w http.ResponseWriter, r *http.Request, uid, STR
 	}
 
 	if FL_INTRUDER == true {
-		UID := ""
+		//D0076
+		//send image to AutoML
+		laterAutoML.Call(c, "CCTV", "cctvKitchenPersonDetected", uid, TITLE, STRUWM, SRC)
+		/*UID := ""
 		if _, err := strconv.Atoi(STRUWM); err != nil {
 			UID = uid
 		} else {
 			UID = fmt.Sprintf("%v---%v", uid, STRUWM)
 		}
+		//send in UWM
 		CAPTION := fmt.Sprintf("Warning, intruder alert in the %v!", TITLE)
-		//onclick=\"openWindow('%vchat?CHAT_FUNC=newChatRoom&INVITE=%v','Presence'); return false\"
 		MESSAGE := fmt.Sprintf("<a href=\"#\" onclick=\"openWindow('%v','Previous'); return false\"><img src=\"%v\" width=\"100\" height=\"100\"></a><br>P[%v]", prevURL, prevURL,distance)
 		data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_ALARM@888@%v@888@%v", CAPTION, MESSAGE)
 		sendChannelMessage(w,r,UID,data)
@@ -55445,19 +55570,31 @@ func struwmPreviousImageCompare(w http.ResponseWriter, r *http.Request, uid, STR
 		//also send an email
 		subj := fmt.Sprintf("[CCTV][%v][%v][distance diff of %v]", CATEGORY, TITLE, distance)
 		msgDtl3 := fmt.Sprintf("[%v]>>> %v <br>%v<br>%v",CAPTION, subj, MESSAGE, MESSAGE2)
-		//to := FDBKMAIL
-		//from := ADMMAIL
-		//go SENDGENEMAIL(c, subj, to, from, msg)
-		//c.Infof("Sent GB msg!")
-		//dummy; hardcoded
 		FL_INTRUDER_NOTIFY := false
 		if FL_INTRUDER_NOTIFY == true {
 			laterNotifyGB.Call(c, "autoNotifyPeopleGB", uid, msgDtl3, ADMMAIL)
-		}
+		}*/
 	}
 	return FL_INTRUDER
 }
 
+//get image url and output bytes 
+func openImageURLtoBytes(w http.ResponseWriter, r *http.Request, imgURL string) []byte {
+	c := appengine.NewContext(r)
+	client := urlfetch.Client(c)
+	if err := r.ParseForm(); err != nil {
+		//panic(err)
+	}
+	resp, err := client.Get(imgURL)
+	if err != nil {
+		//panic(err)
+	}
+
+	defer resp.Body.Close()
+
+	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+	return bodyBytes
+}
 //D0071
 //get image url and output imageApi.Image
 func openImageURL(w http.ResponseWriter, r *http.Request, imgURL string) image.Image {

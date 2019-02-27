@@ -271,14 +271,14 @@ function procMessage(obj) {
 			case "SYS_STRUWM_ALARM":
 			console.log("SYS_STRUWM_ALARM");
 			//data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_ALARM@888@%v@888@%v", CAPTION, MESSAGE
-				//var caption = cmdata[3];
+				var caption = cmdata[3];
 				var message = cmdata[4];
 				if (document.getElementById("soundStat").value != "off") {
 					alertify.set({ delay: 300000 });
 					//alertify.error(caption);
 					alertify.error(message);
-
-					//speakMessage(caption);
+                    //say it
+					speakMessage(caption);
 				}
 
                                 var aSound = document.createElement('audio');
