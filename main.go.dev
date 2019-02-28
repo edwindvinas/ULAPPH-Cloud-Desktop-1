@@ -18125,6 +18125,51 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 				}
 				return
 			}
+		//edwinxx
+		//D0076
+		case "cctv-alarm":
+			_, uid := checkSession(w,r)
+			if uid == "" {
+				//do nothing
+				w.WriteHeader(200)
+				w.Write([]byte("Invalid operation. You are not logged in."))
+				uReferer := r.Referer()
+				//if err == nil {
+					pStr := fmt.Sprintf("<a href=\"%v\">Click here</a> to login now!", uReferer)
+					w.Write([]byte(pStr))
+				//}
+				return
+			} else {
+				alarmStatus := r.FormValue("alarm")
+				if alarmStatus != "" {
+					//set alarm
+					cKey := fmt.Sprintf("CCTV_AUTODETECTION_FLAG_%v", SYS_SERVER_NAME)
+					c.Infof("cKey: %v", cKey)
+					putStrToMemcacheWithoutExp(w,r,cKey,alarmStatus)
+					alStat := ""
+					if alarmStatus == "Y" {
+					alStat = "ON"
+					} else {
+					alStat = "OFF"
+					} 
+					w.Write([]byte(fmt.Sprintf("Alarm has been set to <b>%v</b>!", alStat)))
+					return;
+				} else {
+					//D0074
+					cKey := fmt.Sprintf("CCTV_AUTODETECTION_FLAG_%v", SYS_SERVER_NAME)
+					c.Infof("cKey: %v", cKey)
+					cctv_status := getStrMemcacheValueByKey(w,r,cKey)
+					if strings.TrimSpace(cctv_status) == "Y" {
+						//automl is ON
+						butText := fmt.Sprintf("<label class=\"switch\"><input type=\"checkbox\" checked onclick=\"alarmSet('N');\"><div class=\"slider round\"></div>")
+						w.Write([]byte(fmt.Sprintf("ON - CCTV is currently detecting intruders and will send alarms when person(s) is detected in all cameras except those where autodetection is not enabled. Click the switch to disable.<br>%v", butText)))
+					} else {
+						//automl is OFF
+						butText := fmt.Sprintf("<label class=\"switch\"><input type=\"checkbox\" onclick=\"alarmSet('Y');\"><div class=\"slider round\"></div>")
+						w.Write([]byte(fmt.Sprintf("OFF - CCTV is not detecting intruders and will not send any alarms. Click the switch to enable.<br>%v", butText)))
+					}
+				}
+			}
 		//D0074
 		case "cctv":
 			_, uid := checkSession(w,r)
@@ -55545,7 +55590,12 @@ func struwmPreviousImageCompare(w http.ResponseWriter, r *http.Request, uid, STR
 		FL_INTRUDER = true
 	}
 	//D0076
+	//edwinxxx
 	if FL_INTRUDER == true && AUTOML == "Y" {
+		cKey := fmt.Sprintf("CCTV_AUTODETECTION_FLAG_%v", SYS_SERVER_NAME)
+		c.Infof("cKey: %v", cKey)
+		cctv_status := getStrMemcacheValueByKey(w,r,cKey)
+		if strings.TrimSpace(cctv_status) == "Y" {
 		//D0076
 		//send image to AutoML
 		laterAutoML.Call(c, "CCTV", "cctvKitchenPersonDetected", uid, TITLE, STRUWM, SRC)
@@ -55576,6 +55626,7 @@ func struwmPreviousImageCompare(w http.ResponseWriter, r *http.Request, uid, STR
 		if FL_INTRUDER_NOTIFY == true {
 			laterNotifyGB.Call(c, "autoNotifyPeopleGB", uid, msgDtl3, ADMMAIL)
 		}*/
+		}
 	}
 	return FL_INTRUDER
 }

@@ -16,6 +16,7 @@
 	<link rel="stylesheet" media="all" href="/lib/css/chat-bubble/reply.css">
 	<link rel="stylesheet" media="all" href="/lib/css/chat-bubble/typing.css">
 	<link rel="stylesheet" media="all" href="/lib/css/chat-bubble/input.css">
+    <link rel="stylesheet" type="text/css" href="/css/switch.css">
 	<style>
 	body {
 		background: #dcdde0;
@@ -206,6 +207,9 @@ var convo = {
 	    },{
             question: "Recent CCTVs",
             answer: "funcRecentCCTV"
+        },{
+            question: "Alarm Status",
+            answer: "funcAlarmCCTV"
         }
 	  ]
   },
@@ -267,6 +271,9 @@ funcShowCCTV = function () {
 					  "cctv-cameras": {
 					  says: [currVal],
 						reply: [{
+                            question: "New CCTV",
+                            answer: "funcNewCCTV"
+                            },{
 						      question: "Show CCTVs",
 						      answer: "funcShowCCTV"
 						    },{
@@ -278,6 +285,9 @@ funcShowCCTV = function () {
                             },{
                                 question: "Recent CCTVs",
                                 answer: "funcRecentCCTV"
+                            },{
+                                question: "Alarm Status",
+                                answer: "funcAlarmCCTV"
                             }]
 					  }
 					},
@@ -325,6 +335,9 @@ funcCaptureCCTV = function () {
                             "cctv-cameras": {
                                 says: [currVal1, currVal],
                                     reply: [{
+                                        question: "New CCTV",
+                                        answer: "funcNewCCTV"
+                                        },{
                                         question: "Show CCTVs",
                                         answer: "funcShowCCTV"
                                         },{
@@ -336,6 +349,9 @@ funcCaptureCCTV = function () {
                                         },{
                                             question: "Recent CCTVs",
                                             answer: "funcRecentCCTV"
+                                        },{
+                                            question: "Alarm Status",
+                                            answer: "funcAlarmCCTV"
                                         }]
                                 }
                             },
@@ -375,6 +391,9 @@ funcReviewCCTV = function () {
 					  "cctv-cameras": {
 					  says: [currVal],
 						reply: [{
+                            question: "New CCTV",
+                            answer: "funcNewCCTV"
+                            },{
 						      question: "Show CCTVs",
 						      answer: "funcShowCCTV"
 						    },{
@@ -386,6 +405,9 @@ funcReviewCCTV = function () {
                             },{
                                 question: "Recent CCTVs",
                                 answer: "funcRecentCCTV"
+                            },{
+                                question: "Alarm Status",
+                                answer: "funcAlarmCCTV"
                             }]
 					  }
 					},
@@ -423,6 +445,9 @@ funcRecentCCTV = function () {
 					  "cctv-cameras": {
 					  says: [currVal],
 						reply: [{
+                            question: "New CCTV",
+                            answer: "funcNewCCTV"
+                            },{
 						      question: "Show CCTVs",
 						      answer: "funcShowCCTV"
 						    },{
@@ -434,6 +459,63 @@ funcRecentCCTV = function () {
                             },{
                                 question: "Recent CCTVs",
                                 answer: "funcRecentCCTV"
+                            },{
+                                question: "Alarm Status",
+                                answer: "funcAlarmCCTV"
+                            }]
+					  }
+					},
+					"cctv-cameras"
+				)
+			}
+			return;
+		}
+	  }
+}
+
+funcAlarmCCTV = function () {
+	//reviewing cctv function
+    if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xhr5=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xhr5=new ActiveXObject('MSXML2.XMLHTTP.3.0');
+	  } 
+	console.log("Capturing cctv cameras...");
+	xhr5.open("GET","/directory?DIR_FUNC=cctv-alarm"); 
+	xhr5.send();
+	
+	 xhr5.onreadystatechange=function(convo)
+	  {
+	  if (xhr5.readyState==4 && xhr5.status==200)
+		{
+		var currVal = xhr5.responseText;
+			console.log(currVal);
+			  if (currVal != "") {
+				  chatWindow.talk(
+					{
+					  "cctv-cameras": {
+					  says: [currVal],
+						reply: [{
+                            question: "New CCTV",
+                            answer: "funcNewCCTV"
+                            },{
+						      question: "Show CCTVs",
+						      answer: "funcShowCCTV"
+						    },{
+							  question: "Capture CCTVs",
+							  answer: "funcCaptureCCTV"
+						    },{
+                                question: "Review CCTVs",
+                                answer: "funcReviewCCTV"
+                            },{
+                                question: "Recent CCTVs",
+                                answer: "funcRecentCCTV"
+                            },{
+                                question: "Alarm Status",
+                                answer: "funcAlarmCCTV"
                             }]
 					  }
 					},
@@ -466,11 +548,83 @@ funcToolsCamera = function () {
 	    {
 	      "funcToolsCameraRes": {
 	        says: [msg],
-	        reply: []
+	        reply: [{
+                question: "New CCTV",
+                answer: "funcNewCCTV"
+                },{
+                    question: "Show CCTVs",
+                    answer: "funcShowCCTV"
+                },{
+                    question: "Capture CCTVs",
+                    answer: "funcCaptureCCTV"
+                },{
+                    question: "Review CCTVs",
+                    answer: "funcReviewCCTV"
+                },{
+                    question: "Recent CCTVs",
+                    answer: "funcRecentCCTV"
+                },{
+                    question: "Alarm Status",
+                    answer: "funcAlarmCCTV"
+                }]
 	      }
 	    },
 	    "funcToolsCameraRes"
 	  )
+}
+
+function alarmSet(statVal) {
+	//setting cctv alarm status
+    if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xhr5=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xhr5=new ActiveXObject('MSXML2.XMLHTTP.3.0');
+	  } 
+	console.log("Setting cctv alarm status...");
+	xhr5.open("GET","/directory?DIR_FUNC=cctv-alarm&alarm="+statVal); 
+	xhr5.send();
+	
+	 xhr5.onreadystatechange=function(convo)
+	  {
+	  if (xhr5.readyState==4 && xhr5.status==200)
+		{
+		var currVal = xhr5.responseText;
+			console.log(currVal);
+			  if (currVal != "") {
+				  chatWindow.talk(
+					{
+					  "cctv-cameras": {
+					  says: [currVal],
+						reply: [{
+                            question: "New CCTV",
+                            answer: "funcNewCCTV"
+                            },{
+						      question: "Show CCTVs",
+						      answer: "funcShowCCTV"
+						    },{
+							  question: "Capture CCTVs",
+							  answer: "funcCaptureCCTV"
+						    },{
+                                question: "Review CCTVs",
+                                answer: "funcReviewCCTV"
+                            },{
+                                question: "Recent CCTVs",
+                                answer: "funcRecentCCTV"
+                            },{
+                                question: "Alarm Status",
+                                answer: "funcAlarmCCTV"
+                            }]
+					  }
+					},
+					"cctv-cameras"
+				)
+			}
+			return;
+		}
+	  }
 }
 
 function makeid() {
