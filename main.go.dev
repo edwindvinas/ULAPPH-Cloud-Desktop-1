@@ -18288,11 +18288,12 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			if IS_SEARCH_SERVER != "Y" {
 				redURL := fmt.Sprintf("%v/directory?DIR_FUNC=tracker&xuid=%v&xhost=%v", getSchemeNewUrl(w,r,SEARCH_SERVER), xuid, xhost)
 				xLongLat := fetchURL(w,r,redURL)
+				w.WriteHeader(200)
+				w.Write([]byte(xLongLat))
 				c.Infof("xLongLat: %v", xLongLat)
-				showUserLocation(w,r,xLongLat,xhost,xuid)
 				return
 			} else {
-				showUserLocation(w,r,"",xhost,xuid)
+				showUserLocation(w,r,xhost,xuid)
 				return
 			}
 
@@ -30635,9 +30636,7 @@ func exec_FetchUrlChan(w http.ResponseWriter, r *http.Request , thisChan chan []
  
 //executes URL Fetch and then returns the results as string 
 func fetchURL(w http.ResponseWriter, r *http.Request , fURL string) string {
- 
 	c := appengine.NewContext(r)
-	
 	client := urlfetch.Client(c)
 	if err := r.ParseForm(); err != nil {
 		panic(err)
@@ -30651,7 +30650,6 @@ func fetchURL(w http.ResponseWriter, r *http.Request , fURL string) string {
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
 	bodyString := string(bodyBytes)
 	return bodyString
-	
 }
 
 //executes URL Fetch and then returns the results as bytes
@@ -54598,27 +54596,19 @@ func showOverallPeople(w http.ResponseWriter, r *http.Request, FL_BOT bool) {
 }
 //D0077
 //shows user location (site server only) 
-func showUserLocation(w http.ResponseWriter, r *http.Request, xLongLat, xhost, xuid string) {
+func showUserLocation(w http.ResponseWriter, r *http.Request, xhost, xuid string) {
 	c := appengine.NewContext(r)
 	c.Infof("showUserLocation()")
 	cKey := fmt.Sprintf("%v-tracker-%v", xhost, xuid)
 	c.Infof("cKey: %v", cKey)
 	longStr := ""
 	latStr := ""
-	if xLongLat == "" {
-		longLat := getStrMemcacheValueByKey(w,r,cKey)
-		c.Infof("longLat: %v", longLat)
-		SPL := strings.Split(longLat, ",")
-		if len(SPL) > 0 {
-			longStr = SPL[1]
-			latStr = SPL[0]
-		}
-	} else {
-		SPL := strings.Split(xLongLat, ",")
-		if len(SPL) > 0 {
-			longStr = SPL[1]
-			latStr = SPL[0]
-		}
+	longLat := getStrMemcacheValueByKey(w,r,cKey)
+	c.Infof("longLat: %v", longLat)
+	SPL := strings.Split(longLat, ",")
+	if len(SPL) > 0 {
+		longStr = SPL[1]
+		latStr = SPL[0]
 	}
 	c.Infof("longStr: %v", longStr)
 	c.Infof("latStr: %v", latStr)
