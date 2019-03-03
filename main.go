@@ -28383,6 +28383,7 @@ func social(w http.ResponseWriter, r *http.Request) {
 			procBroadcastPresence2(w,r)
 			return
 		case "proc-broadcast-location":
+			c.Infof("proc-broadcast-location...")
 			xcus := r.FormValue("custom")
 			xuid := r.FormValue("uid")
 			xll := r.FormValue("xll")
@@ -28418,7 +28419,9 @@ func social(w http.ResponseWriter, r *http.Request) {
 			}
 			putStrToMemcacheWithoutExp(w,r,cKey,buffer3.String())
 			//save latest long/lat per host
-			cKeyLL := fmt.Sprintf("%v-tracker", xhost)
+			cKeyLL := fmt.Sprintf("%v-tracker-%v", xhost, xuid)
+			c.Infof("cKeyLL: %v", cKeyLL)
+			c.Infof("xll: %v", xll)
 			putStrToMemcacheWithoutExp(w,r,cKeyLL,xll)
 			return
 		//re-broadcast coming from sites server
@@ -54597,7 +54600,8 @@ func showOverallPeople(w http.ResponseWriter, r *http.Request, FL_BOT bool) {
 //shows user location (site server only) 
 func showUserLocation(w http.ResponseWriter, r *http.Request, xLongLat, xhost, xuid string) {
 	c := appengine.NewContext(r)
-	cKey := fmt.Sprintf("%v-tracker", xhost)
+	c.Infof("showUserLocation()")
+	cKey := fmt.Sprintf("%v-tracker-%v", xhost, xuid)
 	c.Infof("cKey: %v", cKey)
 	longStr := ""
 	latStr := ""
