@@ -394,12 +394,17 @@
 //REV DESC:	  	Integrated AutoML 
 //REV AUTH:		Edwin D. Vinas
 /////////////////////////////////////////////////////////////////////////////////////////////////
+//REV ID: 		D0077
+//REV DATE: 		2019-Mar-03
+//REV DESC:	  	Realtime cctv alarms channel 
+//REV AUTH:		Edwin D. Vinas
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------
 //List of firebase channels
 //list-channels
 //
-//	[ok] /ulapph-firebase/<SYS_SERVER_NAME>/channel/<user-assigned-channel-string> 	
+//	[ok] /ulapph-firebase/<SYS_SERVER_NAME>/channel/<user-assigned-channel-string>
 //		- client listens to this topic (tok.value)
 //	[ok] /ulapph-firebase/<SYS_SERVER_NAME>/things/<user-assigned-channel-string> 	
 //		- sends IOT data to topic	
@@ -414,7 +419,6 @@
 //		- delete channel every eod
 //	[ok] /ulapph-firebase/<SYS_SERVER_NAME>/chat-private/<generated roomID> 		
 //		- send all chats to this private room ID
-//
 //---------------------------------------------------------------------------------------------
 package clouddesktop
  
@@ -1334,14 +1338,15 @@ type UlapphDesktops struct {
 	PK	int	`json:"pk"`
 	Lat	float64	`json:"lat"`
 	Lon	float64	`json:"lon"`
-    Title	string	`json:"title"`
-    Status		int  `json:"status"`
+	Title	string	`json:"title"`
+	Status		int  `json:"status"`
 	Altitude		int  `json:"altitude"`
-    Placement    string  `json:"placement"`
+	Placement    string  `json:"placement"`
 	Brand 	string 	`json:"brand"`
 	Model 	string 	`json:"model"`
 	AntennaModel 	string 	`json:"antenna_model"`
 	Username 	string 	`json:"username"`
+	Picture 	string 	`json:"picture"`
 }
 //D0042
 type Discussions struct {
@@ -27024,7 +27029,6 @@ func stmpHumanize(tStr string) (fTime string) {
 	}
 	return fTime
 }
-		
 //validations for access
 //it determines if the current user is a valid or registered user
 func validateAccess(w http.ResponseWriter, r *http.Request, FUNC_CODE, lref string) (FL_PROCEED_OK bool) {
@@ -27055,12 +27059,7 @@ func validateAccess(w http.ResponseWriter, r *http.Request, FUNC_CODE, lref stri
 			if FL_VALID_USER == true {
 				FL_PROCEED_OK = true
 			}else {
-				msgDtl := fmt.Sprintf("[U00167b] ERROR: Access is not allowed for this session!")
-				msgTyp := "error"
-				msgURL := fmt.Sprintf("https://ulapph-public-1.appspot.com")
-				action := fmt.Sprintf("Apologies for this issue.")
-				sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, msgURL, action)
-				http.Redirect(w, r, sysReq, http.StatusFound)
+				loginGoogle(w,r,r.URL.String())
 				return
 			}
 	}
@@ -28358,6 +28357,7 @@ func social(w http.ResponseWriter, r *http.Request) {
 			xuid := r.FormValue("uid")
 			xll := r.FormValue("xll")
 			xhost := r.FormValue("xhost")
+			xpic := r.FormValue("xpic")
 			if xcus != "" {
 				//this is manually set
 				xll = xcus
@@ -28376,7 +28376,7 @@ func social(w http.ResponseWriter, r *http.Request) {
 				if len(SPL) > 0 {
 					if xuid == SPL[0] && xhost == SPL[1] {
 					//replace
-						buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v\n", xuid, xhost, xll, getTimestamp()))
+						buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v|%v\n", xuid, xhost, xll, getTimestamp(),xpic))
 						FL_OK = true
 					} else {
 						buffer3.WriteString(fmt.Sprintf("%v\n", scanner.Text()))
@@ -28384,7 +28384,7 @@ func social(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 			if FL_OK == false {
-				buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v\n", xuid, xhost, xll, getTimestamp()))
+				buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v|%v\n", xuid, xhost, xll, getTimestamp(), xpic))
 			}
 			putStrToMemcacheWithoutExp(w,r,cKey,buffer3.String())
 			return
@@ -34561,12 +34561,6 @@ func getDefUwms(w http.ResponseWriter, r *http.Request) string {
 	buf.WriteString(fmt.Sprintf("</script>"))
 	*/
 	/*
-	buf.WriteString(fmt.Sprintf("<input type=\"hidden\" value=\"'/webapp/', 500, 300, 'middle', 'top', {title: 'Mobile Webapp', icon: '/img/jswm-web.png'}\" size=\"60\" id=\"webapp777\" />"))
-	buf.WriteString(fmt.Sprintf("<script type=\"text/javascript\">"))
-	buf.WriteString(fmt.Sprintf("	if (document.getElementById('desktop').value == 'uwm') { eval('windowManager.openURI(' + $('webapp777').value + ');'); }"))
-	buf.WriteString(fmt.Sprintf("</script>"))
-	*/
-	/*
 	buf.WriteString(fmt.Sprintf("<input type=\"hidden\" value=\"'/tools?FUNC=WIDGET&t=TODO', 500, 300, 'middle', 'top', {title: 'TODOs', icon: '/img/jswm-web.png'}\" size=\"60\" id=\"todo777\" />"))
 	buf.WriteString(fmt.Sprintf("<script type=\"text/javascript\">"))
 	buf.WriteString(fmt.Sprintf("	if (document.getElementById('desktop').value == 'uwm') { eval('windowManager.openURI(' + $('todo777').value + ');'); }"))
@@ -40554,8 +40548,6 @@ func nlpRecent(w http.ResponseWriter, r *http.Request, target string) (string) {
 //D0065
 func nlpOpen(w http.ResponseWriter, r *http.Request, target string) (string) {
 	switch strings.ToLower(target) {
-	case "webapp":
-		return fmt.Sprintf("<a href=\"/webapp/\" target=\"webapp\">Open Webapp</a>")
 	case "slides with music":
 		return fmt.Sprintf("<a href=\"/infodb?DB_FUNC=SLIDES&CATEGORY=desktop0&VIEW=WITH_MUSIC\" target=\"webapp\">Open Slides with Music</a>")
 	case "articles with music":
@@ -45012,7 +45004,6 @@ const htmlWidgetBrowserMobileUI = `
 <body>
   <header class="o-header">
     <nav class="o-header-nav">
-	  <a href="/webapp/" class="o-header-nav__link" title="Webapp with buttons to launch favorite apps">Webapp</a>
 	  <a href="/contents?q=home" class="o-header-nav__link" title="View the cloud website and access the slides, articles and media. If you are new here, just click this link.">Contents</a>
 	  <a href="/directory?DIR_FUNC=sites" class="o-header-nav__link" title="List all sites available in the sites server">Directory</a>	
 	  <a href="/logout" class="o-header-nav__link" title="Logout">Logout</a>
@@ -45533,7 +45524,7 @@ const htmlDesktopsJSONtoTableA = `
 <div id="desktops"></div>
 <div id="columns"></div>
 <br>
-[<a href="/admin-setup?ADMIN_FUNC=EDIT_CATEGORY_LIST">Edit</a>] [<a href="#" onClick="/tools?FUNC=ALL_NOTES">Notes</a>] [<a href="/directory?DIR_FUNC=sites">Servers</a>] [<a href="#" onclick="blankDesktop();return false;">Blank Desktop</a>] [<a href="#" onclick="clearDesktops();return false;">Clear Desktops</a>] [<a href="/webapp/" target="webapp">Webapp</a>]
+[<a href="/admin-setup?ADMIN_FUNC=EDIT_CATEGORY_LIST">Edit</a>] [<a href="#" onClick="/tools?FUNC=ALL_NOTES">Notes</a>] [<a href="/directory?DIR_FUNC=sites">Servers</a>] [<a href="#" onclick="blankDesktop();return false;">Blank Desktop</a>] [<a href="#" onclick="clearDesktops();return false;">Clear Desktops</a>]
 <script>
   $(document).ready(function() {
     var json = {{.}};
@@ -53525,7 +53516,7 @@ func procBroadcastCustomLoc(w http.ResponseWriter, r *http.Request, uid, latlon 
 	//if this server is not sites server
 	if IS_SEARCH_SERVER != "Y" {
 		//Post data to server
-		URL := fmt.Sprintf("%v/social?SO_FUNC=proc-broadcast-location&custom=%v&uid=%v&xhost=%v", SEARCH_SERVER, latlon, uid, domRefMatchS)
+		URL := fmt.Sprintf("%v/social?SO_FUNC=proc-broadcast-location&custom=%v&uid=%v&xhost=%v&xpic=%v", SEARCH_SERVER, latlon, uid, domRefMatchS, getProfilePic(w, r, uid))
 		req, err := http.NewRequest("POST", URL, nil)
 		client := urlfetch.Client(c)
 		_, err = client.Do(req)
@@ -53910,7 +53901,7 @@ func procBroadcastUserLoc(w http.ResponseWriter, r *http.Request, UID, latLon st
 	//if this server is not sites server
 	if IS_SEARCH_SERVER != "Y" && UID != "" {
 		//Post data to server
-		URL := fmt.Sprintf("%v/social?SO_FUNC=proc-broadcast-location&uid=%v&xll=%v&xhost=%v", SEARCH_SERVER, UID, latLon, domRefMatchS)
+		URL := fmt.Sprintf("%v/social?SO_FUNC=proc-broadcast-location&uid=%v&xll=%v&xhost=%v&xpic=%v", SEARCH_SERVER, UID, latLon, domRefMatchS, getProfilePic(w, r, UID))
 		req, err := http.NewRequest("POST", URL, nil)
 		client := urlfetch.Client(c)
 		_, err = client.Do(req)
@@ -53932,16 +53923,12 @@ func procBroadcastMessage(w http.ResponseWriter, r *http.Request) {
 	pic := r.FormValue("pic")
 	geo := r.FormValue("geo")
 	ip := r.FormValue("ip")
-	
 	IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
-	
 	//if this server is not sites server
 	if IS_SEARCH_SERVER != "Y" {
 		//Post data to server
 		URL := fmt.Sprintf("%v/social?SO_FUNC=proc-broadcast-message-all&msg=%v&uid=%v&os=%v&browser=%v&host=%v&pic=%v&geo=%v&ip=%v", SEARCH_SERVER, msg, uid, os, browser, host, pic, geo,ip)
- 
 		req, err := http.NewRequest("POST", URL, nil)
- 
 		client := urlfetch.Client(c)
 		_, err = client.Do(req)
 		if err != nil {
@@ -54461,6 +54448,10 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 							lon, _ = strconv.ParseFloat(LPL[1], 64)
 						}
 					XTMP := SPL[3]
+					XPIC := "/img/no-profile.png"
+					if len(SPL) >= 5 {
+					XPIC = SPL[4]
+					}
 					//buf.WriteString("")
 					//demo.ulapph@gmail.com|https://|14.7391207,121.0501458|2017-07-01 00:40:15.926259213 +0000 UTC
 					p := UlapphDesktops {
@@ -54475,6 +54466,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 						Model:			"Cloud Desktop",
 						AntennaModel:	stmpHumanize(XTMP),
 						Username:		XUID,
+						Picture:	XPIC,
 					}
 					dks = append(dks, p)
 				}
@@ -54502,6 +54494,10 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 					}
 				tURL := SPL[1]
 				tKey := SPL[0]
+				XPIC := "/img/no-profile.png"
+				if len(SPL) >= 5 {
+					XPIC = SPL[4]
+                                }
 				p := UlapphDesktops {
 					PK:				ctr,
 					Lat:			lat,
@@ -54514,6 +54510,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 					Model:			"Cloud Desktop",
 					AntennaModel:	stmpHumanize(tsmtp),
 					Username:		tKey,
+					Picture:	XPIC,
 				}
 				dks = append(dks, p)
 			}
@@ -54528,17 +54525,13 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 
 //shows overall people directory	
 func showOverallPeople(w http.ResponseWriter, r *http.Request, FL_BOT bool) {
-	
     c := appengine.NewContext(r)
-	
 	if FL_BOT == true {
 		//showOverallRobot(w,r)
 		fmt.Fprintf(w, "Robot not allowed!")
 		return
 	}
-	
 	updateUserActiveData(w, r, c, "", "showOverallPeople")
-	
 	IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "N" {
 		//redirect
@@ -54935,10 +54928,8 @@ func queueNotifyGB(w http.ResponseWriter, r *http.Request) {
 	return
  
 }
- 
 //process taskqueue to log users coordinates
 func queueLogMapCoors(w http.ResponseWriter, r *http.Request, xLatLong, USER_TYPE, TARGET_URL, viaStr, SID string) {
- 
     c := appengine.NewContext(r)
 	//split coors
 	SPL := strings.Split(xLatLong,"+")
@@ -54949,9 +54940,7 @@ func queueLogMapCoors(w http.ResponseWriter, r *http.Request, xLatLong, USER_TYP
 		latitude = SPL[0]
 		longitude = SPL[1]
 	}
-	
 	if latitude != "" && longitude != "" {
-	
 		var buffer4 bytes.Buffer
 		var buffer5 bytes.Buffer
 		buffer4.WriteString(fmt.Sprintf("\n"))
@@ -54961,7 +54950,7 @@ func queueLogMapCoors(w http.ResponseWriter, r *http.Request, xLatLong, USER_TYP
 		PROFILE_PIC_URLME := getProfilePic(w, r, USER_TYPE)
 		//14.676041
 		//121.043700
-		if SID != "FAM_TRACKER" {
+		/*if SID != "FAM_TRACKER" {
 			latRan := fmt.Sprintf("%v", randSeqM(4))
 			longRan := fmt.Sprintf("%v", randSeqM(4))
 			//replace decimal w/ random number
@@ -54969,29 +54958,25 @@ func queueLogMapCoors(w http.ResponseWriter, r *http.Request, xLatLong, USER_TYP
 			latitude = fmt.Sprintf("%v%v", latitude[0:5], latRan)
 			//SPL = strings.Split(longitude,".")
 			longitude = fmt.Sprintf("%v%v", longitude[0:5], longRan)
-		}
+		}*/
 		buffer4.WriteString(fmt.Sprintf("x.push('%v');\n", latitude))
 		buffer4.WriteString(fmt.Sprintf("y.push('%v');\n", longitude))
 		buffer5.WriteString(fmt.Sprintf("x.push('%v');\n", latitude))
 		buffer5.WriteString(fmt.Sprintf("y.push('%v');\n", longitude))
 		buffer4.WriteString(fmt.Sprintf("h.push('<p><strong>%v</strong><br/><img src=\"%v\" width=50 height=50 title=\"%s\"></img><a href=\"%v\" target=\"link\">%v</a><br>%v - %v</p>');\n", USER_TYPE, PROFILE_PIC_URLME, USER_TYPE, TARGET_URL, TARGET_URL, viaStr, currenttime.Format("2006-01-02 15:04:05 +0800")))
 		buffer5.WriteString(fmt.Sprintf("h.push('<p><strong>%v</strong><br/><img src=\"%v\" width=50 height=50 title=\"%s\"></img><a href=\"%v\" target=\"link\">%v</a><br>%v - %v</p>');\n", USER_TYPE, PROFILE_PIC_URLME, USER_TYPE, TARGET_URL, TARGET_URL, viaStr, currenttime.Format("2006-01-02 15:04:05 +0800")))
-		
 		//update TDSLOGS key
 		//currenttime := time.Now().Local()	
 		accessLogDateSeq := currenttime.Hour()
 		accessLogDate := fmt.Sprintf("%v", currenttime.Format("2006-01-02"))
 		accessLogKey := fmt.Sprintf("%v.%v", accessLogDate, accessLogDateSeq)
-		
 		//get old text
 		var g TDSLOGS
 		if err := datastore.Get(c, getKeyAccess(c,accessLogKey), &g); err != nil {
 			//panic(err)
 		}
 		buffer4.Write(g.ACCESS_MAP_TEXT)
-		
 		ctr := g.ACCESS_LOG_CTR + 1
-		
 		g = TDSLOGS{
 				ACCESS_LOG_DATE: accessLogDate,
 				ACCESS_LOG_SEQ: accessLogDateSeq,
@@ -54999,8 +54984,6 @@ func queueLogMapCoors(w http.ResponseWriter, r *http.Request, xLatLong, USER_TYP
 				ACCESS_LOG_TEXT: g.ACCESS_LOG_TEXT,
 				ACCESS_LOG_CTR: ctr,
 		}
- 
- 
 		if len(fmt.Sprintf("%v", buffer4.Bytes())) >= 1048576 || len(fmt.Sprintf("%v", g.ACCESS_LOG_TEXT)) >= 1048576 {
 			g.ACCESS_MAP_TEXT = []byte("")
 			g.ACCESS_LOG_TEXT = []byte("")
@@ -55012,7 +54995,6 @@ func queueLogMapCoors(w http.ResponseWriter, r *http.Request, xLatLong, USER_TYP
 			checkError(w,r,err,"CHK_OQ")
 			return
 		}
-		
 		//log access for specific content
 		SPL := strings.Split(SID,"-")
 		//SPM := strings.Split(SID,"@")
@@ -55590,7 +55572,6 @@ func struwmPreviousImageCompare(w http.ResponseWriter, r *http.Request, uid, STR
 		FL_INTRUDER = true
 	}
 	//D0076
-	//edwinxxx
 	if FL_INTRUDER == true && AUTOML == "Y" {
 		cKey := fmt.Sprintf("CCTV_AUTODETECTION_FLAG_%v", SYS_SERVER_NAME)
 		c.Infof("cKey: %v", cKey)
@@ -65047,12 +65028,6 @@ var mobileBodyTemplateContentA = template.Must(template.New("mobileBodyTemplateC
                 <img src="/img/jswm.png" title="UWM" height="40" width="40"/>
             </a>
         </li>
-        <li id="Webapp">
-         <a href="/webapp/">
-             <em><span>Webapp</span></em><br>
-                <img src="/img/banaosystems-login.png" title="Webapp" height="40" width="40"/>
-            </a>
-        </li>
         <!--li id="QuickSearch">
          <a href="/tools?t=QUICK_SEARCH">
              <em><span>QuickSearch</span></em><br>
@@ -65833,16 +65808,6 @@ var desktopBody2Template = template.Must(template.New("desktopBody2Template").Pa
 			</a>		
 		</li>
 		{{end}}
-		
-		{{if eq .STR_FILLER4 "true" }}
-		<li class="here" id="stm-mobile">
-			<input type="hidden" value="'/webapp/', 500, 300, 'left', 'top', {title: 'Mobile', icon: '/img/jswm-web.png'}" size="60" id="mobile" />
-			<a href="#page" onclick="eval('windowManager.openURI(' + $('mobile').value + ');');">
-				<img src="/img/mobile.png" width="20" height="20" title="Mobile">
-				</img>
-			</a>		
-		</li>
-		{{end}}
 `))
  
  var desktopXBody2Template = template.Must(template.New("desktopXBody2Template").Parse(`
@@ -66182,16 +66147,6 @@ var desktopBody2TemplateNoSticky = template.Must(template.New("desktopBody2Templ
 			<input type="hidden" value="'/admin-setup', 500, 300, 'left', 'top', {title: 'Admin Setup', icon: '/img/jswm-web.png'}" size="60" id="adminsetup" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('adminsetup').value + ');');">
 				<img src="/img/admin-icon.png" width="20" height="20" title="Admin Setup">
-				</img>
-			</a>		
-		</li>
-		{{end}}
-		
-		{{if eq .STR_FILLER4 "true" }}
-		<li class="here" id="stm-mobile">
-			<input type="hidden" value="'/webapp/', 500, 300, 'left', 'top', {title: 'Mobile', icon: '/img/jswm-web.png'}" size="60" id="mobile" />
-			<a href="#page" onclick="eval('windowManager.openURI(' + $('mobile').value + ');');">
-				<img src="/img/mobile.png" width="20" height="20" title="Mobile">
 				</img>
 			</a>		
 		</li>

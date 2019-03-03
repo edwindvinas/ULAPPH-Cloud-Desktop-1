@@ -212,10 +212,6 @@ var convo = {
 	      answer: "funcShowTools"
 	    },
 	    {
-	      question: "CCTV",
-	      answer: "funcCCTVtools"
-	    },
-	    {
 	      question: "PWA",
 	      answer: "funcPwaApps"
 	    }
@@ -332,32 +328,6 @@ var convo = {
 	      question: "Text to Speech",
 	      answer: "funcTextToSpeech"
 	    }
-		]
-  },
-  "funcCCTVtools": {
-    says: ["Click below CCTV functions!"
-    	],
-    reply: [
-		{
-	      question: "New CCTV",
-	      answer: "funcNewCCTV"
-	    },
-		{
-	      question: "Show CCTVs",
-	      answer: "funcShowCCTV"
-	    },
-		{
-	      question: "Capture CCTVs",
-	      answer: "funcCaptureCCTV"
-	    },
-        {
-            question: "Review CCTVs",
-            answer: "funcReviewCCTV"
-        },
-        {
-            question: "Recent CCTVs",
-            answer: "funcRecentCCTV"
-        }
 		]
   },
   "funcGamesLotto": {
@@ -1053,197 +1023,6 @@ funcRandomPics = function () {
 	  }
 }
 
-funcShowCCTV = function () {
-	//call cctv function
-    if (window.XMLHttpRequest)
-	  {// code for IE7+, Firefox, Chrome, Opera, Safari
-	  xhr5=new XMLHttpRequest();
-	  }
-	else
-	  {// code for IE6, IE5
-	  xhr5=new ActiveXObject('MSXML2.XMLHTTP.3.0');
-	  } 
-	console.log("Showing cctv cameras...");
-	xhr5.open("GET","/directory?DIR_FUNC=cctv"); 
-	xhr5.send();
-	
-	 xhr5.onreadystatechange=function(convo)
-	  {
-	  if (xhr5.readyState==4 && xhr5.status==200)
-		{
-		var currVal = xhr5.responseText;
-			console.log(currVal);
-			  if (currVal != "") {
-				  chatWindow.talk(
-					{
-					  "cctv-cameras": {
-					  says: [currVal],
-						reply: [{
-						      question: "Show CCTVs",
-						      answer: "funcShowCCTV"
-						    },{
-							  question: "Capture CCTVs",
-							  answer: "funcCaptureCCTV"
-						    },{
-                                question: "Review CCTVs",
-                                answer: "funcReviewCCTV"
-                            },{
-                                question: "Recent CCTVs",
-                                answer: "funcRecentCCTV"
-                            }]
-					  }
-					},
-					"cctv-cameras"
-				)
-			}
-			return;
-		}
-	  }
-}
-
-funcCaptureCCTV = function () {
-	//capturing cctv function
-    if (window.XMLHttpRequest)
-	  {// code for IE7+, Firefox, Chrome, Opera, Safari
-	  xhr5=new XMLHttpRequest();
-	  }
-	else
-	  {// code for IE6, IE5
-	  xhr5=new ActiveXObject('MSXML2.XMLHTTP.3.0');
-	  } 
-	console.log("Capturing cctv cameras...");
-	xhr5.open("GET","/directory?DIR_FUNC=cctv-capture"); 
-	xhr5.send();
-	
-	 xhr5.onreadystatechange=function(convo)
-	  {
-	  if (xhr5.readyState==4 && xhr5.status==200)
-		{
-		var currVal = xhr5.responseText;
-			console.log(currVal);
-			  if (currVal != "") {
-				  chatWindow.talk(
-					{
-					  "cctv-cameras": {
-					  says: [currVal],
-						reply: [{
-						      question: "Show CCTVs",
-						      answer: "funcShowCCTV"
-						    },{
-							  question: "Capture CCTVs",
-							  answer: "funcCaptureCCTV"
-						    },{
-                                question: "Review CCTVs",
-                                answer: "funcReviewCCTV"
-                            },{
-                                question: "Recent CCTVs",
-                                answer: "funcRecentCCTV"
-                            }]
-					  }
-					},
-					"cctv-cameras"
-				)
-			}
-			return;
-		}
-	  }
-}
-
-funcReviewCCTV = function () {
-	//reviewing cctv function
-    if (window.XMLHttpRequest)
-	  {// code for IE7+, Firefox, Chrome, Opera, Safari
-	  xhr5=new XMLHttpRequest();
-	  }
-	else
-	  {// code for IE6, IE5
-	  xhr5=new ActiveXObject('MSXML2.XMLHTTP.3.0');
-	  } 
-	console.log("Capturing cctv cameras...");
-	xhr5.open("GET","/directory?DIR_FUNC=cctv-review"); 
-	xhr5.send();
-	
-	 xhr5.onreadystatechange=function(convo)
-	  {
-	  if (xhr5.readyState==4 && xhr5.status==200)
-		{
-		var currVal = xhr5.responseText;
-			console.log(currVal);
-			  if (currVal != "") {
-				  chatWindow.talk(
-					{
-					  "cctv-cameras": {
-					  says: [currVal],
-						reply: [{
-						      question: "Show CCTVs",
-						      answer: "funcShowCCTV"
-						    },{
-							  question: "Capture CCTVs",
-							  answer: "funcCaptureCCTV"
-						    },{
-                                question: "Review CCTVs",
-                                answer: "funcReviewCCTV"
-                            },{
-                                question: "Recent CCTVs",
-                                answer: "funcRecentCCTV"
-                            }]
-					  }
-					},
-					"cctv-cameras"
-				)
-			}
-			return;
-		}
-	  }
-}
-
-funcRecentCCTV = function () {
-	//reviewing cctv function
-    if (window.XMLHttpRequest)
-	  {// code for IE7+, Firefox, Chrome, Opera, Safari
-	  xhr5=new XMLHttpRequest();
-	  }
-	else
-	  {// code for IE6, IE5
-	  xhr5=new ActiveXObject('MSXML2.XMLHTTP.3.0');
-	  } 
-	console.log("Capturing cctv cameras...");
-	xhr5.open("GET","/directory?DIR_FUNC=cctv-recent&recent_num=30"); 
-	xhr5.send();
-	
-	 xhr5.onreadystatechange=function(convo)
-	  {
-	  if (xhr5.readyState==4 && xhr5.status==200)
-		{
-		var currVal = xhr5.responseText;
-			console.log(currVal);
-			  if (currVal != "") {
-				  chatWindow.talk(
-					{
-					  "cctv-cameras": {
-					  says: [currVal],
-						reply: [{
-						      question: "Show CCTVs",
-						      answer: "funcShowCCTV"
-						    },{
-							  question: "Capture CCTVs",
-							  answer: "funcCaptureCCTV"
-						    },{
-                                question: "Review CCTVs",
-                                answer: "funcReviewCCTV"
-                            },{
-                                question: "Recent CCTVs",
-                                answer: "funcRecentCCTV"
-                            }]
-					  }
-					},
-					"cctv-cameras"
-				)
-			}
-			return;
-		}
-	  }
-}
 
 funcRandomYoutube = function () {
 	//call nlp
@@ -1474,19 +1253,6 @@ function funcPwaApps() {
 	  )
 }
 
-funcNewCCTV = function () {
-    var ustr = makeid();
-    var msg = "<a href=\"/tools?FUNC=MIRROR2&v=" + ustr +"\" target=\"smallCCTV\">Small CCTV Camera</a><br><a href=\"/tools?FUNC=MIRROR&v=" + ustr + "\" target=\"bigCCTV\">Big CCTV Camera</a>";
-	  chatWindow.talk(
-	    {
-	      "funcToolsCctvRes": {
-	        says: [msg],
-	        reply: []
-	      }
-	    },
-	    "funcToolsCctvRes"
-	  )
-}
 
 funcToolsCamera = function () {
     var ustr = makeid();

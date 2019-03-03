@@ -230,6 +230,9 @@ funcDoctorScott = function () {
     location.href="https://edwin-daen-vinas.appspot.com/bot?bFunc=bchat&u=47";
     return;
 }
+
+//auto-redirect after x seconds
+setTimeout(function() {funcDoctorScott()}, 5000)
   
 // pass JSON to your function and you're done!
 chatWindow.talk(convo)

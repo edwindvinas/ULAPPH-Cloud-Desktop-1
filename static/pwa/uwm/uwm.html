@@ -188,10 +188,6 @@ var convo = {
             question: "Login",
             answer: "funcLoginUWM"
         },
-		{
-	      question: "All Desktops",
-	      answer: "funcAllDesktops"
-	    },
 	    {
 	      question: "User Guide",
 	      answer: "funcUWMtoolsGuide"
@@ -235,10 +231,8 @@ funcLoginUWM = function () {
     return;
 }
 
-funcAllDesktops = function () {
-    location.href="/tools?FUNC=ALL_DESKTOPS";
-    return;
-}
+//auto-redirect after x seconds
+setTimeout(function() {funcLoginUWM()}, 5000)
   
 // pass JSON to your function and you're done!
 chatWindow.talk(convo)

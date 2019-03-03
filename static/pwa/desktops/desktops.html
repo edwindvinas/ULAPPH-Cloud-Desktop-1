@@ -230,6 +230,9 @@ funcDesktops = function () {
     location.href="/tools?FUNC=ALL_DESKTOPS";
     return;
 }
+
+//auto-redirect after x seconds
+setTimeout(function() {funcDesktops()}, 5000)
   
 // pass JSON to your function and you're done!
 chatWindow.talk(convo)

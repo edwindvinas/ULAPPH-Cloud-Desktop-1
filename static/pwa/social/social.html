@@ -230,6 +230,9 @@ funcSocial = function () {
     location.href="/share?SH_FUNC=custom";
     return;
 }
+
+//auto-redirect after x seconds
+setTimeout(function() {funcSocial()}, 5000)
   
 // pass JSON to your function and you're done!
 chatWindow.talk(convo)

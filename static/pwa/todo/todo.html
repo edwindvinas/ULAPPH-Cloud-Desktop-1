@@ -230,6 +230,9 @@ funcTodo = function () {
     location.href="/tools?FUNC=WIDGET&t=TODO";
     return;
 }
+
+//auto-redirect after x seconds
+setTimeout(function() {funcTodo()}, 5000)
   
 // pass JSON to your function and you're done!
 chatWindow.talk(convo)

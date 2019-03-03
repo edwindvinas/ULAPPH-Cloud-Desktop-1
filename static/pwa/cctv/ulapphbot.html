@@ -10,6 +10,12 @@
     <!-- pwa manifest -->
     <link rel="manifest" href="/pwa/cctv/manifest.json?v=1">
 
+    <!--alertify-->
+    <script type="text/javascript" src="/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="/js/soundmanager2.js"></script>
+    <link rel="stylesheet" href="/css/alertify.core.css" />
+    <link rel="stylesheet" href="/css/alertify.default.css" id="toggleCSS" />
+
 	<!-- stylesheets are conveniently separated into components -->
 	<link rel="stylesheet" media="all" href="/lib/css/chat-bubble/setup.css">
 	<link rel="stylesheet" media="all" href="/lib/css/chat-bubble/says.css">
@@ -186,25 +192,21 @@ var convo = {
     	],
 	  reply: [
 		{
-	      question: "New CCTV",
-	      answer: "funcNewCCTV"
-	    },
-		{
-	      question: "Show CCTVs",
-	      answer: "funcShowCCTV"
-	    },
-		{
-	      question: "Capture CCTVs",
-	      answer: "funcCaptureCCTV"
-	    },
-        {
-            question: "Review CCTVs",
-            answer: "funcReviewCCTV"
-        },
-	    {
 	      question: "User Guide",
 	      answer: "funcCCTVtoolsGuide"
 	    },{
+	      question: "New CCTV",
+	      answer: "funcNewCCTV"
+	    },{
+	      question: "Show CCTVs",
+	      answer: "funcShowCCTV"
+	    },{
+	      question: "Capture CCTVs",
+	      answer: "funcCaptureCCTV"
+	    },{
+            question: "Review CCTVs",
+            answer: "funcReviewCCTV"
+        },{
             question: "Recent CCTVs",
             answer: "funcRecentCCTV"
         },{
@@ -534,7 +536,25 @@ funcNewCCTV = function () {
 	    {
 	      "funcToolsCctvRes": {
 	        says: [msg],
-	        reply: []
+	        reply: [{
+                    question: "New CCTV",
+                    answer: "funcNewCCTV"
+                    },{
+                        question: "Show CCTVs",
+                        answer: "funcShowCCTV"
+                    },{
+                        question: "Capture CCTVs",
+                        answer: "funcCaptureCCTV"
+                    },{
+                        question: "Review CCTVs",
+                        answer: "funcReviewCCTV"
+                    },{
+                        question: "Recent CCTVs",
+                        answer: "funcRecentCCTV"
+                    },{
+                        question: "Alarm Status",
+                        answer: "funcAlarmCCTV"
+                    }]
 	      }
 	    },
 	    "funcToolsCctvRes"
@@ -640,7 +660,16 @@ function makeid() {
 // pass JSON to your function and you're done!
 chatWindow.talk(convo)
 </script>
+<!--alertify-->
+<script src="/js/alertify.min.js"></script>
+<!--firebase alarms channel-->
+<script src="https://www.gstatic.com/firebasejs/5.5.9/firebase.js"></script>
+<script src="/js/firebase-account.js"></script>
+<script src="/js/channel-firebase.js"></script>
+<script src="/js/channel-firebase-cctv-alarm.js"></script>
+<script src="/js/channel-cctv-alarm.js"></script>
 <!--pwa service worker registration-->
 <script src="/pwa/cctv/main.js"></script>
+<!--user latitude/longitude-->
 <script src="/js/geolatlon.js"></script>
 </body>

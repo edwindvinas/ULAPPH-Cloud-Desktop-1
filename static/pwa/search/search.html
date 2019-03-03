@@ -230,6 +230,9 @@ funcSearch = function () {
     location.href="/search";
     return;
 }
+
+//auto-redirect after x seconds
+setTimeout(function() {funcSearch()}, 5000)
   
 // pass JSON to your function and you're done!
 chatWindow.talk(convo)

@@ -230,6 +230,9 @@ funcTimelineJS = function () {
     location.href="/editor?EDIT_FUNC=TIMELINE&SID=GEN";
     return;
 }
+
+//auto-redirect after x seconds
+setTimeout(function() {funcTimelineJS()}, 5000)
   
 // pass JSON to your function and you're done!
 chatWindow.talk(convo)
