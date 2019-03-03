@@ -1,6 +1,6 @@
 {
-"short_name": "CCTV",
-"name": "CCTV ChatBot",
+"short_name": "Tracker",
+"name": "ULAPPH Tracker",
 "icons": [
 {
 "src": "tracker-144.png",
@@ -16,5 +16,5 @@
 "theme_color": "#50d29d",
 "background_color": "#50d29d",
 "display": "standalone",
-"start_url": "/pwa/tracker/ulapphbot.html"
+"start_url": "/pwa/tracker/tracker.html"
 }

@@ -1505,7 +1505,6 @@ type AmlPayload struct {
 type AmlImage struct {
 	ImageBytes []byte `json:"imageBytes"`
 }
-//edwinxxx
 //D0077
 //Realtime Location Tracker
 type RealtimeLocation struct {
@@ -18286,11 +18285,11 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			xuid := r.FormValue("xuid")
 			if IS_SEARCH_SERVER != "Y" {
 				redURL := fmt.Sprintf("%v/directory?DIR_FUNC=tracker&xuid=%v&xhost=%v", getSchemeNewUrl(w,r,SEARCH_SERVER), xuid, xhost)
-				http.Redirect(w, r, redURL, http.StatusFound)
+				xLongLat := fetchURL(w,r,redURL)
+				showUserLocation(w,r,xLongLat,xhost,xuid)
 				return
 			} else {
-				//edwinxxx
-				showUserLocation(w,r,xhost,xuid)
+				showUserLocation(w,r,"",xhost,xuid)
 				return
 			}
 
@@ -28415,7 +28414,6 @@ func social(w http.ResponseWriter, r *http.Request) {
 				buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v|%v\n", xuid, xhost, xll, getTimestamp(), xpic))
 			}
 			putStrToMemcacheWithoutExp(w,r,cKey,buffer3.String())
-			//edwinxxx
 			//save latest long/lat per host
 			cKeyLL := fmt.Sprintf("%v-tracker", xhost)
 			putStrToMemcacheWithoutExp(w,r,cKeyLL,xll)
@@ -54594,16 +54592,29 @@ func showOverallPeople(w http.ResponseWriter, r *http.Request, FL_BOT bool) {
 }
 //D0077
 //shows user location (site server only) 
-func showUserLocation(w http.ResponseWriter, r *http.Request, xhost, xuid string) {
+func showUserLocation(w http.ResponseWriter, r *http.Request, xLongLat, xhost, xuid string) {
 	c := appengine.NewContext(r)
-	//edwinxxx
 	cKey := fmt.Sprintf("%v-tracker", xhost)
-	longLat := getStrMemcacheValueByKey(w,r,cKey)
-	SPL := strings.Split(longLat, ",")
-	if len(SPL) > 0 {
+	longStr := ""
+	latStr := ""
+	if xLongLat == "" {
+		longLat := getStrMemcacheValueByKey(w,r,cKey)
+		SPL := strings.Split(longLat, ",")
+		if len(SPL) > 0 {
+			longStr = SPL[1]
+			latStr = SPL[0]
+		}
+	} else {
+		SPL := strings.Split(xLongLat, ",")
+		if len(SPL) > 0 {
+			longStr = SPL[1]
+			latStr = SPL[0]
+		}
+	}
+	if longStr != "" && latStr != "" {
 		g := LocGeometry{
 			Type: "Point",
-			Coordinates: []string{SPL[1], SPL[0]},
+			Coordinates: []string{longStr, latStr},
 		}
 		l := RealtimeLocation{
 			Geometry: g,

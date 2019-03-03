@@ -10,7 +10,8 @@ function setOfCachedUrls(e) {
     })
 }
 var precacheConfig = [
-        ["/pwa/tracker/ulapphbot.html", "132d3884d3dd3f78fa91f957ac8f2972"],
+        ["/pwa/tracker/tracker.html", "132d3884d3dd3f78fa91f957ac8f2972"],
+        ["/pwa/tracker/realtime.html", "132d3884d3dd3f78fa91f957ac8f2972"],
         ["/lib/css/chat-bubble/setup.css", "6296fbc6af1a661b21004b585ebdc3ae"],
         ["/lib/css/chat-bubble/says.css", "1ed9dd88ce2cbe2fbd003a7b404e9054"],
         ["/lib/css/chat-bubble/reply.css", "1ed9dd88ce2cbe2fbd003a7b404e9055"],

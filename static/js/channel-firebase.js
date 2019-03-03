@@ -65,10 +65,14 @@ function initFirebase() {
 	
     // sign into Firebase with the token passed from the server
 	var jwt = document.getElementById("jwt");
-	var idToken = jwt.value;
+    var root = location.protocol + '//' + location.host;
+    var idToken = "";
+    if (jwt) {
+	    idToken = jwt.value;
+    }
 	//save to ls
 	if(typeof(Storage) !== "undefined") {
-		localStorage['idToken'] = idToken;
+		localStorage[root+'idToken'] = idToken;
 	}
     firebase.auth().signInWithCustomToken(idToken).catch(function(error) {
       console.log('Login Failed!', error.code);

@@ -18285,10 +18285,11 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			xuid := r.FormValue("xuid")
 			if IS_SEARCH_SERVER != "Y" {
 				redURL := fmt.Sprintf("%v/directory?DIR_FUNC=tracker&xuid=%v&xhost=%v", getSchemeNewUrl(w,r,SEARCH_SERVER), xuid, xhost)
-				http.Redirect(w, r, redURL, http.StatusFound)
+				xLongLat := fetchURL(w,r,redURL)
+				showUserLocation(w,r,xLongLat,xhost,xuid)
 				return
 			} else {
-				showUserLocation(w,r,xhost,xuid)
+				showUserLocation(w,r,"",xhost,xuid)
 				return
 			}
 
@@ -54591,15 +54592,29 @@ func showOverallPeople(w http.ResponseWriter, r *http.Request, FL_BOT bool) {
 }
 //D0077
 //shows user location (site server only) 
-func showUserLocation(w http.ResponseWriter, r *http.Request, xhost, xuid string) {
+func showUserLocation(w http.ResponseWriter, r *http.Request, xLongLat, xhost, xuid string) {
 	c := appengine.NewContext(r)
 	cKey := fmt.Sprintf("%v-tracker", xhost)
-	longLat := getStrMemcacheValueByKey(w,r,cKey)
-	SPL := strings.Split(longLat, ",")
-	if len(SPL) > 0 {
+	longStr := ""
+	latStr := ""
+	if xLongLat == "" {
+		longLat := getStrMemcacheValueByKey(w,r,cKey)
+		SPL := strings.Split(longLat, ",")
+		if len(SPL) > 0 {
+			longStr = SPL[1]
+			latStr = SPL[0]
+		}
+	} else {
+		SPL := strings.Split(xLongLat, ",")
+		if len(SPL) > 0 {
+			longStr = SPL[1]
+			latStr = SPL[0]
+		}
+	}
+	if longStr != "" && latStr != "" {
 		g := LocGeometry{
 			Type: "Point",
-			Coordinates: []string{SPL[1], SPL[0]},
+			Coordinates: []string{longStr, latStr},
 		}
 		l := RealtimeLocation{
 			Geometry: g,

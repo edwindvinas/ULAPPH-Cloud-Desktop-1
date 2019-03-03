@@ -14,7 +14,7 @@ var host = urlParams["xhost"];
 
 var map = L.map('map'),
     realtime = L.realtime({
-        url: root + '/directory?DIR_FUNC=tracker&xuid=' + uid + '&xhost=' + host,
+        url: root + '/directory?DIR_FUNC=tracker&xuid=' + uid + '&xhost=' + host + '&xdummy=' + "y" ,
         crossOrigin: true,
         type: 'json'
     }, {

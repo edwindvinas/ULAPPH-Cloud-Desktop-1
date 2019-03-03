@@ -63,8 +63,9 @@ function initFirebase() {
     // sign into Firebase with the token passed from the server
 	//get from local storage
 	var idToken = "";
+	var root = location.protocol + '//' + location.host;
 	if(typeof(Storage) !== "undefined") {
-		idToken = localStorage['idToken'];
+		idToken = localStorage[root+'idToken'];
 	}
 	//if user is not logged in; no idToken in LS!
 	if (idToken == "" || idToken == undefined) {

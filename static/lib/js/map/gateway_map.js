@@ -42,7 +42,7 @@
         //marker.data.popup += '<b>Antenna model</b>: ' + (gateway.antenna_model ? gateway.antenna_model : 'Not specified');
 		//marker.data.popup += '<b>System</b>: ULAPPH Cloud Desktop' + '<br>';	
 		marker.data.popup += '<b>Google Map</b>: <a href="https://www.google.com/maps/place/' + gateway.lat + ',' + gateway.lon + '" target=vmap>Show Location Map</a>' + '<br>';	
-		marker.data.popup += '<b>Tracker</b>: <a href="/pwa/tracker/tracker?xuid=' + gateway.username + '&xhost=' + gateway.title  + '" target=tracker>Realtime Tracker</a>' + '<br>';	
+		marker.data.popup += '<b>Tracker</b>: <a href="/pwa/tracker/realtime.html?xuid=' + gateway.username + '&xhost=' + gateway.title  + '" target=tracker>Realtime Tracker</a>' + '<br>';	
 		marker.data.popup += '<b>Activity</b>: ' + (gateway.antenna_model ? gateway.antenna_model : 'Not specified');
 		
         return marker;
