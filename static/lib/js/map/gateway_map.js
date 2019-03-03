@@ -14,7 +14,7 @@
 
         marker.data.icon = get_icon(gateway);
 
-        	marker.data.popup = '<img src="' + gateway.picture + '" alt="Smiley face" height="50" width="50">';
+        	marker.data.popup = '<img src="' + gateway.picture + '" alt="Smiley face" height="50" width="50"><br>';
 		marker.data.popup += '<b>ULAPPH</b>: <a href="' + gateway.title + 'contents?q=home" target=website title=Website>' + gateway.title + '</a><br>';
 
         if (gateway.username) {
@@ -40,8 +40,9 @@
         //marker.data.popup += '<b>Service</b>: ' + (gateway.brand ? gateway.brand : 'Not specified') + '<br>';
         //marker.data.popup += '<b>Product</b>: ' + (gateway.model ? gateway.model : 'Not specified') + '<br>';
         //marker.data.popup += '<b>Antenna model</b>: ' + (gateway.antenna_model ? gateway.antenna_model : 'Not specified');
-		marker.data.popup += '<b>System</b>: ULAPPH Cloud Desktop' + '<br>';	
-		marker.data.popup += '<b>Google Map</b>: <a href="https://www.google.com/maps/place/' + gateway.lat + ',' + gateway.lon + '" target=vmap>View Google Map</a>' + '<br>';	
+		//marker.data.popup += '<b>System</b>: ULAPPH Cloud Desktop' + '<br>';	
+		marker.data.popup += '<b>Google Map</b>: <a href="https://www.google.com/maps/place/' + gateway.lat + ',' + gateway.lon + '" target=vmap>Show Location Map</a>' + '<br>';	
+		marker.data.popup += '<b>Tracker</b>: <a href="/pwa/tracker/tracker?xuid=' + gateway.username + '&xhost=' + gateway.title  + '" target=tracker>Realtime Tracker</a>' + '<br>';	
 		marker.data.popup += '<b>Activity</b>: ' + (gateway.antenna_model ? gateway.antenna_model : 'Not specified');
 		
         return marker;

@@ -396,7 +396,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //REV ID: 		D0077
 //REV DATE: 		2019-Mar-03
-//REV DESC:	  	Realtime cctv alarms channel 
+//REV DESC:	  	Realtime tracker 
 //REV AUTH:		Edwin D. Vinas
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1504,6 +1504,18 @@ type AmlPayload struct {
 
 type AmlImage struct {
 	ImageBytes []byte `json:"imageBytes"`
+}
+//edwinxxx
+//D0077
+//Realtime Location Tracker
+type RealtimeLocation struct {
+	Geometry LocGeometry `json:"geometry"`
+	Type string `json:"type"`
+	Properties []string `json:"properties"`
+}
+type LocGeometry struct {
+	Type string `json:"type"`
+	Coordinates []string `json:"coordinates"`
 }
 
 //D0069
@@ -18265,6 +18277,22 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 				showOverallSites(w,r,FL_IS_BOT)
 				return
 			}
+		//D0077
+		case "tracker":
+			updateUserActiveData(w, r, c, "", "/directory-tracker")
+			IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
+			//if this server is not sites server
+			xhost := r.FormValue("xhost")
+			xuid := r.FormValue("xuid")
+			if IS_SEARCH_SERVER != "Y" {
+				redURL := fmt.Sprintf("%v/directory?DIR_FUNC=tracker&xuid=%v&xhost=%v", getSchemeNewUrl(w,r,SEARCH_SERVER), xuid, xhost)
+				http.Redirect(w, r, redURL, http.StatusFound)
+				return
+			} else {
+				//edwinxxx
+				showUserLocation(w,r,xhost,xuid)
+				return
+			}
 
 		case "people":
 			updateUserActiveData(w, r, c, "", "/directory-people")
@@ -28387,6 +28415,10 @@ func social(w http.ResponseWriter, r *http.Request) {
 				buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v|%v\n", xuid, xhost, xll, getTimestamp(), xpic))
 			}
 			putStrToMemcacheWithoutExp(w,r,cKey,buffer3.String())
+			//edwinxxx
+			//save latest long/lat per host
+			cKeyLL := fmt.Sprintf("%v-tracker", xhost)
+			putStrToMemcacheWithoutExp(w,r,cKeyLL,xll)
 			return
 		//re-broadcast coming from sites server
 		case "proc-broadcast-all":
@@ -54553,19 +54585,45 @@ func showOverallPeople(w http.ResponseWriter, r *http.Request, FL_BOT bool) {
 		}
 		//show cache
 		w.Write([]byte(OVERALL_PEOPLE))
-		
 		if err := showPeopleDirFooter.Execute(w, SYS_ADD_THIS_PUB_ID); err != nil {
 			 panic(err)
 		}
 	} else {
 		fmt.Fprintf(w, "Sorry, no cache available at this time.")
 	}
-	
+}
+//D0077
+//shows user location (site server only) 
+func showUserLocation(w http.ResponseWriter, r *http.Request, xhost, xuid string) {
+	c := appengine.NewContext(r)
+	//edwinxxx
+	cKey := fmt.Sprintf("%v-tracker", xhost)
+	longLat := getStrMemcacheValueByKey(w,r,cKey)
+	SPL := strings.Split(longLat, ",")
+	if len(SPL) > 0 {
+		g := LocGeometry{
+			Type: "Point",
+			Coordinates: []string{SPL[1], SPL[0]},
+		}
+		l := RealtimeLocation{
+			Geometry: g,
+			Type: "Feature",
+			Properties: nil,
+		}
+		data,_ := json.Marshal(l)
+		w.WriteHeader(200)
+		w.Write(data)
+		c.Infof("realtime: %#v", data)
+	} else {
+		w.WriteHeader(500)
+		w.Write([]byte("error"))
+	}
+	return
 }
 
 //shows overall sites 
 func showOverallSites(w http.ResponseWriter, r *http.Request, FL_BOT bool) {
-    c := appengine.NewContext(r)
+	c := appengine.NewContext(r)
 	if FL_BOT == true {
 		//showOverallRobot(w,r)
 		fmt.Fprintf(w, "Robot not allowed!")

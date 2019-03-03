@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ULAPPH Desktops</title>
+	<title>ULAPPH Tracker</title>
 
 	<!-- for mobile screens -->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- pwa manifest -->
-    <link rel="manifest" href="/pwa/desktops/manifest.json?v=1">
+    <link rel="manifest" href="/pwa/tracker/manifest.json?v=1">
 
 	<!-- stylesheets are conveniently separated into components -->
 	<link rel="stylesheet" media="all" href="/lib/css/chat-bubble/setup.css">
@@ -179,14 +179,14 @@ var chatWindow = new Bubbles(document.getElementById("chat"), "chatWindow", {
 var botUrl = window.location.href;
 var convo = {
   ice: {
-    says: ["Hi, I'm ULAPPH Desktops Bot!", 
-    		"<a href=\"" + botUrl + "\" title=\"Click to restart ULAPPH bot!\"><img src=\"/pwa/desktops/desktops.gif\"></a>", 
+    says: ["Hi, I'm ULAPPH tracker Bot!", 
+    		"<a href=\"" + botUrl + "\" title=\"Click to restart ULAPPH bot!\"><img src=\"/pwa/tracker/tracker.gif\"></a>", 
     		"Type any text or click button below."
     	],
 	  reply: [
         {
-            question: "All Desktops",
-            answer: "funcDesktops"
+            question: "Open Tracker",
+            answer: "functracker"
         },
         {
             question: "User Guide",
@@ -226,17 +226,17 @@ var convo = {
     } // end conversation object
 }
 
-funcDesktops = function () {
-    location.href="/tools?FUNC=ALL_DESKTOPS";
+functracker = function () {
+    location.href="/pwa/tracker/realtime.html";
     return;
 }
 
 //auto-redirect after x seconds
-setTimeout(function() {funcDesktops()}, 15000)
+setTimeout(function() {functracker()}, 15000)
   
 // pass JSON to your function and you're done!
 chatWindow.talk(convo)
 </script>
 <!--pwa service worker registration-->
-<script src="/pwa/desktops/main.js"></script>
+<script src="/pwa/tracker/main.js"></script>
 </body>
