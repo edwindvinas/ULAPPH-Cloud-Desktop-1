@@ -43,7 +43,7 @@ realtime.on('update', function(e) {
             realtime.getLayer(fId).getPopup().setContent(popupContent(fId));
         };
 
-    map.fitBounds(realtime.getBounds(), {maxZoom: 3});
+    map.fitBounds(realtime.getBounds(), {maxZoom: 18});
 
     Object.keys(e.enter).forEach(bindFeaturePopup);
     Object.keys(e.update).forEach(updateFeaturePopup);

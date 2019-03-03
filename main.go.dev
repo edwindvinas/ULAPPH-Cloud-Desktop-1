@@ -1510,7 +1510,7 @@ type AmlImage struct {
 type RealtimeLocation struct {
 	Geometry LocGeometry `json:"geometry"`
 	Type string `json:"type"`
-	Properties []string `json:"properties"`
+	Properties string `json:"properties"`
 }
 type LocGeometry struct {
 	Type string `json:"type"`
@@ -54617,7 +54617,7 @@ func showUserLocation(w http.ResponseWriter, r *http.Request, xhost, xuid string
 		l.Geometry.Type = "Point"
 		l.Geometry.Coordinates = []string{longStr, latStr}
 		l.Type = "Feature"
-		l.Properties = nil
+		l.Properties = "" 
 		data,_ := json.Marshal(l)
 		w.WriteHeader(200)
 		w.Write(data)
