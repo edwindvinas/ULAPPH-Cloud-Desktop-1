@@ -54612,15 +54612,11 @@ func showUserLocation(w http.ResponseWriter, r *http.Request, xLongLat, xhost, x
 		}
 	}
 	if longStr != "" && latStr != "" {
-		g := LocGeometry{
-			Type: "Point",
-			Coordinates: []string{longStr, latStr},
-		}
-		l := RealtimeLocation{
-			Geometry: g,
-			Type: "Feature",
-			Properties: nil,
-		}
+		l := RealtimeLocation{}
+		l.Geometry.Type = "Point"
+		l.Geometry.Coordindates = []string{longStr, latStr}
+		l.Type = "Feature"
+		l.Properties = nil
 		data,_ := json.Marshal(l)
 		w.WriteHeader(200)
 		w.Write(data)
