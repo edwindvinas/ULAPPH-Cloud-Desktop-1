@@ -18283,9 +18283,12 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			//if this server is not sites server
 			xhost := r.FormValue("xhost")
 			xuid := r.FormValue("xuid")
+			c.Infof("xhost: %v", xhost)
+			c.Infof("xuid: %v", xuid)
 			if IS_SEARCH_SERVER != "Y" {
 				redURL := fmt.Sprintf("%v/directory?DIR_FUNC=tracker&xuid=%v&xhost=%v", getSchemeNewUrl(w,r,SEARCH_SERVER), xuid, xhost)
 				xLongLat := fetchURL(w,r,redURL)
+				c.Infof("xLongLat: %v", xLongLat)
 				showUserLocation(w,r,xLongLat,xhost,xuid)
 				return
 			} else {
@@ -54595,10 +54598,12 @@ func showOverallPeople(w http.ResponseWriter, r *http.Request, FL_BOT bool) {
 func showUserLocation(w http.ResponseWriter, r *http.Request, xLongLat, xhost, xuid string) {
 	c := appengine.NewContext(r)
 	cKey := fmt.Sprintf("%v-tracker", xhost)
+	c.Infof("cKey: %v", cKey)
 	longStr := ""
 	latStr := ""
 	if xLongLat == "" {
 		longLat := getStrMemcacheValueByKey(w,r,cKey)
+		c.Infof("longLat: %v", longLat)
 		SPL := strings.Split(longLat, ",")
 		if len(SPL) > 0 {
 			longStr = SPL[1]
@@ -54611,19 +54616,23 @@ func showUserLocation(w http.ResponseWriter, r *http.Request, xLongLat, xhost, x
 			latStr = SPL[0]
 		}
 	}
+	c.Infof("longStr: %v", longStr)
+	c.Infof("latStr: %v", latStr)
 	if longStr != "" && latStr != "" {
 		l := RealtimeLocation{}
 		l.Geometry.Type = "Point"
-		l.Geometry.Coordindates = []string{longStr, latStr}
+		l.Geometry.Coordinates = []string{longStr, latStr}
 		l.Type = "Feature"
 		l.Properties = nil
 		data,_ := json.Marshal(l)
 		w.WriteHeader(200)
 		w.Write(data)
-		c.Infof("realtime: %#v", data)
+		c.Infof("realtime: %#v", l)
 	} else {
+		l := RealtimeLocation{}
+		data,_ := json.Marshal(l)
 		w.WriteHeader(500)
-		w.Write([]byte("error"))
+		w.Write(data)
 	}
 	return
 }
