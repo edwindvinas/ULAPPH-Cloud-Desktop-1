@@ -12,6 +12,11 @@ urlParams[decode(match[1])] = decode(match[2]);
 var uid = urlParams["xuid"];
 var host = urlParams["xhost"];
 
+//if no uid/host, redirect to map
+if (uid == "" || host == "" || uid == undefined || host == undefined) {
+    location.href="/pwa/maps/mapper.html";
+}
+
 var map = L.map('map'),
     realtime = L.realtime({
         url: root + '/directory?DIR_FUNC=tracker&xuid=' + uid + '&xhost=' + host + '&xdummy=' + "y" ,

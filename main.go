@@ -53752,7 +53752,7 @@ func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url []str
 		cKey2 = fmt.Sprintf("MY_ULAPPH:%v", uid)
 		//lets check cache if url is saved
 		urls := getStrMemcacheValueByKey(w,r,cKey2)
-		c.Infof("urls: ", urls)
+		c.Infof("urls: %v", urls)
 		if urls != "" {
 			SPL := strings.Split(urls, "@888@")
 			url = SPL
@@ -54491,6 +54491,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+   /*
 	//also add user locs from HOST_LIST2
 	HOST_LIST2 := getHostList2(w,r)
 
@@ -54535,6 +54536,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 		}
     }
 	//cache it first
+    */
 	data,_ := json.Marshal(dks)
 	putBytesToMemcacheWithExp(w,r,cKeyC,data,60)
 	w.Write(data)

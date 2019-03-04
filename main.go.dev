@@ -1516,7 +1516,6 @@ type LocGeometry struct {
 	Type string `json:"type"`
 	Coordinates []string `json:"coordinates"`
 }
-//edwinxxx
 //D0077
 type GotoMyUlapphs  struct {
 	Url string `json:"url"`
@@ -2218,7 +2217,6 @@ var (
 		".timelinejs-rep": parsePresentTemplate2("timelinejs-report.html"),
 		".photo-gallery": parsePresentTemplate2("photo-gallery.html"),
 		//D0077
-		//edwinxxx
 		".goto-ulapph": parsePresentTemplate2("goto-select-myulapph.html"),
 	}
 	contactEmail      = "demo.ulapph@gmail.com"
@@ -7477,18 +7475,14 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 				
 				cKey := fmt.Sprintf("HOST_LIST")
 				putBytesToMemcacheWithoutExp(w,r,cKey,buf.Bytes())
-				
 				//clear autocomp cache
 				cKeyAll := fmt.Sprintf("AUTOCOMP_CACHE_%v", uid)
 				putStrToMemcacheWithoutExp(w,r,cKeyAll,"")
-				
 				fmt.Fprintf(w, "Host List has been set.<br><br>.")
 				fmt.Fprintf(w, "%v", buf.String())
-				
 			case "SET_HOST_LIST2":
 				MEDIA_ID2 := r.FormValue("MEDIA_ID")
 				MEDIA_ID := str2int(MEDIA_ID2)
-						
 				g := TDSCNFG{
 						SYS_VER: 1,
 						USER: uid,
@@ -7507,8 +7501,6 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 				//update cache
 				BLOB_KEY := ""
 				BLOB_KEY, _, _, _, _, _, _, _, _, _, _ = getTDSMEDIABlobKey(w, r, MEDIA_ID)	
-				
- 
 				var buf bytes.Buffer
 				reader := blobstore.NewReader(c, appengine.BlobKey(BLOB_KEY))
 				s := bufio.NewScanner(reader)
@@ -7516,16 +7508,12 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 				for s.Scan() {
 					buf.WriteString(fmt.Sprintf("%v\n", s.Text()))
 				}
-				
 				cKey := fmt.Sprintf("HOST_LIST2")
 				putBytesToMemcacheWithoutExp(w,r,cKey,buf.Bytes())
-				
 				fmt.Fprintf(w, "User to Host List has been set.<br><br>.")
 				fmt.Fprintf(w, "%v", buf.String())
- 
 			case "SET_AS_HOMEPAGE":
 				URL := r.FormValue("URL")
-					
 				g := TDSCNFG{
 						SYS_VER: 1,
 						USER: uid,
@@ -18340,7 +18328,6 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		//D0039
-		//edwinxxx
 		case "GOTO_MY_ULAPPH":
 			//c.Infof("GOTO_MY_ULAPPH...")
 			//D0044
@@ -53754,7 +53741,6 @@ func updateMyULAPPHLoc(w http.ResponseWriter, r *http.Request, uid, latlon strin
 
 //for sites server only
 //gets the ulapph cliud desktop owned by the user
-//edwinxxx
 func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url []string) {
 	//get user
 	c := appengine.NewContext(r)
@@ -53766,6 +53752,7 @@ func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url []str
 		cKey2 = fmt.Sprintf("MY_ULAPPH:%v", uid)
 		//lets check cache if url is saved
 		urls := getStrMemcacheValueByKey(w,r,cKey2)
+		c.Infof("urls: %v", urls)
 		if urls != "" {
 			SPL := strings.Split(urls, "@888@")
 			url = SPL
@@ -53810,7 +53797,7 @@ func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url []str
 		}
     }
 	if FL_FOUND == true {
-		justString := strings.Join(url,"@888@ ")
+		justString := strings.Join(url,"@888@")
 		putStrToMemcacheWithoutExp(w,r,cKey2,justString)
 		return url
 	}
@@ -54504,6 +54491,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+   /*
 	//also add user locs from HOST_LIST2
 	HOST_LIST2 := getHostList2(w,r)
 
@@ -54548,6 +54536,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 		}
     }
 	//cache it first
+    */
 	data,_ := json.Marshal(dks)
 	putBytesToMemcacheWithExp(w,r,cKeyC,data,60)
 	w.Write(data)
@@ -73826,14 +73815,15 @@ func renderStaticTemplates(w http.ResponseWriter, r *http.Request, extName strin
 	
 }
 
-//edwinxxx
 //renders static templates 
 func renderStaticGotoMyUlapphs(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	c.Infof("renderStaticGotoMyUlapphs...")
 	mode := r.FormValue("m")
 	urlArr := getMyULAPPH(w,r,mode)
+	c.Infof("urlArr: %v", urlArr)
 	doc := new(Doc)
 	if len(urlArr) > 0 {
-		//edwinxxx
 		for i := 0; i < len(urlArr); i++ {
 			SPX := strings.Split(urlArr[i], "|")
 			pix := "/img/no-profile.png"
@@ -73847,7 +73837,6 @@ func renderStaticGotoMyUlapphs(w http.ResponseWriter, r *http.Request) {
 			}
 			doc.Ulapphs = append(doc.Ulapphs, g)
 		}
-		//edwinxxx
 	} else {
 		fmt.Fprintf(w, "Apologies, your account is not yet mapped to an ULAPPH server. <a href=\"https://github.com/Accenture/ULAPPH-Cloud-Desktop\">Click here</a> to know how to have your own cloud desktop. If not interested, kindly <a href=\"/logout\">logout</a>.")
 	}
