@@ -62,6 +62,7 @@ function initFirebase() {
     // sign into Firebase with the token passed from the server
 	//get from local storage
 	var root = location.protocol + '//' + location.host;
+    console.log("root: "+root);
 	var idToken = "";
 	if(typeof(Storage) !== "undefined") {
 		idToken = localStorage[root+'idToken'];
@@ -81,11 +82,11 @@ function initFirebase() {
 	var chToken = "";
 	var sss = "";
 	if(typeof(Storage) !== "undefined") {
-		aep = localStorage['aep'];
+		aep = localStorage[root+'aep'];
 		console.log('aep: '+aep);
-		chToken = localStorage['tok'];
+		chToken = localStorage[root+'tok'];
 		console.log('chToken: '+chToken);
-		sss = localStorage['sss'];
+		sss = localStorage[root+'sss'];
 		console.log('sss: '+sss);
 	}
 	var refChan = aep + '/channel/' + chToken;

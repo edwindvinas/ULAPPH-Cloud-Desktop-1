@@ -1,5 +1,5 @@
 //GAE_APP_DOM_ID#ulapph-public-1.appspot.com
-//LAST_UPGRADE#01/20/2019 10:55:59 PM PST
+//LAST_UPGRADE#03/04/2019 12:57:59 PM PST
 //TOTAL_LINES#80740
 //DO NOT REMOVE ABOVE LINE///////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68669,7 +68669,6 @@ func countryChecker(w http.ResponseWriter, r *http.Request) (FL_PROC_OK bool){
 	c := appengine.NewContext(r)
 	h := r.Header
 	//u := user.Current(c)
-	
 	FL_PROC_OK = true
 	if SYS_CHECK_COUNTRY == true {
 	

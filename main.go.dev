@@ -68669,7 +68669,6 @@ func countryChecker(w http.ResponseWriter, r *http.Request) (FL_PROC_OK bool){
 	c := appengine.NewContext(r)
 	h := r.Header
 	//u := user.Current(c)
-	
 	FL_PROC_OK = true
 	if SYS_CHECK_COUNTRY == true {
 	

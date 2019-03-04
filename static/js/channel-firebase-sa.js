@@ -75,8 +75,6 @@ function initFirebase() {
 	}
     firebase.auth().signInWithCustomToken(String(idToken)).catch(function(error) {
       console.log('Login Failed!', error.code);
-      //console.log('Error message: ', error.message);
-	  //onOpen2();
 	  return;
     });
 	console.log('Login successful!');
@@ -84,11 +82,11 @@ function initFirebase() {
 	var chToken = "";
 	var sss = "";
 	if(typeof(Storage) !== "undefined") {
-		aep = localStorage['aep'];
+		aep = localStorage[root+'aep'];
 		console.log('aep: '+aep);
-		chToken = localStorage['tok'];
+		chToken = localStorage[root+'tok'];
 		console.log('chToken: '+chToken);
-		sss = localStorage['sss'];
+		sss = localStorage[root+'sss'];
 		console.log('sss: '+sss);
 	}
 	var refChan = aep + '/channel/' + chToken;
@@ -115,18 +113,7 @@ function initFirebase() {
 	  console.log("Received from: "+pubChan);
 	  onMessage(data.val());
 	});
-	//presenter
-/* 	var presChan = sss + '/channel-public/' + urlParams["PRESENTER_SESSION_KEY"];
-	//console.log("presChan: ", presChan);
-	channelC = firebase.database().ref(presChan);
-	//listener
-	channelC.limitToLast(1).on('child_added', function(data) {
-	  //console.log("child_added");
-	  console.log("Received from: "+presChan);
-	  onMessage(data.val());
-	});	 */
     onOpened();
-    // let the server know that the channel is open
   }
 
   /**

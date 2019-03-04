@@ -64,10 +64,12 @@ function initFirebase() {
     // sign into Firebase with the token passed from the server
 	//get from local storage
 	var root = location.protocol + '//' + location.host;
+    console.log("root: "+root);
 	var idToken = "";
 	if(typeof(Storage) !== "undefined") {
 		idToken = localStorage[root+'idToken'];
 	}
+    console.log("idToken: "+idToken);
 	//if user is not logged in; no idToken in LS!
 	if (idToken == "" || idToken == undefined) {
 		console.log("no token found in ls");
@@ -83,11 +85,11 @@ function initFirebase() {
 	var chToken = "";
 	var sss = "";
 	if(typeof(Storage) !== "undefined") {
-		aep = localStorage['aep'];
+		aep = localStorage[root+'aep'];
 		console.log('aep: '+aep);
-		chToken = localStorage['tok'];
+		chToken = localStorage[root+'tok'];
 		console.log('chToken: '+chToken);
-		sss = localStorage['sss'];
+		sss = localStorage[root+'sss'];
 		console.log('sss: '+sss);
 	}
 	var refChan = aep + '/channel/' + chToken;
@@ -114,20 +116,9 @@ function initFirebase() {
 	  console.log("Received from: "+pubChan);
 	  onMessage(data.val());
 	});
-	//presenter
-/* 	var presChan = sss + '/channel-public/' + urlParams["PRESENTER_SESSION_KEY"];
-	//console.log("presChan: ", presChan);
-	channelC = firebase.database().ref(presChan);
-	//listener
-	channelC.limitToLast(1).on('child_added', function(data) {
-	  //console.log("child_added");
-	  console.log("Received from: "+presChan);
-	  onMessage(data.val());
-	});	 */
     onOpened();
     // let the server know that the channel is open
   }
-
   /**
    * This function opens a communication channel with the server
    * then it adds listeners to all the squares on the board
@@ -135,10 +126,8 @@ function initFirebase() {
    * finally it updates the game state with those values by calling onMessage()
    */
   function initialize() {
-	
 	//lets open channel
     openChannel();
   }
-
   setTimeout(initialize, 100);
 }

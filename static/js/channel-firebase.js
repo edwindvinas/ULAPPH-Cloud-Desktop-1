@@ -9,7 +9,7 @@ function initFirebase() {
   // This is our Firebase realtime DB path that we'll listen to for updates
   // We'll initialize this later in openChannel()
   var channel = null;
-   var channelB = null;
+  var channelB = null;
 
   /**
    * This method lets the server know that the user has opened the channel
@@ -54,15 +54,7 @@ function initFirebase() {
    * finally, it calls onOpened() to let the server know it is ready to receive messages
    */
   function openChannel() {
-	//open channel only on uwm0
-//	var desktop = document.getElementById("desktop");
-//	if (desktop.value == "uwm" || desktop.value == "stream" || desktop.value == "uwm-share") {
-//		//ok channel
-//	} else {
-//		console.log("Invalid desktop value");
-//		return;
-//	}
-	
+	//open channel only on uwm0	
     // sign into Firebase with the token passed from the server
 	var jwt = document.getElementById("jwt");
     var root = location.protocol + '//' + location.host;
@@ -84,12 +76,24 @@ function initFirebase() {
 	var aep = document.getElementById("aep");
 	var sss = document.getElementById("sss");
 	//save to ls
-	if(typeof(Storage) !== "undefined") {
-		localStorage['tok'] = tok.value;
-		localStorage['aep'] = aep.value;
-		localStorage['sss'] = sss.value;
-	}
-	var refChan = aep.value + '/channel/' + tok.value;
+    var tokVal = "";
+    var aepVal = "";
+    var sssVal = "";
+	if(typeof(Storage) !== "undefined" && tok != undefined) {
+        //uwm
+		localStorage[root+'tok'] = tok.value;
+		localStorage[root+'aep'] = aep.value;
+		localStorage[root+'sss'] = sss.value;
+        tokVal = tok.value;
+        aepVal = aep.value;
+        sssVal = sss.value;
+	} else {
+        //apps which uses tokens
+        tokVal = localStorage[root+'tok'];
+        aepVal = localStorage[root+'aep'];
+        sssVal = localStorage[root+'sss'];
+    }
+	var refChan = aepVal + '/channel/' + tokVal;
 	console.log("refChan: ", refChan);
 	channel = firebase.database().ref(refChan);
 	//listener
@@ -103,7 +107,7 @@ function initFirebase() {
       onMessage(data.val());
     });
 	//listener
-	var pubChan = sss.value + '/channel-public/notifications';
+	var pubChan = sssVal + '/channel-public/notifications';
 	//console.log("pubChan: ", pubChan);
 	channelB = firebase.database().ref(pubChan);
 	//listener
@@ -143,13 +147,8 @@ function initFirebase() {
    * finally it updates the game state with those values by calling onMessage()
    */
   function initialize() {
-	
 	//lets open channel
     openChannel();
-	
-	//initial message
-    //onMessage({"user":"guest@gmail.com","message":"Hello!"});
   }
-
   setTimeout(initialize, 100);
 }
