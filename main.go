@@ -1516,6 +1516,12 @@ type LocGeometry struct {
 	Type string `json:"type"`
 	Coordinates []string `json:"coordinates"`
 }
+//D0077
+type GotoMyUlapphs  struct {
+	Url string `json:"url"`
+	Picture string `json:"picture"`
+	UserID string `json:"userid"`
+}
 
 //D0069
 //education modules
@@ -2210,6 +2216,8 @@ var (
 		".timelinejs-gen": parsePresentTemplate2("timelinejs-generator.html"),
 		".timelinejs-rep": parsePresentTemplate2("timelinejs-report.html"),
 		".photo-gallery": parsePresentTemplate2("photo-gallery.html"),
+		//D0077
+		".goto-ulapph": parsePresentTemplate2("goto-select-myulapph.html"),
 	}
 	contactEmail      = "demo.ulapph@gmail.com"
 	gitHubCredentials = ""
@@ -18333,32 +18341,22 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 		case "GOTO_MY_ULAPPH":
 			//c.Infof("GOTO_MY_ULAPPH...")
 			//D0044
-			mode := r.FormValue("m")
-			url := strings.TrimSpace(getMyULAPPH(w,r,mode))
-			if url != "" {
-				redURL := fmt.Sprintf("%v/uwm", url)	
-				http.Redirect(w, r, redURL, http.StatusFound)
-			} else {
-				//c.Infof("Apologies, your account is not yet mapped to an ULAPPH server. Kindly contact demo.ulapph@gmail.com for support.")
-				//fmt.Fprintf(w, "Apologies, your account is not yet mapped to an ULAPPH server. <a href=\"https://ulapph-corporation.appspot.com/media?FUNC_CODE=GET_MEDIA&MEDIA_ID=350&SID=TDSMEDIA-350\">Click here</a> to see pricing of ULAPPH Cloud Desktop. If not interested, kindly <a href=\"/logout\">logout</a>.")
-				fmt.Fprintf(w, "Apologies, your account is not yet mapped to an ULAPPH server. <a href=\"https://github.com/Accenture/ULAPPH-Cloud-Desktop\">Click here</a> to know how to have your own cloud desktop. If not interested, kindly <a href=\"/logout\">logout</a>.")
-				//D0044
-			}
+			renderStaticGotoMyUlapphs(w,r)
 			return
 		//D0044
 		case "FL_ULAPPH_EXISTS":
 			//c.Infof("FL_ULAPPH_EXISTS...")
 			mode := r.FormValue("m")
-			url := strings.TrimSpace(getMyULAPPH(w,r,mode))
+			url := getMyULAPPH(w,r,mode)
 			//fmt.Fprintf(w, url)
-			if url == "" {
+			if len(url) <= 0 {
 				//c.Infof("FL_ULAPPH_EXISTS...NO")
 				w.WriteHeader(400)
 			} else {
 				w.WriteHeader(200)
 				//c.Infof("FL_ULAPPH_EXISTS...YES")
 				//c.Infof("url: %v", url)
-				w.Write([]byte(url))
+				w.Write([]byte("ok"))
 			}
 			return
 	}
@@ -53753,19 +53751,20 @@ func updateMyULAPPHLoc(w http.ResponseWriter, r *http.Request, uid, latlon strin
 
 //for sites server only
 //gets the ulapph cliud desktop owned by the user
-func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url string) {
+func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url []string) {
 	//get user
 	c := appengine.NewContext(r)
 	u := user.Current(c)
-	
 	uid := ""
 	cKey2 := ""
 	if u != nil {
 		uid = u.Email
 		cKey2 = fmt.Sprintf("MY_ULAPPH:%v", uid)
 		//lets check cache if url is saved
-		url = getStrMemcacheValueByKey(w,r,cKey2)
-		if url != "" {
+		urls := getStrMemcacheValueByKey(w,r,cKey2)
+		if urls != "" {
+			SPL := strings.Split(urls, "@888@")
+			url = SPL
 			return url
 		}
 	} else {
@@ -53773,24 +53772,19 @@ func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url strin
 		if mode == "" {
 			loginGoogle(w,r,r.URL.String())
 		}
-		
 	}
-	
 	//parse host list
 	cKey := fmt.Sprintf("HOST_LIST2")
 	HOST_LIST2 := ""
 	if item, err := memcache.Get(c, cKey); err == memcache.ErrCacheMiss {
- 
 	} else if err != nil {
 		//c.Errorf("error getting item: %v", err)
 	} else {
- 
 		HOST_LIST2 = fmt.Sprintf("%s", item.Value)
 	}
 	if HOST_LIST2 == "" {
 		HOST_LIST2 = getHostList2(w,r)
 	}
-	
 	FL_FOUND := false
     scanner := bufio.NewScanner(strings.NewReader(HOST_LIST2))
     for scanner.Scan() {
@@ -53798,26 +53792,25 @@ func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url strin
 			//demo.ulapph@gmail.com|https://ulapph-installer.appspot.com
 			SPL := strings.Split(scanner.Text(), "|")
 			if len(SPL) >= 2 {
-				tURL := SPL[1]
+				//tURL := SPL[1]
 				tKey := SPL[0]
 				if tKey == uid {
 					//ok found you
-					url = tURL
+					//url = append(url, tURL)
+					url = append(url, strings.TrimSpace(scanner.Text()))
 					FL_FOUND = true
 					//c.Infof("url: %v", url)
 					//lets store this to memory
-					putStrToMemcacheWithoutExp(w,r,cKey2,url)
-					break
 				}
 			}
- 
 		}
     }
 	if FL_FOUND == true {
+		justString := strings.Join(url,"@888@ ")
+		putStrToMemcacheWithoutExp(w,r,cKey2,justString)
 		return url
 	}
-	return ""
-	
+	return nil 
 }
 //for sites server only
 //gets the user to owned ulapph cloud desktop mapping
@@ -73830,16 +73823,66 @@ func renderStaticTemplates(w http.ResponseWriter, r *http.Request, extName strin
 }
 
 //renders static templates 
+func renderStaticGotoMyUlapphs(w http.ResponseWriter, r *http.Request) {
+	mode := r.FormValue("m")
+	urlArr := getMyULAPPH(w,r,mode)
+	doc := new(Doc)
+	if len(urlArr) > 0 {
+		for i := 0; i < len(urlArr); i++ {
+			SPX := strings.Split(urlArr[i], "|")
+			pix := "/img/no-profile.png"
+			if len(SPX) == 5 {
+				pix = SPX[4]
+			}
+			g := GotoMyUlapphs {
+				Picture: pix,
+				UserID: SPX[0],
+				Url: SPX[1],
+			}
+			doc.Ulapphs = append(doc.Ulapphs, g)
+		}
+	} else {
+		fmt.Fprintf(w, "Apologies, your account is not yet mapped to an ULAPPH server. <a href=\"https://github.com/Accenture/ULAPPH-Cloud-Desktop\">Click here</a> to know how to have your own cloud desktop. If not interested, kindly <a href=\"/logout\">logout</a>.")
+	}
+	//parse template
+        t := presentTemplates[path.Ext(".goto-ulapph")]
+        if t == nil {
+                panic(t)
+        }
+        data := struct {
+                *Doc
+                Template    *template.Template
+        }{
+                doc,
+                t,
+        }
+        //t.Execute(w, &data)
+        buf := &bytes.Buffer{}
+        err := t.Execute(buf, &data)
+        if err != nil {
+                // Send back error message, for example:
+                msgDtl := url.QueryEscape(fmt.Sprintf("[U00187] Template error: %v", err))
+                msgTyp := "error"
+                action := "U00187"
+                sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, "", action)
+                http.Redirect(w, r, sysReq, http.StatusFound)
+                return
+        } else {
+                // No error, send the content, HTTP 200 response status implied
+                buf.WriteTo(w)
+        }
+}
+
+//renders static templates 
 func renderStaticWithTEMPSTRUCT2(w http.ResponseWriter, r *http.Request, doc *TEMPSTRUCT2, extName string) {
 	t := presentTemplates[path.Ext(extName)]
 	if t == nil {
 		panic(t)
 	}
- 
 	data := struct {
 		*TEMPSTRUCT2
 		Template    *template.Template
-	}{	
+	}{
 		doc,
 		t,
 	}
@@ -75919,6 +75962,8 @@ type Doc struct {
 	Time     time.Time
 	Authors  []Author
 	Sections []Section
+	//D0077
+	Ulapphs []GotoMyUlapphs
 	Tags     []string
 	Images	 []string
 	//IsMobile bool
