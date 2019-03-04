@@ -7475,18 +7475,14 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 				
 				cKey := fmt.Sprintf("HOST_LIST")
 				putBytesToMemcacheWithoutExp(w,r,cKey,buf.Bytes())
-				
 				//clear autocomp cache
 				cKeyAll := fmt.Sprintf("AUTOCOMP_CACHE_%v", uid)
 				putStrToMemcacheWithoutExp(w,r,cKeyAll,"")
-				
 				fmt.Fprintf(w, "Host List has been set.<br><br>.")
 				fmt.Fprintf(w, "%v", buf.String())
-				
 			case "SET_HOST_LIST2":
 				MEDIA_ID2 := r.FormValue("MEDIA_ID")
 				MEDIA_ID := str2int(MEDIA_ID2)
-						
 				g := TDSCNFG{
 						SYS_VER: 1,
 						USER: uid,
@@ -7505,8 +7501,6 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 				//update cache
 				BLOB_KEY := ""
 				BLOB_KEY, _, _, _, _, _, _, _, _, _, _ = getTDSMEDIABlobKey(w, r, MEDIA_ID)	
-				
- 
 				var buf bytes.Buffer
 				reader := blobstore.NewReader(c, appengine.BlobKey(BLOB_KEY))
 				s := bufio.NewScanner(reader)
@@ -7514,16 +7508,12 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 				for s.Scan() {
 					buf.WriteString(fmt.Sprintf("%v\n", s.Text()))
 				}
-				
 				cKey := fmt.Sprintf("HOST_LIST2")
 				putBytesToMemcacheWithoutExp(w,r,cKey,buf.Bytes())
-				
 				fmt.Fprintf(w, "User to Host List has been set.<br><br>.")
 				fmt.Fprintf(w, "%v", buf.String())
- 
 			case "SET_AS_HOMEPAGE":
 				URL := r.FormValue("URL")
-					
 				g := TDSCNFG{
 						SYS_VER: 1,
 						USER: uid,
@@ -53762,6 +53752,7 @@ func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url []str
 		cKey2 = fmt.Sprintf("MY_ULAPPH:%v", uid)
 		//lets check cache if url is saved
 		urls := getStrMemcacheValueByKey(w,r,cKey2)
+		c.Infof("urls: ", urls)
 		if urls != "" {
 			SPL := strings.Split(urls, "@888@")
 			url = SPL
@@ -53806,7 +53797,7 @@ func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url []str
 		}
     }
 	if FL_FOUND == true {
-		justString := strings.Join(url,"@888@ ")
+		justString := strings.Join(url,"@888@")
 		putStrToMemcacheWithoutExp(w,r,cKey2,justString)
 		return url
 	}
@@ -73824,8 +73815,11 @@ func renderStaticTemplates(w http.ResponseWriter, r *http.Request, extName strin
 
 //renders static templates 
 func renderStaticGotoMyUlapphs(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	c.Infof("renderStaticGotoMyUlapphs...")
 	mode := r.FormValue("m")
 	urlArr := getMyULAPPH(w,r,mode)
+	c.Infof("urlArr: %v", urlArr)
 	doc := new(Doc)
 	if len(urlArr) > 0 {
 		for i := 0; i < len(urlArr); i++ {
