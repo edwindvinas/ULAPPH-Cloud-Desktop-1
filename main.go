@@ -55452,10 +55452,11 @@ func queueAutoMLProc(w http.ResponseWriter, r *http.Request) {
 				c.Infof("jqVal: %v", jqVal)
 				if jqVal == "cctvKitchenPersonDetected" {
 					//person was detected
-					CAPTION := fmt.Sprintf("Intruder detected in the %v", TITLE)
+					CAPTION := fmt.Sprintf("Person detected in the %v", TITLE)
 					MESSAGE := fmt.Sprintf("<a href=\"#\" onclick=\"openWindow('%v','Previous'); return false\"><img src=\"%v\" width=\"100\" height=\"100\"></a><br>", IMG, IMG)
 					data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_ALARM@888@%v@888@%v", CAPTION, MESSAGE)
 					sendChannelMessage(w,r,UID,data)
+					sendChannelMessage(w,r,"cctv",data)
 					c.Infof("Channel sent to: %v", UID)
 				}
 
