@@ -20,7 +20,7 @@ function initFirebase() {
   // We'll initialize this later in openChannel()
   var channel = null;
   var channelB = null;
-  //var channelC = null;
+  var channelC = null;
 
   /**
    * This method lets the server know that the user has opened the channel
@@ -111,6 +111,16 @@ function initFirebase() {
 	channelB.limitToLast(1).on('child_added', function(data) {
 	  console.log("child_added");
 	  console.log("Received from: "+pubChan);
+	  onMessage(data.val());
+	});
+	//listener
+	var cctvChan = sss + '/' + aep + '/cctv';
+	console.log("cctvChan: ", cctvChan);
+	channelC = firebase.database().ref(cctvChan);
+	//listener
+	channelC.limitToLast(1).on('child_added', function(data) {
+	  console.log("child_added");
+	  console.log("Received from: "+cctvChan);
 	  onMessage(data.val());
 	});
     onOpened();

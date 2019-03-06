@@ -5299,6 +5299,20 @@ func sendChannelMessage(w http.ResponseWriter, r *http.Request, recID string, ms
 	data,_ := json.Marshal(g)
 	topic := ""
 	switch {
+	//D0077
+	case recID == "cctv":
+		IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
+		if IS_SEARCH_SERVER == "Y" {
+			SEARCH_SERVER = domRefMatchS
+		}
+		SSH := strings.Split(SEARCH_SERVER, ".")
+		if len(SSH) > 0 {
+			SSI := strings.Split(SSH[0], "//")
+			if len(SSI) > 0 {
+				SSS := SSI[1]
+				topic = fmt.Sprintf("%v/%v/%v", SSS, SYS_SERVER_NAME, "cctv")
+			}
+		}
 	case recID == "public":
 		IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
 		if IS_SEARCH_SERVER == "Y" {
@@ -18167,12 +18181,31 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 					alStat = "OFF"
 					} 
 					w.Write([]byte(fmt.Sprintf("Alarm has been set to <b>%v</b>!", alStat)))
+					//also save data in DS
+					g := TDSCNFG{
+							SYS_VER: 1,
+							USER: uid,
+							CFG_ID: cKey,
+							DAT_TYP: "TXT",
+							NUM_VAL: 0,
+							TXT_VAL: alarmStatus,
+							CFG_DESC: "Set via code",
+					}
+					ckey := datastore.NewKey(c, "TDSCNFG", cKey, 0, nil)
+					if _, err := datastore.Put(c, ckey, &g); err != nil {
+							panic(err)
+					}
 					return;
 				} else {
 					//D0074
 					cKey := fmt.Sprintf("CCTV_AUTODETECTION_FLAG_%v", SYS_SERVER_NAME)
 					c.Infof("cKey: %v", cKey)
 					cctv_status := getStrMemcacheValueByKey(w,r,cKey)
+					if (cctv_status == "") {
+						//get status in DS
+						//edwinxxx
+						cctv_status, _ = getTDSCNFG(w,r,0,cKey)
+					}
 					if strings.TrimSpace(cctv_status) == "Y" {
 						//automl is ON
 						butText := fmt.Sprintf("<label class=\"switch\"><input type=\"checkbox\" checked onclick=\"alarmSet('N');\"><div class=\"slider round\"></div>")

@@ -5,15 +5,25 @@ shutter.src = navigator.userAgent.match(/Firefox/) ? '/audio/shutter.ogg' : '/au
 
 function loadSettings() {
 	var sid = localStorage["mirror-sid"];
+	if (sid !== undefined) {
 	document.getElementById("sid").value = sid;
+	}
 	var title = localStorage["mirror-title"];
+	if (title !== undefined) {
 	document.getElementById("title").value = title;
+	}
 	var uwm = localStorage["mirror-uwm"];
+	if (uwm !== undefined) {
 	document.getElementById("uwm").value = uwm;
+	}
 	var fcap = localStorage["mirror-fcap"];
-	document.getElementById("fixedcap").value = fcap;
+	if (fcap === true ) {
+	document.getElemedntById("fixedcap").checked = true;
+	}
 	var autoML = localStorage["mirror-autoDetection"];
-	document.getElementById("autoDetection").value = autoML;
+	if (autoML === true ) {
+	document.getElementById("autoDetection").checked = true;
+	}
 }
 
 function saveSettings() {

@@ -38,8 +38,9 @@ realtime.on('update', function(e) {
         popupContent = function(fId) {
             var feature = e.features[fId],
                 c = feature.geometry.coordinates;
-            return 'Wander drone at ' +
-                coordPart(c[1], 'NS') + ', ' + coordPart(c[0], 'EW');
+	    var cdt = new Date().toLocaleDateString();
+            return '<b>' + uid + '</b>' + '<br>' +
+                coordPart(c[1], 'NS') + ', ' + coordPart(c[0], 'EW') + '<br>' + cdt;
         },
         bindFeaturePopup = function(fId) {
             realtime.getLayer(fId).bindPopup(popupContent(fId));
