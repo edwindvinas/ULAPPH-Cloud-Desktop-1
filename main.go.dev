@@ -895,7 +895,7 @@ const (
 	//AutoML service account json
     AUTOML_SERVER_JSON = ``
 	//AutoML prediction
-    AUTOML_PREDICT_URL = `https://automl.googleapis.com/v1beta1/projects/edwin-daen-vinas/locations/us-central1/models/ICN2458485739611490668:predict`
+    AUTOML_PREDICT_URL = `https://automl.googleapis.com/v1beta1/projects/edwin-daen-vinas/locations/us-central1/models/ICN5145288799912113722:predict`
 	//D0033
 	//MyDrives
 	//Google Drive
@@ -18201,9 +18201,8 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 					cKey := fmt.Sprintf("CCTV_AUTODETECTION_FLAG_%v", SYS_SERVER_NAME)
 					c.Infof("cKey: %v", cKey)
 					cctv_status := getStrMemcacheValueByKey(w,r,cKey)
-					if (cctv_status == "") {
+					if (strings.TrimSpace(cctv_status) == "") {
 						//get status in DS
-						//edwinxxx
 						cctv_status, _ = getTDSCNFG(w,r,0,cKey)
 					}
 					if strings.TrimSpace(cctv_status) == "Y" {
@@ -55664,37 +55663,14 @@ func struwmPreviousImageCompare(w http.ResponseWriter, r *http.Request, uid, STR
 		cKey := fmt.Sprintf("CCTV_AUTODETECTION_FLAG_%v", SYS_SERVER_NAME)
 		c.Infof("cKey: %v", cKey)
 		cctv_status := getStrMemcacheValueByKey(w,r,cKey)
+		if (strings.TrimSpace(cctv_status) == "") {
+			//get status in DS
+			cctv_status, _ = getTDSCNFG(w,r,0,cKey)
+		}
 		if strings.TrimSpace(cctv_status) == "Y" {
 		//D0076
 		//send image to AutoML
 		laterAutoML.Call(c, "CCTV", "cctvKitchenPersonDetected", uid, TITLE, STRUWM, SRC)
-		/*UID := ""
-		if _, err := strconv.Atoi(STRUWM); err != nil {
-			UID = uid
-		} else {
-			UID = fmt.Sprintf("%v---%v", uid, STRUWM)
-		}
-		//send in UWM
-		CAPTION := fmt.Sprintf("Warning, intruder alert in the %v!", TITLE)
-		MESSAGE := fmt.Sprintf("<a href=\"#\" onclick=\"openWindow('%v','Previous'); return false\"><img src=\"%v\" width=\"100\" height=\"100\"></a><br>P[%v]", prevURL, prevURL,distance)
-		data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_ALARM@888@%v@888@%v", CAPTION, MESSAGE)
-		sendChannelMessage(w,r,UID,data)
-		//also send in the main desktop
-		sendChannelMessage(w,r,uid,data)
-
-		MESSAGE2 := fmt.Sprintf("<a href=\"#\" onclick=\"openWindow('%v','Current'); return false\"><img src=\"%v\" width=\"100\" height=\"100\"></a><br>C[%v]", SRC, SRC,distance)
-		data = fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_ALARM@888@%v@888@%v", CAPTION, MESSAGE2)
-		sendChannelMessage(w,r,UID,data)
-		//also send in the main desktop
-		sendChannelMessage(w,r,uid,data)
-		dummyCmd(w,r,uid)
-		//also send an email
-		subj := fmt.Sprintf("[CCTV][%v][%v][distance diff of %v]", CATEGORY, TITLE, distance)
-		msgDtl3 := fmt.Sprintf("[%v]>>> %v <br>%v<br>%v",CAPTION, subj, MESSAGE, MESSAGE2)
-		FL_INTRUDER_NOTIFY := false
-		if FL_INTRUDER_NOTIFY == true {
-			laterNotifyGB.Call(c, "autoNotifyPeopleGB", uid, msgDtl3, ADMMAIL)
-		}*/
 		}
 	}
 	return FL_INTRUDER
