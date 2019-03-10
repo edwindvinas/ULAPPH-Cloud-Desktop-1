@@ -399,6 +399,11 @@
 //REV DESC:	  	Realtime tracker 
 //REV AUTH:		Edwin D. Vinas
 /////////////////////////////////////////////////////////////////////////////////////////////////
+//REV ID: 		D0078
+//REV DATE: 		2019-Mar-09
+//REV DESC:	  	NewsAPI integration 
+//REV AUTH:		Edwin D. Vinas
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------
 //List of firebase channels
@@ -835,6 +840,9 @@ const (
     CMD_API_KEY = ``
 	//Generic API Key
     CMD_GEN_KEY = ``
+	//D0078
+	//News API key
+    NEWSAPI_API_KEY = ``
 	//paypal	
     PAYPAL_PREMIUM_COST = ``
     PAYPAL_CURRENCY = ``
@@ -1522,7 +1530,17 @@ type GotoMyUlapphs  struct {
 	Picture string `json:"picture"`
 	UserID string `json:"userid"`
 }
-
+//D0078
+type NewsApiSources  struct {
+	Status string `json:"status"`
+	Sources []NewsSources `json:"sources"`
+}
+type NewsSources  struct {
+	ID string `json:"id"`
+	Name string `json:"name"`
+	Description string `json:"description"`
+	Country string `json:"country"`
+}
 //D0069
 //education modules
 type StudentRecord struct {
@@ -1810,6 +1828,7 @@ var isSearchEngineAllowed = map[string]bool{"US.?.?":true,"CN.?.?":true,"RU.?.?"
 var isCountryAllowed = map[string]bool{}
 //List of disallowed countries
 var isCountryNotAllowed = map[string]bool{"RU":false,}
+//D0078
 //List of countries
 var xCountry2Name = map[string]string{
 "AF":"Afghanistan",
@@ -2218,6 +2237,8 @@ var (
 		".photo-gallery": parsePresentTemplate2("photo-gallery.html"),
 		//D0077
 		".goto-ulapph": parsePresentTemplate2("goto-select-myulapph.html"),
+		//D0078
+		".news-sources": parsePresentTemplate2("newsapi-sources.html"),
 	}
 	contactEmail      = "demo.ulapph@gmail.com"
 	gitHubCredentials = ""
@@ -6512,50 +6533,32 @@ func contactUs(w http.ResponseWriter, r *http.Request) {
 			}
    }
 }
- 
 func login(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	u := user.Current(c)
-	
-	
-	
-	
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	//when /login
 	//updateUserActiveData(w, r, c, "", "/login")
-	
 	f := r.FormValue("f")
 	if f == "presence" && u != nil {
-		
 		if err := htmlHeaderModalRefreshNoHome.Execute(w, ""); err != nil {
 		 panic(err)
 		}
-		
 		//if u != nil {
-			
 			displayMOTD(w,r,"")
-		
 		//}
-		
 		//if u != nil {
-		
 			displayBasicCharts(w,r,false)
-	
 			displayCurrAccLog(w,r)
-		
 		//}
-		
 		if err := htmlFooterModal.Execute(w, ""); err != nil {
 		  panic(err)
 		}
-		
 		return
 	}
-	
 	lref := r.FormValue("continue")
 	//check if logged in already
 	if u != nil {
-			
 		if lref != "" {
 			//append username
 			i := strings.Index(lref, "?")
@@ -6569,43 +6572,22 @@ func login(w http.ResponseWriter, r *http.Request) {
 		} else {
 			FUNC_CODE := "GET_GRP_ID"
 			FL_VALID_USER, _, _  , _ := usersProcessor(w, r, "au", u.Email, FUNC_CODE)
-			
-			if FL_VALID_USER == true {		
-				//http.Redirect(w, r, "/uwm", http.StatusFound)
+			if FL_VALID_USER == true {
 				http.Redirect(w, r, "/?q=login&LFUNC=ULAPPH", http.StatusFound)
-				return	
-			}		
+				return
+			}
 		}
 	}
-	
-	//uReferer := strings.Replace(r.URL.String(), "&", "@888@", -1)
-	//TARGET_URL := uReferer
-	//
-	//rLoad := fmt.Sprintf("300;url=/?q=login&LFUNC=GOOGLE&TARGET_URL=%v", TARGET_URL)
-	//if err := htmlHeaderModalRefreshNoHome.Execute(w, rLoad); err != nil {
-	// panic(err)
-	//}
-	//
-	//displayOauthIcons(w,r,TARGET_URL,lref)
-	//
-	//if err := htmlFooterModal.Execute(w, ""); err != nil {
-	//  panic(err)
-	//}
 	loginGoogle(w,r,r.URL.String())
-	
 	return
-			
 }
- 
 func displayBasicCharts(w http.ResponseWriter, r *http.Request, isWidget bool) {
 //func displayBasicCharts(w io.Writer, r *http.Request, isWidget bool) {
-	
 	if isWidget == true {
 		if err := htmlHeaderModalRefreshNoHome.Execute(w, 3600); err != nil {
 		 panic(err)
 		}
 	}
-	
 	target := fmt.Sprintf("OVERALL_HITS_IND_%v", SYS_SERVER_NAME)
 	data := getBytMemcacheValueByKey(w,r,target)
 	divs := ""
@@ -6683,11 +6665,9 @@ func displayOauthIcons(w http.ResponseWriter, r *http.Request, TARGET_URL, lref 
 //Executes content as template
 func ulapphGo(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	
 	m := r.FormValue("m")
 	s := r.FormValue("s")
 	a := r.FormValue("a")
-	
 	switch {
 		case m != "":
 			cKey := fmt.Sprintf("GO_TEMPLATE_TDSMEDIA-%v", m)
@@ -6702,7 +6682,7 @@ func ulapphGo(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				//fmt.Fprintf(w, "%v", err)
 				c.Errorf("%v", err)
-			}			
+			}
 		case a != "":
 			cKey := fmt.Sprintf("GO_TEMPLATE_TDSARTL-%v", a)
 			err := renderCustomTemplates(w,r,"gotId",cKey,"",a)
@@ -28327,7 +28307,6 @@ func ulapphComments(w http.ResponseWriter, r *http.Request) {
 			return
 	}
 }
-
 //handles /social handler 
 func social(w http.ResponseWriter, r *http.Request) {
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
@@ -28335,11 +28314,73 @@ func social(w http.ResponseWriter, r *http.Request) {
 	u := user.Current(c)
 	//h := r.Header
 	SO_FUNC := r.FormValue("SO_FUNC")
- 
 	_, uid := checkSession(w,r)
-	
 	switch SO_FUNC {
- 
+		case "NEWSAPI":
+			//D0078
+			c.Infof("NEWSAPI...")
+			url := r.FormValue("url")
+			if url == "" {
+				h := r.Header
+				country := h.Get("X-AppEngine-Country")
+				url = fmt.Sprintf("https://newsapi.org/v2/top-headlines?country=%v", strings.ToLower(country))
+			}
+			c.Infof("url: %v", url)
+			apiKey := NEWSAPI_API_KEY 
+			turl := fmt.Sprintf("%v", url)
+			req, _ := http.NewRequest("GET", turl, nil)
+			req.Header.Set("Authorization", "Bearer "+apiKey)
+			client := urlfetch.Client(c)
+			res, err := client.Do(req)
+			if err != nil {
+				c.Errorf("err: %v", err)
+				return
+			}
+			bodyBytes, _ := ioutil.ReadAll(res.Body)
+			if res.StatusCode == 200 {
+				c.Infof("bodyBytes: %v", string(bodyBytes))
+				w.WriteHeader(200)
+				w.Write(bodyBytes)
+			} else {
+				w.WriteHeader(400)
+			}
+			return
+		case "NEWSAPI-SOURCES":
+			//D0078
+			c.Infof("NEWSAPI-SOURCES...")
+			url := r.FormValue("url")
+			c.Infof("url: %v", url)
+			apiKey := NEWSAPI_API_KEY 
+			turl := fmt.Sprintf("%v", url)
+			req, _ := http.NewRequest("GET", turl, nil)
+			req.Header.Set("Authorization", "Bearer "+apiKey)
+			client := urlfetch.Client(c)
+			res, err := client.Do(req)
+			if err != nil {
+				c.Errorf("err: %v", err)
+				return
+			}
+			bodyBytes, _ := ioutil.ReadAll(res.Body)
+			if res.StatusCode == 200 {
+				//c.Infof("bodyBytes: %v", string(bodyBytes))
+				w.WriteHeader(200)
+				renderStaticNewsSources(w,r,bodyBytes)
+			} else {
+				w.WriteHeader(400)
+			}
+			return
+		case "NEWSAPI-COUNTRIES":
+			//D0078
+			c.Infof("NEWSAPI-COUNTRIES...")
+			w.WriteHeader(200)
+			var buffer3 bytes.Buffer
+			for k, v := range xCountry2Name{
+				ctry := k
+				cname := v
+				buffer3.WriteString(fmt.Sprintf("[ <a href=\"#\" onclick=\"setCountry('%v');return false;\"><b>%v</b></a> ]", strings.ToLower(ctry), cname))
+			}
+			w.Write(buffer3.Bytes())
+			return
 		case "AUTO-LIKE":
 			checkReferrer(w,r)
 			//when user finishes all slides
@@ -29071,33 +29112,25 @@ func social(w http.ResponseWriter, r *http.Request) {
 			return
 		
 	}
-	
-	
 	checkReferrer(w,r)
 	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
 	SID := r.FormValue("SID")
 	//docID := str2int(DOC_ID)
 	r.ParseForm()
-	
 	if SID == "" {
 		return
 	}
-	
 	if SO_FUNC == "" {
 		//SO_FUNC = "SO_VIEW"
 		return
 	}
- 
 	switch SO_FUNC {
-		
 		case "QRGEN":
 			QRDAT := r.FormValue("QRDAT")
 			QR_GET_URL  := fmt.Sprintf("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=%v&choe=UTF-8", QRDAT)
 			http.Redirect(w, r, QR_GET_URL, http.StatusFound)
 			return
- 
 		case "DELETE":
- 
 			MID := r.FormValue("MID")
 			//_, uid := checkSession(w,r)
 			if uid != FDBKMAIL {
@@ -40406,7 +40439,16 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.Write([]byte("Sorry, I didn't get that."))
-		//w.Write([]byte("<ul>"))
+		//send email to admin about unknown intent 
+		geoStr := getGeoString(w,r)
+		geoAcc := getAccessString(w,r,"")
+		subject := fmt.Sprintf("[ULAPPH] Unknown intent [%v] [%v] [%v]", uid, geoStr, geoAcc)
+		MESSAGE := fmt.Sprintf("New uknown intent: %v", inpStr)
+		t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-generic-send-email", map[string][]string{"SUBJECT": {subject}, "TO": {ADMMAIL}, "FROM": {uid}, "MESSAGE": {MESSAGE}})
+		if _, err = taskqueue.Add(c, t, ""); err != nil {
+			 panic(err)
+			//return
+		}
 		//check the ProseData
 		var buf bytes.Buffer
 		tctr := 0
@@ -72963,7 +73005,6 @@ func parseCustomTemplatePres(tempt string) *template.Template {
 	}
 	t = t.Lookup("root")
 	if t == nil {
-		//panic("root template not found for custom")
 		return nil
 	}
 	return t
@@ -72972,7 +73013,6 @@ func parseCustomTemplatePres(tempt string) *template.Template {
 //renders a custom template
 func renderCustomTemplates(w http.ResponseWriter, r *http.Request, mode, cKey, text, mid string) error {
 	c := appengine.NewContext(r)
-	
 	//c.Infof("renderCustomTemplates")
 	tempt := ""
 	switch {
@@ -72982,28 +73022,22 @@ func renderCustomTemplates(w http.ResponseWriter, r *http.Request, mode, cKey, t
 			BLOB_KEY := contentCheckSid(w,r,sid)
 			//c.Infof("BLOB_KEY: %v", BLOB_KEY)
 			tempt = getBlobText(w, r, BLOB_KEY)
-			
 		default:
 			c.Errorf("invalid mode")
-			return errors.New("template error: mode error")		
-	}	
-	
+			return errors.New("template error: mode error")
+	}
 	if tempt == "" {
 		c.Errorf("blob error")
 		return errors.New("template error: blob empty")
 	}
-	
 	t := Template()
 	//c.Infof("parseCustomTemplateReg...")
 	t = parseCustomTemplateReg(tempt)
-	
 	if t == nil {
 		c.Errorf("template error")
 		return errors.New("template error: parse error")
 	}
-	
 	var doc *Doc
-	
 	data := struct {
 		*Doc
 		Template    *template.Template
@@ -73029,7 +73063,6 @@ func renderCustomTemplates(w http.ResponseWriter, r *http.Request, mode, cKey, t
 		buf.WriteTo(w)
 	}
 	return err
-	
 }
 
 //parses regular templates 
@@ -73800,10 +73833,9 @@ func renderStaticTemplates(w http.ResponseWriter, r *http.Request, extName strin
 
 	doc := new(TEMPSTRUCT)	
 	data := struct {
-		
 		*TEMPSTRUCT
 		Template    *template.Template
-	}{	
+	}{
 		doc,
 		t,
 	}
@@ -73822,7 +73854,59 @@ func renderStaticTemplates(w http.ResponseWriter, r *http.Request, extName strin
 		// No error, send the content, HTTP 200 response status implied
 		buf.WriteTo(w)
 	}
-	
+}
+//D0078
+//renders static templates 
+func renderStaticNewsSources(w http.ResponseWriter, r *http.Request, sources []byte) {
+	c := appengine.NewContext(r)
+	c.Infof("renderStaticNewsSources...")
+	ns := new(NewsApiSources)
+	err := json.Unmarshal(sources,ns)
+	if err != nil {
+		c.Errorf("ns: %v", ns)
+		return
+	}
+	doc := new(Doc)
+	if len(ns.Sources) > 0 {
+		for i := 0; i < len(ns.Sources); i++ {
+			g := GotoMyUlapphs {
+				Picture: ns.Sources[i].Country,
+				UserID: ns.Sources[i].Name,
+				Url: ns.Sources[i].ID,
+			}
+			doc.Ulapphs = append(doc.Ulapphs, g)
+		}
+	} else {
+		fmt.Fprintf(w, "Apologies, no sources found!")
+		return
+	}
+	//parse template
+        t := presentTemplates[path.Ext(".news-sources")]
+        if t == nil {
+                panic(t)
+        }
+        data := struct {
+                *Doc
+                Template    *template.Template
+        }{
+                doc,
+                t,
+        }
+        //t.Execute(w, &data)
+        buf := &bytes.Buffer{}
+        err = t.Execute(buf, &data)
+        if err != nil {
+                // Send back error message, for example:
+                msgDtl := url.QueryEscape(fmt.Sprintf("[U00187] Template error: %v", err))
+                msgTyp := "error"
+                action := "U00187"
+                sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, "", action)
+                http.Redirect(w, r, sysReq, http.StatusFound)
+                return
+        } else {
+                // No error, send the content, HTTP 200 response status implied
+                buf.WriteTo(w)
+        }
 }
 
 //renders static templates 
@@ -79237,7 +79321,7 @@ func getGaeLatLon(w http.ResponseWriter, r *http.Request) string {
 //tracks the GPS locations
 func ulapphGPS(w http.ResponseWriter, r *http.Request) {
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	//_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 	GPS_FUNC := r.FormValue("GPS_FUNC")
 	switch GPS_FUNC {
 		//case "GET_DP":

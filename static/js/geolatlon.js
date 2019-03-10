@@ -1,4 +1,4 @@
-setInterval( function(){geoloc();}, 15000);
+setInterval( function(){geoloc();}, 10000);
 var isActive = true;
 
 //check if current window/tab on focus

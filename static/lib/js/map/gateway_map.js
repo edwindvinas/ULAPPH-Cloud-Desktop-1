@@ -56,7 +56,10 @@
         for (var i = 0; i < list_gateway.length; i++) {
             if (window._target_gateway == list_gateway[i].pk) {
                 window._data_gateway.map.setZoom(12);
-                window._data_gateway.map.panTo(new L.LatLng(list_gateway[i].lat, list_gateway[i].lon));
+                //window._data_gateway.map.panTo(new L.LatLng(list_gateway[i].lat, list_gateway[i].lon));
+		//map.panTo(new L.LatLng(40.737, -73.923));
+		//sent PH center at 14.6515619,121.0494018
+                window._data_gateway.map.panTo(new L.LatLng(14.6515619, 121.0494018));
             }
 			console.log("list_gateway[]: "+list_gateway[i]);
             pruneCluster.RegisterMarker(draw_this_gateway(list_gateway[i]));
