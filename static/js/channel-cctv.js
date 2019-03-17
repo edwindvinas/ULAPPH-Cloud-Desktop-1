@@ -41,6 +41,8 @@ function procMessage(obj) {
                 console.log("smatch: "+smatch);
 				var desktop = cmdata[4];
 				console.log("desktop: "+desktop);
+				var room = cmdata[5];
+				console.log("room: "+room);
 				var uwm = "desktop" + document.getElementById("uwm").value;
 				console.log("uwm: "+uwm);
 				if (smatch > 0 && desktop === uwm) {
@@ -53,7 +55,7 @@ function procMessage(obj) {
                     soundManager.play('mySoundCall');
 					//capture
 					console.log("triggered cctv call!");
-                    var rtcLink = "https://appr.tc/r/ulapph-cctv-"+ server +"-" + uwm + "?stereo=false&hd=false";
+                    var rtcLink = "https://appr.tc/r/ulapph-cctv-"+ server + "-" + uwm + "-" + room + "?stereo=false&hd=false";
 					console.log("rtcLink: "+rtcLink);
                     var win = window.open(rtcLink, '1366002941508');
                     setTimeout(function () { win.close();}, 600000);

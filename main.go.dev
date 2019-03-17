@@ -28847,11 +28847,12 @@ func social(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			//send command to cctv channel
-			data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_CALL@888@%v@888@%v", SYS_SERVER_NAME,cat)
+			roomName := getTimestamp()
+			data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_CALL@888@%v@888@%v@888@%v", SYS_SERVER_NAME,cat,roomName)
 			sendChannelMessage(w,r,"cctv",data)
 			c.Infof("webrtc-call channel sent!")
 			//open the link as well to the page
-			redURL := fmt.Sprintf("https://appr.tc/r/ulapph-cctv-%v-%v?stereo=false&hd=false", SYS_SERVER_NAME, cat)
+			redURL := fmt.Sprintf("https://appr.tc/r/ulapph-cctv-%v-%v-%v?stereo=false&hd=false", SYS_SERVER_NAME, cat, roomName)
 			http.Redirect(w, r, redURL, http.StatusFound)
 			return
 		case "get-tot-media":
