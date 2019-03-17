@@ -18261,6 +18261,66 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		//D0074
+		case "cctv-call":
+			_, uid := checkSession(w,r)
+			if uid == "" {
+				//do nothing
+				w.WriteHeader(200)
+				w.Write([]byte("invalid operation"))
+				return
+			} else {
+				//D0074
+				cKey := fmt.Sprintf("LIST_ALL_CCTV_ACTIVE_%v", SYS_SERVER_NAME)
+				//c.Infof("cKey: %v", cKey)
+				cctv_list := getStrMemcacheValueByKey(w,r,cKey)
+				if strings.TrimSpace(cctv_list) == "" {
+					//cfgName := fmt.Sprintf("PERSONAL_CCTV_LIST_%v", uid)
+					cfgName := fmt.Sprintf("PERSONAL_CCTV_LIST_%v", SYS_SERVER_NAME)
+					cctv_list, _ = getTDSCNFG(w,r,0,cfgName)
+					putStrToMemcacheWithoutExp(w,r,cKey,cctv_list)
+				}
+				//c.Infof("cctv_list: %v", cctv_list)
+				SPL := strings.Split(cctv_list, "@888@")
+				ctr := 0
+				wstr := ""
+				wLinks := "<ul>"
+				wLinkso := "<ul>"
+				for i:=0;i<len(SPL);i++ {
+					if SPL[i] != "" {
+						cKeyTS := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", SPL[i])
+						catLastUpload := getStrMemcacheValueByKey(w,r,cKeyTS)
+						//c.Infof("catLastUpload: %v", catLastUpload)
+						timestamp := stmpHumanize(catLastUpload)
+						m := strings.Index(timestamp, "hour")
+						if m != -1 {
+							//cctv may be outdated
+							wstr = fmt.Sprintf("%v<br>%v", wstr, SPL[i])
+							catDesc := deskNum2Name(w,r,SPL[i])
+							thisLink := fmt.Sprintf("/social?SO_FUNC=webrtc-call&cat=%v&catname=%v", SPL[i], catDesc)
+							wLinkso = fmt.Sprintf("%v<li><a href=\"%v\" target=\"%v\">%v</a></li>", wLinkso, thisLink, SPL[i], catDesc)
+						} else {
+							ctr++
+							catDesc := deskNum2Name(w,r,SPL[i])
+							thisLink := fmt.Sprintf("/social?SO_FUNC=webrtc-call&cat=%v&catname=%v", SPL[i], catDesc)
+							wLinks = fmt.Sprintf("%v<li><a href=\"%v\" target=\"%v\">%v</a></li>", wLinks, thisLink, SPL[i], catDesc)
+						}
+					}
+				}
+				wLinks = fmt.Sprintf("%v</ul>", wLinks)
+				wLinkso = fmt.Sprintf("%v</ul>", wLinkso)
+				w.WriteHeader(200)
+				if ctr > 0 {
+					w.Write([]byte(fmt.Sprintf("You may call the following %v cameras!<br>", ctr)))
+					w.Write([]byte(wLinks))
+					if wstr != "" {
+						w.Write([]byte(fmt.Sprintf("<br>Warning: These are not updated: %v<br>", wstr)))
+						w.Write([]byte(wLinkso))
+					}
+				} else {
+					w.Write([]byte(fmt.Sprintf("No cameras available!")))
+				}
+			}
+		//D0074
 		case "cctv-review":
 			_, uid := checkSession(w,r)
 			if uid == "" {
@@ -28648,41 +28708,31 @@ func social(w http.ResponseWriter, r *http.Request) {
 			sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid,reqStr,SID),SID)
 			laterIncNumLikesSocial.Call(c, uid, SID, "SO_INC_NUM_LIKES", "A")
 			return
-			
 		case "proc-broadcast-contents":
 			procBroadcastContentsWorldwide(w,r)
-			return			
-		
+			return
 		case "get-trending":
 			procTrending(w,r)
 			return
-		
 		case "show-trending":
 			showOverallTrending(w,r)
 			return
-			
 		case "get-whats-new":
 			procWhatsNew(w,r)
 			return
-			
 		//D0042
 		case "get-discussions":
 			procDiscussions(w,r)
 			return
-			
 		case "get-people-directory":
 			procPeopleDir(w,r)
-			return			
-		
+			return
 		case "show-whats-new":
 			showOverallWhatsNew(w,r)
 			return
-			
-		//D0042
 		case "show-discussions":
 			showOverallDiscussions(w,r)
 			return
-			
 		//D0042
 		case "flag-recent-refresh":
 			putStrToMemcacheWithoutExp(w,r,"OVERALL_DISCUSSIONS_REFRESH","Y")
@@ -28789,6 +28839,21 @@ func social(w http.ResponseWriter, r *http.Request) {
 			writeHTMLHeader(w, 200)
 			w.Write([]byte(count))
 			return
+		//D0074
+		case "webrtc-call":
+			cat := r.FormValue("cat")
+			if cat == "" {
+				fmt.Fprintf(w, "Invalid operation!")
+				return
+			}
+			//send command to cctv channel
+			data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_CALL@888@%v@888@%v", SYS_SERVER_NAME,cat)
+			sendChannelMessage(w,r,"cctv",data)
+			c.Infof("webrtc-call channel sent!")
+			//open the link as well to the page
+			redURL := fmt.Sprintf("https://appr.tc/r/ulapph-cctv-%v-%v?stereo=false&hd=false", SYS_SERVER_NAME, cat)
+			http.Redirect(w, r, redURL, http.StatusFound)
+			return
 		case "get-tot-media":
 			//D0073
 			cat := r.FormValue("cat")
@@ -28813,13 +28878,11 @@ func social(w http.ResponseWriter, r *http.Request) {
 			writeHTMLHeader(w, 200)
 			w.Write([]byte(count))
 			return
-			
 		case "get-privacy":
 			writeHTMLHeader(w, 200)
 			cont := fmt.Sprintf("%v", SYS_SITE_PRIVATE)
 			w.Write([]byte(cont))
 			return
-		
 		case "get-logo":
 			writeHTMLHeader(w, 200)
 			cont := fmt.Sprintf("%v", SYS_DISP_LOGO)
@@ -52519,10 +52582,9 @@ func updateUserActiveData(w http.ResponseWriter, r *http.Request, c appengine.Co
 	uag := r.UserAgent()
 	ua := user_agent.New(uag)
 	//uaPlatform := ua.Platform()
-	uaPlatform1 := ua.Platform()	
-	uaPlatform := ua.OS()	
+	uaPlatform1 := ua.Platform()
+	uaPlatform := ua.OS()
 	nameb, _ := ua.Browser()
-	
 	i := strings.Index(uid, "@")
 	f := strings.Index(uid, "facebook")
 	g := strings.Index(uid, "gplus")
@@ -52536,9 +52598,7 @@ func updateUserActiveData(w http.ResponseWriter, r *http.Request, c appengine.Co
 		usersProcessor_CACHE_KEY = fmt.Sprintf("usersProcessor_IS_LOGGED_IN_TS_%s", uid)
 		timestamp := getTimestamp()
 		putStrToMemcacheWithoutExp(w,r,usersProcessor_CACHE_KEY,timestamp)
-				
 	}
-	
 	//skip robots from notifs
 	if nameb != "" && uaPlatform1 != "" && uaPlatform != "" {
 		laterQueueStatsUserActive.Call(c, uid, uaPlatform, nameb)
@@ -52557,17 +52617,13 @@ func updateUserActiveData(w http.ResponseWriter, r *http.Request, c appengine.Co
 		case SPL[0] == "TDSMEDIA" && SPL[1] != "":
 		XPL := strings.Split(SPL[1], "@")
 		putStrToMemcacheWithoutExp(w,r,"LAST_TDSMEDIA",XPL[0])
-		
 		case SPL[0] == "TDSSLIDE" && SPL[1] != "":
 		XPL := strings.Split(SPL[1], "@")
 		putStrToMemcacheWithoutExp(w,r,"LAST_TDSSLIDE",XPL[0])
-		
 		case SPL[0] == "TDSARTL" && SPL[1] != "":
 		XPL := strings.Split(SPL[1], "@")
 		putStrToMemcacheWithoutExp(w,r,"LAST_TDSARTL",XPL[0])
-		
 	}
-	
 }
 
 //task queue to increment counter
@@ -54793,7 +54849,6 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 							lon, _ = strconv.ParseFloat(LPL[1], 64)
 						}
 					//if no lat/lon
-					//edwinxxx
 					if lat ==0 && lon == 0 {
 					SPL := strings.Split(XUID, ".")
 					if len(SPL) > 0 {
@@ -64916,6 +64971,7 @@ var htmlMirror = template.Must(template.New("htmlMirror").Parse(`
 		#target { float:left; margin:20px; padding:20px; border:1px solid; background:#ccc; }
 	</style>
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/mobitouch.css" />
+	<script type="text/javascript" src="/js/soundmanager2.js"></script>
 </head>
 <body onload="loadSettings()">
 	<div id="page">
@@ -65021,6 +65077,7 @@ var htmlMirror2 = template.Must(template.New("htmlMirror2").Parse(`
 		#target { float:left; margin:20px; padding:20px; border:1px solid; background:#ccc; }
 	</style>
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/mobitouch.css" />
+	<script type="text/javascript" src="/js/soundmanager2.js"></script>
 </head>
 <body onload="loadSettings()">
 	<div id="page">
@@ -81006,7 +81063,6 @@ func syncGoogleDrive(w http.ResponseWriter, r *http.Request, uid string) {
 	//get access token
 	cKey := fmt.Sprintf("GDRIVE_TOKEN_CACHE_%v", uid)
 	TOKENCACHE := getBytMemcacheValueByKey(w,r,cKey)
-	
 	if TOKENCACHE == nil {
 		//authorize needed
 		fmt.Fprintf(w, "[Authorization Required] <a href=\"/tools?FUNC=DRIVES&t=MYDRIVE_GOOGLE&ACT=A\" target=\"google-drive\">Click here</a> to authorize. You may close this window.<br>")

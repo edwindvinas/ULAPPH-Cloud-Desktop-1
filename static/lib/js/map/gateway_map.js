@@ -13,8 +13,10 @@
         var marker = new PruneCluster.Marker(gateway.lat, gateway.lon);
 
         marker.data.icon = get_icon(gateway);
-
-        	marker.data.popup = '<img src="' + gateway.picture + '" alt="Smiley face" height="50" width="50"><br>';
+		if (gateway.picture == "" || gateway.picture == undefined) {
+			gateway.pciture = "/img/no-profile.png";
+		}
+        	marker.data.popup = '<img src="' + gateway.picture + '" alt="Profile" height="50" width="50"><br>';
 		marker.data.popup += '<b>ULAPPH</b>: <a href="' + gateway.title + 'contents?q=home" target=website title=Website>' + gateway.title + '</a><br>';
 
         if (gateway.username) {

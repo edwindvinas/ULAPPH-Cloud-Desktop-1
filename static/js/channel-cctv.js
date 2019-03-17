@@ -27,10 +27,36 @@ function procMessage(obj) {
 				console.log("desktop: "+desktop);
 				var uwm = "desktop" + document.getElementById("uwm").value;
 				console.log("uwm: "+uwm);
-				if (uid != "" && desktop == uwm) {
+				if (uid != "" && desktop === uwm) {
 					//capture
 					console.log("triggered cctv capture!");
 					take_snapshot();
+				}
+				break;
+			case "SYS_STRUWM_CALL":
+				console.log("SYS_STRUWM_CALL...");
+				var server = cmdata[3];
+				console.log("server: "+server);
+                var smatch = root.indexOf(server);
+                console.log("smatch: "+smatch);
+				var desktop = cmdata[4];
+				console.log("desktop: "+desktop);
+				var uwm = "desktop" + document.getElementById("uwm").value;
+				console.log("uwm: "+uwm);
+				if (smatch > 0 && desktop === uwm) {
+                    var aSound = document.createElement('audio');
+                    soundManager.createSound({
+                        id: 'mySoundCall',
+                        volume: 95,
+                        url: root + "/audio/ringing.ogg"
+                    });
+                    soundManager.play('mySoundCall');
+					//capture
+					console.log("triggered cctv call!");
+                    var rtcLink = "https://appr.tc/r/ulapph-cctv-"+ server +"-" + uwm + "?stereo=false&hd=false";
+					console.log("rtcLink: "+rtcLink);
+                    var win = window.open(rtcLink, '1366002941508');
+                    setTimeout(function () { win.close();}, 600000);
 				}
 				break;
 				

@@ -185,6 +185,9 @@ var convo = {
     	],
 	  reply: [
         {
+            question: "Track User",
+            answer: "funcTrackUser"
+        },{
             question: "Open Tracker",
             answer: "functracker"
         },
@@ -231,8 +234,42 @@ functracker = function () {
     return;
 }
 
+funcTrackUser = function () {
+    if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xhr=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xhr=new ActiveXObject('MSXML2.XMLHTTP.3.0');
+	  } 
+    xhr.open("GET","/directory?DIR_FUNC=map", true);
+	xhr.send();
+	
+	 xhr.onreadystatechange=function()
+	  {
+	  if (xhr.readyState==4 && xhr.status==200)
+		{
+		var currVal = xhr.responseText;
+			console.log(currVal);
+            var jsonData = JSON.parse(currVal);
+            if (jsonData.length > 0) {
+                document.write("Please select from the following users:");
+            }
+            for (var i = 0; i < jsonData.length; i++) {
+                var loc = jsonData[i];
+                console.log("loc: "+loc);
+                var root = location.protocol + '//' + location.host;
+                var rlink = root + "/pwa/tracker/realtime.html?xuid=" + jsonData[i].username + "&xhost=" + root + "/";
+                document.write("<h1>* <a href=\"" + rlink + "\">" + jsonData[i].username + " (" + jsonData[i].antenna_model+ ")" + "</a> -- " + jsonData[i].title + "</h1>");
+            }
+        }
+      }
+    return;
+}
+
 //auto-redirect after x seconds
-setTimeout(function() {functracker()}, 15000)
+setTimeout(function() {functracker()}, 600000)
   
 // pass JSON to your function and you're done!
 chatWindow.talk(convo)
