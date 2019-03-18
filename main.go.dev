@@ -21508,16 +21508,11 @@ func getSentence(txt string) (s1 string) {
 func ulapphTools(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	//c.Infof("checking referrer")
-	checkReferrer(w,r)
-	
 	TARGET := r.FormValue("t")
 	TOOL_FUNC := r.FormValue("FUNC")
-	
 	//c.Infof("checking country")
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
-	
 	uReferer := r.Referer()
- 
 	DESKTOP := r.FormValue("CATEGORY")
 	MODE := r.FormValue("MODE")
 	PARM := r.FormValue("PARM")
@@ -21543,36 +21538,41 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 		getAvailThemes(w,r,SID,con_url)
 		return
 	}
-	
+	if TOOL_FUNC == "MIRROR" {
+		//_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		if err := htmlMirror.Execute(w, ""); err != nil {
+		  panic(err)
+		}
+		return
+	}
+	if TOOL_FUNC == "MIRROR2" {
+		//_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		if err := htmlMirror2.Execute(w, ""); err != nil {
+		  panic(err)
+		}
+		return
+	}
+	checkReferrer(w,r)
 	//c.Infof("checking user session")
 	_, uid := checkSession(w,r)
 	if TOOL_FUNC == "random" {
-		
 		if uid == "" {
 			uid = getGeoString(w,r)
 		}
 		updateUserActiveData(w, r, c, uid, "random ulapph")
-		
 		IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
-		
 		TOT := 0
 		HOST_LIST := ""
-		
 		if IS_SEARCH_SERVER == "N" {
-			TOT, HOST_LIST = fetchHostList(w,r)	
+			TOT, HOST_LIST = fetchHostList(w,r)
 		} else {
 			TOT, HOST_LIST = getHostList(w,r)
 		}
-		
 		myrand := 1
-		
 		if TOT > 1 {
 			myrand = randNum(1, TOT)
 		}
-		
 		scanner := bufio.NewScanner(strings.NewReader(HOST_LIST))
- 
- 
 		lctr := 0
 		rs := ""
 		for scanner.Scan() {
@@ -21589,20 +21589,6 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 		if rs != "" {
 			http.Redirect(w, r, rs, http.StatusFound)
 			return
-		}
-		return
-	}
-	if TOOL_FUNC == "MIRROR" {
-		_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
-		if err := htmlMirror.Execute(w, ""); err != nil {
-		  panic(err)
-		}
-		return
-	}
-	if TOOL_FUNC == "MIRROR2" {
-		_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
-		if err := htmlMirror2.Execute(w, ""); err != nil {
-		  panic(err)
 		}
 		return
 	}
