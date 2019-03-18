@@ -103,6 +103,12 @@ function upload_ulapph() {
 			var blob = dataURItoBlob(document.getElementById("imgdata").value);
 			var fd = new FormData(document.forms[0]);
 			fd.append("file", blob);
+
+			var uid = document.getElementById("uid").value;
+			if (uid === "" || uid === undefined) {
+                alert("No ULAPPH user email ID!");
+                return;
+            }
 			
 			var sid = "";
 			var tgt = document.getElementById("sid").value;
@@ -223,7 +229,7 @@ node.addEventListener("touchend", cancel);
 node.addEventListener("touchleave", cancel);
 node.addEventListener("touchcancel", cancel);
 
-function loadSettings() {
+/*function loadSettings() {
         var sid = localStorage["mirror-sid"];
         document.getElementById("sid").value = sid;
         var title = localStorage["mirror-title"];
@@ -232,9 +238,35 @@ function loadSettings() {
         document.getElementById("uwm").value = uwm;
         var desc = localStorage["mirror-desc"];
         document.getElementById("desc").value = desc;
+}*/
+function loadSettings() {
+	var uid = localStorage["mirror-uid"];
+	if (uid !== undefined) {
+	document.getElementById("uid").value = uid;
+	}
+	var sid = localStorage["mirror-sid"];
+	if (sid !== undefined) {
+	document.getElementById("sid").value = sid;
+	}
+	var title = localStorage["mirror-title"];
+	if (title !== undefined) {
+	document.getElementById("title").value = title;
+	}
+	var uwm = localStorage["mirror-uwm"];
+	if (uwm !== undefined) {
+	document.getElementById("uwm").value = uwm;
+	}
+	var fcap = localStorage["mirror-fcap"];
+	if (fcap === true ) {
+	document.getElemedntById("fixedcap").checked = true;
+	}
+	var autoML = localStorage["mirror-autoDetection"];
+	if (autoML === true ) {
+	document.getElementById("autoDetection").checked = true;
+	}
 }
 
-function saveSettings() {
+/*function saveSettings() {
         var sid = document.getElementById("sid").value;
         localStorage["mirror-sid"] = sid;
         var title = document.getElementById("title").value;
@@ -243,4 +275,19 @@ function saveSettings() {
         localStorage["mirror-uwm"] = uwm;
         var desc = document.getElementById("desc").value;
         localStorage["mirror-desc"] = desc;
+}*/
+
+function saveSettings() {
+	var uid = document.getElementById("uid").value;
+	localStorage["mirror-uid"] = uid;
+	var sid = document.getElementById("sid").value;
+	localStorage["mirror-sid"] = sid;
+	var title = document.getElementById("title").value;
+	localStorage["mirror-title"] = title;
+	var uwm = document.getElementById("uwm").value;
+	localStorage["mirror-uwm"] = uwm;
+	var fcap = document.getElementById("fixedcap").value;
+	localStorage["mirror-fcap"] = fcap;
+	var autoML = document.getElementById("autoDetection").value;
+	localStorage["mirror-autoDetection"] = autoML;
 }

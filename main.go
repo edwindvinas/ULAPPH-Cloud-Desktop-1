@@ -65038,7 +65038,8 @@ var htmlMirror = template.Must(template.New("htmlMirror").Parse(`
 	</form>
  
 	<div id="target">
-		Caption or title: <input type="text" name="title" id="title" value="" maxlength=500>
+		ULAPPH User: <input type="text" name="uid" id="uid" value="" maxlength=500>
+		<br>Add caption or title: <input type="text" name="title" id="title" value="" maxlength=500>
 		<br>Description: <input type="text" name="desc" id="desc" value="" maxlength=500>
 		<br>Stream as wallpapers in UWM:<input type="text" name="uwm" id="uwm" value="" maxlength=50>
 		<br>Add image to TDSSLIDE-<input type="text" name="sid" id="sid" value="" maxlength=10>
@@ -65143,7 +65144,8 @@ var htmlMirror2 = template.Must(template.New("htmlMirror2").Parse(`
 	
 	
 	<div id="target">
-		Add caption or title<input type="text" name="title" id="title" value="" maxlength=500>
+		ULAPPH User: <input type="text" name="uid" id="uid" value="" maxlength=500>
+		<br>Add caption or title: <input type="text" name="title" id="title" value="" maxlength=500>
 		<br>Description: <input type="text" name="desc" id="desc" value="" maxlength=500>
 		<br>Stream as wallpapers in UWM:<input type="text" name="uwm" id="uwm" value="" maxlength=50>
 		<br>Add image to TDSSLIDE-<input type="text" name="sid" id="sid" value="" maxlength=10>
@@ -70540,17 +70542,13 @@ func handleServeArticles(w http.ResponseWriter, r *http.Request) {
 
 //handles new uploaded media files 
 func handleServeMedia(w http.ResponseWriter, r *http.Request) {
-	
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
-	
 		c := appengine.NewContext(r)
 		u := user.Current(c)
- 
 		UID_R := r.FormValue("UID")
 		UID_R2 := strings.Replace(UID_R, "[", "", -1)
 		UID := strings.Replace(UID_R2, "]", "", -1)
-		
 		uid := ""
 		if u != nil {
 			//uid = uid
@@ -70559,7 +70557,6 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 		} else {
 			uid = UID
 		}
-		
 		blobkey := r.FormValue("blobKey5")
 		TITLE_R := r.FormValue("TITLE")
 		TITLE_R2 := strings.Replace(TITLE_R, "[", "", -1)
@@ -70817,11 +70814,9 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 			DESC = fmt.Sprintf("%v [%v]", DESC, FILE_NAME)
 			TITLE = fmt.Sprintf("%v [%v]", TITLE, FILE_NAME)
 		}
- 
 		NUM_LIKES := float64(0)
 		NUM_COMMENTS := float64(0)
 		NUM_VIEWS := float64(0)
- 
 		for _, p := range media{
 			thisID = p.MEDIA_ID + 1
 			p.SYS_VER = SYS_VERSION
@@ -70831,10 +70826,8 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 			if FL_ADD_WP == "on" && DATA_TYPE == "image" {
 				FUNC_CODE := "GET_GRP_ID"
 				_, GROUP_ID, _  , _ := usersProcessor(w, r, "au", uid, FUNC_CODE)
-				
 				if SYS_WALLP_ADMIN_ONLY == true && GROUP_ID == "GRP_ADMIN" {
 					p.PROP = "big_wp2"
-					
 					//clear wp cache
 					putStrToMemcacheWithoutExp(w,r,fmt.Sprintf("WALLPAPERS_LIST_%v", "admin"),"")
 				} else {
@@ -70862,11 +70855,9 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 			p.COMMENTS_BY = ""
 			p.MIME_TYPE = MIME_TYPE
 			p.SHARED_TO = ""
- 
 			NUM_LIKES = float64(p.NUM_LIKES)
 			NUM_COMMENTS = float64(p.NUM_COMMENTS)
 			NUM_VIEWS = float64(p.NUM_VIEWS)
-			
 			thisKey := fmt.Sprintf("%d", p.MEDIA_ID)
 			key := datastore.NewKey(c, "TDSMEDIA", thisKey, 0, nil)
 			_, err := datastore.Put(c, key, &p)
@@ -70875,7 +70866,6 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 				//return
 			}
 			//c.Errorf("[S0593]")
- 
 			break
 		}
 
@@ -70889,7 +70879,6 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 			blobChan := make(chan string)
 			go getBlobTextChan(w, r,blobChan, blobkey)
 			thisCont = <- blobChan
-					
 		} else {
 			thisCont = fmt.Sprintf("%v - %v", TITLE, DESC)
 		}
@@ -73046,19 +73035,14 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 				}
 
 				putSearchIndexM(w,r,"IDX_TDSMEDIA",thisIdxKey,searchIdx)
-				
 				break
 			}
- 
 			sysReq := fmt.Sprintf("/media?FUNC_CODE=VIEW&MEDIA_ID=%d&DATA_TYPE=%s&BLOB_KEY=%v&IMG_URL=%v", MEDIA_ID, DATA_TYPE, blobkey, thisURL)	
 			http.Redirect(w, r, sysReq, http.StatusFound)
-			return			
-		
+			return
 		default:
-		
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT")
-						
 			UID := pVals["UID"]
 			TYPE := pVals["DATA_TYPE"]
 			TITLE := pVals["TITLE"]
@@ -73080,7 +73064,6 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 			bKey := string(file[0].BlobKey)
 			reqStr := fmt.Sprintf("/serve-media/?DATA_TYPE=%s&TITLE=%s&DESC=%s&CATEGORY=%s&blobKey5=%v&FL_SHARED=%v&FILE_NAME=%v&MIME_TYPE=%v&FL_ADD_WP=%v&UID=%v&DOC_STAT=%v&EMBED=%v&OPT=%v&STRUWM=%v&STRUWMI=%v&AUTOML=%v", TYPE, TITLE, DESC, CATEGORY, bKey, FL_SHARED, FILE_NAME, MIME_TYPE, FL_ADD_WP, UID, DOC_STAT, EMBED, OPT, STRUWM, STRUWMI, AUTOML)
 			http.Redirect(w, r, reqStr, http.StatusFound)
-	
 	}
 }
 

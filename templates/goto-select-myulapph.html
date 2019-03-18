@@ -49,19 +49,11 @@
 <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for accounts.." title="Type in a name">
 
 <ul id="myUL">
-  <!--li><a href="#">Adele</a></li>
-  <li><a href="#">Agnes</a></li>
-
-  <li><a href="#">Billy</a></li>
-  <li><a href="#">Bob</a></li>
-
-  <li><a href="#">Calvin</a></li>
-  <li><a href="#">Christina</a></li>
-  <li><a href="#">Cindy</a></li-->
   {{range .Ulapphs}}
-    <li><a href="{{.Url}}/uwm" title="UWM Login" target="{{.UserID}}@{{.Url}}"><img src="{{.Picture}}" width=100 height=100>{{.UserID}} @ {{.Url}}</a></li>
+    <li><a href="{{.Url}}/chat-bubble/ulapphbot.html" title="Chatbot" target="pwa-{{.UserID}}@{{.Url}}"><img src="/chat-bubble/bot-512.png" width=100 height=100></a><a href="{{.Url}}/pwa/" title="PWA Apps" target="pwa-{{.UserID}}@{{.Url}}"><img src="/img/pwa.png" width=100 height=100></a><a href="{{.Url}}/uwm" title="UWM Login" target="{{.UserID}}@{{.Url}}"><img src="{{.Picture}}" width=100 height=100>{{.UserID}} @ {{.Url}}</a></li>
   {{end}}
 </ul>
+<h1><a href="/logout">Logout</a></h1>
 
 <script>
 function myFunction() {
