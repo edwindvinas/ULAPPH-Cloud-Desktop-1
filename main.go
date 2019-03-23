@@ -40413,9 +40413,22 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 			c.Infof("ERROR: %v", err)
 			return
 		}
-		//clear cache
+		//clear cache cs common
                 cKey := fmt.Sprintf("ULAPPH_NLP_%v", SID)
 		_ = memcache.Delete(c,cKey)
+		//clear cache overall common 
+                cKey = fmt.Sprintf("ULAPPH_NLP_%v", "ULAPPH-COMMON-KB")
+		_ = memcache.Delete(c,cKey)
+		//send email to admin about unknown intent 
+		geoStr := getGeoString(w,r)
+		geoAcc := getAccessString(w,r,"")
+		subject := fmt.Sprintf("[ULAPPH] Crowdsourced intent [%v]", uid)
+		MESSAGE := fmt.Sprintf("[ULAPPH] Crowdsourced intent [<b>%v</a>] [%v] [%v] [%v] [%v] [%v]", inpStr, SYS_SERVER_NAME, SID, uid, geoStr, geoAcc)
+		t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-generic-send-email", map[string][]string{"SUBJECT": {subject}, "TO": {ADMMAIL}, "FROM": {uid}, "MESSAGE": {MESSAGE}})
+		if _, err = taskqueue.Add(c, t, ""); err != nil {
+			 panic(err)
+			//return
+		}
 		w.WriteHeader(200)
 		fmt.Fprintf(w, "Saved data successfully! Please wait from 30mins to 1 hour in order for the new data to take effect!")
 	case "csAppend":
@@ -40460,6 +40473,13 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		_ = memcache.Delete(c,cKey)
 		w.WriteHeader(200)
 		fmt.Fprintf(w, "Saved data successfully! Please wait from 30mins to 1 hour in order for the new data to take effect!")
+		return
+	case "nlpReset":
+		//clear cache
+                cKey := fmt.Sprintf("ULAPPH_NLP_%v", "ULAPPH-COMMON-KB")
+		_ = memcache.Delete(c,cKey)
+		w.WriteHeader(200)
+		fmt.Fprintf(w, "NLP cache deleted!")
 		return
 	case "nlpProse":
 		if err == nil {
