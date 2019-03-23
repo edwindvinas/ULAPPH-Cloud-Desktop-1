@@ -40370,6 +40370,52 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 	c.Infof("kvo: %+v", kvo)
 
 	switch nlpFunc {
+	//edwinxxx
+	case "csTeachMe":
+		//Crowdsource - append intent/response
+		c.Infof("nlpFunc = csTeachMe")
+		SID := r.FormValue("SID")
+		c.Infof("SID: %v", SID)
+		intent := r.FormValue("intent")
+		c.Infof("intent: %v", intent)
+		response := r.FormValue("response")
+		//remove newlines
+		response = strings.Replace(response, "\n","<br>",-1)
+		//replace double quotes
+		response = strings.Replace(response, "\"","&#34;",-1)
+		c.Infof("response: %v", response)
+		UID := r.FormValue("UID")
+		c.Infof("UID: %v", UID)
+		//copy existing data
+		BLOB_KEY := contentCheckSid(w,r,SID)
+		c.Infof("BLOB_KEY: %v", BLOB_KEY)
+		var buf bytes.Buffer
+		reader := blobstore.NewReader(c, appengine.BlobKey(BLOB_KEY))
+		s := bufio.NewScanner(reader)
+		for s.Scan() {
+			buf.WriteString(s.Text())
+			buf.WriteString("\n")
+		}
+		//append
+		buf.WriteString("{\n")
+		buf.WriteString(fmt.Sprintf("    \"text\": \"%v\",\n", intent))
+		buf.WriteString(fmt.Sprintf("    \"answer\": \"%v\",\n", response))
+		buf.WriteString(fmt.Sprintf("    \"help\": \"cs teacher: %v\",\n", UID))
+		buf.WriteString("    \"isRegexp\": \"true\",\n")
+		buf.WriteString("    \"isAnsOtto\": \"false\"\n")
+		buf.WriteString("}\n")
+
+		c.Infof("DATA: %v", buf.String())
+		err := blobFileSaver(w,r,SID,buf.Bytes())
+		if err != nil {
+			c.Infof("ERROR: %v", err)
+			return
+		}
+		//clear cache
+                cKey := fmt.Sprintf("ULAPPH_NLP_%v", SID)
+		_ = memcache.Delete(c,cKey)
+		w.WriteHeader(200)
+		fmt.Fprintf(w, "Saved data successfully!")
 	case "csAppend":
 		c.Infof("nlpFunc = csAppend")
 		SID := r.FormValue("SID")
@@ -40408,7 +40454,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		//clear cache
-                cKey := fmt.Sprintf("ULAPPH_NLP_%v", s)
+                cKey := fmt.Sprintf("ULAPPH_NLP_%v", SID)
 		_ = memcache.Delete(c,cKey)
 		w.WriteHeader(200)
 		fmt.Fprintf(w, "Saved data successfully!")
