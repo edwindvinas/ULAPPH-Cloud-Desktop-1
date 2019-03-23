@@ -6810,12 +6810,13 @@ func login(w http.ResponseWriter, r *http.Request) {
 	//check if logged in already
 	if u != nil {
 		if lref != "" {
-			//append username
+			//append username & loc
+			locStr := getGeoString(w,r)
 			i := strings.Index(lref, "?")
 			if i == -1 {
-				lref = fmt.Sprintf("%v?UID=%v", lref, u.Email)
+				lref = fmt.Sprintf("%v?UID=%v&g=%v", lref, u.Email, locStr)
 			} else {
-				lref = fmt.Sprintf("%v&UID=%v", lref, u.Email)
+				lref = fmt.Sprintf("%v&UID=%v&g=%v", lref, u.Email, locStr)
 			}
 			http.Redirect(w, r, lref, http.StatusFound)
 			return
@@ -11227,7 +11228,6 @@ func getGeoString(w http.ResponseWriter, r *http.Request) (geoStr string) {
 	xRegion  := h.Get("X-AppEngine-Region")
 	xCity    := h.Get("X-AppEngine-City")
 	geoStr = fmt.Sprintf("%s.%s.%s.user", xCountry, xRegion, xCity)
-	
 	return geoStr
 }
 
@@ -11237,7 +11237,6 @@ func getCountry(w http.ResponseWriter, r *http.Request) (geoCountry string) {
 	h := r.Header
 	xCountry := h.Get("X-AppEngine-Country")
 	geoCountry = fmt.Sprintf("%s", xCountry)
-	
 	return geoCountry
 }
 //this returns the SID only
@@ -16786,7 +16785,7 @@ const chatTemplateDispA1 = `
 	<html lang="en">
 	<head>
 	  <meta charset="UTF-8">
-	  <title>Chat::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	  <title>Chat::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	  <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	  <link rel="shortcut icon" href="/img/favicon.ico"/>
 `
@@ -16975,7 +16974,7 @@ const streamTemplateDispA1 = `
 	<html lang="en">
 	<head>
 	  <meta charset="UTF-8">
-	  <title>Stream::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	  <title>Stream::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	  <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	  <link rel="shortcut icon" href="/img/favicon.ico"/>
 		<link rel="stylesheet" href="/css/chat-style.css">
@@ -17054,7 +17053,7 @@ const ulocTemplateDispA = `
 <html manifest="/cache?q=ulocA&f=" lang="en-US" class="no-js">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <title>Local Storage:ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+  <title>Local Storage:ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
   <link rel="shortcut icon" href="/img/favicon.ico"/>
   <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
   <script type="text/javascript" language="javascript" src="/js/jquery-1.11.1.min.js"></script>
@@ -17345,7 +17344,7 @@ const ulocTemplateDispB = `
 <html manifest="/cache?q=ulocB&f=" lang="en-US" class="no-js">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <title>Local Storage::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+  <title>Local Storage::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
   <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
   <link rel="shortcut icon" href="/img/favicon.ico"/>
   <link rel="stylesheet" href="/css/localStorage.css" />
@@ -40381,10 +40380,11 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		intent := r.FormValue("intent")
 		c.Infof("intent: %v", intent)
 		response := r.FormValue("response")
-		//remove newlines
+		//replace special chars
 		response = strings.Replace(response, "\n","<br>",-1)
-		//replace double quotes
-		response = strings.Replace(response, "\"","&#34;",-1)
+		//response = strings.Replace(response, "\"","&#34;",-1)
+		response = strings.Replace(response, "\"","'",-1)
+		response = strings.Replace(response, "=","&#61;",-1)
 		c.Infof("response: %v", response)
 		UID := r.FormValue("UID")
 		c.Infof("UID: %v", UID)
@@ -40422,9 +40422,9 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		//send email to admin about unknown intent 
 		geoStr := getGeoString(w,r)
 		geoAcc := getAccessString(w,r,"")
-		subject := fmt.Sprintf("[ULAPPH] Crowdsourced intent [%v]", uid)
-		MESSAGE := fmt.Sprintf("[ULAPPH] Crowdsourced intent [<b>%v</a>] [%v] [%v] [%v] [%v] [%v]", inpStr, SYS_SERVER_NAME, SID, uid, geoStr, geoAcc)
-		t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-generic-send-email", map[string][]string{"SUBJECT": {subject}, "TO": {ADMMAIL}, "FROM": {uid}, "MESSAGE": {MESSAGE}})
+		subject := fmt.Sprintf("[ULAPPH] Crowdsourced intent [%v]", UID)
+		MESSAGE := fmt.Sprintf("[ULAPPH] Crowdsourced intent [<b>%v</a>] [%v] [%v] [%v] [%v] [%v]", inpStr, SYS_SERVER_NAME, SID, UID, geoStr, geoAcc)
+		t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-generic-send-email", map[string][]string{"SUBJECT": {subject}, "TO": {ADMMAIL}, "FROM": {UID}, "MESSAGE": {MESSAGE}})
 		if _, err = taskqueue.Add(c, t, ""); err != nil {
 			 panic(err)
 			//return
@@ -45029,7 +45029,7 @@ const mediaMusicPlayerUMP1 = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Music Player::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>Music Player::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <script src="/js/modernizr.custom.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
@@ -45085,7 +45085,7 @@ const mediaMIDIPlayerUMP1 = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MIDI Player::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>MIDI Player::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <script src="/js/modernizr.custom.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
@@ -45176,7 +45176,7 @@ const mediaVideoPlayerUVP1 = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Video Player::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>Video Player::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <script src="/js/modernizr.custom.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
@@ -45227,7 +45227,7 @@ const mediaYoutubePlayerYVP1 = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Youtube Player::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>Youtube Player::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <script src="/js/modernizr.custom.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
@@ -45345,7 +45345,7 @@ const htmlWidgetBrowserA = `
 <html lang="en-US">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-  <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+  <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
   <link rel="shortcut icon" href="/img/favicon.ico"/>
   <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
   <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
@@ -45371,7 +45371,7 @@ const htmlWidgetBrowserH = `
 <html lang="en-US">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-  <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+  <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
   <link rel="shortcut icon" href="/img/favicon.ico"/>
   <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
   <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
@@ -45397,7 +45397,7 @@ const htmlWidgetBrowserC1 = `
 <html lang="en-US">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-  <title>Loading ULAPPH Cloud Desktop::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+  <title>Loading ULAPPH Cloud Desktop::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
   <link rel="shortcut icon" href="/img/favicon.ico"/>
   <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
   <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
@@ -45653,7 +45653,7 @@ const htmlWidgetBrowserAUF = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MiniBrowser::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>MiniBrowser::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
@@ -45673,7 +45673,7 @@ const htmlWidgetRanGenTool = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Random Generator::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>Random Generator::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 </head>
  
@@ -45692,7 +45692,7 @@ const htmlWidgetFamTreeTool = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Family Tree::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>Family Tree::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 </head>
  
@@ -45711,7 +45711,7 @@ const htmlUrlFetcherA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>URL Fetcher::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>URL Fetcher::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
@@ -45733,7 +45733,7 @@ const htmlUwmSharingA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>UWM Sharing::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>UWM Sharing::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link href="/css/bootstrap.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/css/switch.css">
@@ -45790,7 +45790,7 @@ const htmlDrivesA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>My Drives::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>My Drives::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/buttons/buttons.css">
 <link rel="stylesheet" href="/lib/css/animate/animate.css">	
@@ -45945,7 +45945,7 @@ const htmlDriveJSONtoTableA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>JSON to Table::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>JSON to Table::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
@@ -45980,7 +45980,7 @@ const htmlDesktopsJSONtoTableA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>All Desktops::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>All Desktops::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
@@ -46092,7 +46092,7 @@ const htmlIconsJSONtoTableA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>All Icons::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>All Icons::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
@@ -46132,7 +46132,7 @@ const htmlNotesJSONtoTableA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>All Notes::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>All Notes::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
@@ -46171,7 +46171,7 @@ const htmlGithubJSONtoTableA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>JSON to Table::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>JSON to Table::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
@@ -46212,7 +46212,7 @@ const htmlGithubJSONtoTableAB = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>JSON to Table::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>JSON to Table::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
@@ -46248,7 +46248,7 @@ const htmlWidgetMyLocalNotesA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Local Notes::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>Local Notes::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>	
@@ -46298,7 +46298,7 @@ const htmlWidgetDefaultSlideA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Default Slide::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>Default Slide::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>	
@@ -46443,7 +46443,7 @@ const htmlWidgetMyPreferencesA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>My Preferences::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>My Preferences::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link href="/css/bootstrap.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/css/spectrum.css">
@@ -46736,7 +46736,7 @@ const htmlEscSearchACR = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Search::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>Search::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 	
@@ -46752,7 +46752,7 @@ const htmlWidgetBrowserACR = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Join Chat::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>Join Chat::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
@@ -46786,7 +46786,7 @@ const iconsSettingsTemplateHeaderHTML = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Settings::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>Settings::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -46841,7 +46841,7 @@ const genericTableDispHdr2 = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>{{.STR_FILLER3}}::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>{{.STR_FILLER3}}::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -46917,7 +46917,7 @@ const genericTableDispHdrNC2 = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>{{.STR_FILLER3}}::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>{{.STR_FILLER3}}::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47011,7 +47011,7 @@ const infoDBTemplateHeaderHTMLSlidesAdmin = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Slides::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>Slides::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47098,7 +47098,7 @@ const infoDBTemplateHeaderHTMLSlidesDirectory = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Directory::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>Directory::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47150,7 +47150,7 @@ const showTrendingRecs = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>ULAPPH Trending Contents::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>ULAPPH Trending Contents::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47193,7 +47193,7 @@ const showPeopleDirRecs = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>ULAPPH People Directory::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>ULAPPH People Directory::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47234,7 +47234,7 @@ const showSitesDirRecs = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>ULAPPH Cloud Desktop Directory::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>ULAPPH Cloud Desktop Directory::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47276,7 +47276,7 @@ const showWhatsNewRecs = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>ULAPPH Whats New Contents::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>ULAPPH Whats New Contents::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47320,7 +47320,7 @@ const showDiscussionsRecs = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>ULAPPH Recent Discussions::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>ULAPPH Recent Discussions::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47366,7 +47366,7 @@ const showAllRecentsRecs = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>ULAPPH Recents::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>ULAPPH Recents::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47407,7 +47407,7 @@ const infoDBTemplateHeaderHTMLArticlesAdmin = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Articles::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>Articles::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47492,7 +47492,7 @@ const iconsSettingsTemplateHeaderHTMLAds = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>AdminAds::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>AdminAds::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47534,7 +47534,7 @@ const iconsSettingsTemplateHeaderHTMLSL = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>AdminSlides::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>AdminSlides::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47579,7 +47579,7 @@ const iconsSettingsTemplateHeaderHTMLAL = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>AdminArticles::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>AdminArticles::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47622,7 +47622,7 @@ const iconsSettingsTemplateHeaderHTMLMD = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Media Gallery::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>Media Gallery::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47738,7 +47738,7 @@ const iconsSettingsTemplateHeaderHTMLMDAdmin = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Media Gallery::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>Media Gallery::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47856,7 +47856,7 @@ const iconsSettingsTemplateHeaderHTMLMDUAdmin = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Media Gallery::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>Media Gallery::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47931,7 +47931,7 @@ const iconsSettingsTemplateHeaderHTMLSLU = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Admin Slides::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>Admin Slides::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -47988,7 +47988,7 @@ const iconsSettingsTemplateHeaderHTMLSLA = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Admin Articles::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>Admin Articles::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
@@ -48103,7 +48103,7 @@ const mediaSimpleGal1A = `
 		<meta charset="UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Photo Gallery::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+        <title>Photo Gallery::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
         <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
         <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
         <meta name="author" content="Codrops"/>
@@ -61631,7 +61631,7 @@ var userAccessTemplateMobileRootSearch = template.Must(template.New("userAccessT
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Search::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Search::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -61702,7 +61702,7 @@ var userAccessTemplateMobileRootAll = template.Must(template.New("userAccessTemp
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />   	
@@ -61778,7 +61778,7 @@ var userAccessTemplateMobileDesktop0 = template.Must(template.New("userAccessTem
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." /> 	
@@ -61844,7 +61844,7 @@ var userAccessTemplateDesktop0Head1 = template.Must(template.New("userAccessTemp
 <!DOCTYPE HTML>
 <html manifest="/cache?q=desktop0&uid={{.}}" lang="en-US" class="no-js" >
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -61859,7 +61859,7 @@ var userAccessTemplateDesktopNHead1 = template.Must(template.New("userAccessTemp
 <!DOCTYPE HTML>
 <html manifest="/cache?q=desktopN&d={{.}}" lang="en-US" class="no-js" >
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -61969,7 +61969,7 @@ var userAccessTemplateDesktop0Part1 = template.Must(template.New("userAccessTemp
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -61984,7 +61984,7 @@ var userAccessTemplateDesktop0Part1a = template.Must(template.New("userAccessTem
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -62287,7 +62287,7 @@ var htmlHeaderModal = template.Must(template.New("htmlHeaderModal").Parse(`
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -62319,7 +62319,7 @@ var htmlWidgetWeather = template.Must(template.New("htmlWidgetWeather").Parse(`
 var mobileControl = template.Must(template.New("mobileControl").Parse(`
 <html>
 <head>
-    <title>MC::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>MC::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -62452,7 +62452,7 @@ var htmlHeaderModalProfile = template.Must(template.New("htmlHeaderModalProfile"
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Profile::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Profile::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -62512,7 +62512,7 @@ var htmlEditorHeader = template.Must(template.New("htmlEditorHeader").Parse(`
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Editor::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Editor::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -63000,7 +63000,7 @@ var htmlEditorHeaderReader = template.Must(template.New("htmlEditorHeaderReader"
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Editor::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Editor::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -63378,7 +63378,7 @@ var htmlHeaderModalAds = template.Must(template.New("htmlHeaderModalAds").Parse(
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Ads::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Ads::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -63401,7 +63401,7 @@ var htmlHeaderAdmin = template.Must(template.New("htmlHeaderAdmin").Parse(`
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Admin::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Admin::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -63430,7 +63430,7 @@ var htmlHeaderSearchGlow = template.Must(template.New("htmlHeaderSearchGlow").Pa
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Search::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Search::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -63451,7 +63451,7 @@ var htmlHeaderFB = template.Must(template.New("htmlHeaderFB").Parse(`
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -63476,7 +63476,7 @@ var htmlQuickSearchTool = template.Must(template.New("htmlQuickSearchTool").Pars
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Quick Launch::- ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>Quick Launch::- ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
@@ -63816,7 +63816,7 @@ var htmlHeaderGB = template.Must(template.New("htmlHeaderGB").Parse(`
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Guestbook::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Guestbook::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -63866,7 +63866,7 @@ var htmlHeaderGBSocial = template.Must(template.New("htmlHeaderGBSocial").Parse(
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Discussion::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Discussion::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -63952,7 +63952,7 @@ var htmlHeaderGBChannel = template.Must(template.New("htmlHeaderGBChannel").Pars
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Guestbook::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Guestbook::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -64007,7 +64007,7 @@ var htmlHeaderModalRefresh = template.Must(template.New("htmlHeaderModalRefresh"
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -64031,7 +64031,7 @@ var htmlHeaderModalRefreshNo = template.Must(template.New("htmlHeaderModalRefres
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -64053,7 +64053,7 @@ var htmlHeaderModalRefreshNoHome = template.Must(template.New("htmlHeaderModalRe
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -64082,7 +64082,7 @@ var htmlHeaderModalBlink = template.Must(template.New("htmlHeaderModalBlink").Pa
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -64139,7 +64139,7 @@ var htmlHeaderModalBlinkColor = template.Must(template.New("htmlHeaderModalBlink
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -64200,7 +64200,7 @@ const htmlHeaderGoogleMapsC = `
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Google Maps::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Google Maps::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -64272,7 +64272,7 @@ var htmlHeaderModalBlinkColorLinkify = template.Must(template.New("htmlHeaderMod
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -64406,7 +64406,7 @@ var textCSSBody = template.Must(template.New("textCSSBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>Text Formatter::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+		<title>Text Formatter::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 		<link rel="shortcut icon" href="/img/favicon.ico"/>
 	</head>
 	<body>
@@ -64453,7 +64453,7 @@ var textCountdownGet = template.Must(template.New("textCountdownGet").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>Countdown Timer::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+		<title>Countdown Timer::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 		<link rel="shortcut icon" href="/img/favicon.ico"/>
 	</head>
 	<body onload="addMinutes(0);">
@@ -64486,7 +64486,7 @@ var textCryptoBody = template.Must(template.New("textCryptoBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>ULAPPH Encryption::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+		<title>ULAPPH Encryption::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 		<link rel="shortcut icon" href="/img/favicon.ico"/>
 	</head>
 	<body>
@@ -64519,7 +64519,7 @@ var textTimelineBodyRaw = template.Must(template.New("textDrawBodyRaw").Parse(`
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>ULAPPH Timeline::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>ULAPPH Timeline::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta charset="utf-8">
     <meta name="description" content="TimelineJS Embed">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -64562,7 +64562,7 @@ var textTimelineBody = template.Must(template.New("textDrawBody").Parse(`
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>ULAPPH Timeline::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>ULAPPH Timeline::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta charset="utf-8">
     <meta name="description" content="TimelineJS Embed">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -64604,7 +64604,7 @@ var textDrawBody = template.Must(template.New("textDrawBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-	<title>ULAPPH Drawing::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>ULAPPH Drawing::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" href="/draw/better.css" type="text/css" />
     <link rel="stylesheet" href="/draw/pygments.css" type="text/css" />
@@ -64667,7 +64667,7 @@ var textToSpeechBody = template.Must(template.New("textToSpeechBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>Text To Speech::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+		<title>Text To Speech::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta charset="UTF-8">
 		<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
@@ -64771,7 +64771,7 @@ var textSemaphoreBody = template.Must(template.New("textSemaphoreBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>SemaphoreSMS::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+		<title>SemaphoreSMS::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 		<link rel="shortcut icon" href="/img/favicon.ico"/>
 		<link rel="stylesheet" href="/css/chat-style.css">
 		<script type="text/javascript" src="/js/jquery-2.1.1.js"></script>
@@ -64805,7 +64805,7 @@ var textStartBody = template.Must(template.New("textStartBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>Start Menu::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+		<title>Start Menu::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 		<link rel="shortcut icon" href="/img/favicon.ico"/>
 		<link rel="stylesheet" href="/css/chat-style.css">
 		<script type="text/javascript" src="/js/jquery-2.1.1.js"></script>
@@ -64857,7 +64857,7 @@ var playGoBody = template.Must(template.New("playGoBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>ULAPPH Go Playground::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+		<title>ULAPPH Go Playground::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 		<link rel="shortcut icon" href="/img/favicon.ico"/>
 		<link rel="stylesheet" href="/css/style-play.css">
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
@@ -64979,7 +64979,7 @@ var htmlToolsConnection = template.Must(template.New("htmlToolsConnection").Pars
 <head>
 <meta charset=utf-8>
 <meta name="viewport" content="width=620">
-<title>Monitor::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>Monitor::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/css/html5demos.css">
@@ -65015,7 +65015,7 @@ var htmlMirror = template.Must(template.New("htmlMirror").Parse(`
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>WebcamJS MirrorB - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>WebcamJS MirrorB - ULAPPH Cloud Desktop</title>
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="stylesheet" href="/lib/css/buttons/buttons.css">
 	<style type="text/css">
@@ -65122,7 +65122,7 @@ var htmlMirror2 = template.Must(template.New("htmlMirror2").Parse(`
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>WebcamJS MirrorS - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+	<title>WebcamJS MirrorS - ULAPPH Cloud Desktop</title>
 	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="stylesheet" href="/lib/css/buttons/buttons.css">
 	<style type="text/css">
@@ -65267,7 +65267,7 @@ var userAccessTemplateDesktopNPart1 = template.Must(template.New("userAccessTemp
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -65283,7 +65283,7 @@ var userAccessTemplateDesktopNPart1a = template.Must(template.New("userAccessTem
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -65297,7 +65297,7 @@ var userAccessTemplateUWMPart1 = template.Must(template.New("userAccessTemplateU
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>UWM::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+    <title>UWM::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
@@ -68331,7 +68331,7 @@ var multiUploaderImagesHdr = template.Must(template.New("multiUploaderImagesHdr"
  
 <meta charset="utf-8">
  
-<title>Dropzone::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>Dropzone::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <script src="/js/dropzone.js"></script>
@@ -68381,7 +68381,7 @@ var multiUploaderImagesHdr2 = template.Must(template.New("multiUploaderImagesHdr
  
 <meta charset="utf-8">
  
-<title>Dropzone::ulapph-public-1.appspot.com - ULAPPH OPO - ULAPPH Cloud Desktop Website</title>
+<title>Dropzone::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 <link rel="shortcut icon" href="/img/favicon.ico"/>
 <script src="/js/dropzone.js"></script>
@@ -74294,7 +74294,7 @@ func renderStaticGotoMyUlapphs(w http.ResponseWriter, r *http.Request) {
 			doc.Ulapphs = append(doc.Ulapphs, g)
 		}
 	} else {
-		fmt.Fprintf(w, "Apologies, your account is not yet mapped to an ULAPPH server. <a href=\"https://github.com/Accenture/ULAPPH-Cloud-Desktop\">Click here</a> to know how to have your own cloud desktop. If not interested, kindly <a href=\"/logout\">logout</a>.")
+		fmt.Fprintf(w, "Hello, your account is not yet connected to any ULAPPH server. <a href=\"https://github.com/Accenture/ULAPPH-Cloud-Desktop\">Click here</a> to install your own cloud desktop for free. If not interested, kindly <a href=\"/logout\">logout</a>.")
 	}
 	//parse template
         t := presentTemplates[path.Ext(".goto-ulapph")]
