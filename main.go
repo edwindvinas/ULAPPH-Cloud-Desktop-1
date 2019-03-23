@@ -608,6 +608,8 @@ const (
 	PlayEnabled = true
 	//Common Chatbot Knowledge Base
 	SYS_COMMON_CHAT_KB = "https://ulapph-sites.appspot.com/media?FUNC_CODE=GET_MEDIA_NC&MEDIA_ID=71&SID=TDSMEDIA-71"
+	//Crowdsourced - Common Chatbot Knowledge Base
+	SYS_COMMON_CHAT_KB_CS = "TDSMEDIA-75"
     ///////////////////////////////////////////////////////////////
 	// CUSTOM PARAMETERS (FLAGS)
 	// Change them via Ulapph Cloud Desktop Manager VBA tool
@@ -40372,8 +40374,9 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 	switch nlpFunc {
 	case "csTeachMe":
 		//Crowdsource - append intent/response
+		//for ulapph-sites central server only
 		c.Infof("nlpFunc = csTeachMe")
-		SID := r.FormValue("SID")
+		SID := SYS_COMMON_CHAT_KB_CS
 		c.Infof("SID: %v", SID)
 		intent := r.FormValue("intent")
 		c.Infof("intent: %v", intent)
@@ -40414,7 +40417,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
                 cKey := fmt.Sprintf("ULAPPH_NLP_%v", SID)
 		_ = memcache.Delete(c,cKey)
 		w.WriteHeader(200)
-		fmt.Fprintf(w, "Saved data successfully!")
+		fmt.Fprintf(w, "Saved data successfully! Please wait from 30mins to 1 hour in order for the new data to take effect!")
 	case "csAppend":
 		c.Infof("nlpFunc = csAppend")
 		SID := r.FormValue("SID")
@@ -40456,7 +40459,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
                 cKey := fmt.Sprintf("ULAPPH_NLP_%v", SID)
 		_ = memcache.Delete(c,cKey)
 		w.WriteHeader(200)
-		fmt.Fprintf(w, "Saved data successfully!")
+		fmt.Fprintf(w, "Saved data successfully! Please wait from 30mins to 1 hour in order for the new data to take effect!")
 		return
 	case "nlpProse":
 		if err == nil {
@@ -40531,7 +40534,8 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 				//thisCont := getBlobText(w, r, BLOB_KEY)
 				//c.Infof("thisCont: %v", thisCont)
 			}
-			putStrToMemcacheWithoutExp(w,r,cKey,thisCont)
+			//putStrToMemcacheWithoutExp(w,r,cKey,thisCont)
+			putStrToMemcacheWithExp(w,r,cKey,thisCont,MC_ADS_EXPIRES_30_MIN)
 		}
 		if thisCont == "" {
 			w.Write([]byte("System error. KB data not found!"))
