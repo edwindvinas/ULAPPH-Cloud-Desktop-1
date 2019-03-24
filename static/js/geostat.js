@@ -1,3 +1,5 @@
+setInterval( function(){geoLatLon();}, 10000);
+
 var isSlow = false;
 var uwms = document.getElementById("uwms");
 var tok = document.getElementById("tok");
@@ -115,12 +117,7 @@ function geoloc() {
 	if (uwms.value != "") {
 		return;
 	}
-	
-	if (navigator.geolocation) {
-	  navigator.geolocation.getCurrentPosition(success, error);
-	} else {
-	  console.log("Geo location not supported!");
-	}
+	geoLatLon();
 	if (('speechSynthesis' in window) || ('SpeechRecognition' in window)) {
 		window.speechSynthesis.cancel();
 	}
@@ -132,6 +129,13 @@ function geoloc() {
 	setInterval(function(){speakTime()}, 900000);	
 };
 
+function geoLatLon() {
+    if (navigator.geolocation) {
+	  navigator.geolocation.getCurrentPosition(success, error);
+	} else {
+	  console.log("Geo location not supported!");
+	}
+}
 function speakTime(){
 	if (('speechSynthesis' in window) || ('SpeechRecognition' in window)) {
 		var Digital=new Date()

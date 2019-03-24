@@ -4156,9 +4156,8 @@ func root(w http.ResponseWriter, r *http.Request) {
 					}
 					if HOST_LIST == "" {
 						IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
-						
 						if IS_SEARCH_SERVER == "N" {
-							_, HOST_LIST = fetchHostList(w,r)	
+							_, HOST_LIST = fetchHostList(w,r)
 						} else {
 							_, HOST_LIST = getHostList(w,r)
 						}
@@ -18558,6 +18557,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			}
+		//online users map portal
 		case "map":
 			updateUserActiveData(w, r, c, "", "/directory-map")
 			if FL_IS_BOT == true {
@@ -18582,6 +18582,33 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 				return
 			} else {
 				showOverallMap(w,r)
+				return
+			}
+		//online servers map portal
+		case "map2":
+			updateUserActiveData(w, r, c, "", "/directory-map2")
+			if FL_IS_BOT == true {
+				c.Infof("Robot not allowed!")
+				fmt.Fprintf(w, "Robot not allowed!")
+				return
+			}
+			IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
+			//if this server is not sites server
+			if IS_SEARCH_SERVER != "Y" {
+				urlStr := fmt.Sprintf("%v/search?f=GET_MAP_LIST2&esk=%v", SEARCH_SERVER, EXT_SEARCH_GEN_KEY)
+				client := urlfetch.Client(c)
+				if err := r.ParseForm(); err != nil {
+					panic(err)
+				}
+				resp, err := client.Get(urlStr)
+				if err != nil {
+					panic(err)
+				}
+				bodyBytes, _ := ioutil.ReadAll(resp.Body)
+				w.Write(bodyBytes)
+				return
+			} else {
+				showOverallMap2(w,r)
 				return
 			}
 		case "sites":
@@ -23100,6 +23127,13 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			showOverallMap(w,r)
+			return
+		case SEARCH_FUNC == "GET_MAP_LIST2":
+			if r.FormValue("esk") != EXT_SEARCH_GEN_KEY {
+				fmt.Printf("Unauthorized access")
+				return
+			}
+			showOverallMap2(w,r)
 			return
 		case SEARCH_FUNC == "GET_CURR_ACC_LOG":
 			CURR_ACC_LOG := getCurrAccLog(w,r)
@@ -54068,14 +54102,12 @@ func getCurrAccLog(w http.ResponseWriter, r *http.Request) (CURR_ACC_LOG_ALL str
 //gets the hostlist from cache or from the sites server
 func getHostList(w http.ResponseWriter, r *http.Request) (TOT int, HOST_LIST string) {
 	c := appengine.NewContext(r)
-	
 	cKey := fmt.Sprintf("HOST_LIST")
 	//HOST_LIST := ""
 	HOST_LIST = getStrMemcacheValueByKey(w,r,cKey)
 	if HOST_LIST != "" {
 		//ok
 	} else {
-		
 		//cache host list here
 		MEDIA_ID := 0
 		cfgName := "SYSTEM_SEARCH_SETTINGS"
@@ -54086,24 +54118,18 @@ func getHostList(w http.ResponseWriter, r *http.Request) (TOT int, HOST_LIST str
 		}
 		//update cache
 		BLOB_KEY := ""
-		BLOB_KEY, _, _, _, _, _, _, _, _, _, _ = getTDSMEDIABlobKey(w, r, MEDIA_ID)	
-		
- 
+		BLOB_KEY, _, _, _, _, _, _, _, _, _, _ = getTDSMEDIABlobKey(w, r, MEDIA_ID)
 		var buf bytes.Buffer
 		reader := blobstore.NewReader(c, appengine.BlobKey(BLOB_KEY))
 		s := bufio.NewScanner(reader)
-		
 		for s.Scan() {
 			//fmt.Fprintf(w, "%v", s.Text())	
 			buf.WriteString(fmt.Sprintf("%v\n", s.Text()))
 		}
-		
 		cKey := fmt.Sprintf("HOST_LIST")
 		putBytesToMemcacheWithoutExp(w,r,cKey,buf.Bytes())
 		HOST_LIST = buf.String()
- 
 	}
-	
 	//secCtr := 0
 	TOT = 0
 	s := bufio.NewScanner(strings.NewReader(HOST_LIST))
@@ -54112,8 +54138,6 @@ func getHostList(w http.ResponseWriter, r *http.Request) (TOT int, HOST_LIST str
 			TOT++
 		}
 	}
- 
-		
 	return TOT, HOST_LIST
 }
 
@@ -54216,8 +54240,8 @@ func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url []str
 		HOST_LIST2 = getHostList2(w,r)
 	}
 	FL_FOUND := false
-    scanner := bufio.NewScanner(strings.NewReader(HOST_LIST2))
-    for scanner.Scan() {
+	scanner := bufio.NewScanner(strings.NewReader(HOST_LIST2))
+	for scanner.Scan() {
 		if scanner.Text() != "" {
 			//demo.ulapph@gmail.com|https://ulapph-installer.appspot.com
 			SPL := strings.Split(scanner.Text(), "|")
@@ -54234,7 +54258,7 @@ func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url []str
 				}
 			}
 		}
-    }
+	}
 	if FL_FOUND == true {
 		justString := strings.Join(url,"@888@")
 		putStrToMemcacheWithoutExp(w,r,cKey2,justString)
@@ -54857,7 +54881,7 @@ func showOverallRobot(w http.ResponseWriter, r *http.Request, target string) {
 	w.Write([]byte(fmt.Sprintf("<html><head><META http-equiv=\"refresh\" content=\"300;URL=/directory?DIR_FUNC=%v\"></head><body><img src=\"/img/cat_sleep.png\" width=150 height=150 title=\"No one online now!\"></body></html>", target)))
 	return
 }
-//shows overall map
+//shows overall map for users portal
 func showOverallMap(w http.ResponseWriter, r *http.Request) {
     c := appengine.NewContext(r)
 	updateUserActiveData(w, r, c, "", "showOverallMap")
@@ -54942,52 +54966,83 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-   /*
-	//also add user locs from HOST_LIST2
-	HOST_LIST2 := getHostList2(w,r)
-
-    scanner := bufio.NewScanner(strings.NewReader(HOST_LIST2))
-    for scanner.Scan() {
-		if scanner.Text() != "" {
-			//demo.ulapph@gmail.com|https://ulapph-installer.appspot.com|lat,lon|timestamp
-			SPL := strings.Split(scanner.Text(), "|")
-			if len(SPL) >= 4 {
-				ctr++
-				tsmtp := SPL[3]
-				tloc := SPL[2]
+	data,_ := json.Marshal(dks)
+	putBytesToMemcacheWithExp(w,r,cKeyC,data,60)
+	w.Write(data)
+	return
+}
+//shows overall map for servers portal
+func showOverallMap2(w http.ResponseWriter, r *http.Request) {
+    c := appengine.NewContext(r)
+	updateUserActiveData(w, r, c, "", "showOverallMap2")
+	var dks []UlapphDesktops
+	//lets serve some cache
+	cKeyC := fmt.Sprintf("JSON_PROC_BROADCAST_LOCATION2")
+	JLIST := getBytMemcacheValueByKey(w,r,cKeyC)
+	//c.Infof("JLIST: %v", string(JLIST))
+	//if JLIST != nil {
+	if string(JLIST) != "" {
+		//c.Infof("Serve map cached!")
+		json.Unmarshal(JLIST, &dks)
+		data,_ := json.Marshal(dks)
+		w.Write(data)
+		return
+	}
+	//get from memcache
+	cKey := fmt.Sprintf("PROC_BROADCAST_LOCATION2")
+	LIST := getStrMemcacheValueByKey(w,r,cKey)
+	if LIST == "" {
+		IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
+		if IS_SEARCH_SERVER == "N" {
+			_, LIST = fetchHostList(w,r)
+		} else {
+			_, LIST = getHostList(w,r)
+		}
+	}
+	ctr := 0
+	//c.Infof("LIST: %v", LIST)
+	if LIST != "" {
+		//scan
+		//var buf bytes.Buffer
+		scanner := bufio.NewScanner(strings.NewReader(LIST))
+		//XLIST := strings.Split(LIST, "@888@")
+		for scanner.Scan() {
+		//for i:=0;i<len(XLIST);i++ {
+			if scanner.Text() != "" {
+			//ULAPPHServerURL,ServerName,ServerDesc,ServerTag,AlternateURL,Latitude,Longitude,ServerIcon
+			//ent := strings.TrimSpace(XLIST[i])
+			//if ent != "" {
+				SPL := strings.Split(scanner.Text(), "|")
+				//SPL := strings.Split(ent, "|")
+				if len(SPL) >= 4 {
+					ctr++
+					XUID := SPL[0]
+					XHOST := SPL[0]
 					lat := float64(0)
 					lon := float64(0)
-					LPL := strings.Split(tloc, ",")
-					if len(LPL) == 2 {
-						lat, _ = strconv.ParseFloat(LPL[0], 64)
-						lon, _ = strconv.ParseFloat(LPL[1], 64)
+					lat, _ = strconv.ParseFloat(SPL[5], 64)
+					lon, _ = strconv.ParseFloat(SPL[6], 64)
+					XPIC := SPL[7] 
+					//buf.WriteString("")
+					p := UlapphDesktops {
+						PK:				ctr,
+						Lat:			lat,
+						Lon:			lon,
+						Title:			XHOST,
+						Status:		0,
+						Altitude:		0,
+						Placement:		"GAE",
+						Brand:			"ULAPPH",
+						Model:			"Cloud Desktop",
+						AntennaModel:	getTimestamp(),
+						Username:		XUID,
+						Picture:	XPIC,
 					}
-				tURL := SPL[1]
-				tKey := SPL[0]
-				XPIC := "/img/no-profile.png"
-				if len(SPL) >= 5 {
-					XPIC = SPL[4]
-                                }
-				p := UlapphDesktops {
-					PK:				ctr,
-					Lat:			lat,
-					Lon:			lon,
-					Title:			tURL,
-					Status:		1,
-					Altitude:		0,
-					Placement:		"GAE",
-					Brand:			"ULAPPH",
-					Model:			"Cloud Desktop",
-					AntennaModel:	stmpHumanize(tsmtp),
-					Username:		tKey,
-					Picture:	XPIC,
+					dks = append(dks, p)
 				}
-				dks = append(dks, p)
 			}
 		}
-    }
-	//cache it first
-    */
+	}
 	data,_ := json.Marshal(dks)
 	putBytesToMemcacheWithExp(w,r,cKeyC,data,60)
 	w.Write(data)
@@ -74294,7 +74349,7 @@ func renderStaticGotoMyUlapphs(w http.ResponseWriter, r *http.Request) {
 			doc.Ulapphs = append(doc.Ulapphs, g)
 		}
 	} else {
-		fmt.Fprintf(w, "Apologies, your account is not yet mapped to an ULAPPH server. <a href=\"https://github.com/Accenture/ULAPPH-Cloud-Desktop\">Click here</a> to know how to have your own cloud desktop. If not interested, kindly <a href=\"/logout\">logout</a>.")
+		fmt.Fprintf(w, "Hello, your account is not yet connected to any ULAPPH server. <a href=\"https://github.com/Accenture/ULAPPH-Cloud-Desktop\">Click here</a> to install your own cloud desktop for free. If not interested, kindly <a href=\"/logout\">logout</a>.")
 	}
 	//parse template
         t := presentTemplates[path.Ext(".goto-ulapph")]

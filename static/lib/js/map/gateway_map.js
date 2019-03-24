@@ -26,7 +26,7 @@
 			if (n > 0) {			
 				//for users
 				marker.data.popup += '<b>Profile</b>: <a href="' + gateway.title + 'social?SO_FUNC=ViewPeople&UID=' + gateway.username + '" target=prof title=Profile>' + gateway.username + '</a><br>';
-				marker.data.popup += '<b>Contact</b>: <a href="' + gateway.title + 'chat?CHAT_FUNC=newChatRoom&INVITE=' + gateway.username + '" target=chat title=Chat>' + gateway.username + '</a><br>';
+				//marker.data.popup += '<b>Contact</b>: <a href="' + gateway.title + 'chat?CHAT_FUNC=newChatRoom&INVITE=' + gateway.username + '" target=chat title=Chat>' + gateway.username + '</a><br>';
 			} else {
 				//for bots
 				marker.data.popup += '<b>Profile</b>:' + gateway.username + '<br>';
