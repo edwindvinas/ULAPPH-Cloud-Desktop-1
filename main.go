@@ -11123,15 +11123,15 @@ func promptRegister(w http.ResponseWriter, r *http.Request, uid string, xCountry
 	  panic(err)
 	}
 	if SYS_REGISTRATION_MANUAL == true {
-		message := "[U00181] ERROR: Registration has been disabled. Only administrators can add new users to this site. Kindly contact admin to request for your account. You may also check other sites where registration is enabled."
+		message := "[U00181] ERROR: Registration has been disabled. Only administrators can add new users to this site. Kindly contact admin to request for your account."
 		if err := htmlHeaderModal.Execute(w, getBasicColors(w,r)); err != nil {
 		  panic(err)
 		}
 		if err := sysmsgErrorTemplate.Execute(w, message); err != nil {
 		  panic(err)
 		}
-		fmt.Fprintf(w, "<div class=\"info\"><a href=\"https://ulapph-public-1.appspot.com\">Register</a> for an account at OPO.ULAPPH.COM instead.</div>")
-		fmt.Fprintf(w, "<div class=\"warning\"><a href=\"/admin-setup\">Click here</a> to manage users if you are an administrator.</div>")	
+		//fmt.Fprintf(w, "<div class=\"info\"><a href=\"https://ulapph-public-1.appspot.com\">Register</a> for an account at OPO.ULAPPH.COM instead.</div>")
+		//fmt.Fprintf(w, "<div class=\"warning\"><a href=\"/admin-setup\">Click here</a> to manage users if you are an administrator.</div>")	
 		fmt.Fprintf(w, "<div class=\"error\"><a href=\"/logout\">Logout</a> from this system.</div>")	
 		if err := htmlFooterModal.Execute(w, ""); err != nil {
 		  panic(err)
