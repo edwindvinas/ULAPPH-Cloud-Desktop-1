@@ -9873,11 +9873,10 @@ func webtop(w http.ResponseWriter, r *http.Request, aUser string, tUser string, 
 //it basically outputs the main desktop UI and the sub-desktops up to 1000 
 func uwm(w http.ResponseWriter, r *http.Request) {
         c := appengine.NewContext(r)
-		checkHTTPS2(w,r)
+	checkHTTPS2(w,r)
         h := r.Header
-		if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
+	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
         var buffer bytes.Buffer
-
 		//if this a shared desktop, no need to login
 		TARGET_UWM := r.FormValue("u")
 		passcode := r.FormValue("passcode")
@@ -11119,16 +11118,12 @@ func promptRegister(w http.ResponseWriter, r *http.Request, uid string, xCountry
 	if uid == "" {
 		return
 	}
- 
 	checkSysIns(w,r)
-	
 	if err := htmlHeaderModal.Execute(w, getBasicColors(w,r)); err != nil {
 	  panic(err)
 	}
- 
 	if SYS_REGISTRATION_MANUAL == true {
 		message := "[U00181] ERROR: Registration has been disabled. Only administrators can add new users to this site. Kindly contact admin to request for your account. You may also check other sites where registration is enabled."
-		
 		if err := htmlHeaderModal.Execute(w, getBasicColors(w,r)); err != nil {
 		  panic(err)
 		}
@@ -11138,13 +11133,10 @@ func promptRegister(w http.ResponseWriter, r *http.Request, uid string, xCountry
 		fmt.Fprintf(w, "<div class=\"info\"><a href=\"https://ulapph-public-1.appspot.com\">Register</a> for an account at OPO.ULAPPH.COM instead.</div>")
 		fmt.Fprintf(w, "<div class=\"warning\"><a href=\"/admin-setup\">Click here</a> to manage users if you are an administrator.</div>")	
 		fmt.Fprintf(w, "<div class=\"error\"><a href=\"/logout\">Logout</a> from this system.</div>")	
-		
 		if err := htmlFooterModal.Execute(w, ""); err != nil {
 		  panic(err)
 		}
-		
 		return
-				
 	}
    fmt.Fprintf(w, "<div class=\"info2\"><img src=\"https://ulapph-public-1.appspot.com/img/ulapph-logo.png\" title=\"ULAPPH Logo\" width=200 height=100></img></div>")
    fmt.Fprintf(w, "<div class=\"info2\"><h3>Welcome to %v</h3>", getSchemeUrl(w,r))
@@ -11162,7 +11154,6 @@ func promptRegister(w http.ResponseWriter, r *http.Request, uid string, xCountry
    if err := userRegistrationTemplate.Execute(w, &TEMPDATA); err != nil {
 	 panic(err)
    }
-	
    return
 }
 
@@ -12916,26 +12907,17 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 //it automatically handle the display of the website contents	
 func contentsAll(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-		
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
- 
 	if SYS_SITE_PRIVATE == true && r.FormValue("bk") != SYS_BYPASS_PRIV_KEY {
 		_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 	}
- 
 	query := r.FormValue("q")
-	
 	switch query {
-	
 	case "SHOW_PER_LIST_MENU":
- 
 		_, uid := checkSession(w,r)
-		
 		showPersonalMenuMobile(w,r,uid)
-		
 	case "SHOW_TOP_LIST_MENU":
 		showTopListMenu(w,r,"s")
-		
 	case "LOAD_AJAX_TILES":
 		deskName := r.FormValue("deskName")
 		cursor := r.FormValue("cursor")
@@ -12944,15 +12926,12 @@ func contentsAll(w http.ResponseWriter, r *http.Request) {
 		chanc:= make(chan string)
 		chand := make(chan bool)
 		dispTopContents(w,r,deskName,"AJAX", cursor, tbl_src, chanc, chand)
-		
 	case "GET_NEXT_CON2":
- 
 		//for remote control
 			SID := r.FormValue("SID")
 			MODE := r.FormValue("MODE")
 			//GOTO := r.FormValue("GOTO")
 			redLink := r.FormValue("redirect")
-			
 			SPL := strings.Split(SID,"-")
 			TARGET := SPL[0]
 			if TARGET == "" {
@@ -12963,7 +12942,6 @@ func contentsAll(w http.ResponseWriter, r *http.Request) {
 				DOC_ID = SPL[1]
 			}
 			docID := str2int(DOC_ID)
-			
 			u := user.Current(c)
 			uid := ""
 			if u == nil {
@@ -12972,12 +12950,9 @@ func contentsAll(w http.ResponseWriter, r *http.Request) {
 				//uid = uid
 				_, uid = checkSession(w,r)
 			}
-			
 			reqStr := ""
 			_, _, _, _, _, _, _, _, MUSIC_ID, GET_NEXT := getTDSSLIDEBlobKey(w, r, docID)
-			
 			switch {
-						
 			case TARGET == "TDSARTL" && MODE == "ARTICLE":
 				reqStr = fmt.Sprintf("/articles?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v&MUSIC_ID=%v", docID, docID, MUSIC_ID)
 				if redLink == "y" {
@@ -18510,7 +18485,6 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		//D0074
-		//edwinxxx
 		case "cctv":
 			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 			_, uid := checkSession(w,r)
@@ -27427,7 +27401,13 @@ func validateAccess(w http.ResponseWriter, r *http.Request, FUNC_CODE, lref stri
 			if FL_VALID_USER == true {
 				FL_PROCEED_OK = true
 			}else {
-				loginGoogle(w,r,r.URL.String())
+				if u != nil {
+					h := r.Header
+					xCountry := h.Get("X-AppEngine-Country")
+					promptRegister(w,r,uid,xCountry,"","https://lh3.googleusercontent.com/W2q6sVO6ADtrwfPYuJVBeT5Vi2G0Z9-V9cV6qm_H-9sSsZ7eii17f2akVHIsTuiWbNxX_EwXmb7OKonHWUI1RBh5R4DujN6Z","")
+				} else {
+					loginGoogle(w,r,r.URL.String())
+				}
 				return
 			}
 	}
@@ -31439,7 +31419,6 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 				http.Redirect(w, r, sysReq, http.StatusFound)
 				return
 			} else {
-				
 				fmt.Fprintf(w, "<title>Install ULAPPH Cloud Desktop</title>")
 				fmt.Fprintf(w, "<center><a href=\"/ulapph-router?RTR_FUNC=NEW_INSTALL&CONFIRM=Y\" title=\"Click to install\"><img src=\"/img/install.png\" height=100 width=100></a>")
 				fmt.Fprintf(w, "<center><font color=green><h2>ULAPPH Cloud Desktop</h2>Kindly click button above to setup ULAPPH Cloud Desktop!</font>")	
