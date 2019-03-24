@@ -6825,7 +6825,13 @@ func login(w http.ResponseWriter, r *http.Request) {
 			if FL_VALID_USER == true {
 				http.Redirect(w, r, "/?q=login&LFUNC=ULAPPH", http.StatusFound)
 				return
+			} else {
+				h := r.Header
+				xCountry := h.Get("X-AppEngine-Country")
+				promptRegister(w,r,uid,xCountry,"","https://lh3.googleusercontent.com/W2q6sVO6ADtrwfPYuJVBeT5Vi2G0Z9-V9cV6qm_H-9sSsZ7eii17f2akVHIsTuiWbNxX_EwXmb7OKonHWUI1RBh5R4DujN6Z","")
+				return
 			}
+
 		}
 	}
 	loginGoogle(w,r,r.URL.String())
