@@ -55012,7 +55012,7 @@ func showOverallMap2(w http.ResponseWriter, r *http.Request) {
 			//ULAPPHServerURL,ServerName,ServerDesc,ServerTag,AlternateURL,Latitude,Longitude,ServerIcon
 			//ent := strings.TrimSpace(XLIST[i])
 			//if ent != "" {
-				SPL := strings.Split(scanner.Text(), "|")
+				SPL := strings.Split(scanner.Text(), ",")
 				//SPL := strings.Split(ent, "|")
 				if len(SPL) >= 4 {
 					ctr++
