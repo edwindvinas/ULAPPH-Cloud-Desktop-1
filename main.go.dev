@@ -54974,10 +54974,10 @@ func showOverallMap2(w http.ResponseWriter, r *http.Request) {
 	//lets serve some cache
 	cKeyC := fmt.Sprintf("JSON_PROC_BROADCAST_LOCATION2")
 	JLIST := getBytMemcacheValueByKey(w,r,cKeyC)
-	c.Infof("JLIST: %v", string(JLIST))
+	//c.Infof("JLIST: %v", string(JLIST))
 	//if JLIST != nil {
 	if string(JLIST) != "" {
-		c.Infof("Serve map cached!")
+		//c.Infof("Serve map cached!")
 		json.Unmarshal(JLIST, &dks)
 		data,_ := json.Marshal(dks)
 		w.Write(data)
@@ -54995,7 +54995,7 @@ func showOverallMap2(w http.ResponseWriter, r *http.Request) {
 		//}
 	}
 	ctr := 0
-	c.Infof("LIST: %v", LIST)
+	//c.Infof("LIST: %v", LIST)
 	if LIST != "" {
 		//scan
 		//var buf bytes.Buffer
@@ -55007,12 +55007,12 @@ func showOverallMap2(w http.ResponseWriter, r *http.Request) {
 			//ULAPPHServerURL,ServerName,ServerDesc,ServerTag,AlternateURL,Latitude,Longitude,ServerIcon
 			//ent := strings.TrimSpace(XLIST[i])
 			//if ent != "" {
-			c.Infof("LINE: %v", scanner.Text())
+			//c.Infof("LINE: %v", scanner.Text())
 			thisStr := fmt.Sprintf("%v", scanner.Text())
                         if string(thisStr[0]) == "#" {
 				continue
 			}
-				SPL := strings.Split(scanner.Text(), ",")
+				SPL := strings.Split(scanner.Text(), "|")
 				//SPL := strings.Split(ent, "|")
 				if len(SPL) >= 4 {
 					ctr++
@@ -55020,9 +55020,9 @@ func showOverallMap2(w http.ResponseWriter, r *http.Request) {
 					XHOST := SPL[0]
 					lat := float64(0)
 					lon := float64(0)
-					lat, _ = strconv.ParseFloat(SPL[5], 64)
-					lon, _ = strconv.ParseFloat(SPL[6], 64)
-					XPIC := SPL[7] 
+					lat, _ = strconv.ParseFloat(SPL[2], 64)
+					lon, _ = strconv.ParseFloat(SPL[3], 64)
+					XPIC := SPL[4] 
 					//buf.WriteString("")
 					p := UlapphDesktops {
 						PK:				ctr,
