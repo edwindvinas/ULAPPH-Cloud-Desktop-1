@@ -18200,6 +18200,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 	FL_IS_BOT := isBot(w,r)
 	switch DIR_FUNC {
 		case "cctv-recent":
+			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 			recent_num := r.FormValue("recent_num")
 			_, uid := checkSession(w,r)
 			if uid == "" {
@@ -18262,6 +18263,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			}
 		//D0074
 		case "cctv-call":
+			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 			_, uid := checkSession(w,r)
 			if uid == "" {
 				//do nothing
@@ -18322,6 +18324,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			}
 		//D0074
 		case "cctv-review":
+			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 			_, uid := checkSession(w,r)
 			if uid == "" {
 				//do nothing
@@ -18382,6 +18385,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			}
 		//D0074
 		case "cctv-capture":
+			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 			_, uid := checkSession(w,r)
 			if uid == "" {
 				//do nothing
@@ -18444,6 +18448,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 		//edwinxx
 		//D0076
 		case "cctv-alarm":
+			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 			_, uid := checkSession(w,r)
 			if uid == "" {
 				//do nothing
@@ -18505,7 +18510,9 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		//D0074
+		//edwinxxx
 		case "cctv":
+			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 			_, uid := checkSession(w,r)
 			if uid == "" {
 				//do nothing

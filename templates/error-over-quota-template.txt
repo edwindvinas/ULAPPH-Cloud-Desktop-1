@@ -5,7 +5,7 @@
     <title>Over Quota Error - AppEngine - {{.STR_FILLER1}}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">                                                               
     <meta name="description"   content="This AppEngine cloud application has reached AppEngine Quota Limits - {{.STR_FILLER1}}" />
-    <meta name="author" content="ULAPPH Corporation" />                                                                                     
+    <meta name="author" content="ULAPPH Cloud Desktop" />                                                                                     
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>                                                                        
     <link rel="shortcut icon" href="img/favicon.ico"/>    
     <link rel="stylesheet" media="screen,projection,tv" href="css/modalWindow.css"/>
