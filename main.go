@@ -53935,7 +53935,6 @@ func procBroadcastAll(w http.ResponseWriter, r *http.Request) {
 	geo := r.FormValue("geo")
 	cont := r.FormValue("cont")
 	ip := r.FormValue("ip")
-	
 	IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "Y" {
 		//scan host list
@@ -53944,7 +53943,6 @@ func procBroadcastAll(w http.ResponseWriter, r *http.Request) {
 		temp := strings.Split(HOST_LIST,"\n")
 		if len(temp) > 0 {
 			for j := 0; j < len(temp); j++ {
- 
 				tURL := ""
 				SPL := strings.Split(temp[j], "|")
 				if len(SPL) < 2 {
@@ -53952,10 +53950,10 @@ func procBroadcastAll(w http.ResponseWriter, r *http.Request) {
 				} else {
 					tURL = strings.TrimSpace(SPL[0])
 				}
-				i := strings.Index(getSchemeUrl(w,r), tURL)
-				//if tURL != "" && i == -1 {
-				if tURL != "" && i == -1 {
-					if string(tURL[0]) != "#" {
+				if tURL != "" {
+					i := strings.Index(getSchemeUrl(w,r), tURL)
+					//if tURL != "" && i == -1 {
+					if string(tURL[0]) != "#" && i == -1 {
 						URL := fmt.Sprintf("%v/social?SO_FUNC=proc-broadcast-all&uid=%v&os=%v&browser=%v&host=%v&pic=%v&geo=%v&cont=%v&ip=%v", tURL, uid, os, browser, host, pic, geo, cont, ip)
 						postUrlBroadcast(w,r,URL)
 					}
@@ -53969,16 +53967,13 @@ func procBroadcastAll(w http.ResponseWriter, r *http.Request) {
 //posts broadcasts to all given a URL
 func postUrlBroadcast(w http.ResponseWriter, r *http.Request, URL string) {
 	c := appengine.NewContext(r)
-	
 	req, err := http.NewRequest("POST", URL, nil)
- 
 	client := urlfetch.Client(c)
 	_, err = client.Do(req)
 	if err != nil {
 		panic(err)
 	}
 }
- 
 //broadcast worldwide contents
 func procBroadcastContentsAll(w http.ResponseWriter, r *http.Request) {
 	
@@ -54979,10 +54974,10 @@ func showOverallMap2(w http.ResponseWriter, r *http.Request) {
 	//lets serve some cache
 	cKeyC := fmt.Sprintf("JSON_PROC_BROADCAST_LOCATION2")
 	JLIST := getBytMemcacheValueByKey(w,r,cKeyC)
-	//c.Infof("JLIST: %v", string(JLIST))
+	c.Infof("JLIST: %v", string(JLIST))
 	//if JLIST != nil {
 	if string(JLIST) != "" {
-		//c.Infof("Serve map cached!")
+		c.Infof("Serve map cached!")
 		json.Unmarshal(JLIST, &dks)
 		data,_ := json.Marshal(dks)
 		w.Write(data)
@@ -54992,15 +54987,15 @@ func showOverallMap2(w http.ResponseWriter, r *http.Request) {
 	cKey := fmt.Sprintf("PROC_BROADCAST_LOCATION2")
 	LIST := getStrMemcacheValueByKey(w,r,cKey)
 	if LIST == "" {
-		IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
-		if IS_SEARCH_SERVER == "N" {
-			_, LIST = fetchHostList(w,r)
-		} else {
+		//IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
+		//if IS_SEARCH_SERVER == "N" {
+		//	_, LIST = fetchHostList(w,r)
+		//} else {
 			_, LIST = getHostList(w,r)
-		}
+		//}
 	}
 	ctr := 0
-	//c.Infof("LIST: %v", LIST)
+	c.Infof("LIST: %v", LIST)
 	if LIST != "" {
 		//scan
 		//var buf bytes.Buffer
@@ -55012,6 +55007,11 @@ func showOverallMap2(w http.ResponseWriter, r *http.Request) {
 			//ULAPPHServerURL,ServerName,ServerDesc,ServerTag,AlternateURL,Latitude,Longitude,ServerIcon
 			//ent := strings.TrimSpace(XLIST[i])
 			//if ent != "" {
+			c.Infof("LINE: %v", scanner.Text())
+			thisStr := fmt.Sprintf("%v", scanner.Text())
+                        if string(thisStr[0]) == "#" {
+				continue
+			}
 				SPL := strings.Split(scanner.Text(), ",")
 				//SPL := strings.Split(ent, "|")
 				if len(SPL) >= 4 {
