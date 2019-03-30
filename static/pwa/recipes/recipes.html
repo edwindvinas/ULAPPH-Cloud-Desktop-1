@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ULAPPH Games</title>
+	<title>ULAPPH Recipes</title>
 
 	<!-- for mobile screens -->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- pwa manifest -->
-    <link rel="manifest" href="/pwa/games/manifest.json?v=1">
+    <link rel="manifest" href="/pwa/recipes/manifest.json?v=1">
 
 	<!-- stylesheets are conveniently separated into components -->
 	<link rel="stylesheet" media="all" href="/lib/css/chat-bubble/setup.css">
@@ -179,14 +179,14 @@ var chatWindow = new Bubbles(document.getElementById("chat"), "chatWindow", {
 var botUrl = window.location.href;
 var convo = {
   ice: {
-    says: ["Hi, I'm ULAPPH Games Bot!", 
-    		"<a href=\"" + botUrl + "\" title=\"Click to restart ULAPPH bot!\"><img src=\"/pwa/games/games.gif\"></a>", 
+    says: ["Hi, I'm ULAPPH Recipes Bot!", 
+    		"<a href=\"" + botUrl + "\" title=\"Click to restart ULAPPH bot!\"><img src=\"/pwa/recipes/recipes.gif\"></a>", 
     		"Type any text or click button below."
     	],
 	  reply: [
         {
-            question: "Open Games",
-            answer: "funcGames"
+            question: "Open Recipes",
+            answer: "funcRecipes"
         },
         {
             question: "User Guide",
@@ -226,59 +226,244 @@ var convo = {
     } // end conversation object
 }
 
-funcGames = function () {
+funcRecipes = function () {
     chatWindow.talk(
     {
-        "games-response": {
-        says: ["Choose from the following online games."],
+        "recipes-response": {
+        says: ["Choose from the following online recipes."],
         reply: [{
-            question: "Word Games",
-            answer: "funcWordGames"
+            question: "All Recipes",
+            answer: "funcAllRecipes"
         },
         {
-            question: "Brain Games",
-            answer: "funcBrainGames"
+            question: "Food Network",
+            answer: "funcFoodNet"
         },
         {
-            question: "Scrabble Online",
-            answer: "funcScrabbleOnline"
+            question: "Food.com",
+            answer: "funcFoodCom"
         },
         {
-            question: "Chess Online",
-            answer: "funcChessOnline"
+            question: "The Kitchen",
+            answer: "funcTheKitchen"
+        },
+        {
+            question: "Yummly",
+            answer: "funcYummly"
+        },
+        {
+            question: "Chow",
+            answer: "funcChow"
+        },
+        {
+            question: "Epicurious",
+            answer: "funcEpicurious"
+        },
+        {
+            question: "Simply Recipes",
+            answer: "funcSimplyRecipes"
+        },
+        {
+            question: "Cooking Light",
+            answer: "funcCookingLight"
+        },
+        {
+            question: "Betty Crocker",
+            answer: "funcBettyCrocker"
+        },
+        {
+            question: "My Recipes",
+            answer: "funcMyRecipes"
+        },
+        {
+            question: "Eating Well",
+            answer: "funcEatingWell"
+        },
+        {
+            question: "Cooks",
+            answer: "funcCooks"
+        },
+        {
+            question: "Spoonful",
+            answer: "funcSpoonful"
+        },
+        {
+            question: "Kraft Recipes",
+            answer: "funcKraftRecipes"
+        },
+        {
+            question: "Filipino Dishes",
+            answer: "funcFilDishes"
         }]
         }
     },
-    "games-response"
+    "recipes-response"
     )
 }
 
-funcWordGames = function () {
-    window.open("http://www.wordgames.com/en/static/popular-games.html?homepage_featured");
+funcCommonRecipes = function () {
+    chatWindow.talk(
+    {
+        "recipes-response": {
+        says: [],
+        reply: [{
+            question: "All Recipes",
+            answer: "funcAllRecipes"
+        },
+        {
+            question: "Food Network",
+            answer: "funcFoodNet"
+        },
+        {
+            question: "Food.com",
+            answer: "funcFoodCom"
+        },
+        {
+            question: "The Kitchen",
+            answer: "funcTheKitchen"
+        },
+        {
+            question: "Yummly",
+            answer: "funcYummly"
+        },
+        {
+            question: "Chow",
+            answer: "funcChow"
+        },
+        {
+            question: "Epicurious",
+            answer: "funcEpicurious"
+        },
+        {
+            question: "Simply Recipes",
+            answer: "funcSimplyRecipes"
+        },
+        {
+            question: "Cooking Light",
+            answer: "funcCookingLight"
+        },
+        {
+            question: "Betty Crocker",
+            answer: "funcBettyCrocker"
+        },
+        {
+            question: "My Recipes",
+            answer: "funcMyRecipes"
+        },
+        {
+            question: "Eating Well",
+            answer: "funcEatingWell"
+        },
+        {
+            question: "Cooks",
+            answer: "funcCooks"
+        },
+        {
+            question: "Spoonful",
+            answer: "funcSpoonful"
+        },
+        {
+            question: "Kraft Recipes",
+            answer: "funcKraftRecipes"
+        },
+        {
+            question: "Filipino Dishes",
+            answer: "funcFilDishes"
+        }]
+        }
+    },
+    "recipes-response"
+    )
+}
+
+funcAllRecipes = function () {
+    window.open("http://www.allrecipes.com/");
     return;
 }
 
-funcBrainGames = function () {
-    window.open("https://www.mindgames.com/Brain+Games");
+funcFoodNet = function () {
+    window.open("http://www.foodnetwork.com/");
+    funcCommonRecipes();
+    return;
+}
+funcFoodCom = function () {
+    window.open("http://www.food.com/");
+    funcCommonRecipes();
+    return;
+}
+funcTheKitchen = function () {
+    window.open("http://www.thekitchn.com/");
+    funcCommonRecipes();
+    return;
+}
+funcYummly = function () {
+    window.open("http://www.yummly.com/");
+    funcCommonRecipes();
+    return;
+}
+funcChow = function () {
+    window.open("http://www.chow.com/");
+    funcCommonRecipes();
+    return;
+}
+funcEpicurious = function () {
+    window.open("http://www.epicurious.com/");
+    funcCommonRecipes();
+    return;
+}
+funcSimplyRecipes = function () {
+    window.open("http://www.simplyrecipes.com/");
+    funcCommonRecipes();
+    return;
+}
+funcCookingLight = function () {
+    window.open("http://www.cookinglight.com/");
+    funcCommonRecipes();
+    return;
+}
+funcBettyCrocker = function () {
+    window.open("http://www.bettycrocker.com/");
+    funcCommonRecipes();
+    return;
+}
+funcMyRecipes = function () {
+    window.open("http://www.myrecipes.com/");
+    funcCommonRecipes();
+    return;
+}
+funcEatingWell = function () {
+    window.open("http://www.eatingwell.com/");
+    funcCommonRecipes();
+    return;
+}
+funcCooks = function () {
+    window.open("http://www.cooks.com/");
+    funcCommonRecipes();
+    return;
+}
+funcSpoonful = function () {
+    window.open("http://www.spoonful.com/");
+    funcCommonRecipes();
+    return;
+}
+funcKraftRecipes = function () {
+    window.open("http://www.kraftrecipes.com/");
+    funcCommonRecipes();
     return;
 }
 
-funcScrabbleOnline = function () {
-    window.open("https://m.funkypotato.com/mobile-games/scrabble-online/?status=play");
-    return;
-}
-
-funcChessOnline = function () {
-    window.open("http://www.betterthanchess.com/");
+funcFilDishes = function () {
+    window.open("https://en.wikipedia.org/wiki/List_of_Philippine_dishes");
+    funcCommonRecipes();
     return;
 }
 
 //auto-redirect after x seconds
-//setTimeout(function() {funcWordGames()}, 15000)
+//setTimeout(function() {funcWordRecipes()}, 15000)
   
 // pass JSON to your function and you're done!
 chatWindow.talk(convo)
 </script>
 <!--pwa service worker registration-->
-<script src="/pwa/games/main.js"></script>
+<script src="/pwa/recipes/main.js"></script>
 </body>

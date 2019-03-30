@@ -6828,7 +6828,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 			} else {
 				h := r.Header
 				xCountry := h.Get("X-AppEngine-Country")
-				promptRegister(w,r,uid,xCountry,"","https://lh3.googleusercontent.com/W2q6sVO6ADtrwfPYuJVBeT5Vi2G0Z9-V9cV6qm_H-9sSsZ7eii17f2akVHIsTuiWbNxX_EwXmb7OKonHWUI1RBh5R4DujN6Z","")
+				promptRegister(w,r,u.Email,xCountry,"","https://lh3.googleusercontent.com/W2q6sVO6ADtrwfPYuJVBeT5Vi2G0Z9-V9cV6qm_H-9sSsZ7eii17f2akVHIsTuiWbNxX_EwXmb7OKonHWUI1RBh5R4DujN6Z","")
 				return
 			}
 
@@ -44529,6 +44529,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 					//c.Errorf("[S0372]")
 					if URL != "" {
 						q = datastore.NewQuery("TDSMEDIA").Filter("IMG_URL =", URL)
+						PROP = URL
 					}
 					media := make([]TDSMEDIA, 0, 1)
 					if _, err := q.GetAll(c, &media); err != nil {

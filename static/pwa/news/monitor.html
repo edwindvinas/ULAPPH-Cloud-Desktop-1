@@ -160,6 +160,8 @@
                     curIndex = curIndex + 1;
                     //show image & link
                     setTimeout(function() {document.getElementById("news").innerHTML = "<a href=\"" + url + "\" target=\"" + title + "\"><img src=\"" + img + "\" width=\"100%\" height=\"100%\"></a>";}, 40000);
+                    //speak time
+                    speakTime();
                 }
             }
         }
@@ -173,6 +175,18 @@
                 msg.text = thisMsg;
                 window.speechSynthesis.speak(msg);
         }
+    }
+    function speakTime(){
+            if (('speechSynthesis' in window) || ('SpeechRecognition' in window)) {
+                    var Digital=new Date()
+                    var nowIs = formatDate2(Digital);
+                    var nowNa = 'Time now is '+nowIs;
+                    var msg = new SpeechSynthesisUtterance();
+                    msg.rate = 1;
+                    msg.pitch = 1;
+                    msg.text = nowNa;
+                    window.speechSynthesis.speak(msg);
+            }
     }
     //retrieve news now
     funcnews();

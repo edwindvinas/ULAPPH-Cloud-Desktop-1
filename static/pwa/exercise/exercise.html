@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ULAPPH Games</title>
+	<title>ULAPPH Exercise</title>
 
 	<!-- for mobile screens -->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- pwa manifest -->
-    <link rel="manifest" href="/pwa/games/manifest.json?v=1">
+    <link rel="manifest" href="/pwa/exercise/manifest.json?v=1">
 
 	<!-- stylesheets are conveniently separated into components -->
 	<link rel="stylesheet" media="all" href="/lib/css/chat-bubble/setup.css">
@@ -179,14 +179,14 @@ var chatWindow = new Bubbles(document.getElementById("chat"), "chatWindow", {
 var botUrl = window.location.href;
 var convo = {
   ice: {
-    says: ["Hi, I'm ULAPPH Games Bot!", 
-    		"<a href=\"" + botUrl + "\" title=\"Click to restart ULAPPH bot!\"><img src=\"/pwa/games/games.gif\"></a>", 
+    says: ["Hi, I'm ULAPPH Exercise Bot!", 
+    		"<a href=\"" + botUrl + "\" title=\"Click to restart ULAPPH bot!\"><img src=\"/pwa/exercise/exercise.gif\"></a>", 
     		"Type any text or click button below."
     	],
 	  reply: [
         {
-            question: "Open Games",
-            answer: "funcGames"
+            question: "Men Exercises",
+            answer: "funcMenExercise"
         },
         {
             question: "User Guide",
@@ -226,59 +226,150 @@ var convo = {
     } // end conversation object
 }
 
-funcGames = function () {
+funcMenExercise = function () {
     chatWindow.talk(
     {
-        "games-response": {
-        says: ["Choose from the following online games."],
+        "exercise-response": {
+        says: [],
         reply: [{
-            question: "Word Games",
-            answer: "funcWordGames"
+            question: "8-Minute Stretch Exercise",
+            answer: "func8MinStretch"
         },
         {
-            question: "Brain Games",
-            answer: "funcBrainGames"
+            question: "8-Minute Cardio Exercise",
+            answer: "func8MinCardio"
         },
         {
-            question: "Scrabble Online",
-            answer: "funcScrabbleOnline"
+            question: "Dance Exercise",
+            answer: "funcDanceExercise"
         },
         {
-            question: "Chess Online",
-            answer: "funcChessOnline"
+            question: "8-Minute Abs Exercise",
+            answer: "func8MinAbs"
+        },
+        {
+            question: "8-Minute Legs Exercise",
+            answer: "func8MinLegs"
+        },
+        {
+            question: "8-Minute Arms Exercise",
+            answer: "func8MinArms"
+        },
+        {
+            question: "8-Minute Buns Exercise",
+            answer: "func8MinBuns"
+        },
+        {
+            question: "45-Minute Boxing Cardio Exercise",
+            answer: "func45MinBoxing"
+        },
+        {
+            question: "Push-up Exercise",
+            answer: "funcPushUps"
+        },
+        {
+            question: "Plank Exercise",
+            answer: "funcPlanks"
+        },
+        {
+            question: "5-Minute Cool Down Exercise",
+            answer: "func5MinCoolDown"
+        },
+        {
+            question: "8 Minutes Biceps",
+            answer: "func8MinBiceps"
+        },
+        {
+            question: "Male Vocal Workout",
+            answer: "funcMaleVocal"
+        },
+        {
+            question: "Male Vocal Eh Workout",
+            answer: "funcMaleVocalEh"
         }]
         }
     },
-    "games-response"
+    "exercise-response"
     )
 }
 
-funcWordGames = function () {
-    window.open("http://www.wordgames.com/en/static/popular-games.html?homepage_featured");
+func8MinStretch = function () {
+    window.open("https://www.youtube.com/embed/79sXwpZUeBw");
     return;
 }
 
-funcBrainGames = function () {
-    window.open("https://www.mindgames.com/Brain+Games");
+func8MinCardio = function () {
+    window.open("https://www.youtube.com/embed/X1TuhAn6C-g");
     return;
 }
 
-funcScrabbleOnline = function () {
-    window.open("https://m.funkypotato.com/mobile-games/scrabble-online/?status=play");
+funcDanceExercise = function () {
+    window.open("https://www.youtube.com/embed/BOkBrurM9G4");
     return;
 }
 
-funcChessOnline = function () {
-    window.open("http://www.betterthanchess.com/");
+func8MinAbs = function () {
+    window.open("https://www.youtube.com/embed/pNqrkGnkUWc");
     return;
 }
+
+func8MinLegs = function () {
+    window.open("https://www.youtube.com/embed/uLIfN-31Bgs");
+    return;
+}
+
+func8MinArms = function () {
+    window.open("https://www.youtube.com/embed/sSby1UUhyts");
+    return;
+}
+
+func8MinBuns = function () {
+    window.open("https://www.youtube.com/embed/bMnW7bbkV6Q");
+    return;
+}
+
+func45MinBoxing = function () {
+    window.open("https://www.youtube.com/embed/lujcE3FGL_U");
+    return;
+}
+
+funcPushUps = function () {
+    window.open("https://www.youtube.com/embed/jWc8gHlAkoM");
+    return;
+}
+
+funcPlanks = function () {
+    window.open("https://www.youtube.com/embed/TvxNkmjdhMM");
+    return;
+}
+
+func5MinCoolDown = function () {
+    window.open("https://www.youtube.com/embed/XewzQ9MRDh8");
+    return;
+}
+
+func8MinBiceps = function () {
+    window.open("https://www.youtube.com/embed/L5993CtcBI8");
+    return;
+}
+
+funcMaleVocal = function () {
+    window.open("https://www.youtube.com/embed/La155cWwlj4");
+    return;
+}
+
+funcMaleVocalEh = function () {
+    window.open("https://www.youtube.com/embed/bcfs85dqbss");
+    return;
+}
+
 
 //auto-redirect after x seconds
-//setTimeout(function() {funcWordGames()}, 15000)
+//setTimeout(function() {funcExercise()}, 15000)
   
 // pass JSON to your function and you're done!
 chatWindow.talk(convo)
 </script>
 <!--pwa service worker registration-->
-<script src="/pwa/games/main.js"></script>
+<script src="/pwa/exercise/main.js"></script>
 </body>

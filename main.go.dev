@@ -6825,7 +6825,13 @@ func login(w http.ResponseWriter, r *http.Request) {
 			if FL_VALID_USER == true {
 				http.Redirect(w, r, "/?q=login&LFUNC=ULAPPH", http.StatusFound)
 				return
+			} else {
+				h := r.Header
+				xCountry := h.Get("X-AppEngine-Country")
+				promptRegister(w,r,u.Email,xCountry,"","https://lh3.googleusercontent.com/W2q6sVO6ADtrwfPYuJVBeT5Vi2G0Z9-V9cV6qm_H-9sSsZ7eii17f2akVHIsTuiWbNxX_EwXmb7OKonHWUI1RBh5R4DujN6Z","")
+				return
 			}
+
 		}
 	}
 	loginGoogle(w,r,r.URL.String())
@@ -11123,15 +11129,15 @@ func promptRegister(w http.ResponseWriter, r *http.Request, uid string, xCountry
 	  panic(err)
 	}
 	if SYS_REGISTRATION_MANUAL == true {
-		message := "[U00181] ERROR: Registration has been disabled. Only administrators can add new users to this site. Kindly contact admin to request for your account. You may also check other sites where registration is enabled."
+		message := "[U00181] ERROR: Registration has been disabled. Only administrators can add new users to this site. Kindly contact admin to request for your account."
 		if err := htmlHeaderModal.Execute(w, getBasicColors(w,r)); err != nil {
 		  panic(err)
 		}
 		if err := sysmsgErrorTemplate.Execute(w, message); err != nil {
 		  panic(err)
 		}
-		fmt.Fprintf(w, "<div class=\"info\"><a href=\"https://ulapph-public-1.appspot.com\">Register</a> for an account at OPO.ULAPPH.COM instead.</div>")
-		fmt.Fprintf(w, "<div class=\"warning\"><a href=\"/admin-setup\">Click here</a> to manage users if you are an administrator.</div>")	
+		//fmt.Fprintf(w, "<div class=\"info\"><a href=\"https://ulapph-public-1.appspot.com\">Register</a> for an account at OPO.ULAPPH.COM instead.</div>")
+		//fmt.Fprintf(w, "<div class=\"warning\"><a href=\"/admin-setup\">Click here</a> to manage users if you are an administrator.</div>")	
 		fmt.Fprintf(w, "<div class=\"error\"><a href=\"/logout\">Logout</a> from this system.</div>")	
 		if err := htmlFooterModal.Execute(w, ""); err != nil {
 		  panic(err)
@@ -44523,6 +44529,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 					//c.Errorf("[S0372]")
 					if URL != "" {
 						q = datastore.NewQuery("TDSMEDIA").Filter("IMG_URL =", URL)
+						PROP = URL
 					}
 					media := make([]TDSMEDIA, 0, 1)
 					if _, err := q.GetAll(c, &media); err != nil {
