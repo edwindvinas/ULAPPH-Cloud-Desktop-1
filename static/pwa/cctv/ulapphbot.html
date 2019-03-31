@@ -434,6 +434,36 @@ funcReviewCCTV = function () {
 }
 
 funcRecentCCTV = function () {
+    chatWindow.talk(
+    {
+        "cctv-cameras": {
+        says: [],
+            reply: [{
+                    question: "20 Recents",
+                    answer: "funcRecentCCTV20s"
+                },{
+                    question: "50 Recents",
+                    answer: "funcRecentCCTV50s"
+                },{
+                    question: "100 Recents",
+                    answer: "funcRecentCCTV100s"
+                },{
+                    question: "500 Recents",
+                    answer: "funcRecentCCTV500s"
+                },{
+                    question: "1000 Recents",
+                    answer: "funcRecentCCTV1000s"
+                },{
+                    question: "5000 Recents",
+                    answer: "funcRecentCCTV5000s"
+                }]
+        }
+    },
+    "cctv-cameras"
+)
+}
+
+funcRecentCCTV20s = function () {
 	//reviewing cctv function
     if (window.XMLHttpRequest)
 	  {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -459,26 +489,293 @@ funcRecentCCTV = function () {
 					  "cctv-cameras": {
 					  says: [currVal],
 						reply: [{
-                            question: "New CCTV",
-                            answer: "funcNewCCTV"
+                                question: "20 Recents",
+                                answer: "funcRecentCCTV20s"
                             },{
-						      question: "Show CCTVs",
-						      answer: "funcShowCCTV"
-						    },{
-							  question: "Capture CCTVs",
-							  answer: "funcCaptureCCTV"
-						    },{
-                                question: "Review CCTVs",
-                                answer: "funcReviewCCTV"
+                                question: "50 Recents",
+                                answer: "funcRecentCCTV50s"
                             },{
-                                question: "Call CCTVs",
-                                answer: "funcCallCCTV"
+                                question: "100 Recents",
+                                answer: "funcRecentCCTV100s"
                             },{
-                                question: "Recent CCTVs",
-                                answer: "funcRecentCCTV"
+                                question: "500 Recents",
+                                answer: "funcRecentCCTV500s"
                             },{
-                                question: "Alarm Status",
-                                answer: "funcAlarmCCTV"
+                                question: "1000 Recents",
+                                answer: "funcRecentCCTV1000s"
+                            },{
+                                question: "5000 Recents",
+                                answer: "funcRecentCCTV5000s"
+                            }]
+					  }
+					},
+					"cctv-cameras"
+				)
+			}
+			return;
+		}
+	  }
+}
+
+funcRecentCCTV50s = function () {
+	//reviewing cctv function
+    if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xhr5=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xhr5=new ActiveXObject('MSXML2.XMLHTTP.3.0');
+	  } 
+	console.log("Capturing cctv cameras...");
+	xhr5.open("GET","/directory?DIR_FUNC=cctv-recent&recent_num=50"); 
+	xhr5.send();
+	
+	 xhr5.onreadystatechange=function(convo)
+	  {
+	  if (xhr5.readyState==4 && xhr5.status==200)
+		{
+		var currVal = xhr5.responseText;
+			console.log(currVal);
+			  if (currVal != "") {
+				  chatWindow.talk(
+					{
+					  "cctv-cameras": {
+					  says: [currVal],
+						reply: [{
+                                question: "20 Recents",
+                                answer: "funcRecentCCTV20s"
+                            },{
+                                question: "50 Recents",
+                                answer: "funcRecentCCTV50s"
+                            },{
+                                question: "100 Recents",
+                                answer: "funcRecentCCTV100s"
+                            },{
+                                question: "500 Recents",
+                                answer: "funcRecentCCTV500s"
+                            },{
+                                question: "1000 Recents",
+                                answer: "funcRecentCCTV1000s"
+                            },{
+                                question: "5000 Recents",
+                                answer: "funcRecentCCTV5000s"
+                            }]
+					  }
+					},
+					"cctv-cameras"
+				)
+			}
+			return;
+		}
+	  }
+}
+
+funcRecentCCTV100s = function () {
+	//reviewing cctv function
+    if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xhr5=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xhr5=new ActiveXObject('MSXML2.XMLHTTP.3.0');
+	  } 
+	console.log("Capturing cctv cameras...");
+	xhr5.open("GET","/directory?DIR_FUNC=cctv-recent&recent_num=100"); 
+	xhr5.send();
+	
+	 xhr5.onreadystatechange=function(convo)
+	  {
+	  if (xhr5.readyState==4 && xhr5.status==200)
+		{
+		var currVal = xhr5.responseText;
+			console.log(currVal);
+			  if (currVal != "") {
+				  chatWindow.talk(
+					{
+					  "cctv-cameras": {
+					  says: [currVal],
+						reply: [{
+                                question: "20 Recents",
+                                answer: "funcRecentCCTV20s"
+                            },{
+                                question: "50 Recents",
+                                answer: "funcRecentCCTV50s"
+                            },{
+                                question: "100 Recents",
+                                answer: "funcRecentCCTV100s"
+                            },{
+                                question: "500 Recents",
+                                answer: "funcRecentCCTV500s"
+                            },{
+                                question: "1000 Recents",
+                                answer: "funcRecentCCTV1000s"
+                            },{
+                                question: "5000 Recents",
+                                answer: "funcRecentCCTV5000s"
+                            }]
+					  }
+					},
+					"cctv-cameras"
+				)
+			}
+			return;
+		}
+	  }
+}
+
+funcRecentCCTV500s = function () {
+	//reviewing cctv function
+    if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xhr5=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xhr5=new ActiveXObject('MSXML2.XMLHTTP.3.0');
+	  } 
+	console.log("Capturing cctv cameras...");
+	xhr5.open("GET","/directory?DIR_FUNC=cctv-recent&recent_num=500"); 
+	xhr5.send();
+	
+	 xhr5.onreadystatechange=function(convo)
+	  {
+	  if (xhr5.readyState==4 && xhr5.status==200)
+		{
+		var currVal = xhr5.responseText;
+			console.log(currVal);
+			  if (currVal != "") {
+				  chatWindow.talk(
+					{
+					  "cctv-cameras": {
+					  says: [currVal],
+						reply: [{
+                                question: "20 Recents",
+                                answer: "funcRecentCCTV20s"
+                            },{
+                                question: "50 Recents",
+                                answer: "funcRecentCCTV50s"
+                            },{
+                                question: "100 Recents",
+                                answer: "funcRecentCCTV100s"
+                            },{
+                                question: "500 Recents",
+                                answer: "funcRecentCCTV500s"
+                            },{
+                                question: "1000 Recents",
+                                answer: "funcRecentCCTV1000s"
+                            },{
+                                question: "5000 Recents",
+                                answer: "funcRecentCCTV5000s"
+                            }]
+					  }
+					},
+					"cctv-cameras"
+				)
+			}
+			return;
+		}
+	  }
+}
+
+funcRecentCCTV1000s = function () {
+	//reviewing cctv function
+    if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xhr5=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xhr5=new ActiveXObject('MSXML2.XMLHTTP.3.0');
+	  } 
+	console.log("Capturing cctv cameras...");
+	xhr5.open("GET","/directory?DIR_FUNC=cctv-recent&recent_num=1000"); 
+	xhr5.send();
+	
+	 xhr5.onreadystatechange=function(convo)
+	  {
+	  if (xhr5.readyState==4 && xhr5.status==200)
+		{
+		var currVal = xhr5.responseText;
+			console.log(currVal);
+			  if (currVal != "") {
+				  chatWindow.talk(
+					{
+					  "cctv-cameras": {
+					  says: [currVal],
+						reply: [{
+                                question: "20 Recents",
+                                answer: "funcRecentCCTV20s"
+                            },{
+                                question: "50 Recents",
+                                answer: "funcRecentCCTV50s"
+                            },{
+                                question: "100 Recents",
+                                answer: "funcRecentCCTV100s"
+                            },{
+                                question: "500 Recents",
+                                answer: "funcRecentCCTV500s"
+                            },{
+                                question: "1000 Recents",
+                                answer: "funcRecentCCTV1000s"
+                            },{
+                                question: "5000 Recents",
+                                answer: "funcRecentCCTV5000s"
+                            }]
+					  }
+					},
+					"cctv-cameras"
+				)
+			}
+			return;
+		}
+	  }
+}
+
+funcRecentCCTV5000s = function () {
+	//reviewing cctv function
+    if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xhr5=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xhr5=new ActiveXObject('MSXML2.XMLHTTP.3.0');
+	  } 
+	console.log("Capturing cctv cameras...");
+	xhr5.open("GET","/directory?DIR_FUNC=cctv-recent&recent_num=5000"); 
+	xhr5.send();
+	
+	 xhr5.onreadystatechange=function(convo)
+	  {
+	  if (xhr5.readyState==4 && xhr5.status==200)
+		{
+		var currVal = xhr5.responseText;
+			console.log(currVal);
+			  if (currVal != "") {
+				  chatWindow.talk(
+					{
+					  "cctv-cameras": {
+					  says: [currVal],
+						reply: [{
+                                question: "20 Recents",
+                                answer: "funcRecentCCTV20s"
+                            },{
+                                question: "50 Recents",
+                                answer: "funcRecentCCTV50s"
+                            },{
+                                question: "100 Recents",
+                                answer: "funcRecentCCTV100s"
+                            },{
+                                question: "500 Recents",
+                                answer: "funcRecentCCTV500s"
+                            },{
+                                question: "1000 Recents",
+                                answer: "funcRecentCCTV1000s"
+                            },{
+                                question: "5000 Recents",
+                                answer: "funcRecentCCTV5000s"
                             }]
 					  }
 					},

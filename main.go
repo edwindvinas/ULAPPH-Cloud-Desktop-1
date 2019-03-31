@@ -18977,6 +18977,11 @@ func editor(w http.ResponseWriter, r *http.Request) {
 				tjs.Title = tjst
 				switch contType {
 				case "TDSSLIDE":
+					if repMode == "rep-stats" {
+						w.WriteHeader(200)
+						w.Write([]byte("N/A"))
+						return
+					}
 					//q := datastore.NewQuery("TDSSLIDE").Filter("YEAR =", start_year).Limit(500)
 					q := datastore.NewQuery("TDSSLIDE").Order("-DOC_ID").Limit(500)
 					if contCat != "" {
@@ -19007,12 +19012,17 @@ func editor(w http.ResponseWriter, r *http.Request) {
 							}
 						}
 					}
-					if repMode == "rep-stats" {
+					/*if repMode == "rep-stats" {
 						w.WriteHeader(200)
 						w.Write([]byte(fmt.Sprintf("%v/%v",ctr,recCount)))
 						return
-					}
+					}*/
 				case "TDSARTL":
+					if repMode == "rep-stats" {
+						w.WriteHeader(200)
+						w.Write([]byte("N/A"))
+						return
+					}
 					//q := datastore.NewQuery("TDSARTL").Filter("YEAR =", start_year).Limit(500)
 					q := datastore.NewQuery("TDSARTL").Order("-DOC_ID").Limit(500)
 					if contCat != "" {
@@ -19043,12 +19053,17 @@ func editor(w http.ResponseWriter, r *http.Request) {
 							}
 						}
 					}
-					if repMode == "rep-stats" {
+					/*if repMode == "rep-stats" {
 						w.WriteHeader(200)
 						w.Write([]byte(fmt.Sprintf("%v/%v",ctr,recCount)))
 						return
-					}
+					}*/
 				case "TDSMEDIA":
+					if repMode == "rep-stats" {
+						w.WriteHeader(200)
+						w.Write([]byte("N/A"))
+						return
+					}
 					//q := datastore.NewQuery("TDSMEDIA").Filter("YEAR =", start_year).Limit(500)
 					q := datastore.NewQuery("TDSMEDIA").Order("-MEDIA_ID").Limit(500)
 					if contCat != "" {
@@ -19079,11 +19094,11 @@ func editor(w http.ResponseWriter, r *http.Request) {
 							}
 						}
 					}
-					if repMode == "rep-stats" {
+					/*if repMode == "rep-stats" {
 						w.WriteHeader(200)
 						w.Write([]byte(fmt.Sprintf("%v/%v",ctr,recCount)))
 						return
-					}
+					}*/
 				default:
 					//slides
 					//q := datastore.NewQuery("TDSSLIDE").Filter("YEAR =", start_year).Limit(500)
