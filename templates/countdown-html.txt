@@ -251,7 +251,8 @@ function soundAlarm() {
 			volume: 95,
 			url: root + "/audio/alarmclock.mp3"
 		});
-		playSound('mySoundAC');	
+		//playSound('mySoundAC');
+        soundManager.play('mySoundAC');	
 		return;
 	}
 	soundManager.createSound({
@@ -262,7 +263,7 @@ function soundAlarm() {
 	soundManager.play('mySoundAC');
 	//alert
 	var about = document.getElementById('title').innerHTML;
-	alert("Time is up! RE: "+about);
+	//alert("Time is up! RE: "+about);
 	document.title = "Time is up >> " + document.title;
 	return;
 };
