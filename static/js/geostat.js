@@ -1,4 +1,4 @@
-setInterval( function(){geoLatLon();}, 10000);
+setInterval( function(){geoLatLon();}, 30000);
 
 var isSlow = false;
 var uwms = document.getElementById("uwms");
@@ -130,7 +130,11 @@ function geoloc() {
 };
 
 function geoLatLon() {
-    if (navigator.geolocation) {
+   	if isActive == false {
+		//reduce bill
+		return;
+	}
+    	if (navigator.geolocation) {
 	  navigator.geolocation.getCurrentPosition(success, error);
 	} else {
 	  console.log("Geo location not supported!");

@@ -178,7 +178,7 @@ cron:
   
 - description: regular update of earthquakes (PH)
   url: /ulapph-router?RTR_FUNC=CACHE_URL_FETCH_01
-  schedule: every 1 hours
+  schedule: every 15 minutes
 
 - description: regular cleanup of inactive users
   url: /ulapph-router?RTR_FUNC=TASK_CLEAN_UP_INACT_USERS

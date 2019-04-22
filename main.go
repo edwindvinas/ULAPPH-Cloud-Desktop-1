@@ -25868,26 +25868,22 @@ func infodb(w http.ResponseWriter, r *http.Request) {
 				TASK_MEMCACHER_motd(w,r,"","ULAPPH Stocks",stocksKey,reqStr)
 			}
 			return
-			
 		case "ULAPPH-EQ-PH":
 			cKey := fmt.Sprintf("ULAPPH_EQ_%v", "PH")
 			ULAPPH_EQ_PH := []byte("")
 			if item, err := memcache.Get(c, cKey); err == memcache.ErrCacheMiss {
- 
 			} else if err != nil {
 				//c.Errorf("error getting item: %v", err)
 			} else {
- 
 				ULAPPH_EQ_PH = item.Value
 			}
-			
 			if ULAPPH_EQ_PH == nil {
 				fmt.Fprintf(w, "Sorry, cache not available now. Please come back after a couple of minutes.")
 				TASK_MEMCACHER_URLFETCH_philvolcs_EQ(w,r)
 			} else {
 				//display slides
 				writeHTMLHeader(w, 200)
-				w.Write(ULAPPH_EQ_PH)				
+				w.Write(ULAPPH_EQ_PH)
 			}
 			return
  
@@ -32107,7 +32103,7 @@ func getSystemStats(w http.ResponseWriter, r *http.Request) (p TEMPSTRUCT3, err 
  
 //billing fix to determine if there is anyone online
 //if none, we can suspend some operations to minimize usage
-func isAnyoneOnline(w http.ResponseWriter, r *http.Request) bool {
+/*func isAnyoneOnline(w http.ResponseWriter, r *http.Request) bool {
 	usersOnline_CACHE_KEY := fmt.Sprintf("USERS_ONLINE_LIST")
 	usersOnline_CACHE := getStrMemcacheValueByKey(w,r,usersOnline_CACHE_KEY)
 	fuCtr := 0
@@ -32123,7 +32119,7 @@ func isAnyoneOnline(w http.ResponseWriter, r *http.Request) bool {
 		return true
 	}
 	return false
-}
+}*/
 
 //caches a given MOTD file and generates a slide or article
 //user gets redirected to the slide or article link
@@ -32526,26 +32522,20 @@ func TASK_MEMCACHER_URLFETCH_NOTIFS_IND (w http.ResponseWriter, r *http.Request,
 //it parses the Philvolcs data and notifies users online about the earthquake events
 func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	
 	if SYS_EARTHQUAKE_MON != true {
 		return
 	}
-	
 	//lets do this only if anyone is online
-	if isAnyoneOnline(w,r) == false {
-		return
-	}
-	
+	//if isAnyoneOnline(w,r) == false {
+	//	return
+	//}
 	//dummy
-	FL_DUMMY := false
-	
+	FL_DUMMY := false 
 	//get hourly logs
 	currenttime := time.Now().Local()
 	DATE_YEAR := currenttime.Year()
-	
 	fmt.Fprintf(w, "<h1>Earthquake-PH</h1>")
-	
-	var lines []string
+	/*var lines []string
 	lines = append(lines, fmt.Sprintf("ULAPPH Earthquake Monitoring"))
 	lines = append(lines, fmt.Sprintf("Philippines"))
 	const layout = "2 Jan 2006"
@@ -32568,7 +32558,6 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 	lines = append(lines, fmt.Sprintf("* Source: Earthquaketrack.com/p/philippines/recent"))
 	lines = append(lines, fmt.Sprintf(".link http://earthquaketrack.com/p/philippines/recent"))
 	lines = append(lines, fmt.Sprintf(""))
-	
 	if SYS_DISP_ADS_CONTENT == true {
 		//put ads
 		for i := 1; i < 4; i++ {
@@ -32580,13 +32569,13 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 			lines = append(lines, fmt.Sprintf("%v", thisFrame))
 			lines = append(lines, " ")
 			lines = append(lines, " ")
-		
 		}
 	}
-	
-	UFLink := "http://www.phivolcs.dost.gov.ph/html/update_SOEPD/EQLatest.html"
-	ARLink := "https://ulapph-public-1.appspot.com/infodb?DB_FUNC=ULAPPH-EQ-PH&SID=ULAPPH-EQ-PH"
-	cKey := fmt.Sprintf("ULAPPH_EQ_%s", "PH")
+	*/
+	//UFLink := "http://www.phivolcs.dost.gov.ph/html/update_SOEPD/EQLatest.html"
+	//ARLink := "https://ulapph-public-1.appspot.com/infodb?DB_FUNC=ULAPPH-EQ-PH&SID=ULAPPH-EQ-PH"
+	UFLink := "https://earthquake.phivolcs.dost.gov.ph/"
+	//cKey := fmt.Sprintf("ULAPPH_EQ_%s", "PH")
 	cKeyP := fmt.Sprintf("ULAPPH_EQ_%s_PREV", "PH")
 	cKeyValue := ""
 	client := urlfetch.Client(c)
@@ -32597,11 +32586,9 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		//eturn err
 	}
-	
 	//////////////////////////////
-	FL_EQ := false
+	//FL_EQ := false
 	msgDtl3 := ""
-		
 	if err != nil {
 		fmt.Printf("%s", err)
 	} else {
@@ -32611,7 +32598,8 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 		parse_html(w, r, y, ufdoc)
 		//parse links
 		//-------------------------------
-		mainPath := "http://www.phivolcs.dost.gov.ph/html/update_SOEPD"
+		//mainPath := "http://www.phivolcs.dost.gov.ph/html/update_SOEPD"
+		mainPath := "https://earthquake.phivolcs.dost.gov.ph/"
 		y.Flush()
 		s := bufio.NewScanner(&buf)
 		SLctr := 1
@@ -32624,16 +32612,14 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 				i := strings.Index(s.Text(), mtch)
 				if i != -1 {
 					SPL := strings.Split(s.Text(), "LINK:")
-					lines = append(lines, "* ")
+					//lines = append(lines, "* ")
 					//thisFrame := fmt.Sprintf(".iframe %v/%v 600 900", mainPath, SPL[1])
-					thisFrame := fmt.Sprintf(".link %v/%v", mainPath, SPL[1])
-					
+					//thisFrame := fmt.Sprintf(".link %v/%v", mainPath, SPL[1])
 					if SLctr == 1 {
 						thisFrame2 := fmt.Sprintf("%v/%v", mainPath, SPL[1])
 						//if SPL[1] <> previous SPL, send notifications
 						trimValue := strings.TrimSpace(SPL[1])
 						if item, err := memcache.Get(c, cKeyP); err == memcache.ErrCacheMiss {
- 
 						} else if err != nil {
 							//c.Errorf("error getting item: %v", err)
 						} else {
@@ -32641,51 +32627,44 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 						}
 						//if cKeyValue != "" {
 						if cKeyValue != trimValue {
-							
 							if SYS_EQ_MON_MSG == true {
-								msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>][<a href=\"%v\" target=\"eq2\">View All</a>]<hr>Source: PHIVOLCS", thisFrame2, ShortenUrl(w,r,ARLink))
-								
-								msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago. >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v | Philvolcs URL: %v)", ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,ARLink), ShortenUrl(w,r,UFLink))		
+								//msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>][<a href=\"%v\" target=\"eq2\">View All</a>]<hr>Source: PHIVOLCS", thisFrame2, ShortenUrl(w,r,ARLink))
+								msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>]<hr>Source: PHIVOLCS", thisFrame2)
+								//msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago. >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v | Philvolcs URL: %v)", ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,ARLink), ShortenUrl(w,r,UFLink))
+								msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago. >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v)", ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,UFLink))
 								//update all sys msg
 								putStrToMemcacheWithExp(w,r,"ALARM_EQ_MSG",msgDtl3c,30)
-								
-								sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,"philvolcs",ARLink,""),"")
+								//sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,"philvolcs",ARLink,""),"")
+								sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,"philvolcs","",""),"")
 								data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "EARTHQUAKE", msgDtl3c)
 								ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")
 								ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
-								FL_EQ = true
- 
+								//FL_EQ = true
 							}
 						}
 						//save current value to cache
 						putStrToMemcacheWithoutExp(w,r,cKeyP,trimValue)
 						//}
 					}
-						
-					lines = append(lines, fmt.Sprintf("%v", thisFrame))
-					lines = append(lines, " ")
+					//lines = append(lines, fmt.Sprintf("%v", thisFrame))
+					//lines = append(lines, " ")
 					SLctr++
 				}
 			}
-			
 		}
 	}
-	
 	if FL_DUMMY == true {
-//		msgDtl3 := fmt.Sprintf("DANGER!!! Earthquake DUMMY run!")
-//		sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,"philvolcs","/dummy",""),"")
-//		data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "ULAPPH", msgDtl3)
-//		ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")
-//		laterNotifyGB.Call(c, "autoNotifyPeopleGB", ADMMAIL, msgDtl3, ADMMAIL)
+		msgDtl3 := fmt.Sprintf("DANGER!!! Earthquake DUMMY run!")
+		sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,"philvolcs","/dummy",""),"")
+		data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "ULAPPH", msgDtl3)
+		ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")
+		laterNotifyGB.Call(c, "autoNotifyPeopleGB", ADMMAIL, msgDtl3, ADMMAIL)
 	}
-	
-	lines = append(lines, fmt.Sprintf("* URL Fetch"))
-	lines = append(lines, fmt.Sprintf(".link http://www.phivolcs.dost.gov.ph/html/update_SOEPD/EQLatest.html"))
-	lines = append(lines, fmt.Sprintf(""))
-	
+	//lines = append(lines, fmt.Sprintf("* URL Fetch"))
+	//lines = append(lines, fmt.Sprintf(".link http://www.phivolcs.dost.gov.ph/html/update_SOEPD/EQLatest.html"))
+	//lines = append(lines, fmt.Sprintf(""))
 	////////////////////////////////
-	
-	doc, err := Parse4(w, r, &Lines{0, lines}, "EQ-PH", 0)
+	/*doc, err := Parse4(w, r, &Lines{0, lines}, "EQ-PH", 0)
 	if err != nil {
 		panic(err)
 	}
@@ -32696,17 +32675,16 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 	//renderPresentation(&buf, title2, doc)
 	if err := renderPresentation(w,r,&buf, title2, doc, SL_TMP); err != nil {
 		panic(err)
-	}		
+	}
 	//fmt.Fprintf(w, "lines:<br> %v<br>", buf.Bytes())
-	putBytesToMemcacheWithoutExp(w,r,cKey,buf.Bytes())	
+	putBytesToMemcacheWithoutExp(w,r,cKey,buf.Bytes())
 	fmt.Fprintf(w, "Task completed<br>")
 	fmt.Fprintf(w, "cKey: %v", cKey)
-	
 	if FL_EQ == true {
 		sysReq := fmt.Sprintf("/guestbook?GB_FUNC=SIGN_ALL&METHOD=GB&content=%v&uid=%v", msgDtl3, ADMMAIL)
 		http.Redirect(w, r, sysReq, http.StatusFound)
-		return	
-	}
+		return
+	}*/
  
 }
 

@@ -327,6 +327,10 @@ var convo = {
 		{
 	      question: "Text to Speech",
 	      answer: "funcTextToSpeech"
+	    },	
+		{
+	      question: "Speak Time",
+	      answer: "funcSpeakTime"
 	    }
 		]
   },
@@ -662,6 +666,58 @@ funcTextToSpeech = function () {
 	    },
 	    "funcTTSRes"
 	  )
+}
+
+funcSpeakTime = function () {
+    if (localStorage["speaktime"] === "Y") {
+        clearInterval(myVar);
+        localStorage["speaktime"] = "N";
+        chatWindow.talk(
+        {
+            "funcSpeakTimeRes": {
+            says: ["Speak time has been disabled!"],
+            reply: []
+            }
+        },
+        "funcSpeakTimeRes"
+        )
+    } else {
+        funcSpeakTimeNow();
+        var myVar = setInterval(function(){ funcSpeakTimeNow(); }, 900000); //15minutes
+    }
+}
+
+funcSpeakTimeNow = function () {
+    if (('speechSynthesis' in window) || ('SpeechRecognition' in window)) {
+                var Digital=new Date()
+                var nowIs = formatDate2(Digital);
+                var nowNa = 'Time now is '+nowIs;
+                var msg = new SpeechSynthesisUtterance();
+                msg.rate = 1;
+                msg.pitch = 1;
+                msg.text = nowNa;
+                window.speechSynthesis.speak(msg);
+    }
+    chatWindow.talk(
+    {
+        "funcSpeakTimeRes": {
+        says: [nowNa],
+        reply: []
+        }
+    },
+    "funcSpeakTimeRes"
+    )
+}
+
+function formatDate2(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = hours + ':' + minutes + ' ' + ampm;
+  return strTime;
 }
 
 funcAllTrending = function () {
