@@ -456,6 +456,9 @@ funcRecentCCTV = function () {
                 },{
                     question: "5000 Recents",
                     answer: "funcRecentCCTV5000s"
+                },{
+                    question: "Back to MainMenu",
+                    answer: "funcShowMainMenu"
                 }]
         }
     },
@@ -506,6 +509,9 @@ funcRecentCCTV20s = function () {
                             },{
                                 question: "5000 Recents",
                                 answer: "funcRecentCCTV5000s"
+                            },{
+                                question: "Back to MainMenu",
+                                answer: "funcShowMainMenu"
                             }]
 					  }
 					},
@@ -560,6 +566,9 @@ funcRecentCCTV50s = function () {
                             },{
                                 question: "5000 Recents",
                                 answer: "funcRecentCCTV5000s"
+                            },{
+                                question: "Back to MainMenu",
+                                answer: "funcShowMainMenu"
                             }]
 					  }
 					},
@@ -614,6 +623,9 @@ funcRecentCCTV100s = function () {
                             },{
                                 question: "5000 Recents",
                                 answer: "funcRecentCCTV5000s"
+                            },{
+                                question: "Back to MainMenu",
+                                answer: "funcShowMainMenu"
                             }]
 					  }
 					},
@@ -668,6 +680,9 @@ funcRecentCCTV500s = function () {
                             },{
                                 question: "5000 Recents",
                                 answer: "funcRecentCCTV5000s"
+                            },{
+                                question: "Back to MainMenu",
+                                answer: "funcShowMainMenu"
                             }]
 					  }
 					},
@@ -722,6 +737,9 @@ funcRecentCCTV1000s = function () {
                             },{
                                 question: "5000 Recents",
                                 answer: "funcRecentCCTV5000s"
+                            },{
+                                question: "Back to MainMenu",
+                                answer: "funcShowMainMenu"
                             }]
 					  }
 					},
@@ -776,6 +794,9 @@ funcRecentCCTV5000s = function () {
                             },{
                                 question: "5000 Recents",
                                 answer: "funcRecentCCTV5000s"
+                            },{
+                                question: "Back to MainMenu",
+                                answer: "funcShowMainMenu"
                             }]
 					  }
 					},
@@ -936,6 +957,43 @@ funcNewCCTV = function () {
 	  )
 }
 
+funcCCTVtoolsGuide = function () {
+    var msg = "To add a new camera setup, you can edit your desktop categories first. You can then get there the desktop number and desktop name which you will enter in the CCTV camera page. In the \"New CCTV\" page, you need to enter the valid user registered in the ULAPPH Cloud Desktop server. You can select the desired buttons to start capturing CCTV. You can install the CCTV mobile app to easily review your CCTVs.";
+	  chatWindow.talk(
+	    {
+	      "funcCCTVtoolsGuideRes": {
+	        says: [msg],
+	        reply: [{
+            question: "User Guide",
+            answer: "funcCCTVtoolsGuide"
+            },{
+            question: "New CCTV",
+            answer: "funcNewCCTV"
+            },{
+            question: "Show CCTVs",
+            answer: "funcShowCCTV"
+            },{
+            question: "Capture CCTVs",
+            answer: "funcCaptureCCTV"
+            },{
+                question: "Review CCTVs",
+                answer: "funcReviewCCTV"
+            },{
+                question: "Call CCTVs",
+                answer: "funcCallCCTV"
+            },{
+                question: "Recent CCTVs",
+                answer: "funcRecentCCTV"
+            },{
+                question: "Alarm Status",
+                answer: "funcAlarmCCTV"
+            }]
+	      }
+	    },
+	    "funcCCTVtoolsGuideRes"
+	  )
+}
+
 funcToolsCamera = function () {
     var ustr = makeid();
     var msg = "<a href=\"/tools?FUNC=MIRROR2&camfunc=image-capture&v=" + ustr +"\" target=\"smallcamera\">Small Camera</a><br><a href=\"/tools?FUNC=MIRROR&camfunc=image-capture&v=" + ustr + "\" target=\"bigcamera\">Big Camera</a>";
@@ -1026,6 +1084,40 @@ function alarmSet(statVal) {
 			return;
 		}
 	  }
+}
+
+function funcShowMainMenu() {
+    chatWindow.talk(
+    {
+        "cctv-cameras": {
+        says: [currVal],
+        reply: [{
+            question: "New CCTV",
+            answer: "funcNewCCTV"
+            },{
+                question: "Show CCTVs",
+                answer: "funcShowCCTV"
+            },{
+                question: "Capture CCTVs",
+                answer: "funcCaptureCCTV"
+            },{
+                question: "Review CCTVs",
+                answer: "funcReviewCCTV"
+            },{
+                question: "Call CCTVs",
+                answer: "funcCallCCTV"
+            },{
+                question: "Recent CCTVs",
+                answer: "funcRecentCCTV"
+            },{
+                question: "Alarm Status",
+                answer: "funcAlarmCCTV"
+            }]
+        }
+    },
+    "cctv-cameras"
+)
+
 }
 
 function makeid() {

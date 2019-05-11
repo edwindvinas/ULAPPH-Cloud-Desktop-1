@@ -109,9 +109,24 @@
 </head>
 
 <body>
+    <input type="button" id="toggle" value="Motion Alarm is disabled" />
     <div id="container" style="height: 0px; width: 0px;"><canvas width="0" height="0"></canvas></div>
-
-
+    <script>
+      localStorage["soundBusy"] = "Y";
+      var wakeLockEnabled = false;
+      var toggleEl = document.querySelector("#toggle");
+      toggleEl.addEventListener('click', function() {
+        if (!wakeLockEnabled) {
+          localStorage["soundBusy"] = "N";
+          wakeLockEnabled = true;
+          toggleEl.value = "Motion Alarm is enabled";
+        } else {
+          localStorage["soundBusy"] = "Y";
+          wakeLockEnabled = false;
+          toggleEl.value = "Motion Alarm is disabled";
+        }
+      }, false);
+    </script>
     <script type="text/javascript">
         var images = [
             "https://i.ytimg.com/vi/lt0WQ8JzLz4/maxresdefault.jpg",
@@ -155,9 +170,7 @@
                     volume: 99,
                     url: root + "/audio/industrialAlarm.mp3"
                 });
-                localStorage["soundBusy"] = "Y";
                 soundManager.play('mySoundAC');
-                localStorage["soundBusy"] = "N";
                 return;
             }
             soundManager.createSound({
@@ -165,9 +178,7 @@
                 volume: 99,
                 url: root + "/audio/industrialAlarm.ogg"
             });
-            localStorage["soundBusy"] = "Y";
             soundManager.play('mySoundAC');
-            localStorage["soundBusy"] = "N";
             return;
         };
 

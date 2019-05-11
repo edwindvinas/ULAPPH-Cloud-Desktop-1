@@ -3548,28 +3548,22 @@ func root(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	u := user.Current(c)
 	h := r.Header
- 
 	// call functions in Golang
 	checkHTTPS2(w,r)
-	
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
-	
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
-	
 	if SYS_DOWN_ENABLE == true {
 		http.Redirect(w, r, DEFAULT_DOWN_URL, http.StatusFound)
 		return
 	}
-	
 	query := r.FormValue("q")
 	i := strings.Index(query, "token-qr@@@")
 	if i != -1 {
 		SPL := strings.Split(query, "@@@")
 		redURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/?q=token-qr&user=%v&tok=%v&isDesktop=%v&targetURL=%v", SPL[1], SPL[2], SPL[3], SPL[4])
 		http.Redirect(w, r, redURL, http.StatusFound)
-		return		
+		return
 	}
-	
 	i = strings.Index(query, "login@888@")
 	if i != -1 {
 		query = strings.Replace(query, "@888@", "&", -1)
@@ -3577,35 +3571,27 @@ func root(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, redURL, http.StatusFound)
 		return
 	}
-	
 	uReferer := r.Referer()
 	uag := r.UserAgent()
 	ua := user_agent.New(uag)
 	uaPlatform := ua.OS()
 	nameb, _ := ua.Browser()
-	
 	// call common functions
 	viaStr := getAccessString(w,r,"")
 	viaStrB := getAccessString(w,r,"C")
- 
 	switch query {
-		
 		case "":
 			// get built-in App Engine fields injected in all request headers
 			xCountry := h.Get("X-AppEngine-Country")
 			xRegion  := h.Get("X-AppEngine-Region")
 			xCity    := h.Get("X-AppEngine-City")
- 
 			// get the user sessions
 			_, uid := checkSession(w,r)
-			
 			if uid == "" {
 				uid = "guest"
 			}
-			
 			// execute a function later
 			laterQueueAdsLogViews.Call(c, "0", uid, "www", "0", xCountry, xRegion, xCity, uaPlatform, nameb, uReferer, getIpAdd(w,r))
-			
 			if nameb != "Internet Explorer" {
 			//WHEN BROWSER IS NOT INTERNET EXPLORER
 				//check if user is logged in and a valid ulapph user so we can skip the public page
@@ -3617,7 +3603,6 @@ func root(w http.ResponseWriter, r *http.Request) {
 					// call a function with input fields and output fields
 					FUNC_CODE := "GET_GRP_ID"
 					FL_VALID_USER, GROUP_ID, _  , _ := usersProcessor(w, r, "au", uid, FUNC_CODE)
-					
 					if FL_VALID_USER == true {
 						if GROUP_ID == "GRP_ADMIN" || GROUP_ID == "GRP_USER" {
 							//notify all users of this event via channels
@@ -3627,9 +3612,9 @@ func root(w http.ResponseWriter, r *http.Request) {
 							ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
 							sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid, "https://ulapph-public-1.appspot.com",""),"")
 							checkHomepageSettings(w,r,"")
-							return						
+							updateUserActiveData(w, r, c, uid, "homepage")
+							return
 						}
-			
 					} else {
 					//if not yet valid user
 						//notify all users of this event via channels
@@ -3642,17 +3627,19 @@ func root(w http.ResponseWriter, r *http.Request) {
 							data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "ULAPPH-VISITOR", msgDtl3b)
 							ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")
 							ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
+							updateUserActiveData(w, r, c, "", "homepage")
 						}else{
 							msg = uid
 							msgDtl3 = fmt.Sprintf("UID:%v has visited ULAPPH https://ulapph-public-1.appspot.com %v", msg, viaStr)
 							msgDtl3b := fmt.Sprintf("UID:%v has visited ULAPPH https://ulapph-public-1.appspot.com %v", msg, viaStrB)
 							data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "ULAPPH-VISITOR", msgDtl3b)
-							ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")	
+							ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")
 							ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
+							updateUserActiveData(w, r, c, uid, "homepage")
 						}
 						sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,msg, "https://ulapph-public-1.appspot.com",""),"")
 						checkHomepageSettings(w,r,"")
-						return						
+						return
 					}
 				} else {
 				//WHEN USER IS NOT LOGGED IN
@@ -3664,8 +3651,8 @@ func root(w http.ResponseWriter, r *http.Request) {
 					ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")	
 					ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
 					sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,msg, "https://ulapph-public-1.appspot.com",""),"")
-					
 					checkHomepageSettings(w,r,"")
+					updateUserActiveData(w, r, c, "", "homepage")
 					return
 				}
 			} else {
@@ -3679,28 +3666,22 @@ func root(w http.ResponseWriter, r *http.Request) {
 				ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
 				sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,msg, "https://ulapph-public-1.appspot.com/?q=home",""),"")
 				checkHomepageSettings(w,r,"")
+				updateUserActiveData(w, r, c, "", "homepage")
 				return
 			}
-			
 		//if show home gallery
 		case "gallery":
 			showHomeGallery(w,r)
 			return
-			
 		case "qu":
 			_, uid := checkSession(w,r)
 			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
-				
 			currDesktop := "desktop0"
-			
 			//get user privilege
 			FUNC_CODE := "GET_GRP_ID"
 			FL_VALID_USER, GROUP_ID, _  , _ := usersProcessor(w, r, "au", uid, FUNC_CODE)
-			
 			if FL_VALID_USER == true {
-			
 				if GROUP_ID == "GRP_ADMIN" || GROUP_ID == "GRP_USER" && currDesktop == "desktop0" {
-					
 					// execute an in-line html template with basic field population
 					if err := htmlHeaderModal.Execute(w, getBasicColors(w,r)); err != nil {
 					  panic(err)
@@ -16218,38 +16199,29 @@ func ulapphChatSender(w http.ResponseWriter, r *http.Request, UC_FUNC string, MS
 		case "CH_MSG_NOTIFY_CHAT_ROOM":
 			//private chats
 			sendChatPrivate(w, r, roomID, MSG)
- 
 		//firebase
 		//public chat
 		case "CH_MSG_NOTIFY_CHATS":
 			mode := r.FormValue("mode")
 			roomID := r.FormValue("roomID")
-			
- 
 			if roomID == "" {
 				sendChatPublic(w, r, mode, SYS_CHAT_PUB_ROOM_ID, MSG)
 			} else {
- 
 				sendChatPublic(w, r, mode, roomID, MSG)
 			}
-		
 		//announce to world chat
 		case "CH_MSG_NOTIFY_CHATS_WORLD":
 			//public chats
 			mode := "worldwide"
 			roomID := SYS_CHAT_WORLD_ROOM_ID
 			sendChatPublic(w, r, mode, roomID, MSG)
-			
 			//also notify to country level
 			mode = "country"
 			h := r.Header
 			xCountry := h.Get("X-AppEngine-Country")
 			roomID = fmt.Sprintf("%v:%v", xCountry, SYS_CHAT_COUNTRY_ROOM_ID)
 			sendChatPublic(w, r, mode, roomID, MSG)
-			
- 
 	}
-	
 }
 
 //saved data to browser local storage
@@ -22080,7 +22052,7 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 				if uwmsource != "" {
 					renderAddUWMPage(w,r,".adduwm", uid, n, d)
 				} else {
-					fmt.Fprintf(w, "No UWM source has been set for UWM%v. Please check documentation on how to set the UWM source. You may <a href=\"/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0\">Create Initial Text File</a>. Then get the SID and enter ULAPPH command in start menu: <b>setuwm TDSMEDIA-ID</b> in order to set the UWM for this desktop. You may just set it to blank initially.", n)
+					fmt.Fprintf(w, "No UWM source has been set for UWM%v. Please check documentation on how to set the UWM source. But here are the steps to setup UWM: <li>You may <a href=\"/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0\">Create Initial Text File</a>. You may just set it to blank initially. <li>Then get the SID and enter ULAPPH command in start menu: <b>setuwm TDSMEDIA-ID</b> in order to set the UWM for this desktop.", n)
 				}
 				return
 
@@ -34112,7 +34084,7 @@ func peopleEdit(w http.ResponseWriter, r *http.Request) {
 			redURL := fmt.Sprintf("/editor?EDIT_FUNC=READER&MEDIA_ID=%v&SID=TDSMEDIA-%v", docID, docID)
 			http.Redirect(w, r, redURL, http.StatusFound)
 		} else {
-			fmt.Fprintf(w, "No UWM source has been set for UWM%v. Please check documentation on how to set the UWM source. You may <a href=\"/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0\">Create Initial Text File</a>.", r.FormValue("u"))
+			fmt.Fprintf(w, "No UWM source has been set for UWM%v. Please check documentation on how to set the UWM source. But here is how to set it up: <li>You may <a href=\"/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0\">Create Initial Text File</a>. You can set it as blank for now. <li>Then get the SID and enter ULAPPH command in start menu: <b>setuwm TDSMEDIA-ID</b> in order to set the UWM for this desktop.", r.FormValue("u"))
 		}
 		return
 		
@@ -52632,11 +52604,10 @@ func updateUserActiveData(w http.ResponseWriter, r *http.Request, c appengine.Co
 		//broadcast to server
 		osp := fmt.Sprintf("%v - %v", uaPlatform1, uaPlatform)
 		laterBroadcastUserPresence.Call(c, uid, osp, nameb, getSchemeUrl(w,r), getProfilePic(w, r, uid), getGeoString(w,r), content, ipStr)
-		//temp - log visitors as well
-		//disable visitor gps logs
-		//rh := r.Header
-		//oLatLong := rh.Get("X-AppEngine-CityLatLong")
-		//procBroadcastUserLoc(w,r,uid,oLatLong)
+		//log visitors as well
+		rh := r.Header
+		oLatLong := rh.Get("X-AppEngine-CityLatLong")
+		procBroadcastUserLoc(w,r,uid,oLatLong)
 	}
 	//increment access hits for dweetio
 	SPL := strings.Split(content, "-")
@@ -53913,12 +53884,9 @@ func postUrlBroadcast(w http.ResponseWriter, r *http.Request, URL string) {
 }
 //broadcast worldwide contents
 func procBroadcastContentsAll(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
 	encMsg := r.FormValue("encMsg")
-	
 	IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
-	
 	//if this server is not sites server
 	if IS_SEARCH_SERVER != "Y" {
 		//Post data to server
@@ -54275,9 +54243,7 @@ func fetchHostList(w http.ResponseWriter, r *http.Request) (TOT int, HOST_LIST s
 
 //broadcasts presence to all 
 func procBroadcastPresence(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
- 
     //c := appengine.NewContext(r)
 	uid := fmt.Sprintf("%v",r.FormValue("uid"))
 	uaPlatform := r.FormValue("uaPlatform")
@@ -54287,24 +54253,18 @@ func procBroadcastPresence(w http.ResponseWriter, r *http.Request) {
 	geo := r.FormValue("geo")
 	cont := r.FormValue("cont")
 	ip := r.FormValue("ip")
-	
 	IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
-	
 	//if this server is not sites server
 	if IS_SEARCH_SERVER != "Y" && uid != "" {
 		URL := fmt.Sprintf("%v/social?SO_FUNC=proc-broadcast-presence&uid=%v&uaPlatform=%v&nameb=%v&host=%v&pic=%v&geo=%v&cont=%v&ip=%v", SEARCH_SERVER, uid, uaPlatform, nameb, host, pic, geo, cont, ip)
- 
 		req, err := http.NewRequest("POST", URL, nil)
- 
 		client := urlfetch.Client(c)
 		_, err = client.Do(req)
 		if err != nil {
 			//panic(err)
 		}
- 
 	}
-	return	
-	
+	return
 }
 //broadcasts user locations via longitude and latitude
 //executed only when user logs in to UWM desktop
@@ -54326,7 +54286,6 @@ func procBroadcastUserLoc(w http.ResponseWriter, r *http.Request, UID, latLon st
 }
 //broadcasts messages to the sites server 
 func procBroadcastMessage(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
 	msg := r.FormValue("msg")
 	uid := fmt.Sprintf("%v",r.FormValue("uid"))
@@ -60501,15 +60460,12 @@ func handleClickUrl(w http.ResponseWriter, r *http.Request) {
 		//c.Errorf("[S0538]")
 
 		//notify all users of this event via channels
-		//msgDtl3 := fmt.Sprintf("UID:%v has visited website. LINK: %v", uid, URL_ADD)
 		shareMe := fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", ICON_NAME, ShortenUrl(w,r,URL_ADD), ICON_NAME)
 		msgDtl3 := fmt.Sprintf("UID:%v has visited <a href=\"%v\">%v</a> %v LINK: %v from %v", uid, URL_ADD, ICON_NAME, shareMe, URL_ADD, uReferer)
 		msgDtl3b := fmt.Sprintf("UID:%v has visited [%v] [%v] LINK: [%v]", uid, URL_ADD, ICON_NAME, URL_ADD)
 		data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "WEBSITE", msgDtl3b)
 		ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")
 		sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid,"/click-url",""),"")
-
-		
 		http.Redirect(w, r, URL_ADD, http.StatusFound)
 		return
 }
@@ -68033,6 +67989,10 @@ var desktopBodyTabzillaTemplatejswm = template.Must(template.New("desktopBodyTab
 <script src="/js/ranwall.js"></script>
 <script src="/js/wall-copy.js"></script>
 <script type="text/javascript">
+	var uTitle = document.getElementById("desktop").value + "::" + document.getElementById("dName").value;
+ 	document.title = uTitle +  ' @ ' + window.location.host;
+</script>
+<script type="text/javascript">
 	location.href = "#page";
 </script>
 <script type="text/javascript">
@@ -74247,7 +74207,8 @@ func renderStaticNewsSources(w http.ResponseWriter, r *http.Request, sources []b
 
 //renders static templates 
 func renderStaticGotoMyUlapphs(w http.ResponseWriter, r *http.Request) {
-	//c := appengine.NewContext(r)
+	c := appengine.NewContext(r)
+	u := user.Current(c)
 	//c.Infof("renderStaticGotoMyUlapphs...")
 	mode := r.FormValue("m")
 	urlArr := getMyULAPPH(w,r,mode)
@@ -74268,7 +74229,9 @@ func renderStaticGotoMyUlapphs(w http.ResponseWriter, r *http.Request) {
 			doc.Ulapphs = append(doc.Ulapphs, g)
 		}
 	} else {
-		fmt.Fprintf(w, "Hello, your account is not yet connected to any ULAPPH server. <a href=\"https://github.com/Accenture/ULAPPH-Cloud-Desktop\">Click here</a> to install your own cloud desktop for free. If not interested, kindly <a href=\"/logout\">logout</a>.")
+		fmt.Fprintf(w, "<b>Hello %v</b>, <font color=red>your account is not yet connected</font> to any ULAPPH server. <br><a href=\"https://github.com/Accenture/ULAPPH-Cloud-Desktop\">Click here</a> to install your own cloud desktop for free. <br>If not interested, kindly <a href=\"/logout\">logout</a>.", u.Email)
+		fmt.Fprintf(w, "For questions, you can also chat with a human by clicking this <a href=\"http://bit.ly/2VsoZSh\">chat link</a>. Just note that the chat agent is not always online!")
+		return
 	}
 	//parse template
         t := presentTemplates[path.Ext(".goto-ulapph")]
