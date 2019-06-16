@@ -27584,12 +27584,10 @@ func putBytesToMemcacheWithExp(w http.ResponseWriter, r *http.Request,cKey strin
 //puts bytes to memcache w/o expiry 
 func putBytesToMemcacheWithoutExp(w http.ResponseWriter, r *http.Request,cKey string,sBytes []byte) {
 	c := appengine.NewContext(r)
-	
 	item := &memcache.Item{
 		Key:   cKey,
 		Value: sBytes,
 	}
-				
 	if err := memcache.Add(c, item); err == memcache.ErrNotStored {
 		memcache.Set(c, item)
 	}
@@ -54858,7 +54856,9 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	data,_ := json.Marshal(dks)
-	putBytesToMemcacheWithExp(w,r,cKeyC,data,60)
+	//putBytesToMemcacheWithExp(w,r,cKeyC,data,60)
+	//edwinxxx
+	putBytesToMemcacheWithoutExp(w,r,cKeyC,data)
 	w.Write(data)
 	return
 }
@@ -74207,8 +74207,8 @@ func renderStaticNewsSources(w http.ResponseWriter, r *http.Request, sources []b
 
 //renders static templates 
 func renderStaticGotoMyUlapphs(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-	u := user.Current(c)
+	//c := appengine.NewContext(r)
+	//u := user.Current(c)
 	//c.Infof("renderStaticGotoMyUlapphs...")
 	mode := r.FormValue("m")
 	urlArr := getMyULAPPH(w,r,mode)
@@ -74229,9 +74229,8 @@ func renderStaticGotoMyUlapphs(w http.ResponseWriter, r *http.Request) {
 			doc.Ulapphs = append(doc.Ulapphs, g)
 		}
 	} else {
-		fmt.Fprintf(w, "<b>Hello %v</b>, <font color=red>your account is not yet connected</font> to any ULAPPH server. <br><a href=\"https://github.com/Accenture/ULAPPH-Cloud-Desktop\">Click here</a> to install your own cloud desktop for free. <br>If not interested, kindly <a href=\"/logout\">logout</a>.", u.Email)
-		fmt.Fprintf(w, "For questions, you can also chat with a human by clicking this <a href=\"http://bit.ly/2VsoZSh\">chat link</a>. Just note that the chat agent is not always online!")
-		return
+		fmt.Fprintf(w, "<b>Hello</b>, <font color=red>your account is not yet connected</font> to any ULAPPH server. <br><a href=\"https://github.com/Accenture/ULAPPH-Cloud-Desktop\">Click here</a> to install your own cloud desktop for free. <br>If not interested, kindly <a href=\"/logout\">logout</a>.")
+		fmt.Fprintf(w, "<br>For questions, you can also chat with a human by clicking this <a href=\"http://bit.ly/2VXdh1g\">chat link</a>. Just note that the chat agent is not always online!")
 	}
 	//parse template
         t := presentTemplates[path.Ext(".goto-ulapph")]
