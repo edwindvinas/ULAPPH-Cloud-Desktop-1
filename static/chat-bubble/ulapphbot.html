@@ -67,6 +67,12 @@ urlParams = {};
 while (match = search.exec(query))
    urlParams[decode(match[1])] = decode(match[2]);
 
+//--------
+//CONFIGS
+//--------
+var CURRENT_INTENT = "";
+var UID = urlParams["UID"];
+
 // initialize by constructing a named function...
 // ...and add text processing plugin:
 var chatWindow = new Bubbles(document.getElementById("chat"), "chatWindow", {
@@ -99,6 +105,12 @@ var chatWindow = new Bubbles(document.getElementById("chat"), "chatWindow", {
     if (urlParams["DEBUG"] != "") {
         FL_DEBUG = urlParams["DEBUG"];
     }
+    var uid = urlParams["UID"];
+    if (uid == "" || uid == undefined) {
+        redirectLogin();
+        return;
+    }
+    CURRENT_INTENT = o.input;
 	//xhr.open("POST","/nlp?nlpFunc=nlpProse&p=" + o.input + "&SID=" + KNOWLEDGE_BASE + "&DEBUG=" + FL_DEBUG, true); 
     xhr.open("POST","/nlp?nlpFunc=nlpProse&p=" + o.input + "&SID=" + KNOWLEDGE_BASE + "&DEBUG=" + FL_DEBUG, true);
 	xhr.send();
@@ -109,6 +121,11 @@ var chatWindow = new Bubbles(document.getElementById("chat"), "chatWindow", {
 		{
 		var currVal = xhr.responseText;
 			console.log(currVal);
+
+			if (currVal == "Sorry, I didn't get that.") {	
+			    funcPromptSorry();
+			    return;
+			}
 			
 			switch (currVal) {
 				case "nlp-success-invalid-function":
@@ -214,7 +231,15 @@ var convo = {
 	    {
 	      question: "PWA",
 	      answer: "funcPwaApps"
-	    }
+	    },
+        {
+            question: "SearchInternal",
+            answer: "funcSearchUlapph"
+        },
+        {
+            question: "SearchExternal",
+            answer: "funcSearchUlapphExt"
+        }
 	  ]
   },
   "iceListFunctions": {
@@ -1332,6 +1357,58 @@ function makeid() {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
 
   return text;
+}
+
+funcPromptSorry = function () {
+	  chatWindow.talk(
+	    {
+	      "funcPromptSorry": {
+	        says: ["Sorry, I am not able to understand what you said... I'll learn about this and will surely have an answer next time!", "You can actually help me by clicking the \"Teach Me\" button below to help me learn the response to this intent. You may also click the other buttons to proceed with other actions you might want to take."],
+	        reply: [{
+    	      question: "SearchInternal",
+    	      answer: "funcSearchUlapph"
+    	    },{
+    	      question: "SearchExternal",
+    	      answer: "funcSearchUlapphExt"
+    	    },{
+    	      question: "Teach Me",
+    	      answer: "funcCrowdSource"
+    	    }]
+	      }
+	    },
+	    "funcPromptSorry"
+	  )
+}
+
+funcSearchUlapph = function () {
+	  window.open("https://www.ulapph.net/search?s=" + CURRENT_INTENT + "&f=glow2&t=In+ULAPPH");
+}
+
+funcSearchUlapphExt = function () {
+	  window.open("https://www.ulapph.net/search?s=" + CURRENT_INTENT + "&f=glow2&t=All+ULAPPH+Sites");
+}
+
+funcCrowdSource = function () {
+    //reset nlp cache in this server
+    resetNLP();
+    //show form
+    var output = "<b>Teach Me - Crowdsourcing AI Learning!</b><br>In this form, you can teach me by filling-up the response to the unknown intent.<br>";
+    output += "<form action=\"https://ulapph-sites.appspot.com/nlp\" method=\"get\">";
+    output += "<input type=\"hidden\" name=\"nlpFunc\" value=\"csTeachMe\">";
+    output += "<input type=\"hidden\" name=\"UID\" value=\"" + UID + "\">";
+    output += "<b>Intent</b>: <input type=\"text\" name=\"intent\" value=\"" + CURRENT_INTENT + "\"><br>";
+    output += "<b>Response</b>: <textarea rows=\"4\" cols=\"50\" name=\"response\">Enter text or html here...</textarea>";
+    output += "<input type=\"submit\" value=\"Submit\">";
+    output += "</form>";
+	  chatWindow.talk(
+	    {
+	      "funcCrowdSource": {
+	        says: [output],
+	        reply: []
+	      }
+	    },
+	    "funcCrowdSource"
+	  )
 }
 
 function reloadPage() {

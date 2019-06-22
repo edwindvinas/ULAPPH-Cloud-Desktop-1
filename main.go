@@ -22859,13 +22859,10 @@ func getRandomColors() (color1, color2, color3 string) {
 //function to handle /search
 //it process in site or extended multiple sites search
 func ulapphSearch(w http.ResponseWriter, r *http.Request) {
-	
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
-	
 	c := appengine.NewContext(r)
-	u := user.Current(c) 	
-	
-    uid := ""
+	u := user.Current(c)
+        uid := ""
 	if u != nil {
 		//uid = uid
 		_, uid = checkSession(w,r)
@@ -22877,49 +22874,37 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 	SEARCH_TARGET := r.FormValue("t")
 	SEARCH_KEY := r.FormValue("s")
 	SEARCH_INT := r.FormValue("i")
-	
 	i := strings.Index(SEARCH_KEY, "http://")
 	j := strings.Index(SEARCH_KEY, "https://")
 	if i != -1 || j != -1 {
 		http.Redirect(w, r, SEARCH_KEY, http.StatusFound)
 		return
 	}
-	
-	
 	s := getScheme(w,r)
 	sec := "N"
 	if s == "https:" {
 		sec = "Y"
 	}
-	
 	switch {
-		
 		case SEARCH_FUNC == "fetch-url":
-			
 			URL := r.FormValue("URL")
- 
 			var Url *url.URL
 			Url, _ = url.Parse(URL)
-			
 			u, err := url.Parse(URL)
 			if err != nil {
 				panic(err)
 			}
 			//tHost := u.Host
 			tSch := u.Scheme
-			
 			if tSch == "" {
 				fmt.Fprintf(w, "Error, please indicate url scheme.")
 				return
 			}
-		
 			cKey := fmt.Sprintf("FETCH_URL_%v", Url.String())
 			FETCH_DATA := ""
 			if item, err := memcache.Get(c, cKey); err == memcache.ErrCacheMiss {
- 
 			} else if err != nil {
 			} else {
- 
 				FETCH_DATA = fmt.Sprintf("%s", item.Value)
 				fmt.Fprintf(w, "%v", FETCH_DATA)
 				return
@@ -22929,34 +22914,26 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 				if err := r.ParseForm(); err != nil {
 					panic(err)
 				}
-				
 				resp, err := client.Get(URL)
 				if err != nil {
 					panic(err)
 				}
- 
 				bodyBytes, _ := ioutil.ReadAll(resp.Body)
 				FETCH_URL := string(bodyBytes)
-				
 				if FETCH_URL != "" {
 					//cKey := fmt.Sprintf("FETCH_URL")
 					putBytesToMemcacheWithExp(w,r,cKey,bodyBytes,MC_ADS_EXPIRES_30_MIN)
 					fmt.Fprintf(w, "%v", string(bodyBytes))
-					
 				}
 				return
 			}
-		
 		case SEARCH_FUNC == "get-auto-content":
-		
 			FUNC_CODE := "GET_GRP_ID"
 			FL_VALID_USER, _, _  , _ := usersProcessor(w, r, "au", uid, FUNC_CODE)
-			
- 			if FL_VALID_USER == false {
+			if FL_VALID_USER == false {
 				fmt.Fprintf(w, "content not available for guests")
 				return
 			}
-			
 			//search?s=google+appengine&f=glow2&t=Query+Web
 			cKey := r.FormValue("cKey")
 			UID := r.FormValue("UID")
@@ -22966,11 +22943,8 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 			mode := r.FormValue("m")
 			keyword := r.FormValue("s")
 			AUTO_SLIDES := ""
-			
 			totDel := 0
-			
 			for j := 0; j < 5 && AUTO_SLIDES == ""; j++ {
-				
 				AUTO_SLIDES = getStrMemcacheValueByKey(w,r,cKey)
 				if AUTO_SLIDES == "" {
 					delaySecond(15)
@@ -22982,9 +22956,6 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 					break
 				}
 			}
- 
-						
- 
 			if AUTO_SLIDES != "" {
 				writeHTMLHeader(w, 200)
 				w.Write([]byte(AUTO_SLIDES))
@@ -23007,20 +22978,16 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 				}
 				return
 			}
-			
 		case SEARCH_FUNC == "get-auto-content2":
 			if r.FormValue("API_KEY") != CMD_API_KEY {
 				redURL := fmt.Sprintf("/login")
 				http.Redirect(w, r, redURL, http.StatusFound)
-				return				
+				return
 			}
 			cKey := r.FormValue("cKey")
 			AUTO_SLIDES := ""
-			
 			totDel := 0
-			
 			for j := 0; j < 5 && AUTO_SLIDES == ""; j++ {
-				
 				AUTO_SLIDES = getStrMemcacheValueByKey(w,r,cKey)
 				if AUTO_SLIDES == "" {
 					delaySecond(15)
@@ -23031,8 +22998,7 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 				} else {
 					break
 				}
-			}		
- 
+			}
 			if AUTO_SLIDES != "" {
 				writeHTMLHeader(w, 200)
 				w.Write([]byte(AUTO_SLIDES))
@@ -54856,9 +54822,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	data,_ := json.Marshal(dks)
-	//putBytesToMemcacheWithExp(w,r,cKeyC,data,60)
-	//edwinxxx
-	putBytesToMemcacheWithoutExp(w,r,cKeyC,data)
+	putBytesToMemcacheWithExp(w,r,cKeyC,data,60)
 	w.Write(data)
 	return
 }
@@ -76323,6 +76287,7 @@ type Doc struct {
 	ColorFrom string
 	ColorTo string
 	SlideColor string
+	SocialSMS string
 	SocialLinkPlus string
 	SocialLinkFB string
 	SocialLinkTwitter string
@@ -77350,6 +77315,7 @@ func parseHeader(w http.ResponseWriter, r *http.Request, doc *Doc, lines *Lines,
 	doc.SID = SID
 	doc.DocID = DOC_ID
 	doc.Build = UCD_BUILD_STR
+	doc.SocialSMS = SMS_CONTACT_NBR
 	doc.SocialLinkPlus = SOCIAL_LINK_PLUS
 	doc.SocialLinkFB = SOCIAL_LINK_FB
 	doc.SocialLinkTwitter = SOCIAL_LINK_TWITTER
