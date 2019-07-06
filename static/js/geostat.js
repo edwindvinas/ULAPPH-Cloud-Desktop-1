@@ -114,7 +114,8 @@ console.log("Client geolocation failed!");
 }
 
 function geoloc() {
-	if (uwms.value != "") {
+	if (uwms.value != "" || uwms.value == undefined) {
+		//run only on main uwm
 		return;
 	}
 	geoLatLon();
@@ -130,11 +131,12 @@ function geoloc() {
 };
 
 function geoLatLon() {
-   	if isActive == false {
+   	if (isActive == false) {
 		//reduce bill
 		return;
 	}
     	if (navigator.geolocation) {
+	  console.log("Geo location successful!");
 	  navigator.geolocation.getCurrentPosition(success, error);
 	} else {
 	  console.log("Geo location not supported!");

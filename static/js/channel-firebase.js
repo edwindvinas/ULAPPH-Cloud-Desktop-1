@@ -18,7 +18,7 @@ function initFirebase() {
   function onOpened() {
 	//console.log("onOpened()");
 	onOpen();
-	geoloc();
+	//geoloc();
   }
 
   /**

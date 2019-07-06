@@ -51,6 +51,7 @@ function geoloc() {
 	}
 	
 	if (navigator.geolocation) {
+	  console.log("Geo location successful!");
 	  navigator.geolocation.getCurrentPosition(success, error);
 	} else {
 	  console.log("Geo location not supported!");
