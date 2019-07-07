@@ -41339,7 +41339,7 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 		saveStudentRecord(w,r,uid,educData)
 		resp = "saved new student record"
 		//add in master school record
-		educSchoolMasterRecord(w,r,uid)
+		educSchoolMasterRecord(w,r,uid,"")
 	} else {
 		//read from blob
 		blobByte := getBlobByte(w, r, EDUC_BLOB)
@@ -41418,7 +41418,7 @@ func getSchoolMasterRecord(w http.ResponseWriter, r *http.Request) (string) {
 
 //edwinxxx
 //D0069
-func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid string) (string) {
+func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score string) (string) {
 	c := appengine.NewContext(r)
 	//check if student is in the school master record 
 	////c.Infof("educSchoolMasterRecord")
@@ -41486,18 +41486,24 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid string) 
 		//make sure it doesn't exist
 		for i:=0;i<len(dkm.Students);i++ {
 			if dkm.Students[i].Student == uid {
-				resp = "update failed; record exists"
-				return resp
-				break
+				if score != "" {
+					//score update needed
+					dkm.Students[i].OverallGrade = score
+				} else {
+					resp = "update failed; record exists"
+					return resp
+					break
+				}
 			}
 		}
-		dks := StudentRecord{}
-		dks.Student = uid
-		dks.School = SYS_SERVER_NAME
-		dks.OverallGrade = "" 
-		dks.Levels = nil
-		dkm.Students = append(dkm.Students, dks)
-
+		if score == "" {
+			dks := StudentRecord{}
+			dks.Student = uid
+			dks.School = SYS_SERVER_NAME
+			dks.OverallGrade = "" 
+			dks.Levels = nil
+			dkm.Students = append(dkm.Students, dks)
+		}
 		educData,_ = json.Marshal(dkm)
 		////c.Infof("educDate: %v", educData)
 		saveMasterRecord(w,r,uid,educData)
@@ -41644,6 +41650,7 @@ func cancelEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, sLevel stri
 	////c.Infof("resp: %v", resp)
 	return resp
 }
+//edwinxxx
 //D0069
 func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (string) {
 	c := appengine.NewContext(r)
@@ -41660,14 +41667,14 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 	}
 	if g.TXT_VAL != "" {
 		////c.Infof("g.TXT_VAL empty")
-		EDUC_BLOB = g.TXT_VAL 
+		EDUC_BLOB = g.TXT_VAL
 	}
 	if EDUC_BLOB == "" {
 		resp = "not enrolled yet"
 	} else {
 		//read from blob
 		//resp = "updated existing student record"
-		blobByte := getBlobByte(w, r, EDUC_BLOB)	
+		blobByte := getBlobByte(w, r, EDUC_BLOB)
 		////c.Infof("config: %v", string(blobByte ))
 		sturec := StudentRecord{}
 		err := json.Unmarshal(blobByte, &sturec)
@@ -41675,6 +41682,7 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 			panic(err)
 		}
 		//store to temp
+		xs:=[]float64{}
 		for i:=0;i<len(sturec.Levels);i++ {
 			////c.Infof("examURL: %v", sturec.Levels[i].ExamURL)
 			if sturec.Levels[i].LevelGrade == "" || sturec.Levels[i].LevelGrade == "0" && sturec.Levels[i].ExamURL != "" {
@@ -41687,6 +41695,7 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 					fmt.Fprintf(w,"Error extracting score from comments: %v", err)
 				} else {
 					sturec.Levels[i].LevelGrade = fmt.Sprintf("%v", score)
+					xs = append(xs, score)
 				}
 			}
 		}
@@ -41695,6 +41704,10 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 		//save it
 		educData,_ := json.Marshal(sturec)
 		saveStudentRecord(w,r,uid,educData)
+		//get average 
+		aveGrade := fmt.Sprintf("%.2f", average(xs))
+		//update school record
+		educSchoolMasterRecord(w,r,uid,aveGrade)
 
 	}
 	////c.Infof("resp: %v", resp)
@@ -41783,6 +41796,15 @@ func saveMasterRecord(w http.ResponseWriter, r *http.Request, uid string, educDa
 	if res.StatusCode != http.StatusCreated {
 		return
 	}
+}
+
+//D0069
+func average(xs[]float64)float64 {
+	total:=0.0
+	for _,v:=range xs {
+		total +=v
+	}
+	return total/float64(len(xs))
 }
 
 //D0028
