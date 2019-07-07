@@ -41422,6 +41422,11 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score s
 	c := appengine.NewContext(r)
 	//check if student is in the school master record 
 	////c.Infof("educSchoolMasterRecord")
+	c.Infof("score: %v", score)
+	FL_AVE_MODE := false
+	if score != "" {
+		FL_AVE_MODE = true
+	}
 	resp := ""
 	EDUC_BLOB := ""
 	FL_EN := false
@@ -41466,7 +41471,7 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score s
 		dks := StudentRecord{}
 		dks.Student = uid
 		dks.School = SYS_SERVER_NAME
-		dks.OverallGrade = "" 
+		dks.OverallGrade = ""
 		dks.Levels = nil
 		dkm.Students = append(dkm.Students, dks)
 
@@ -41486,7 +41491,7 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score s
 		//make sure it doesn't exist
 		for i:=0;i<len(dkm.Students);i++ {
 			if dkm.Students[i].Student == uid {
-				if score != "" {
+				if FL_AVE_MODE == true {
 					//score update needed
 					dkm.Students[i].OverallGrade = score
 				} else {
@@ -41496,11 +41501,11 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score s
 				}
 			}
 		}
-		if score == "" {
+		if FL_AVE_MODE == false {
 			dks := StudentRecord{}
 			dks.Student = uid
 			dks.School = SYS_SERVER_NAME
-			dks.OverallGrade = "" 
+			dks.OverallGrade = ""
 			dks.Levels = nil
 			dkm.Students = append(dkm.Students, dks)
 		}
@@ -41705,7 +41710,9 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 		educData,_ := json.Marshal(sturec)
 		saveStudentRecord(w,r,uid,educData)
 		//get average 
+		c.Infof("xs: %v", xs)
 		aveGrade := fmt.Sprintf("%.2f", average(xs))
+		c.Infof("aveGrade: %v", aveGrade)
 		//update school record
 		educSchoolMasterRecord(w,r,uid,aveGrade)
 
