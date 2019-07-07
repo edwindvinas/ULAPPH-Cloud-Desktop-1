@@ -41702,6 +41702,11 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 					sturec.Levels[i].LevelGrade = fmt.Sprintf("%v", score)
 					xs = append(xs, score)
 				}
+			} else {
+				fgrade, err := strconv.ParseFloat(sturec.Levels[i].LevelGrade, 64)
+				if err == nil {
+					xs = append(xs, fgrade)
+				}
 			}
 		}
 		data,_ := json.MarshalIndent(sturec.Levels, "", "  ")
