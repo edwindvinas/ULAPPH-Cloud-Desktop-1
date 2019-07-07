@@ -72455,6 +72455,51 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 			//c.Errorf("[S0607]")
 			putStrToMemcacheWithoutExp(w,r,cKeySR,blobkey)
 			////c.Infof("student rec saved")
+		//edwinxxx
+		case "EDUC2":
+			//delete existing blob
+			////c.Infof("EDUC2")
+			//D0068
+			if API_KEY != CMD_GEN_KEY {
+				////c.Infof("Invalid api key")
+				return
+			}
+
+			cKeySR := fmt.Sprintf("SCHOOL_REC_BLOB")
+			SR_BLOB := ""
+			var g TDSCNFG
+			SR_BLOB = getStrMemcacheValueByKey(w,r,cKeySR)
+			thisKey := fmt.Sprintf("SCHOOL_REC")
+			if SR_BLOB == "" {
+				key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
+				if err := datastore.Get(c, key, &g); err != nil {
+					//return
+				}
+				SR_BLOB = g.TXT_VAL
+			}
+			////c.Infof("SR_BLOB: %v", SR_BLOB)
+			if SR_BLOB != "" {
+				blobstore.Delete(c, appengine.BlobKey(SR_BLOB))
+			}
+			blobkey := string(file[0].BlobKey)
+			////c.Infof("blobkey: %v", blobkey)
+			////c.Infof("uid: %v", uid)
+			g = TDSCNFG{
+					SYS_VER: 1,
+					USER: ADMMAIL,
+					CFG_ID: thisKey,
+					DAT_TYP: "TXT",
+					NUM_VAL: 0,
+					TXT_VAL: blobkey,
+					CFG_DESC: "Set via code",
+			}
+			key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
+			if _, err := datastore.Put(c, key, &g); err != nil {
+					panic(err)
+					//return
+			}
+			//c.Errorf("[S0607]")
+			putStrToMemcacheWithoutExp(w,r,cKeySR,blobkey)
 
 		case "ACB":
 			//delete existing blob
