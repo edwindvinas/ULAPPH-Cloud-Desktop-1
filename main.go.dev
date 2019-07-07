@@ -41694,12 +41694,13 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 				//get SID from examURL
 				SID, _ := getRefDoc(w,r,sturec.Levels[i].ExamURL)
 				////c.Infof("SID: %v", SID)
-				score, err := getScoreFromComments(w,r,SID,uid)
+				score, timestamp, err := getScoreFromComments(w,r,SID,uid)
 				////c.Infof("score: %v", score)
 				if err != nil {
 					fmt.Fprintf(w,"Error extracting score from comments: %v", err)
 				} else {
 					sturec.Levels[i].LevelGrade = fmt.Sprintf("%v", score)
+					sturec.Levels[i].CompletionDate = timestamp 
 					xs = append(xs, score)
 				}
 			} else {
@@ -82504,7 +82505,7 @@ func extractPlannerTasks(w http.ResponseWriter, r *http.Request, token, cfgMedia
 }
 //D0069
 //get score from comments
-func getScoreFromComments(w http.ResponseWriter, r *http.Request, SID, UID string) (sValue float64, err error) {
+func getScoreFromComments(w http.ResponseWriter, r *http.Request, SID, UID string) (sValue float64, tstamp string, err error) {
 	c := appengine.NewContext(r)
 	//////c.Infof("getScoreFromComments()")
 	//////c.Infof("SID: %v",SID)
@@ -82520,13 +82521,14 @@ func getScoreFromComments(w http.ResponseWriter, r *http.Request, SID, UID strin
 		for _, p := range cmts{
 			if p.UID == UID || p.NAME == UID {
 				sValue, _ = strconv.ParseFloat(p.SVAL, 64)
+				tstamp = fmt.Sprintf("%v", p.TIMESTAMP)
 				//return sValue, err
 				//break
 			}
 		}
 	}
 	//return float64(0), err
-	return sValue, err
+	return sValue, tstamp, err
 }
 
 //D0061
