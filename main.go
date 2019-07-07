@@ -1572,6 +1572,8 @@ type LevelsData struct {
 //D0069
 type MasterSyllabus struct {
 	Level string `json:"level"`
+	Title string `json:"title"`
+	Description string `json:"description"`
 	LessonURL string `json:"lessonURL"`
 	ExamURL string `json:"examURL"`
 }
