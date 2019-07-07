@@ -1543,6 +1543,12 @@ type NewsSources  struct {
 	Description string `json:"description"`
 	Country string `json:"country"`
 }
+//edwinxxx
+//D0069
+//education modules
+type SchoolRecord struct {
+	Students []StudentRecord `json:"students"`
+}
 //D0069
 //education modules
 type StudentRecord struct {
@@ -6076,7 +6082,7 @@ func registration(w http.ResponseWriter, r *http.Request) {
 				
 				//send email to user
 				if SYS_AUTO_REG_ENABLE == false {
-					MESSAGE := fmt.Sprintf("[ULAPPH] Hi %v! Welcome to %v! Your registration is pending approval.", uid, getSchemeUrl(w,r))
+					MESSAGE := fmt.Sprintf("[ULAPPH] Hi %v! Welcome to %v! Your registration is pending approval by the admin.", uid, getSchemeUrl(w,r))
 					subject := "Registration pending approval"
 					//t = taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-generic-send-email", map[string][]string{"SUBJECT": {subject}, "TO": {uid}, "FROM": {ADMMAIL}, "MESSAGE": {MESSAGE}})
 					t = taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-generic-send-email", map[string][]string{"SUBJECT": {subject}, "TO": {email}, "FROM": {ADMMAIL}, "MESSAGE": {MESSAGE}})
@@ -7743,6 +7749,9 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 				putBytesToMemcacheWithoutExp(w,r,cKey,buf.Bytes())
 				fmt.Fprintf(w, "User to Host List has been set.<br><br>.")
 				fmt.Fprintf(w, "%v", buf.String())
+				//clear cache
+				cKey2 := fmt.Sprintf("MY_ULAPPH:%v", uid)
+				_ = memcache.Delete(c, cKey2)
 			case "SET_AS_HOMEPAGE":
 				URL := r.FormValue("URL")
 				g := TDSCNFG{
@@ -9138,7 +9147,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 						
 						//send email to user
 						if SYS_AUTO_REG_ENABLE == false {
-							MESSAGE := fmt.Sprintf("[ULAPPH] Hi %v! Welcome to %v! Your registration is pending approval.", uid, getSchemeUrl(w,r))
+							MESSAGE := fmt.Sprintf("[ULAPPH] Hi %v! Welcome to %v! Your registration is pending approval by the admin.", uid, getSchemeUrl(w,r))
 							subject := "Registration pending approval"
 							t = taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-generic-send-email", map[string][]string{"SUBJECT": {subject}, "TO": {uid}, "FROM": {ADMMAIL}, "MESSAGE": {MESSAGE}})
 							//if _, err := taskqueue.Add(c, t, "online-users"); err != nil {
@@ -11110,7 +11119,7 @@ func promptRegister(w http.ResponseWriter, r *http.Request, uid string, xCountry
 	  panic(err)
 	}
 	if SYS_REGISTRATION_MANUAL == true {
-		message := fmt.Sprintf("[U00181] ERROR: Registration has been disabled. Only administrators can add new users to this site. Kindly contact admin [%v] to request for your account.", ADMMAIL)
+		message := fmt.Sprintf("[U00181] ERROR: Registration is not allowed. Only administrators can add new users to this site. Kindly contact admin [%v] to request for your account.", ADMMAIL)
 		if err := htmlHeaderModal.Execute(w, getBasicColors(w,r)); err != nil {
 		  panic(err)
 		}
@@ -41076,11 +41085,21 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 					////c.Infof("score-update...")
 					resp = updateScores(w,r,mSID,uid)
 				case "student":
-					resp = fmt.Sprintf("student: level %v", sLevel) 
+					//resp = fmt.Sprintf("student: level %v", sLevel) 
+					//edwinxxx
+					resp = getSchoolMasterRecord(w,r)
 				case "course":
-					resp = fmt.Sprintf("course: level %v", sLevel) 
-				case "drop-out":
-					resp = fmt.Sprintf("drop-out: level %v", sLevel) 
+					//edwinxxx
+					dks := StudentRecord{}
+					ld := LevelsData{}
+					ld.Level = sLevel
+					ld.SyllabusURL, ld.ExamURL = getSyllabus(w,r,mSID,sLevel)
+					dks.Levels = append(dks.Levels, ld)
+					data,_ := json.MarshalIndent(dks.Levels, "", "  ")
+					if data != nil {
+						resp = fmt.Sprintf("%v", string(data))
+					}
+					//resp = fmt.Sprintf("course: level %v", sLevel) 
 			}
 			w.WriteHeader(200)
 			w.Write([]byte(resp))
@@ -41259,6 +41278,7 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//edwinxxx
 //D0069
 func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string) (string) {
 	c := appengine.NewContext(r)
@@ -41268,8 +41288,10 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 	EDUC_BLOB := ""
 	FL_EN := false
 	var g TDSCNFG
+	//edwinxxx
 	thisKey := fmt.Sprintf("STUDENT_REC_%v", uid)
 	////c.Infof("thisKey: %v", thisKey)
+	//--check student record
 	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 	if err := datastore.Get(c, key, &g); err != nil {
 		//panic(err)
@@ -41308,17 +41330,19 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 		ld.Level = level
 		ld.Status = "ENROLLED"
 		timestamp := getTimestamp()
-		ld.EnrollDate = timestamp 
-		ld.SyllabusURL, ld.ExamURL = getSyllabus(w,r,mSID,level) 
+		ld.EnrollDate = timestamp
+		ld.SyllabusURL, ld.ExamURL = getSyllabus(w,r,mSID,level)
 		dks.Levels = append(dks.Levels, ld)
 
 		educData,_ = json.Marshal(dks)
 		////c.Infof("educDate: %v", educData)
 		saveStudentRecord(w,r,uid,educData)
 		resp = "saved new student record"
+		//add in master school record
+		educSchoolMasterRecord(w,r,uid)
 	} else {
 		//read from blob
-		blobByte := getBlobByte(w, r, EDUC_BLOB)	
+		blobByte := getBlobByte(w, r, EDUC_BLOB)
 		////c.Infof("config: %v", string(blobByte ))
 		dks := StudentRecord{}
 		err := json.Unmarshal(blobByte, &dks)
@@ -41337,8 +41361,8 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 		ld.Level = level
 		ld.Status = "ENROLLED"
 		timestamp := getTimestamp()
-		ld.EnrollDate = timestamp 
-		ld.SyllabusURL, ld.ExamURL = getSyllabus(w,r,mSID,level) 
+		ld.EnrollDate = timestamp
+		ld.SyllabusURL, ld.ExamURL = getSyllabus(w,r,mSID,level)
 		dks.Levels = append(dks.Levels, ld)
 
 		educData,_ = json.Marshal(dks)
@@ -41350,6 +41374,139 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 	return resp
 
 }
+//edwinxxx
+//D0069
+func getSchoolMasterRecord(w http.ResponseWriter, r *http.Request) (string) {
+	c := appengine.NewContext(r)
+	//check if student is in the school master record 
+	////c.Infof("getSchoolMasterRecord")
+	resp := ""
+	EDUC_BLOB := ""
+	var g TDSCNFG
+	//edwinxxx
+	thisKey := fmt.Sprintf("SCHOOL_REC")
+	////c.Infof("thisKey: %v", thisKey)
+	//--check school record
+	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
+	if err := datastore.Get(c, key, &g); err != nil {
+		//panic(err)
+		//return
+	}
+	if g.TXT_VAL != "" {
+		////c.Infof("g.TXT_VAL empty")
+		EDUC_BLOB = g.TXT_VAL 
+	}
+	if EDUC_BLOB == "" {
+		resp = "No master school record yet. Someone has to enroll first."
+	} else {
+		//read from blob
+		blobByte := getBlobByte(w, r, EDUC_BLOB)
+		dkm := SchoolRecord{}
+		err := json.Unmarshal(blobByte, &dkm)
+		if err != nil {
+			panic(err)
+		}
+		//edwinxxx
+		data,_ := json.MarshalIndent(dkm.Students, "", "  ")
+		if data != nil {
+			resp = fmt.Sprintf("%v", string(data))
+		}
+	}
+	////c.Infof("resp: %v", resp)
+	return resp
+}
+
+//edwinxxx
+//D0069
+func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid string) (string) {
+	c := appengine.NewContext(r)
+	//check if student is in the school master record 
+	////c.Infof("educSchoolMasterRecord")
+	resp := ""
+	EDUC_BLOB := ""
+	FL_EN := false
+	var g TDSCNFG
+	//edwinxxx
+	thisKey := fmt.Sprintf("SCHOOL_REC")
+	////c.Infof("thisKey: %v", thisKey)
+	//--check school record
+	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
+	if err := datastore.Get(c, key, &g); err != nil {
+		//panic(err)
+		//return
+	}
+	if g.TXT_VAL != "" {
+		////c.Infof("g.TXT_VAL empty")
+		EDUC_BLOB = g.TXT_VAL 
+		FL_EN = true
+	}
+	if FL_EN == false {
+		////c.Infof("Insert TDSCNFG")
+		g := TDSCNFG{
+				SYS_VER: 1,
+				USER: ADMMAIL,
+				CFG_ID: thisKey,
+				DAT_TYP: "TXT",
+				NUM_VAL: 0,
+				TXT_VAL: "",
+				CFG_DESC: "Set via code",
+		}
+		key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
+		if _, err := datastore.Put(c, key, &g); err != nil {
+				panic(err)
+				//return
+		}
+	}
+	educData := []byte("")
+	if EDUC_BLOB == "" {
+		////c.Infof("EDUC_BLOB = empty")
+		//construct from initial data
+		//edwinxxx
+		dkm := SchoolRecord{}
+		dks := StudentRecord{}
+		dks.Student = uid
+		dks.School = SYS_SERVER_NAME
+		dks.OverallGrade = "" 
+		dks.Levels = nil
+		dkm.Students = append(dkm.Students, dks)
+
+		educData,_ = json.Marshal(dkm)
+		////c.Infof("educDate: %v", educData)
+		saveMasterRecord(w,r,uid,educData)
+		resp = "saved new school record"
+	} else {
+		//read from blob
+		blobByte := getBlobByte(w, r, EDUC_BLOB)
+		////c.Infof("config: %v", string(blobByte ))
+		dkm := SchoolRecord{}
+		err := json.Unmarshal(blobByte, &dkm)
+		if err != nil {
+			panic(err)
+		}
+		//make sure it doesn't exist
+		for i:=0;i<len(dkm.Students);i++ {
+			if dkm.Students[i].Student == uid {
+				resp = "update failed; record exists"
+				return resp
+				break
+			}
+		}
+		dks := StudentRecord{}
+		dks.Student = uid
+		dks.School = SYS_SERVER_NAME
+		dks.OverallGrade = "" 
+		dks.Levels = nil
+		dkm.Students = append(dkm.Students, dks)
+
+		educData,_ = json.Marshal(dkm)
+		////c.Infof("educDate: %v", educData)
+		saveMasterRecord(w,r,uid,educData)
+		resp = "updated existing master record"
+	}
+	////c.Infof("resp: %v", resp)
+	return resp
+}
+
 //D0069
 func getSyllabus(w http.ResponseWriter, r *http.Request, mSID, level string) (string, string) {
 	//c := appengine.NewContext(r)
@@ -41419,7 +41576,7 @@ func checkEnroll(w http.ResponseWriter, r *http.Request, mSID, uid string) (stri
 	} else {
 		//read from blob
 		//resp = "updated existing student record"
-		blobByte := getBlobByte(w, r, EDUC_BLOB)	
+		blobByte := getBlobByte(w, r, EDUC_BLOB)
 		////c.Infof("config: %v", string(blobByte ))
 		sturec := StudentRecord{}
 		err := json.Unmarshal(blobByte, &sturec)
@@ -41455,14 +41612,14 @@ func cancelEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, sLevel stri
 	}
 	if g.TXT_VAL != "" {
 		////c.Infof("g.TXT_VAL empty")
-		EDUC_BLOB = g.TXT_VAL 
+		EDUC_BLOB = g.TXT_VAL
 	}
 	if EDUC_BLOB == "" {
 		resp = "not enrolled yet"
 	} else {
 		//read from blob
 		//resp = "updated existing student record"
-		blobByte := getBlobByte(w, r, EDUC_BLOB)	
+		blobByte := getBlobByte(w, r, EDUC_BLOB)
 		////c.Infof("config: %v", string(blobByte ))
 		sturec := StudentRecord{}
 		err := json.Unmarshal(blobByte, &sturec)
@@ -41545,6 +41702,7 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 }
 
 //D0069
+//creates a new blob
 func saveStudentRecord(w http.ResponseWriter, r *http.Request, uid string, educData []byte) {
 	c := appengine.NewContext(r)
 	//upload to blobstore
@@ -41583,6 +41741,48 @@ func saveStudentRecord(w http.ResponseWriter, r *http.Request, uid string, educD
 		return
 	}
 
+}
+
+//edwinxxx
+//D0069
+//creates a new blob
+func saveMasterRecord(w http.ResponseWriter, r *http.Request, uid string, educData []byte) {
+	c := appengine.NewContext(r)
+	//upload to blobstore
+	////c.Infof("saveMasterRecord")
+	////c.Infof("upload to blobstore")
+	csn2 := getUpUrlString(w,r,"/upload-media")
+	u, err := blobstore.UploadURL(c, csn2, nil)
+	if err != nil {
+		return
+	}
+	var m bytes.Buffer
+	fw := multipart.NewWriter(&m)
+	file, err := fw.CreateFormFile("file", "EDUC2")
+	if err != nil {
+		return
+	}
+	if _, err = file.Write(educData); err != nil {
+		return
+	}
+	_ = fw.WriteField("FUNC_CODE", "EDUC2")
+	//D0068
+	_ = fw.WriteField("API_KEY", CMD_GEN_KEY)
+	_ = fw.WriteField("UID", uid)
+	fw.Close()
+	req, err := http.NewRequest("POST", u.String(), &m)
+	if err != nil {
+		return
+	}
+	req.Header.Set("Content-Type", fw.FormDataContentType())
+	client := urlfetch.Client(c)
+	res, err := client.Do(req)
+	if err != nil {
+		return
+	}
+	if res.StatusCode != http.StatusCreated {
+		return
+	}
 }
 
 //D0028
@@ -48918,9 +49118,9 @@ const peopleSettingsTemplateTablePeopleHTMLAdminPending = `
 <tr>
 <td class="cbc">
 PENDING
-<a href="/admin-setup?ADMIN_FUNC=TDSUSERS-APPROVE&USER={{.}}"><img src="/img/approve.png" width=40 height=40/></img></a>
-<a href="/admin-setup?ADMIN_FUNC=TDSUSERS-DELETE&USER={{.}}"><img src="/img/delete-user.png" width=40 height=40/></img></a>
-<a href="/admin-setup?ADMIN_FUNC=TDSUSERS-ACCOUNT&USER={{.}}#account"><img src="/img/settings.png" width=40 height=40/></img></a>
+<a href="/admin-setup?ADMIN_FUNC=TDSUSERS-APPROVE&USER={{.}}" title="Approve User"><img src="/img/approve.png" width=40 height=40/></img></a>
+<a href="/admin-setup?ADMIN_FUNC=TDSUSERS-DELETE&USER={{.}}" title="Delete User"><img src="/img/delete-user.png" width=40 height=40/></img></a>
+<a href="/admin-setup?ADMIN_FUNC=TDSUSERS-ACCOUNT&USER={{.}}#account" title="Settings"><img src="/img/settings.png" width=40 height=40/></img></a>
 </td>
 <td class="id">
 <a href="/people-edit?EditPeopleFunc=EditPeople&UID={{.}}&SID={{.}}"><img src="/img/emoticon-happy.png" width=40 height=40></img></a>
@@ -59685,7 +59885,7 @@ func usersProcessor(w http.ResponseWriter, r *http.Request, auth, USER_EMAIL_ID 
 						return FL_VALID_USER, p.GROUP_ID, p.FL_BILLED, p.USER_ACC_TYP
 					}
 					if p.USER_ACC_OPT == "Pending" {
-						msgDtl := "[U00091] PENDING: Access request is currently pending. Please contact administrator if you didn't receive an email confirmation in 24 hours."
+						msgDtl := "[U00091] PENDING: Access request is currently pending. Kindly check your email. Please contact administrator if you didn't receive an email confirmation in 24 hours."
 						msgTyp := "warning"
 						msgURL := "/"
 						action := "U00091"
@@ -72226,7 +72426,7 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 			thisKey := fmt.Sprintf("STUDENT_REC_%v", uid)
 			if SR_BLOB == "" {
 				key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
-				if err := datastore.Get(c, key, &g); err != nil {			
+				if err := datastore.Get(c, key, &g); err != nil {
 					//return
 				}
 				SR_BLOB = g.TXT_VAL
@@ -79528,16 +79728,13 @@ func ShortenUrl(w http.ResponseWriter, r *http.Request, longUrl string) (shorten
 	if SYS_ENABLE_URL_SHORTENER  == false {
 		return longUrl
 	}
-	
 	var encbuf bytes.Buffer
 	enc := json.NewEncoder(&encbuf)
 	err := enc.Encode(map[string]string{"longUrl": longUrl})
 	if err != nil {
 		//return
 		shortenUrl = longUrl
- 
 	}
-	
 	transport := &transport.APIKey{
 			Key:       apiKeyUs,
 			Transport: &urlfetch.Transport{Context: c}}
@@ -79551,7 +79748,6 @@ func ShortenUrl(w http.ResponseWriter, r *http.Request, longUrl string) (shorten
 		//err = os.NewError("failed to post")
 		//return
 		shortenUrl = longUrl
- 
 	}
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
@@ -79566,13 +79762,10 @@ func ShortenUrl(w http.ResponseWriter, r *http.Request, longUrl string) (shorten
 	if err != nil {
 		//return
 		shortenUrl = longUrl
- 
 	}
 	shortenUrl = out["id"].(string)
- 
 	return
 }
- 
 //D0040
 //gets the GAE given longitude and latitude
 func getGaeLatLon(w http.ResponseWriter, r *http.Request) string {
