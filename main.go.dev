@@ -41090,7 +41090,7 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 					resp = getSchoolMasterRecord(w,r)
 				case "course":
 					//edwinxxx
-					dks := StudentRecord{}
+					/*dks := StudentRecord{}
 					ld := LevelsData{}
 					ld.Level = sLevel
 					ld.SyllabusURL, ld.ExamURL = getSyllabus(w,r,mSID,sLevel)
@@ -41098,8 +41098,22 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 					data,_ := json.MarshalIndent(dks.Levels, "", "  ")
 					if data != nil {
 						resp = fmt.Sprintf("%v", string(data))
-					}
+					}*/
 					//resp = fmt.Sprintf("course: level %v", sLevel) 
+					BLOB_KEY := contentCheckSid(w,r,mSID)
+					////c.Infof("BLOB_KEY: %v", BLOB_KEY)
+					blobByte := getBlobByte(w, r, BLOB_KEY) 
+					msyl := []MasterSyllabus{}
+					err := json.Unmarshal(blobByte, &msyl)
+					////c.Infof("ERROR: %v", err)
+					if err != nil {
+						panic(err)
+					}
+					data,_ := json.MarshalIndent(msyl, "", "  ")
+					if data != nil {
+						resp = fmt.Sprintf("%v", string(data))
+					}
+
 			}
 			w.WriteHeader(200)
 			w.Write([]byte(resp))
