@@ -7042,7 +7042,6 @@ func logout(w http.ResponseWriter, r *http.Request) {
 					fmt.Fprintf(w, "<input type=\"hidden\" id=\"aUser\" value=\"%v\">", uid)
 					fmt.Fprintf(w, "<input type=\"hidden\" id=\"host\" value=\"%v\">", getSchemeUrl(w,r))
 					fmt.Fprintf(w, "<input type=\"hidden\" id=\"MEDIA_ID\" value=\"%v\">", nMediaID)
-					//fmt.Fprintf(w, "<div class=\"success2\"><h1><a href=\"#\" id=\"doBackupLogoutBtn\" class=\"button button-3d button-royal\">SyncNotes & Logout Now!</a><a href=\"/logout?LFUNC=LOGOUT\" class=\"button button-3d button-caution\">Logout Now!</a></h1>You are syncing & logging out as <b>%v</b>.</div>", uid)
 					fmt.Fprintf(w, "<div class=\"success2\"><h1><a href=\"/logout?LFUNC=LOGOUT\" class=\"button button-3d button-caution\">Logout Now!</a><a href=\"#\" id=\"doBackupLogoutBtn\" class=\"button button-3d button-royal\">Encrypt, SyncNotes & Logout Now!</a></h1>You are syncing & logging out as <b>%v</b>.</div>", uid)
 					fmt.Fprintf(w, "<script src=\"/js/jquery.min.js\"></script>")
 					fmt.Fprintf(w, "<script src=\"/js/cloud-notes-backup.js\"></script>")
@@ -9428,12 +9427,8 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					fmt.Fprintf(w, "	<input type=\"text\" name=\"ip\" value=\"\" placeholder=\"x.x.x.x\" />")
 					fmt.Fprintf(w, "	<br><input type=\"submit\" name=\"submit\" value=\"Un-Block IP\"/>")
 					fmt.Fprintf(w, "</form>")
- 
-					
 				fmt.Fprintf(w, "<br>")
-				//fmt.Fprintf(w, "<h1>Uninstall Cloud Desktop</h1>")
 				fmt.Fprintf(w, "<a href=\"#\" class=\"button button-block button-rounded button-large\">Uninstall Cloud Desktop</a>")
-				//fmt.Fprintf(w, "<hr>")
 					fmt.Fprintf(w, "<h3><font color=red>Warning!!! Once you click Uninstall, it will delete all data forever & can no longer be recovered.</h3></font>")
 					fmt.Fprintf(w, "<form action=\"/ulapph-router\" method=\"GET\" target=\"qv3\">")
 					fmt.Fprintf(w, "	<input type=\"hidden\" name=\"RTR_FUNC\" value=\"UNINSTALL\"/>")
@@ -9443,9 +9438,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 				if err := htmlFooterSearch.Execute(w, ""); err != nil {
 				  panic(err)
 				}
-					
 		}
-			
 	} else {
 		msgDtl := "[U00018]ERROR: ONLY ADMIN CAN ACCESS THIS FUNCTION."
 		msgTyp := "error"
@@ -9455,7 +9448,6 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, sysReq, http.StatusFound)
 		return
 	}
-		
 }
 
 //D0063 
@@ -20777,15 +20769,15 @@ func commonTools(w http.ResponseWriter, r *http.Request, uid, FORMAT, SID, uRefe
 	fmt.Fprintf(w, "	<a href=\"/?q=qv#upload-video\">")
 	fmt.Fprintf(w, "		<img src=\"/img/new-video.png\" title=\"upload video\" height=\"40\" width=\"40\"></a>")
 	fmt.Fprintf(w, "	<a href=\"/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWARTICLE&CATEGORY=desktop0\">")
-	fmt.Fprintf(w, "		<img src=\"https://lh3.googleusercontent.com/bWbqX-0gpLlDLDzlyf1ZoudamXIcx0XOh23pfH04xnriWGSMH4K2eQJ7z9Iv0g695sYUcgxrnMxn2W84dZQD0mLR7ca07g\" title=\"newArticle\" height=\"40\" width=\"40\"></a>")
+	fmt.Fprintf(w, "		<img src=\"/img/new-article.png\" title=\"newArticle\" height=\"40\" width=\"40\"></a>")
 	fmt.Fprintf(w, "	<a href=\"/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWSLIDE&CATEGORY=desktop0\">")
-	fmt.Fprintf(w, "		<img src=\"https://lh3.googleusercontent.com/G2iUip44r8yUxxsYCYxTj2s8X6P7hMM-piMDyVt0XYx4eCGVfFNnz0gPjkwcarANFBWASI9tFSB_5pSKn6ub7Na5s8hz\" title=\"newSlide\" height=\"40\" width=\"40\"></a>")
+	fmt.Fprintf(w, "		<img src=\"/img/new-slide.png\" title=\"newSlide\" height=\"40\" width=\"40\"></a>")
 	fmt.Fprintf(w, "	<a href=\"/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0\">")
-	fmt.Fprintf(w, "		<img src=\"https://lh3.googleusercontent.com/dp0me5EMk4V5HENykVZtT0CT2SULxt7IIcVuHmKH6n-Eb-vX7tBj2Y_SEgLSCOT92GmfoO5wX3EJc_yQUbduq5pEJTHC\" title=\"newTextFile\" height=\"40\" width=\"40\"></a>")
+	fmt.Fprintf(w, "		<img src=\"/img/new-text.png\" title=\"newTextFile\" height=\"40\" width=\"40\"></a>")
 	fmt.Fprintf(w, "	<a href=\"/?q=qi#upload-image\">")
 	fmt.Fprintf(w, "		<img src=\"https://lh3.googleusercontent.com/kSr4cjtoSAIgMtfCIwP4yTX4rsNwBntXEz2aW9CKKlxCatokvQPkVUKUIQA5K9x7BQCvU9RiALTyPlVfbHRfKzza-OiP\" title=\"addImageFile\" height=\"40\" width=\"40\"></a>")
 	fmt.Fprintf(w, "	<a href=\"/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD\">")
-	fmt.Fprintf(w, "		<img src=\"https://lh3.googleusercontent.com/cIVQhhLxXgP7J2ERCOfcDc7_jijzAa4QSICwX_QhrT9GG5n_pKKatFrZjXPFORFTGnljcOx98SMP9VUoK0jynKsGkMGeSg\" title=\"multiUpload\" height=\"40\" width=\"40\"></a>")
+	fmt.Fprintf(w, "		<img src=\"/img/uploader.png\" title=\"multiUpload\" height=\"40\" width=\"40\"></a>")
 	fmt.Fprintf(w, "	<a href=\"/?q=qu\" target=\"qu\">")
 	fmt.Fprintf(w, "		<img src=\"https://lh3.googleusercontent.com/QtzAaanTReFACnFMGZ_Yc2yHOAFOEmOJN9yc_xrGOebTyX81sXFd0uQjbK_lklDC08r21DgSgXEN4qlLsR9J516MVfjGlQ\" title=\"addWebsite\" height=\"40\" width=\"40\"></a>")
 	if FORMAT != "" {
@@ -37433,7 +37425,7 @@ func adminSlides(w http.ResponseWriter, r *http.Request) {
 								fmt.Fprintf(w, "<b>Title:</b> %v<br>", p.TITLE)
 								fmt.Fprintf(w, "<b>Description:</b> %v<br>", p.DESC)
 								fmt.Fprintf(w, "<b>Desktop:</b> %v<br>", p.CATEGORY)
-								fmt.Fprintf(w, "<b>Image Src:</b> <img src=\"%v\" height=100 width=100></img><a href=\"/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD\"><img src=\"https://lh3.googleusercontent.com/cIVQhhLxXgP7J2ERCOfcDc7_jijzAa4QSICwX_QhrT9GG5n_pKKatFrZjXPFORFTGnljcOx98SMP9VUoK0jynKsGkMGeSg\" title=\"Multiple Upload\" height=\"40\" width=\"40\"/></a><br>", p.TAGS)
+								fmt.Fprintf(w, "<b>Image Src:</b> <img src=\"%v\" height=100 width=100></img><a href=\"/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD\"><img src=\"/img/uploader.png\" title=\"Multiple Upload\" height=\"40\" width=\"40\"/></a><br>", p.TAGS)
 								
 								fmt.Fprintf(w, "<b>Blob Key:</b> %v<br>", p.BLOB_URL)
 								fmt.Fprintf(w, "<b>Background Music ID:</b> %v<br>", p.MUSIC_ID)
@@ -40041,7 +40033,7 @@ func adminArticles(w http.ResponseWriter, r *http.Request) {
 								fmt.Fprintf(w, "<b>Title:</b> %v<br>", p.TITLE)
 								fmt.Fprintf(w, "<b>Description:</b> %v<br>", p.DESC)
 								fmt.Fprintf(w, "<b>Desktop:</b> %v<br>", p.CATEGORY)
-								fmt.Fprintf(w, "<b>Image Src:</b> <img src=\"%v\" height=100 width=100></img><a href=\"/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD\"><img src=\"https://lh3.googleusercontent.com/cIVQhhLxXgP7J2ERCOfcDc7_jijzAa4QSICwX_QhrT9GG5n_pKKatFrZjXPFORFTGnljcOx98SMP9VUoK0jynKsGkMGeSg\" title=\"Multiple Upload\" height=\"40\" width=\"40\"/></a><br>", p.TAGS)
+								fmt.Fprintf(w, "<b>Image Src:</b> <img src=\"%v\" height=100 width=100></img><a href=\"/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD\"><img src=\"/img/uploader.png\" title=\"Multiple Upload\" height=\"40\" width=\"40\"/></a><br>", p.TAGS)
 								fmt.Fprintf(w, "<b>Blob Key:</b> %v<br>", p.BLOB_URL)
 								fmt.Fprintf(w, "<b>Background Music ID:</b> %v<br>", p.MUSIC_ID)
 								if SYS_DISP_HOMEPAGE_CFG == true {
@@ -47233,7 +47225,7 @@ $(document).ready(function() {
 <a href="/" id="tabzilla" data-infobar="translation">Home</a>
 <script src="/js/settings_count.js"></script>
 <h3><font color="blue">Slides > {{.}}</font></h3>
-<a href="/infodb?DB_FUNC=SLIDES&CATEGORY="><img src="https://lh3.googleusercontent.com/1hOYTc1KkYDbvrdqB2TAe9-bE1TfSBBNBhFu2YrKrF1fbhmsxVuK9ZH0_Mf-ghCLUW2HtGBnY6XE1mHGQI8Xp6b1DL58yQ" title="List All Slides" height=40 width=40></a>
+<!--a href="/infodb?DB_FUNC=SLIDES&CATEGORY="><img src="https://lh3.googleusercontent.com/1hOYTc1KkYDbvrdqB2TAe9-bE1TfSBBNBhFu2YrKrF1fbhmsxVuK9ZH0_Mf-ghCLUW2HtGBnY6XE1mHGQI8Xp6b1DL58yQ" title="List All Slides" height=40 width=40></a>
 <a href="/infodb?DB_FUNC=VIEWER-SLIDES-ALL"><img src="https://lh3.googleusercontent.com/zz0WH4xuaiGofYdNEV5T9YityoXV-LdKuAWzhwyHqYFjXgPQVSzsUvMDTB9Q-5s1N9cPmyAn92pFPnaVKzrwQQraCybi" title="Slide All Slides" height=40 width=40></a>
 <a href="/editor?DOC_ID=0&SID=NEWSLIDE&CATEGORY={{.}}"><img src="https://lh3.googleusercontent.com/c6C1SEHVDBREUM9hjWwBkE-5xNq5dzrvcdj1iMaNVt6CexLSo9pwivkFpuTc8f4YPvnOfNAoscBPVoHuIXzg1jVR2_G2" title="New Slide" height=40 width=40></a>
 <a href="#upload-slides"><img src="https://lh3.googleusercontent.com/wcYYSjl5jjz27wNNAjaZF988sIxwE_w5prJAEpDvi6-sNNjlS2sq8E1kmJhnSlb_HAXTXru9JGKMvS54nKPX-2wDwRf1" title="Upload Slides" height=40 width=40></a>
@@ -47241,7 +47233,7 @@ $(document).ready(function() {
 <a href="/infodb?DB_FUNC=SLIDES&CATEGORY=desktop0"><img src="https://lh3.googleusercontent.com/9huj9qpDUt8idkHGJiEQz2MsnP7i1pRx6gcoR3WN-gixfyUkW48K5yzy3UrQAP01fFOfEpeJ-uvkB-q1VzrLqYRDEWRb" title="View Personal Slides" height=40 width=40></a>
 <a href="/media?CATEGORY={{.}}"><img src="https://lh3.googleusercontent.com/0DMGfaCaIl5rk0mOnQ3UHDLRfj70_GanQJLxzAPS865GhNkTRJEn7UTEt40U2QtgmHR76t4Mc2ql59xu3QuDQZNtliyXEg" title="Media Gallery" height=40 width=40></a>
 <a href="/infodb?DB_FUNC=SLIDES&CATEGORY={{.}}&VIEW=RECENT"><img src="/img/recent.png" title="View Recent Slides" height=40 width=40></a>
-<hr>
+<hr-->
 <div id="slides-area"></div>
 <div id="slides-area-button"></div>
 <div id="slides-copy-button"></div>
@@ -47628,14 +47620,14 @@ $(document).ready(function() {
 <a href="/" id="tabzilla" data-infobar="translation">Home</a>
 <script src="/js/settings_count.js"></script>
 <h3><font color="blue">Articles > {{.}}</font></h3>
-<a href="/infodb?DB_FUNC=ARTICLES&CATEGORY="><img src="https://lh3.googleusercontent.com/5F03yVRd68GcmE5hsGW0PSf-j3eR6-QxNWsLOzXOk-qYxWHydMbwG6un3ecZiuYsLmPPWNLf88qE3vaxHX1kVLrJBSccpw" title="List all Articles" height=40 width=40></a>
+<!--a href="/infodb?DB_FUNC=ARTICLES&CATEGORY="><img src="https://lh3.googleusercontent.com/5F03yVRd68GcmE5hsGW0PSf-j3eR6-QxNWsLOzXOk-qYxWHydMbwG6un3ecZiuYsLmPPWNLf88qE3vaxHX1kVLrJBSccpw" title="List all Articles" height=40 width=40></a>
 <a href="/editor?DOC_ID=0&SID=NEWARTICLE&CATEGORY={{.}}"><img src="https://lh3.googleusercontent.com/UmYEg0Y9VgTuymOs0U6m_C1EJ02zdX-L-SMJpwuhhphtrc4oVCx5UDJ0Tv4DVbsuzRxmeMxyIE8tMteSV3UKN9B2h4uK" title="New Article" height=40 width=40></a>
 <a href="#upload-articles"><img src="https://lh3.googleusercontent.com/ohqRUQxZxQj5qi2N-njg9sb8dsvogOfM8Zamot1g-9iZXbyKV-peONVDoPNt7GzSRjMY2DbQPHD9phRCe0QdBKVCiwVpqA" title="Upload Article" height=40 width=40></a>
 <a href="/admin-articles"><img src="https://lh3.googleusercontent.com/9YwRXxRpwP0J9eLZ5RKcs1NEI2TP_WaulchFx8_gL9aSHKxW9-zBIEH0H6UcYDF40UvR_CdneXC8tQDmnfe_lxjljk5y" title="Admin Articles" height=40 width=40></a>
 <a href="/infodb?DB_FUNC=ARTICLES&CATEGORY=desktop0"><img src="https://lh3.googleusercontent.com/UA3v8CtZTiufEmBnraMfGVIFhWKK352Og2hJoHTpeOenu-3BKxAigV6iCtBaMoZFOkWMUwPPFFBEkuIwpPBQ946sspIbVw" title="View Personal Articles" height=40 width=40></a>
 <a href="/media?CATEGORY={{.}}"><img src="https://lh3.googleusercontent.com/fazvKTAudGvqzmVfKUCtMseQStH28o5Anr1VGTlZVcw2vn3Z2o4wFjHEtjpsYbC9pZ8XbTamulRfRQmCeA5-SAyy6UDV" title="Media Gallery" height=40 width=40></a>
 <a href="/infodb?DB_FUNC=ARTICLES&CATEGORY={{.}}&VIEW=RECENT"><img src="/img/recent.png" title="View Recent Articles" height=40 width=40></a>
-<hr>
+<hr-->
 <div id="slides-area"></div>
 <div id="slides-area-button"></div>
 <div id="slides-copy-button"></div>
@@ -47718,14 +47710,14 @@ const iconsSettingsTemplateHeaderHTMLSL = `
 <body>
 <a href="/" id="tabzilla" data-infobar="translation">Home</a>
 <h3><font color="blue">Admin - Slides - {{.}}</font></h3>
-<a href="/infodb?DB_FUNC=SLIDES&CATEGORY="><img src="https://lh3.googleusercontent.com/1hOYTc1KkYDbvrdqB2TAe9-bE1TfSBBNBhFu2YrKrF1fbhmsxVuK9ZH0_Mf-ghCLUW2HtGBnY6XE1mHGQI8Xp6b1DL58yQ" title="List All Slides" height=40 width=40></a>
+<!--a href="/infodb?DB_FUNC=SLIDES&CATEGORY="><img src="https://lh3.googleusercontent.com/1hOYTc1KkYDbvrdqB2TAe9-bE1TfSBBNBhFu2YrKrF1fbhmsxVuK9ZH0_Mf-ghCLUW2HtGBnY6XE1mHGQI8Xp6b1DL58yQ" title="List All Slides" height=40 width=40></a>
 <a href="/infodb?DB_FUNC=VIEWER-SLIDES-ALL"><img src="https://lh3.googleusercontent.com/zz0WH4xuaiGofYdNEV5T9YityoXV-LdKuAWzhwyHqYFjXgPQVSzsUvMDTB9Q-5s1N9cPmyAn92pFPnaVKzrwQQraCybi" title="Slide All Slides" height=40 width=40></a>
 <a href="/editor?DOC_ID=0&SID=NEWSLIDE&CATEGORY={{.}}"><img src="https://lh3.googleusercontent.com/c6C1SEHVDBREUM9hjWwBkE-5xNq5dzrvcdj1iMaNVt6CexLSo9pwivkFpuTc8f4YPvnOfNAoscBPVoHuIXzg1jVR2_G2" title="New Slide" height=40 width=40></a>
 <a href="#upload-slides"><img src="https://lh3.googleusercontent.com/wcYYSjl5jjz27wNNAjaZF988sIxwE_w5prJAEpDvi6-sNNjlS2sq8E1kmJhnSlb_HAXTXru9JGKMvS54nKPX-2wDwRf1" title="Upload Slides" height=40 width=40></a>
 <a href="/infodb?DB_FUNC=SLIDES&CATEGORY=desktop0"><img src="https://lh3.googleusercontent.com/9huj9qpDUt8idkHGJiEQz2MsnP7i1pRx6gcoR3WN-gixfyUkW48K5yzy3UrQAP01fFOfEpeJ-uvkB-q1VzrLqYRDEWRb" title="View Personal Slides" height=40 width=40></a>
 <a href="/media?CATEGORY={{.}}"><img src="https://lh3.googleusercontent.com/0DMGfaCaIl5rk0mOnQ3UHDLRfj70_GanQJLxzAPS865GhNkTRJEn7UTEt40U2QtgmHR76t4Mc2ql59xu3QuDQZNtliyXEg" title="Media Gallery" height=40 width=40></a>
 <a href="/infodb?DB_FUNC=SLIDES&CATEGORY={{.}}&VIEW=RECENT"><img src="/img/recent.png" title="View Recent Slides" height=40 width=40></a>
-<hr>
+<hr-->
 `
  
 var iconsSettingsTemplateHeaderAL = template.Must(template.New("iconsSettingsTemplateHeaderAL").Parse(iconsSettingsTemplateHeaderHTMLAL))
@@ -47761,14 +47753,14 @@ const iconsSettingsTemplateHeaderHTMLAL = `
 <body>
 <a href="/" id="tabzilla" data-infobar="translation">Home</a>
 <h3><font color="blue">Admin - Articles</font></h3>
-<a href="/infodb?DB_FUNC=ARTICLES&CATEGORY="><img src="https://lh3.googleusercontent.com/5F03yVRd68GcmE5hsGW0PSf-j3eR6-QxNWsLOzXOk-qYxWHydMbwG6un3ecZiuYsLmPPWNLf88qE3vaxHX1kVLrJBSccpw" title="List all Articles" height=40 width=40></a>
+<!--a href="/infodb?DB_FUNC=ARTICLES&CATEGORY="><img src="https://lh3.googleusercontent.com/5F03yVRd68GcmE5hsGW0PSf-j3eR6-QxNWsLOzXOk-qYxWHydMbwG6un3ecZiuYsLmPPWNLf88qE3vaxHX1kVLrJBSccpw" title="List all Articles" height=40 width=40></a>
 <a href="/editor?DOC_ID=0&SID=NEWARTICLE&CATEGORY={{.}}"><img src="https://lh3.googleusercontent.com/UmYEg0Y9VgTuymOs0U6m_C1EJ02zdX-L-SMJpwuhhphtrc4oVCx5UDJ0Tv4DVbsuzRxmeMxyIE8tMteSV3UKN9B2h4uK" title="New Article" height=40 width=40></a>
 <a href="#upload-articles"><img src="https://lh3.googleusercontent.com/ohqRUQxZxQj5qi2N-njg9sb8dsvogOfM8Zamot1g-9iZXbyKV-peONVDoPNt7GzSRjMY2DbQPHD9phRCe0QdBKVCiwVpqA" title="Upload Article" height=40 width=40></a>
 <a href="/admin-articles"><img src="https://lh3.googleusercontent.com/9YwRXxRpwP0J9eLZ5RKcs1NEI2TP_WaulchFx8_gL9aSHKxW9-zBIEH0H6UcYDF40UvR_CdneXC8tQDmnfe_lxjljk5y" title="Admin Articles" height=40 width=40></a>
 <a href="/infodb?DB_FUNC=ARTICLES&CATEGORY=desktop0"><img src="https://lh3.googleusercontent.com/UA3v8CtZTiufEmBnraMfGVIFhWKK352Og2hJoHTpeOenu-3BKxAigV6iCtBaMoZFOkWMUwPPFFBEkuIwpPBQ946sspIbVw" title="View Personal Articles" height=40 width=40></a>
 <a href="/media?CATEGORY={{.}}"><img src="https://lh3.googleusercontent.com/fazvKTAudGvqzmVfKUCtMseQStH28o5Anr1VGTlZVcw2vn3Z2o4wFjHEtjpsYbC9pZ8XbTamulRfRQmCeA5-SAyy6UDV" title="Media Gallery" height=40 width=40></a>
 <a href="/infodb?DB_FUNC=ARTICLES&CATEGORY={{.}}&VIEW=RECENT"><img src="/img/recent.png" title="View Recent Articles" height=40 width=40></a>
-<hr>
+<hr-->
 `
  
 var iconsSettingsTemplateHeaderMD = template.Must(template.New("iconsSettingsTemplateHeaderMD").Parse(iconsSettingsTemplateHeaderHTMLMD))
@@ -47862,7 +47854,7 @@ $(document).ready(function() {
 <body>
 <a href="/" id="tabzilla" data-infobar="translation">Home</a>
 <h3><font color="blue">Media Gallery</font></h3>
-<a href="/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD"><img src="https://lh3.googleusercontent.com/cIVQhhLxXgP7J2ERCOfcDc7_jijzAa4QSICwX_QhrT9GG5n_pKKatFrZjXPFORFTGnljcOx98SMP9VUoK0jynKsGkMGeSg" title="Multiple Upload" height=40 width=40></a>
+<!--a href="/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD"><img src="/img/uploader.png" title="Multiple Upload" height=40 width=40></a>
 <a href="/?q=qi#upload-image"><img src="https://lh3.googleusercontent.com/eGqfd8VMV1FCKIaubhMkBDjMnU9lv1WQRu0iqzcAnqLJ60k4wrGp2opS1f-j-Oh0n7uUTBAHxTwSEeQi3efMLdMi1PbW" title="Upload Image" height=40 width=40></a>
 <a href="/?q=qt#upload-text"><img src="https://lh3.googleusercontent.com/sGoo7YEJKoJ4JrkySxYzcplcZChb6VhOC_7dIkrF78KH0C3GgLvARzvDNUevjcBWZhCGcytW3myUvJoftkMnTseq0SVj" title="Upload Text File" height=40 width=40></a>
 <a href="/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0"><img src="https://lh3.googleusercontent.com/HZeDnyMUi99is1fbWsnWnqGrkt-Pde01EHLz4ej-GSZ69S-N3jezP-FoNMuwXaSvv2ntr_cauLhKsIWtAEWOircVhg1PSg" title="New Text File" height=40 width=40></a>
@@ -47879,7 +47871,7 @@ $(document).ready(function() {
 <a href="/media?FUNC_CODE=UMP"><img src="/img/music-player.png" title="Music Player" height=40 width=40></a>
 <a href="/media?FUNC_CODE=UVP"><img src="/img/video-player.png" title="Video Player" height=40 width=40></a>
 <a href="/media?FUNC_CODE=YVP"><img src="/img/youtube-player.png" title="Youtube Player" height=40 width=40></a>
-<hr>
+<hr-->
 <div id="slides-area"></div>
 <div id="slides-area-button"></div>
 <div id="slides-copy-button"></div>
@@ -47980,7 +47972,7 @@ $(document).ready(function() {
 <body>
 <a href="/" id="tabzilla" data-infobar="translation">Home</a>
 <h3><font color="blue">Media Gallery</font></h3>
-<a href="/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD"><img src="https://lh3.googleusercontent.com/cIVQhhLxXgP7J2ERCOfcDc7_jijzAa4QSICwX_QhrT9GG5n_pKKatFrZjXPFORFTGnljcOx98SMP9VUoK0jynKsGkMGeSg" title="Multiple Upload" height=40 width=40></a>
+<!--a href="/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD"><img src="/img/uploader.png" title="Multiple Upload" height=40 width=40></a>
 <a href="/?q=qi#upload-image"><img src="https://lh3.googleusercontent.com/eGqfd8VMV1FCKIaubhMkBDjMnU9lv1WQRu0iqzcAnqLJ60k4wrGp2opS1f-j-Oh0n7uUTBAHxTwSEeQi3efMLdMi1PbW" title="Upload Image" height=40 width=40></a>
 <a href="/?q=qt#upload-text"><img src="https://lh3.googleusercontent.com/sGoo7YEJKoJ4JrkySxYzcplcZChb6VhOC_7dIkrF78KH0C3GgLvARzvDNUevjcBWZhCGcytW3myUvJoftkMnTseq0SVj" title="Upload Text File" height=40 width=40></a>
 <a href="/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0"><img src="https://lh3.googleusercontent.com/HZeDnyMUi99is1fbWsnWnqGrkt-Pde01EHLz4ej-GSZ69S-N3jezP-FoNMuwXaSvv2ntr_cauLhKsIWtAEWOircVhg1PSg" title="New Text File" height=40 width=40></a>
@@ -47997,7 +47989,7 @@ $(document).ready(function() {
 <a href="/media?FUNC_CODE=UMP"><img src="/img/music-player.png" title="Music Player" height=40 width=40></a>
 <a href="/media?FUNC_CODE=UVP"><img src="/img/video-player.png" title="Video Player" height=40 width=40></a>
 <a href="/media?FUNC_CODE=YVP"><img src="/img/youtube-player.png" title="Youtube Player" height=40 width=40></a>
-<hr>
+<hr-->
 <div id="slides-area"></div>
 <div id="slides-area-button"></div>
 <div id="slides-copy-button"></div>
@@ -48063,7 +48055,7 @@ $(document).ready(function() {
  
 <body>
 <h3><font color="blue">Admin Media</font></h3>
-<a href="/infodb?DB_FUNC=MEDIA"><img src="https://lh3.googleusercontent.com/VC8-KBmRE9-OGuVUCYQDJ3g8L8lcUWltTy3qjFSN_ymJvLGwHm36gxZsG1VBL_86dHP63feRvoRFWwMSsYal4hDnexAZ" height=40 width=40 title="Media Home"></a>
+<!--a href="/infodb?DB_FUNC=MEDIA"><img src="https://lh3.googleusercontent.com/VC8-KBmRE9-OGuVUCYQDJ3g8L8lcUWltTy3qjFSN_ymJvLGwHm36gxZsG1VBL_86dHP63feRvoRFWwMSsYal4hDnexAZ" height=40 width=40 title="Media Home"></a>
 <a href="#update-media"><img src="https://lh3.googleusercontent.com/UU_9rGIzZCGW4rt3A3M1NHIHpqBZsfWFu3SHCdmap2oITKMj7TWB3bvJweTw7Ri09ZQ2eOdcW3euqbZ1OJVATsU-dufV5A" height=40 width=40 title="Update Media"></a>
 <a href="#delete-media"><img src="https://lh3.googleusercontent.com/4zj6LK-gXqT7WJvFxjxM_DxGvZhV9nOsjIMI9ot8KEuP97mXQilZ8kD2Wi-SoHJdtfDnItQLaF5fk09h7iiLuyGfOzQJ" height=40 width=40 title="Delete Media"></a>
 <a href="#shared-to2"><img src="https://lh3.googleusercontent.com/9YwRXxRpwP0J9eLZ5RKcs1NEI2TP_WaulchFx8_gL9aSHKxW9-zBIEH0H6UcYDF40UvR_CdneXC8tQDmnfe_lxjljk5y" height=40 width=40 title="Access List"></a>
@@ -48073,7 +48065,7 @@ $(document).ready(function() {
 <a href="/?q=qv#upload-video"><img src="/img/new-video.png" title="Upload New Video" height=40 width=40></a>
 <a href="/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0"><img src="https://lh3.googleusercontent.com/HZeDnyMUi99is1fbWsnWnqGrkt-Pde01EHLz4ej-GSZ69S-N3jezP-FoNMuwXaSvv2ntr_cauLhKsIWtAEWOircVhg1PSg" height=40 width=40 title="New Text File"></a>
 <a href="/infodb?DB_FUNC=MEDIA&CATEGORY=ALL_RECENT"><img src="/img/recent.png" title="View Recent" height=40 width=40></a>
-<hr>
+<hr-->
 <div id="slides-area"></div>
 <div id="slides-area-button"></div>
 <div id="slides-copy-button"></div>
@@ -48133,7 +48125,7 @@ const iconsSettingsTemplateHeaderHTMLSLU = `
  
 <body>
 <h3><font color="blue">Admin Slides</font></h3>
-<a href="/admin-slides"><img src="https://lh3.googleusercontent.com/4UHg0Hh0yAda2zpJiiAvviD5tUEWqpkCfRAaHLlfqmVmQ6QLjr-FOQU1ZfG8PvRZijmL1NpBkvwwf2bNY_uaPNJRRLv2FQ" title="Slides Home" height=40 width=40></a><a href="/editor?DOC_ID={{.}}&SID=TDSSLIDE-{{.}}"><img src="https://lh3.googleusercontent.com/aGZaWYabEl0XmH-TK8HP4VXaloT8dCFRJz9fw_pLrU91_kEunLV5jtX8AgBp0zQMl4S6LDF1kSLZTsRN9cQzepNGu9Q" title="Slide Editor" height=40 width=40></a><a href="#update-slides"><img src="https://lh3.googleusercontent.com/1fGFhgevAM9gGtgD6_OrN6JrFJo8uYsNysiRpv0b2B1bqIKg2KFRyI6m5Dyexfyleff_wrHBrkwy2zAQL6UKDrG5KxA" title="Update Slide" height=40 width=40></a><a href="#shared-to"><img src="https://lh3.googleusercontent.com/SdzHsODMGfy1upRVeJHAk6-apf9rrbAxFfPeGD5jBZ-zlmXXSDMhz1J7TWko5b6C-CgYzPlUuAJAMZiPqtOVYGm7Pkg" title="Access List" height=40 width=40></a><a href="#delete-slides"><img src="https://lh3.googleusercontent.com/u44Q_knOeOzKdeAo0GJ6VJFZlvdxRlm1ZU8Zsn6jwdNISi5tBVt7tPbAOPRKqvjv2Sd985kgdaeMMF57fEUn5w6ZFF1rxA" title="Delete Slide File" height=40 width=40></a><a href="#clear-cache"><img src="https://lh3.googleusercontent.com/_9RT7FZRoND2jRhfqdLgHNQ2WSzMHvEUdbuALRdWhALGjtl2oqNz-Szt2DXbMOwRLHW9jC0vV8GTylLVmdSDLCidVqc" title="Clear Cache" height=40 width=40></a><a href="/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID={{.}}&SID=TDSSLIDE-{{.}}"><img src="https://lh3.googleusercontent.com/sU0HpzM0Qq2-wET1-_TK5_P8PZDvg7WehQVUOhCakmBT7iqG0s1KaQx5dZTOEBm4xm83PC_yihwdJu6IUIaG9zTDVAQB" title="Preview Slide" height=40 width=40></a><a href="/media"><img src="https://lh3.googleusercontent.com/fazvKTAudGvqzmVfKUCtMseQStH28o5Anr1VGTlZVcw2vn3Z2o4wFjHEtjpsYbC9pZ8XbTamulRfRQmCeA5-SAyy6UDV" title="Media Gallery" height=40 width=40></a><a href="/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWSLIDE&CATEGORY=desktop0"><img src="https://lh3.googleusercontent.com/G2iUip44r8yUxxsYCYxTj2s8X6P7hMM-piMDyVt0XYx4eCGVfFNnz0gPjkwcarANFBWASI9tFSB_5pSKn6ub7Na5s8hz" title="New Slide" height=40 width=40></a>
+<a href="/admin-slides"><img src="https://lh3.googleusercontent.com/4UHg0Hh0yAda2zpJiiAvviD5tUEWqpkCfRAaHLlfqmVmQ6QLjr-FOQU1ZfG8PvRZijmL1NpBkvwwf2bNY_uaPNJRRLv2FQ" title="Slides Home" height=40 width=40></a><a href="/editor?DOC_ID={{.}}&SID=TDSSLIDE-{{.}}"><img src="https://lh3.googleusercontent.com/aGZaWYabEl0XmH-TK8HP4VXaloT8dCFRJz9fw_pLrU91_kEunLV5jtX8AgBp0zQMl4S6LDF1kSLZTsRN9cQzepNGu9Q" title="Slide Editor" height=40 width=40></a><a href="#update-slides"><img src="https://lh3.googleusercontent.com/1fGFhgevAM9gGtgD6_OrN6JrFJo8uYsNysiRpv0b2B1bqIKg2KFRyI6m5Dyexfyleff_wrHBrkwy2zAQL6UKDrG5KxA" title="Update Slide" height=40 width=40></a><a href="#shared-to"><img src="https://lh3.googleusercontent.com/SdzHsODMGfy1upRVeJHAk6-apf9rrbAxFfPeGD5jBZ-zlmXXSDMhz1J7TWko5b6C-CgYzPlUuAJAMZiPqtOVYGm7Pkg" title="Access List" height=40 width=40></a><a href="#delete-slides"><img src="https://lh3.googleusercontent.com/u44Q_knOeOzKdeAo0GJ6VJFZlvdxRlm1ZU8Zsn6jwdNISi5tBVt7tPbAOPRKqvjv2Sd985kgdaeMMF57fEUn5w6ZFF1rxA" title="Delete Slide File" height=40 width=40></a><a href="#clear-cache"><img src="https://lh3.googleusercontent.com/_9RT7FZRoND2jRhfqdLgHNQ2WSzMHvEUdbuALRdWhALGjtl2oqNz-Szt2DXbMOwRLHW9jC0vV8GTylLVmdSDLCidVqc" title="Clear Cache" height=40 width=40></a><a href="/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID={{.}}&SID=TDSSLIDE-{{.}}"><img src="https://lh3.googleusercontent.com/sU0HpzM0Qq2-wET1-_TK5_P8PZDvg7WehQVUOhCakmBT7iqG0s1KaQx5dZTOEBm4xm83PC_yihwdJu6IUIaG9zTDVAQB" title="Preview Slide" height=40 width=40></a><a href="/media"><img src="https://lh3.googleusercontent.com/fazvKTAudGvqzmVfKUCtMseQStH28o5Anr1VGTlZVcw2vn3Z2o4wFjHEtjpsYbC9pZ8XbTamulRfRQmCeA5-SAyy6UDV" title="Media Gallery" height=40 width=40></a><a href="/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWSLIDE&CATEGORY=desktop0"><img src="/img/new-slide.png" title="New Slide" height=40 width=40></a>
 <hr>
 `
  
@@ -59054,7 +59046,7 @@ const slidesDispTemplateHTMLRecs = `
 	<img src="{{.TAGS}}" height="100" width="100" style="padding-top:23px;" onmouseover="showtrail(800,500,'{{.TAGS}}=s800');" onmouseout="hidetrail();"></img></a><button onclick="copyToUWM('','/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}','{{.TITLE}}','TDSSLIDE-{{.DOC_ID}}')">UWM Me!</button><div id='iurl_{{.DOC_ID}}s'></div></td>
 	<td data-order="{{.TITLE}}">
 		<a href="/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
-		[ <a href="/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ]
+		[ <a href="/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ] [ <a download="TDSSLIDE-{{.DOC_ID}}-{{.TITLE}}.ulapphSlide" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSSLIDE-{{.DOC_ID}}">Backup</a> ]
 <!--		 [ <a href="#" class="show_hide">Show/Hide</a> ]
         <div class="slidingDiv">
 		<a href="/slides?TYPE=SLIDE&SECS=8&MODE=NORMAL&PARM=LOOP&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}"><img src="/img/viewer.png" height="40" width="40"></a>
@@ -59193,7 +59185,7 @@ const slidesDispTemplateHTMLRecsRecent = `
 	<img src="{{.TAGS}}" height="100" width="100" style="padding-top:23px;" onmouseover="showtrail(800,500,'{{.TAGS}}=s800');" onmouseout="hidetrail();"></img></a> <button onclick="copyToUWM('','/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}','{{.TITLE}}','TDSSLIDE-{{.DOC_ID}}')">UWM Me!</button><div id='iurl_{{.DOC_ID}}s'></div></td>
 	<td data-order="{{.TITLE}}">
 		<a href="/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
-		[ <a href="/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ]
+		[ <a href="/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ] [ <a download="TDSSLIDE-{{.DOC_ID}}-{{.TITLE}}.ulapphSlide" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSSLIDE-{{.DOC_ID}}">Backup</a> ]
 <!--		 [ <a href="#" class="show_hide">Show/Hide</a> ]
         <div class="slidingDiv">
 		<a href="/slides?TYPE=SLIDE&SECS=8&MODE=NORMAL&PARM=LOOP&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}"><img src="/img/viewer.png" height="40" width="40"></a>
@@ -59234,7 +59226,7 @@ const articlesDispTemplateHTMLRecs = `
 	<img src="{{.TAGS}}" height="100" width="100" onmouseover="showtrail(800,500,'{{.TAGS}}=s800');" onmouseout="hidetrail();"></img></a> <button onclick="copyToUWM('','/admin-articles?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}','{{.TITLE}}','TDSARTL-{{.DOC_ID}}')">UWM Me!</button><div id='iurl_{{.DOC_ID}}s'></div></td>
 	<td data-order="{{.TITLE}}">
 		<a href="/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
-		[ <a href="/admin-articles?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ]
+		[ <a href="/admin-articles?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ] [ <a download="TDSARTL-{{.DOC_ID}}-{{.TITLE}}.ulapphArticle" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSARTL-{{.DOC_ID}}">Backup</a> ]
 <!--		 [ <a href="#" class="show_hide">Show/Hide</a> ]
         <div class="slidingDiv">
 		<a href="/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}"><img src="/img/viewer.png" height="40" width="40"></a><br>
@@ -59318,7 +59310,7 @@ const articlesDispTemplateHTMLRecsRecent = `
 	<img src="{{.TAGS}}" height="100" width="100" onmouseover="showtrail(800,500,'{{.TAGS}}=s800');" onmouseout="hidetrail();"></img></a> <button onclick="copyToUWM('','/admin-articles?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}','{{.TITLE}}','TDSARTL-{{.DOC_ID}}')">UWM Me!</button><div id='iurl_{{.DOC_ID}}s'></div></td>
 	<td data-order="{{.TITLE}}">
 		<a href="/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
-		[ <a href="/admin-articles?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ]
+		[ <a href="/admin-articles?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ] [ <a download="TDSARTL-{{.DOC_ID}}-{{.TITLE}}.ulapphArticle" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSARTL-{{.DOC_ID}}">Backup</a> ]
 <!--		 [ <a href="#" class="show_hide">Show/Hide</a> ]
         <div class="slidingDiv">
 		<a href="/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}"><img src="/img/viewer.png" height="40" width="40"></a><br>
@@ -59355,7 +59347,7 @@ const slidesDispTemplateHTMLRecsMine = `
 	<img src="{{.TAGS}}" height="100" width="100" style="padding-top:23px;" onmouseover="showtrail(800,500,'{{.TAGS}}=s800');" onmouseout="hidetrail();"></img></a> <button onclick="copyToUWM('','/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}','{{.TITLE}}','TDSSLIDE-{{.DOC_ID}}')">UWM Me!</button><div id='iurl_{{.DOC_ID}}s'></div></td>
 	<td data-order="{{.TITLE}}">
 		<a href="/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
-		[ <a href="/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ]
+		[ <a href="/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ] [ <a download="TDSSLIDE-{{.DOC_ID}}-{{.TITLE}}.ulapphSlide" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSSLIDE-{{.DOC_ID}}">Backup</a> ]
 <!--		 [ <a href="#" class="show_hide">Show/Hide</a> ]
         <div class="slidingDiv">
 		<a href="/slides?TYPE=SLIDE&SECS=8&MODE=NORMAL&PARM=LOOP&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}"><img src="/img/viewer.png" height="40" width="40"></a><br>
@@ -59394,7 +59386,7 @@ const slidesDispTemplateHTMLRecsMineRecent = `
 	<img src="{{.TAGS}}" height="100" width="100" style="padding-top:23px;" onmouseover="showtrail(800,500,'{{.TAGS}}=s800');" onmouseout="hidetrail();"></img></a> <button onclick="copyToUWM('','/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}','{{.TITLE}}','TDSSLIDE-{{.DOC_ID}}')">UWM Me!</button><div id='iurl_{{.DOC_ID}}s'></div></td>
 	<td data-order="{{.TITLE}}">
 		<a href="/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
-		[ <a href="/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ]
+		[ <a href="/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ] [ <a download="TDSSLIDE-{{.DOC_ID}}-{{.TITLE}}.ulapphSlide" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSSLIDE-{{.DOC_ID}}">Backup</a> ]
 <!--		 [ <a href="#" class="show_hide">Show/Hide</a> ]
         <div class="slidingDiv">
 		<a href="/slides?TYPE=SLIDE&SECS=8&MODE=NORMAL&PARM=LOOP&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}"><img src="/img/viewer.png" height="40" width="40"></a><br>
@@ -59460,7 +59452,7 @@ const articlesDispTemplateHTMLRecsMine = `
 	<img src="{{.TAGS}}" height="100" width="100" onmouseover="showtrail(800,500,'{{.TAGS}}=s800');" onmouseout="hidetrail();"></img></a> <button onclick="copyToUWM('','/admin-articles?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}','{{.TITLE}}','TDSARTL-{{.DOC_ID}}')">UWM Me!</button><div id='iurl_{{.DOC_ID}}s'></div></td>
 	<td data-order="{{.TITLE}}">
 		<a href="/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
-		[ <a href="/admin-articles?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ]
+		[ <a href="/admin-articles?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ] [ <a download="TDSARTL-{{.DOC_ID}}-{{.TITLE}}.ulapphArticle" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSARTL-{{.DOC_ID}}">Backup</a> ]
 <!--		 [ <a href="#" class="show_hide">Show/Hide</a> ]
         <div class="slidingDiv">
 		<a href="/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}"><img src="/img/viewer.png" height="40" width="40"></a><br>
@@ -59496,7 +59488,7 @@ const articlesDispTemplateHTMLRecsMineRecent = `
 	<img src="{{.TAGS}}" height="100" width="100" onmouseover="showtrail(800,500,'{{.TAGS}}=s800');" onmouseout="hidetrail();"></img></a> <button onclick="copyToUWM('','/admin-articles?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}','{{.TITLE}}','TDSARTL-{{.DOC_ID}}')">UWM Me!</button><div id='iurl_{{.DOC_ID}}s'></div></td>
 	<td data-order="{{.TITLE}}">
 		<a href="/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
-		[ <a href="/admin-articles?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ]
+		[ <a href="/admin-articles?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ] [ <a download="TDSARTL-{{.DOC_ID}}-{{.TITLE}}.ulapphArticle" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSARTL-{{.DOC_ID}}">Backup</a> ]
 <!--		 [ <a href="#" class="show_hide">Show/Hide</a> ]
         <div class="slidingDiv">
 		<a href="/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}"><img src="/img/viewer.png" height="40" width="40"></a><br>
@@ -59534,7 +59526,7 @@ const slidesDispTemplateHTMLRecs2 = `
 	<img src="{{.TAGS}}" height="100" width="100" style="padding-top:23px;" onmouseover="showtrail(800,500,'{{.TAGS}}=s800');" onmouseout="hidetrail();"></img></a> <button onclick="copyToUWM('','/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}','{{.TITLE}}','TDSSLIDE-{{.DOC_ID}}')">UWM Me!</button><div id='iurl_{{.DOC_ID}}s'></div></td>
 	<td data-order="{{.TITLE}}">
 		<a href="/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
-		[ <a href="/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ] <!--[ <a href="#" class="show_hide">Show/Hide</a> ]
+		[ <a href="/admin-slides?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ] <!--[ <a href="#" class="show_hide">Show/Hide</a> ] [ <a download="TDSSLIDE-{{.DOC_ID}}-{{.TITLE}}.ulapphSlide" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSSLIDE-{{.DOC_ID}}">Backup</a> ]
         <div class="slidingDiv">
 		<a href="/slides?TYPE=SLIDE&SECS=8&MODE=NORMAL&PARM=LOOP&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}"><img src="/img/viewer.png" height="40" width="40"></a><br>
 		<a href="/presenter?TYPE=SLIDE&MODE=PRESENTER&PARM=AUTO&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}"><img src="/img/presenter.png" height="40" width="40"></a><br>
@@ -59576,7 +59568,7 @@ const articlesDispTemplateHTMLRecs2 = `
 	<td data-order="{{.TITLE}}">
 		<a href="/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
 		[ <a href="/admin-articles?FUNC_CODE=VIEW&DOC_ID={{.DOC_ID}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_URL}}&CATEGORY={{.CATEGORY}}">Update</a> ]
-<!--		 [ <a href="#" class="show_hide">Show/Hide</a> ]
+<!--		 [ <a href="#" class="show_hide">Show/Hide</a> ] [ <a download="TDSSLIDE-{{.DOC_ID}}-{{.TITLE}}.ulapphSlide" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSSLIDE-{{.DOC_ID}}">Backup</a> ]
         <div class="slidingDiv">
 		<a href="/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}"><img src="/img/viewer.png" height="40" width="40"></a><br>
 		<a href="/presenter?TYPE=SLIDE&MODE=PRESENTER&PARM=AUTO&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}"><img src="/img/presenter.png" height="40" width="40"></a><br>
@@ -59628,7 +59620,7 @@ const mediaDispTemplateHTMLRecs = `
 	<td>
 	    <a href="/media?FUNC_CODE=VIEW&MEDIA_ID={{.MEDIA_ID}}&DATA_TYPE={{.DATA_TYPE}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_KEY}}&IMG_URL={{.IMG_URL}}">{{.TITLE}}</a>
 		<br>
-		[ <a href="/media?FUNC_CODE=VIEW&MEDIA_ID={{.MEDIA_ID}}&DATA_TYPE={{.DATA_TYPE}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_KEY}}&IMG_URL={{.IMG_URL}}">Update</a> ]
+		[ <a href="/media?FUNC_CODE=VIEW&MEDIA_ID={{.MEDIA_ID}}&DATA_TYPE={{.DATA_TYPE}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_KEY}}&IMG_URL={{.IMG_URL}}">Update</a> ] [ <a download="TDSARTL-{.MEDIA_ID}}-{{.TITLE}}.ulapphText" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSMEDIA-{.MEDIA_ID}}">Backup</a> ]
 <!--	    [ <a href="#" class="show_hide">Show/Hide</a> ]
         <div class="slidingDiv">
 		{{if eq .DATA_TYPE "image"}}
@@ -59681,7 +59673,7 @@ const mediaDispTemplateHTMLRecsMobile = `
 	<td>
 	    <a href="/media?FUNC_CODE=VIEW&MEDIA_ID={{.MEDIA_ID}}&DATA_TYPE={{.DATA_TYPE}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_KEY}}&IMG_URL={{.IMG_URL}}">{{.TITLE}}</a>
 		<br>
-		[ <a href="/media?FUNC_CODE=VIEW&MEDIA_ID={{.MEDIA_ID}}&DATA_TYPE={{.DATA_TYPE}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_KEY}}&IMG_URL={{.IMG_URL}}">Update</a> ]
+		[ <a href="/media?FUNC_CODE=VIEW&MEDIA_ID={{.MEDIA_ID}}&DATA_TYPE={{.DATA_TYPE}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_KEY}}&IMG_URL={{.IMG_URL}}">Update</a> ] [ <a download="TDSARTL-{.MEDIA_ID}}-{{.TITLE}}.ulapphText" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSMEDIA-{.MEDIA_ID}}">Backup</a> ]
 	    <br>
 		{{if eq .DATA_TYPE "image"}}
 		<a href="/uloc?LS_FUNC=MEDIA_IMAGE&MEDIA_ID={{.MEDIA_ID}}&SID=TDSMEDIA-{{.MEDIA_ID}}&IMG_SRC={{.IMG_URL}}&TITLE={{.TITLE}}"><img src="/img/uloc.png" width="40" height="40"></img></a><br>
@@ -59719,7 +59711,7 @@ const mediaDispTemplateHTMLRecs2 = `
 		<td>
 			<a href="/media?FUNC_CODE=VIEW&MEDIA_ID={{.MEDIA_ID}}&DATA_TYPE={{.DATA_TYPE}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_KEY}}&IMG_URL={{.IMG_URL}}">{{.TITLE}}</a>
 			<br>
-			[ <a href="/media?FUNC_CODE=VIEW&MEDIA_ID={{.MEDIA_ID}}&DATA_TYPE={{.DATA_TYPE}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_KEY}}&IMG_URL={{.IMG_URL}}">Update</a> ]
+			[ <a href="/media?FUNC_CODE=VIEW&MEDIA_ID={{.MEDIA_ID}}&DATA_TYPE={{.DATA_TYPE}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_KEY}}&IMG_URL={{.IMG_URL}}">Update</a> ] [ <a download="TDSARTL-{.MEDIA_ID}}-{{.TITLE}}.ulapphText" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSMEDIA-{.MEDIA_ID}}">Backup</a> ]
 <!--			[ <a href="#" class="show_hide">Show/Hide</a> ]
         <div class="slidingDiv">
 			{{if eq .DATA_TYPE "image"}}
@@ -59774,7 +59766,7 @@ const mediaDispTemplateHTMLRecs2Mobile = `
 		<td>
 			<a href="/media?FUNC_CODE=VIEW&MEDIA_ID={{.MEDIA_ID}}&DATA_TYPE={{.DATA_TYPE}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_KEY}}&IMG_URL={{.IMG_URL}}">{{.TITLE}}</a>
 			<br>
-			[ <a href="/media?FUNC_CODE=VIEW&MEDIA_ID={{.MEDIA_ID}}&DATA_TYPE={{.DATA_TYPE}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_KEY}}&IMG_URL={{.IMG_URL}}">Update</a> ]
+			[ <a href="/media?FUNC_CODE=VIEW&MEDIA_ID={{.MEDIA_ID}}&DATA_TYPE={{.DATA_TYPE}}&TITLE={{.TITLE}}&BLOB_KEY={{.BLOB_KEY}}&IMG_URL={{.IMG_URL}}">Update</a> ] [ <a download="TDSARTL-{.MEDIA_ID}}-{{.TITLE}}.ulapphText" href="/editor?EDIT_FUNC=GET_TEXT&KEY_TEXT=TDSMEDIA-{.MEDIA_ID}}">Backup</a> ]
 			<br>
 			{{if eq .DATA_TYPE "image"}}
 				<a href="/uloc?LS_FUNC=MEDIA_IMAGE&MEDIA_ID={{.MEDIA_ID}}&SID=TDSMEDIA-{{.MEDIA_ID}}&IMG_SRC={{.IMG_URL}}&TITLE={{.TITLE}}"><img src="/img/uloc.png" width="40" height="40"></img></a><br>
@@ -62713,13 +62705,13 @@ var htmlEditorBody = template.Must(template.New("htmlEditorBody").Parse(`
     <tr>
       <td colspan="2">
 		<a href="/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWARTICLE&CATEGORY=desktop0">
-			<img src="https://lh3.googleusercontent.com/bWbqX-0gpLlDLDzlyf1ZoudamXIcx0XOh23pfH04xnriWGSMH4K2eQJ7z9Iv0g695sYUcgxrnMxn2W84dZQD0mLR7ca07g" title="newArticle" height="40" width="40"></a>
+			<img src="/img/new-article.png" title="newArticle" height="40" width="40"></a>
 		<a href="/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWSLIDE&CATEGORY=desktop0">
-			<img src="https://lh3.googleusercontent.com/G2iUip44r8yUxxsYCYxTj2s8X6P7hMM-piMDyVt0XYx4eCGVfFNnz0gPjkwcarANFBWASI9tFSB_5pSKn6ub7Na5s8hz" title="newSlide" height="40" width="40"></a>
+			<img src="/img/new-slide.png" title="newSlide" height="40" width="40"></a>
 		<a href="/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0">
-			<img src="https://lh3.googleusercontent.com/dp0me5EMk4V5HENykVZtT0CT2SULxt7IIcVuHmKH6n-Eb-vX7tBj2Y_SEgLSCOT92GmfoO5wX3EJc_yQUbduq5pEJTHC" title="newTextFile" height="40" width="40"></a>
+			<img src="/img/new-text.png" title="newTextFile" height="40" width="40"></a>
 		<br><a href="/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD">		
-			<img src="https://lh3.googleusercontent.com/cIVQhhLxXgP7J2ERCOfcDc7_jijzAa4QSICwX_QhrT9GG5n_pKKatFrZjXPFORFTGnljcOx98SMP9VUoK0jynKsGkMGeSg" title="multiUpload" height="40" width="40"></a>
+			<img src="/img/uploader.png" title="multiUpload" height="40" width="40"></a>
 		<a href="/slides?CATEGORY=desktop0">
 			<img src="https://lh3.googleusercontent.com/4UHg0Hh0yAda2zpJiiAvviD5tUEWqpkCfRAaHLlfqmVmQ6QLjr-FOQU1ZfG8PvRZijmL1NpBkvwwf2bNY_uaPNJRRLv2FQ" title="Slides Home" height="40" width="40"></a>
 		<a href="/articles?CATEGORY=desktop0">
@@ -63204,11 +63196,11 @@ var htmlEditorBodyReader = template.Must(template.New("htmlEditorBodyReader").Pa
 <br>
 <a href="#" onclick="env.genTree(); return false;"><img src="/img/tree.png" width="35" height="35" title="Generate UI-Tree"></a>
 <br>
-<a href="/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0"><img src="https://lh3.googleusercontent.com/dp0me5EMk4V5HENykVZtT0CT2SULxt7IIcVuHmKH6n-Eb-vX7tBj2Y_SEgLSCOT92GmfoO5wX3EJc_yQUbduq5pEJTHC" title="newTextFile" width="35" height="35"></a>
+<a href="/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0"><img src="/img/new-text.png" title="newTextFile" width="35" height="35"></a>
 <br>
-<a href="/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWSLIDE&CATEGORY=desktop0"><img src="https://lh3.googleusercontent.com/G2iUip44r8yUxxsYCYxTj2s8X6P7hMM-piMDyVt0XYx4eCGVfFNnz0gPjkwcarANFBWASI9tFSB_5pSKn6ub7Na5s8hz" title="newSlide" width="35" height="35"></a>
+<a href="/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWSLIDE&CATEGORY=desktop0"><img src="/img/new-slide.png" title="newSlide" width="35" height="35"></a>
 <br>
-<a href="/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWARTICLE&CATEGORY=desktop0"><img src="https://lh3.googleusercontent.com/bWbqX-0gpLlDLDzlyf1ZoudamXIcx0XOh23pfH04xnriWGSMH4K2eQJ7z9Iv0g695sYUcgxrnMxn2W84dZQD0mLR7ca07g" title="newArticle" width="35" height="35"></a>
+<a href="/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWARTICLE&CATEGORY=desktop0"><img src="/img/new-article.png" title="newArticle" width="35" height="35"></a>
 <br>
 <a href="#" onclick="env.textFormat(); return false;"><img src="/img/text-formatter.png" title="Text Formatter" width="35" height="35"></a>
 <br>
@@ -66201,20 +66193,20 @@ var desktopBody2Template = template.Must(template.New("desktopBody2Template").Pa
 			</a>		
 		</li>
 		{{if eq .STR_FILLER4 "false" }}
-		<li class="here" id="stm-locstor">
+		<!--li class="here" id="stm-locstor">
 			<input type="hidden" value="'/tools?FUNC=ALL_ICONS', 500, 300, 'left', 'top', {title: 'All Icons', icon: '/img/jswm-web.png'}" size="60" id="locstor" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('locstor').value + ');');">
 				<img src="/img/top.png" width="20" height="20" title="All Icons">
 				</img>
 			</a>		
-		</li>
+		</li-->
 		{{end}}
-		<li class="here" id="stm-MiniBrowser">
+		<!--li class="here" id="stm-MiniBrowser">
 			<a href="#page" onclick="uwmQuickSearch();">
 				<img src="/img/minib.png" width="20" height="20" title="MiniBrowser">
 				</img>
 			</a>			
-		</li>
+		</li-->
 		
 		
 		{{if eq .STR_FILLER4 "false" }}
@@ -66265,13 +66257,13 @@ var desktopBody2Template = template.Must(template.New("desktopBody2Template").Pa
 			
 		<!--ulapph toolbars-->
 		
-		<li class="here" id="stm-drives">
+		<!--li class="here" id="stm-drives">
 			<input type="hidden" value="'/tools?FUNC=WIDGET&t=MyDrives', 500, 300, 'left', 'top', {title: 'My Drives', icon: '/img/jswm-web.png'}" size="60" id="drives" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('drives').value + ');');">
 				<img src="/img/mydrives.png" width="20" height="20" title="My Drives">
 				</img>
 			</a>		
-		</li>
+		</li-->
 		
 		<li class="here" id="stm-www2">
 			<input type="hidden" value="'/contents?q=home', 500, 300, 'left', 'top', {title: 'Website', icon: '/img/jswm-web.png'}" size="60" id="www2" />
@@ -66281,13 +66273,13 @@ var desktopBody2Template = template.Must(template.New("desktopBody2Template").Pa
 			</a>		
 		</li>
 		
-		<li class="here" id="stm-htbv">
+		<!--li class="here" id="stm-htbv">
 			<input type="hidden" value="'/infodb?DB_FUNC=VIEWER-SLIDES-ALL', 500, 300, 'left', 'top', {title: 'Viewer', icon: '/img/jswm-web.png'}" size="60" id="htbv" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('htbv').value + ');');">
 				<img src="/img/play.png" width="20" height="20" title="Play Slides">
 				</img>
 			</a>		
-		</li>
+		</li-->
 		
 		<li class="here" id="stm-phmini">
 			<input type="hidden" value="'/media?FUNC_CODE=VIEW_THUMBS&category={{.STR_FILLER7}}', 500, 300, 'left', 'top', {title: 'Photo Gallery', icon: '/img/jswm-web.png'}" size="60" id="phmini" />
@@ -66330,7 +66322,7 @@ var desktopBody2Template = template.Must(template.New("desktopBody2Template").Pa
 		<li class="here" id="stm-htb1">
 			<input type="hidden" value="'/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWARTICLE&CATEGORY=desktop0', 500, 300, 'left', 'top', {title: 'New Article', icon: '/img/jswm-web.png'}" size="60" id="htb1" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('htb1').value + ');');">
-				<img src="https://lh3.googleusercontent.com/bWbqX-0gpLlDLDzlyf1ZoudamXIcx0XOh23pfH04xnriWGSMH4K2eQJ7z9Iv0g695sYUcgxrnMxn2W84dZQD0mLR7ca07g" width="20" height="20" title="New Article">
+				<img src="/img/new-article.png" width="20" height="20" title="New Article">
 				</img>
 			</a>		
 		</li>
@@ -66340,7 +66332,7 @@ var desktopBody2Template = template.Must(template.New("desktopBody2Template").Pa
 		<li class="here" id="stm-htb2">
 			<input type="hidden" value="'/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWSLIDE&CATEGORY=desktop0', 500, 300, 'left', 'top', {title: 'New Slide', icon: '/img/jswm-web.png'}" size="60" id="htb2" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('htb2').value + ');');">
-				<img src="https://lh3.googleusercontent.com/G2iUip44r8yUxxsYCYxTj2s8X6P7hMM-piMDyVt0XYx4eCGVfFNnz0gPjkwcarANFBWASI9tFSB_5pSKn6ub7Na5s8hz" width="20" height="20" title="New Slide">
+				<img src="/img/new-slide.png" width="20" height="20" title="New Slide">
 				</img>
 			</a>		
 		</li>
@@ -66350,7 +66342,7 @@ var desktopBody2Template = template.Must(template.New("desktopBody2Template").Pa
 		<li class="here" id="stm-htb3">
 			<input type="hidden" value="'/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0', 500, 300, 'left', 'top', {title: 'New Text', icon: '/img/jswm-web.png'}" size="60" id="htb3" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('htb3').value + ');');">
-				<img src="https://lh3.googleusercontent.com/dp0me5EMk4V5HENykVZtT0CT2SULxt7IIcVuHmKH6n-Eb-vX7tBj2Y_SEgLSCOT92GmfoO5wX3EJc_yQUbduq5pEJTHC" width="20" height="20" title="New Text">
+				<img src="/img/new-text.png" width="20" height="20" title="New Text">
 				</img>
 			</a>		
 		</li>
@@ -66359,7 +66351,7 @@ var desktopBody2Template = template.Must(template.New("desktopBody2Template").Pa
 		<li class="here" id="stm-htb4">
 			<input type="hidden" value="'/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD', 500, 300, 'left', 'top', {title: 'Uploader', icon: '/img/jswm-web.png'}" size="60" id="htb4" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('htb4').value + ');');">
-				<img src="https://lh3.googleusercontent.com/cIVQhhLxXgP7J2ERCOfcDc7_jijzAa4QSICwX_QhrT9GG5n_pKKatFrZjXPFORFTGnljcOx98SMP9VUoK0jynKsGkMGeSg" width="20" height="20" title="Uploader">
+				<img src="/img/uploader.png" width="20" height="20" title="Uploader">
 				</img>
 			</a>		
 		</li>
@@ -66546,21 +66538,21 @@ var desktopBody2TemplateNoSticky = template.Must(template.New("desktopBody2Templ
 				</img>
 			</a>		
 		</li>
-		<li class="here" id="stm-MiniBrowser">
+		<!--li class="here" id="stm-MiniBrowser">
 			<a href="#page" onclick="uwmQuickSearch();">
 				<img src="/img/minib.png" width="20" height="20" title="MiniBrowser">
 				</img>
 			</a>		
-		</li>
+		</li-->
 		
 		{{if eq .STR_FILLER4 "false" }}
-		<li class="here" id="stm-locstor">
+		<!--li class="here" id="stm-locstor">
 			<input type="hidden" value="'/tools?FUNC=ALL_ICONS', 500, 300, 'left', 'top', {title: 'All Icons', icon: '/img/jswm-web.png'}" size="60" id="locstor" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('locstor').value + ');');">
 				<img src="/img/top.png" width="20" height="20" title="All Icons">
 				</img>
 			</a>		
-		</li>
+		</li-->
 		{{end}}
 		{{if eq .STR_FILLER4 "false" }}
 	    <li class="here" id="stm-closeall">
@@ -66606,13 +66598,13 @@ var desktopBody2TemplateNoSticky = template.Must(template.New("desktopBody2Templ
 		
 		<!--ulapph toolbars-->
 		
-		<li class="here" id="stm-drives">
+		<!--li class="here" id="stm-drives">
 			<input type="hidden" value="'/tools?FUNC=WIDGET&t=MyDrives', 500, 300, 'left', 'top', {title: 'My Drives', icon: '/img/jswm-web.png'}" size="60" id="drives" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('drives').value + ');');">
 				<img src="/img/mydrives.png" width="20" height="20" title="My Drives">
 				</img>
 			</a>		
-		</li>
+		</li-->
 		
 		<li class="here" id="stm-www2">
 			<input type="hidden" value="'/contents?q=home', 500, 300, 'left', 'top', {title: 'Website', icon: '/img/jswm-web.png'}" size="60" id="www2" />
@@ -66622,13 +66614,13 @@ var desktopBody2TemplateNoSticky = template.Must(template.New("desktopBody2Templ
 			</a>		
 		</li>
 		
-		<li class="here" id="stm-htbv">
+		<!--li class="here" id="stm-htbv">
 			<input type="hidden" value="'/infodb?DB_FUNC=VIEWER-SLIDES-ALL', 500, 300, 'left', 'top', {title: 'Viewer', icon: '/img/jswm-web.png'}" size="60" id="htbv" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('htbv').value + ');');">
 				<img src="/img/play.png" width="20" height="20" title="Play Slides">
 				</img>
 			</a>		
-		</li>
+		</li-->
 		
 		<li class="here" id="stm-phmini">
 			<input type="hidden" value="'/media?FUNC_CODE=VIEW_THUMBS&category={{.STR_FILLER7}}', 500, 300, 'left', 'top', {title: 'Photo Gallery', icon: '/img/jswm-web.png'}" size="60" id="phmini" />
@@ -66671,7 +66663,7 @@ var desktopBody2TemplateNoSticky = template.Must(template.New("desktopBody2Templ
 		<li class="here" id="stm-htb1">
 			<input type="hidden" value="'/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWARTICLE&CATEGORY=desktop0', 500, 300, 'left', 'top', {title: 'New Article', icon: '/img/jswm-web.png'}" size="60" id="htb1" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('htb1').value + ');');">
-				<img src="https://lh3.googleusercontent.com/bWbqX-0gpLlDLDzlyf1ZoudamXIcx0XOh23pfH04xnriWGSMH4K2eQJ7z9Iv0g695sYUcgxrnMxn2W84dZQD0mLR7ca07g" width="20" height="20" title="New Article">
+				<img src="/img/new-article.png" width="20" height="20" title="New Article">
 				</img>
 			</a>		
 		</li>
@@ -66681,7 +66673,7 @@ var desktopBody2TemplateNoSticky = template.Must(template.New("desktopBody2Templ
 		<li class="here" id="stm-htb2">
 			<input type="hidden" value="'/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWSLIDE&CATEGORY=desktop0', 500, 300, 'left', 'top', {title: 'New Slide', icon: '/img/jswm-web.png'}" size="60" id="htb2" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('htb2').value + ');');">
-				<img src="https://lh3.googleusercontent.com/G2iUip44r8yUxxsYCYxTj2s8X6P7hMM-piMDyVt0XYx4eCGVfFNnz0gPjkwcarANFBWASI9tFSB_5pSKn6ub7Na5s8hz" width="20" height="20" title="New Slide">
+				<img src="/img/new-slide.png" width="20" height="20" title="New Slide">
 				</img>
 			</a>		
 		</li>
@@ -66691,7 +66683,7 @@ var desktopBody2TemplateNoSticky = template.Must(template.New("desktopBody2Templ
 		<li class="here" id="stm-htb3">
 			<input type="hidden" value="'/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0', 500, 300, 'left', 'top', {title: 'New Text', icon: '/img/jswm-web.png'}" size="60" id="htb3" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('htb3').value + ');');">
-				<img src="https://lh3.googleusercontent.com/dp0me5EMk4V5HENykVZtT0CT2SULxt7IIcVuHmKH6n-Eb-vX7tBj2Y_SEgLSCOT92GmfoO5wX3EJc_yQUbduq5pEJTHC" width="20" height="20" title="New Text">
+				<img src="/img/new-text.png" width="20" height="20" title="New Text">
 				</img>
 			</a>		
 		</li>
@@ -66700,7 +66692,7 @@ var desktopBody2TemplateNoSticky = template.Must(template.New("desktopBody2Templ
 		<li class="here" id="stm-htb4">
 			<input type="hidden" value="'/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD', 500, 300, 'left', 'top', {title: 'Uploader', icon: '/img/jswm-web.png'}" size="60" id="htb4" />
 			<a href="#page" onclick="eval('windowManager.openURI(' + $('htb4').value + ');');">
-				<img src="https://lh3.googleusercontent.com/cIVQhhLxXgP7J2ERCOfcDc7_jijzAa4QSICwX_QhrT9GG5n_pKKatFrZjXPFORFTGnljcOx98SMP9VUoK0jynKsGkMGeSg" width="20" height="20" title="Uploader">
+				<img src="/img/uploader.png" width="20" height="20" title="Uploader">
 				</img>
 			</a>		
 		</li>
@@ -68508,7 +68500,7 @@ var multiUploaderImagesHdr = template.Must(template.New("multiUploaderImagesHdr"
 <link rel="stylesheet" href="/lib/css/sol/sol.css">
 <script type="text/javascript" src="/lib/js/sol/sol.js"></script>
 <body>
-<a href="/contents?q=home"><img src="/img/home.png" title="All Contents" height="40" width="40"></a> <a href="/infodb?DB_FUNC=MEDIA&CATEGORY=ALL_RECENT"><img src="/img/recent.png" title="Recent" height="40" width="40"></a> <a href="/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD"><img src="https://lh3.googleusercontent.com/cIVQhhLxXgP7J2ERCOfcDc7_jijzAa4QSICwX_QhrT9GG5n_pKKatFrZjXPFORFTGnljcOx98SMP9VUoK0jynKsGkMGeSg" title="Upload More..." height="40" width="40"></a>
+<a href="/contents?q=home"><img src="/img/home.png" title="All Contents" height="40" width="40"></a> <a href="/infodb?DB_FUNC=MEDIA&CATEGORY=ALL_RECENT"><img src="/img/recent.png" title="Recent" height="40" width="40"></a> <a href="/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD"><img src="/img/uploader.png" title="Upload More..." height="40" width="40"></a>
 <p>
   To set common media properties such as title/desc, populate below then click submit. Once done, click above Media Gallery to view the uploaded files.
 </p>
@@ -68554,7 +68546,7 @@ var multiUploaderImagesHdr2 = template.Must(template.New("multiUploaderImagesHdr
 <script src="/js/dropzone.js"></script>
 <link rel="stylesheet" href="/css/dropzone.css">
 <body>
-<a href="/contents?q=home"><img src="/img/home.png" title="All Contents" height="40" width="40"></a> <a href="/infodb?DB_FUNC=MEDIA&CATEGORY=ALL_RECENT&LAST=50" ><img src="/img/recent.png" title="Recent" height="40" width="40"></a> <a href="/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD"><img src="https://lh3.googleusercontent.com/cIVQhhLxXgP7J2ERCOfcDc7_jijzAa4QSICwX_QhrT9GG5n_pKKatFrZjXPFORFTGnljcOx98SMP9VUoK0jynKsGkMGeSg" title="Upload More..." height="40" width="40"></a>
+<a href="/contents?q=home"><img src="/img/home.png" title="All Contents" height="40" width="40"></a> <a href="/infodb?DB_FUNC=MEDIA&CATEGORY=ALL_RECENT&LAST=50" ><img src="/img/recent.png" title="Recent" height="40" width="40"></a> <a href="/media?FUNC_CODE=SET_MULTI_IMAGE_UPLOAD"><img src="/img/uploader.png" title="Upload More..." height="40" width="40"></a>
 <p>
   Drag and drop one or more files for each box. Each file is being uploaded automatically.
 </p>
