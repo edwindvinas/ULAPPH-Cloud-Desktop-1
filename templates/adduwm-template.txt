@@ -13,7 +13,7 @@
 <body>
 
 <!--p>Enter URL and title:</p-->
-<span class="button-wrap">
+<!--span class="button-wrap">
 <a href="#" onclick="editUWMSettings(); return false;" class="button button-pill button-raised button-highlight">Edit Desktop: {{.STR_FILLER1}}</a>
 </span>
 {{if ne .STR_FILLER2 ""}}
@@ -25,6 +25,12 @@
 <span class="button-wrap">
 <a href="#" onclick="editBotSettings({{.STR_FILLER2}}); return false;" class="button button-pill button-raised button-royal">Edit Bot: {{.STR_FILLER1}}</a>
 </span>
+{{end}}
+-->
+{{if ne .STR_FILLER2 ""}}
+<a href="/people-edit?EditPeopleFunc=EDIT_WINDOWS_SUBUWM&u={{.STR_FILLER2}}">Edit UWM Settings</a> |
+<a href="/people-edit?EditPeopleFunc=EDIT_TOPICS_SUBUWM&u={{.STR_FILLER2}}">Edit Topic Settings</a> |
+<a href="/people-edit?EditPeopleFunc=EDIT_BOT_SUBUWM&u={{.STR_FILLER2}}">Edit Chatbot Settings</a>
 {{end}}
 
 <br>

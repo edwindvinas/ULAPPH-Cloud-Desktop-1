@@ -22036,11 +22036,9 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, turl, http.StatusFound)	
 		return
 	}
-	
 	if TOOL_FUNC == "WIDGET" {
 		//widgets
 		switch TARGET {
-				
 			case "ADDUWM":
 				n := r.FormValue("n")
 				//D0065
@@ -46157,11 +46155,11 @@ const htmlDesktopsJSONtoTableA = `
 		  {"header":"ChatBot", "key":"bLink", "template":'<a href=\'{{"{{"}}bLink{{"}}"}}\' target=\'B-{{"{{"}}name{{"}}"}}\' title=\'Click to bot for this desktop\'><img src=\'/img/robot.png\' width=32 height=32></a>'},
 		  {"header":"Desktop", "key":"dLink", "template":'<a href=\'{{"{{"}}dLink{{"}}"}}\' target=\'D-{{"{{"}}name{{"}}"}}\'><img src=\'/img/ext-con.png\' width=32 height=32></a> <a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}dLink{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\"><img src=\'/img/uwm-mini.png\' width=32 height=32></a>'},
 		  {"header":"UWM", "key":"uLink", "template":'<a href=\'{{"{{"}}uLink{{"}}"}}\' target=\'UWM-{{"{{"}}name{{"}}"}}\'><img src=\'/img/ext-con.png\' width=32 height=32></a> <a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}uLink{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\"><img src=\'/img/uwm-mini.png\' width=32 height=32></a>'},
-		  {"header":"Desktop", "key":"dsLink", "template":'<a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}dsLink{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\"><img src=\'/img/settings.png\' width=32 height=32></a>'},
-		  {"header":"UWM", "key":"usLink", "template":'<a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}usLink{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\"><img src=\'/img/settings.png\' width=32 height=32></a>'},
-		  {"header":"Topics", "key":"tLink", "template":'<a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}tLink{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\"><img src=\'/img/settings.png\' width=32 height=32></a>'},
-		  {"header":"ChatBot", "key":"cLink", "template":'<a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}cLink{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\"><img src=\'/img/settings.png\' width=32 height=32></a>'},
-		  {"header":"Share", "key":"sLink", "template":'<a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}sLink{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\"><img src=\'/img/settings.png\' width=32 height=32></a>'},
+		  {"header":"Desktop", "key":"dsLink", "template":'<a href=\'{{"{{"}}dsLink{{"}}"}}\' target=\'dsLink-{{"{{"}}name{{"}}"}}\'><img src=\'/img/settings.png\' width=32 height=32></a>'},
+		  {"header":"UWM", "key":"usLink", "template":'<a href=\'{{"{{"}}usLink{{"}}"}}\' target=\'usLink-{{"{{"}}name{{"}}"}}\'><img src=\'/img/settings.png\' width=32 height=32></a>'},
+		  {"header":"Topics", "key":"tLink", "template":'<a href=\'{{"{{"}}tLink{{"}}"}}\' target=\'tLink-{{"{{"}}name{{"}}"}}\'><img src=\'/img/settings.png\' width=32 height=32></a>'},
+		  {"header":"ChatBot", "key":"cLink", "template":'<a href=\'{{"{{"}}cLink{{"}}"}}\' target=\'cLink-{{"{{"}}name{{"}}"}}\'><img src=\'/img/settings.png\' width=32 height=32></a>'},
+		  {"header":"Share", "key":"sLink", "template":'<a href=\'{{"{{"}}sLink{{"}}"}}\' target=\'sLink-{{"{{"}}name{{"}}"}}\'><img src=\'/img/settings.png\' width=32 height=32></a>'},
 		  {"header":"Slides", "key":"sqLink", "template":'<a href=\'{{"{{"}}sqLink{{"}}"}}\' target=\'T-{{"{{"}}name{{"}}"}}\' title=\'Click to view counts\'><img src=\'/img/info.png\' width=32 height=32></a>'},
 		  {"header":"Articles", "key":"aqLink", "template":'<a href=\'{{"{{"}}aqLink{{"}}"}}\' target=\'T-{{"{{"}}name{{"}}"}}\' title=\'Click to view counts\'><img src=\'/img/info.png\' width=32 height=32></a>'},
 		  {"header":"Media", "key":"mqLink", "template":'<a href=\'{{"{{"}}mqLink{{"}}"}}\' target=\'T-{{"{{"}}name{{"}}"}}\' title=\'Click to view counts\'><img src=\'/img/info.png\' width=32 height=32></a>'}
@@ -48055,17 +48053,17 @@ $(document).ready(function() {
  
 <body>
 <h3><font color="blue">Admin Media</font></h3>
-<!--a href="/infodb?DB_FUNC=MEDIA"><img src="https://lh3.googleusercontent.com/VC8-KBmRE9-OGuVUCYQDJ3g8L8lcUWltTy3qjFSN_ymJvLGwHm36gxZsG1VBL_86dHP63feRvoRFWwMSsYal4hDnexAZ" height=40 width=40 title="Media Home"></a>
-<a href="#update-media"><img src="https://lh3.googleusercontent.com/UU_9rGIzZCGW4rt3A3M1NHIHpqBZsfWFu3SHCdmap2oITKMj7TWB3bvJweTw7Ri09ZQ2eOdcW3euqbZ1OJVATsU-dufV5A" height=40 width=40 title="Update Media"></a>
-<a href="#delete-media"><img src="https://lh3.googleusercontent.com/4zj6LK-gXqT7WJvFxjxM_DxGvZhV9nOsjIMI9ot8KEuP97mXQilZ8kD2Wi-SoHJdtfDnItQLaF5fk09h7iiLuyGfOzQJ" height=40 width=40 title="Delete Media"></a>
-<a href="#shared-to2"><img src="https://lh3.googleusercontent.com/9YwRXxRpwP0J9eLZ5RKcs1NEI2TP_WaulchFx8_gL9aSHKxW9-zBIEH0H6UcYDF40UvR_CdneXC8tQDmnfe_lxjljk5y" height=40 width=40 title="Access List"></a>
-<a href="/?q=qi#upload-image"><img src="https://lh3.googleusercontent.com/eGqfd8VMV1FCKIaubhMkBDjMnU9lv1WQRu0iqzcAnqLJ60k4wrGp2opS1f-j-Oh0n7uUTBAHxTwSEeQi3efMLdMi1PbW" height=40 width=40 title="Upload New Image"></a>
-<a href="/?q=qt#upload-text"><img src="https://lh3.googleusercontent.com/sGoo7YEJKoJ4JrkySxYzcplcZChb6VhOC_7dIkrF78KH0C3GgLvARzvDNUevjcBWZhCGcytW3myUvJoftkMnTseq0SVj" title="Upload Text File" height=40 width=40></a>
-<a href="/?q=qm#upload-music"><img src="/img/new-music.png" height=40 width=40 title="Upload New Music"></a>
-<a href="/?q=qv#upload-video"><img src="/img/new-video.png" title="Upload New Video" height=40 width=40></a>
-<a href="/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0"><img src="https://lh3.googleusercontent.com/HZeDnyMUi99is1fbWsnWnqGrkt-Pde01EHLz4ej-GSZ69S-N3jezP-FoNMuwXaSvv2ntr_cauLhKsIWtAEWOircVhg1PSg" height=40 width=40 title="New Text File"></a>
-<a href="/infodb?DB_FUNC=MEDIA&CATEGORY=ALL_RECENT"><img src="/img/recent.png" title="View Recent" height=40 width=40></a>
-<hr-->
+<a href="/infodb?DB_FUNC=MEDIA">Media Home</a> |
+<a href="#update-media">Update Media</a> |
+<a href="#delete-media">Delete Media</a> |
+<a href="#shared-to2">Access List</a> |
+<a href="/?q=qi#upload-image">Upload New Image</a> |
+<a href="/?q=qt#upload-text">Upload Text File</a> |
+<a href="/?q=qm#upload-music">Upload New Music</a> |
+<a href="/?q=qv#upload-video">Upload New Video</a> |
+<a href="/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0">New Text File</a> |
+<a href="/infodb?DB_FUNC=MEDIA&CATEGORY=ALL_RECENT">View Recent</a>
+<hr>
 <div id="slides-area"></div>
 <div id="slides-area-button"></div>
 <div id="slides-copy-button"></div>
@@ -48125,7 +48123,7 @@ const iconsSettingsTemplateHeaderHTMLSLU = `
  
 <body>
 <h3><font color="blue">Admin Slides</font></h3>
-<a href="/admin-slides"><img src="https://lh3.googleusercontent.com/4UHg0Hh0yAda2zpJiiAvviD5tUEWqpkCfRAaHLlfqmVmQ6QLjr-FOQU1ZfG8PvRZijmL1NpBkvwwf2bNY_uaPNJRRLv2FQ" title="Slides Home" height=40 width=40></a><a href="/editor?DOC_ID={{.}}&SID=TDSSLIDE-{{.}}"><img src="https://lh3.googleusercontent.com/aGZaWYabEl0XmH-TK8HP4VXaloT8dCFRJz9fw_pLrU91_kEunLV5jtX8AgBp0zQMl4S6LDF1kSLZTsRN9cQzepNGu9Q" title="Slide Editor" height=40 width=40></a><a href="#update-slides"><img src="https://lh3.googleusercontent.com/1fGFhgevAM9gGtgD6_OrN6JrFJo8uYsNysiRpv0b2B1bqIKg2KFRyI6m5Dyexfyleff_wrHBrkwy2zAQL6UKDrG5KxA" title="Update Slide" height=40 width=40></a><a href="#shared-to"><img src="https://lh3.googleusercontent.com/SdzHsODMGfy1upRVeJHAk6-apf9rrbAxFfPeGD5jBZ-zlmXXSDMhz1J7TWko5b6C-CgYzPlUuAJAMZiPqtOVYGm7Pkg" title="Access List" height=40 width=40></a><a href="#delete-slides"><img src="https://lh3.googleusercontent.com/u44Q_knOeOzKdeAo0GJ6VJFZlvdxRlm1ZU8Zsn6jwdNISi5tBVt7tPbAOPRKqvjv2Sd985kgdaeMMF57fEUn5w6ZFF1rxA" title="Delete Slide File" height=40 width=40></a><a href="#clear-cache"><img src="https://lh3.googleusercontent.com/_9RT7FZRoND2jRhfqdLgHNQ2WSzMHvEUdbuALRdWhALGjtl2oqNz-Szt2DXbMOwRLHW9jC0vV8GTylLVmdSDLCidVqc" title="Clear Cache" height=40 width=40></a><a href="/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID={{.}}&SID=TDSSLIDE-{{.}}"><img src="https://lh3.googleusercontent.com/sU0HpzM0Qq2-wET1-_TK5_P8PZDvg7WehQVUOhCakmBT7iqG0s1KaQx5dZTOEBm4xm83PC_yihwdJu6IUIaG9zTDVAQB" title="Preview Slide" height=40 width=40></a><a href="/media"><img src="https://lh3.googleusercontent.com/fazvKTAudGvqzmVfKUCtMseQStH28o5Anr1VGTlZVcw2vn3Z2o4wFjHEtjpsYbC9pZ8XbTamulRfRQmCeA5-SAyy6UDV" title="Media Gallery" height=40 width=40></a><a href="/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWSLIDE&CATEGORY=desktop0"><img src="/img/new-slide.png" title="New Slide" height=40 width=40></a>
+<a href="/admin-slides">Slides Home</a> | <a href="/editor?DOC_ID={{.}}&SID=TDSSLIDE-{{.}}">Slide Editor</a> | <a href="#update-slides">Update Slide</a> | <a href="#shared-to">Access List </a> | <a href="#delete-slides">Delete Slide File</a> | <a href="#clear-cache">Clear Cache</a> | <a href="/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID={{.}}&SID=TDSSLIDE-{{.}}">Preview Slide</a> | <a href="/media">Media Gallery</a> | <a href="/editor?EDIT_FUNC=READER&DOC_ID=0&SID=NEWSLIDE&CATEGORY=desktop0">New Slide</a>
 <hr>
 `
  
@@ -48182,15 +48180,15 @@ const iconsSettingsTemplateHeaderHTMLSLA = `
  
 <body>
 <h3><font color="blue">Admin Articles</font></h3>
-<a href="/admin-articles"><img src="https://lh3.googleusercontent.com/7G4vkwZb9Y_jc5eZhub_RGUQeK1iMWPyviFL2inWI9yeAtMcPKIsA2VQSTCDZYy5Gujuvr1KKQ5tRJpHnD0CUsz5YwgZsg" title="Articles Home" height=40 width=40></a>
-<a href="/editor?DOC_ID={{.}}&SID=TDSARTL-{{.}}"><img src="https://lh3.googleusercontent.com/U2kAdWLLrLLhNfAhvAFdgXoz0XwAmJxymETNGJI1jDSvh2W-dJM_CTFo3aomtLcXXxcbumDiZ3nk5QOtlOw29szXu4Lj" title="Article Editor" height=40 width=40></a>
-<a href="#update-articles"><img src="https://lh3.googleusercontent.com/uAZJ-0OgO9R4FGO4IalXYWOUF5UOH8-1pkQdKCh9DAR_WDndfpx74D3bbmySLDS0kxOnWUIEXjWCKqYVZsN4K0H5jQvM" title="Update Article" height=40 width=40></a>
-<a href="#shared-to2"><img src="https://lh3.googleusercontent.com/kdAv3xyqJLLKfMxads5jVdu_Pt_Am51OpG7snZcYiZT9cf7IwOD14KYKRTzqpxCxFReCS1NxQX9rllazjkiDBKonew64TA" title="Access List" height=40 width=40></a>
-<a href="#delete-articles"><img src="https://lh3.googleusercontent.com/lTNFS0yx4kUhX16cCMIDUfCUGTqPvRWtOalOg2gpbuNPXgGYnqQVymKuPeayrwuvMtOaERy0kwZkHMTBTB0eSfTo8lU" title="Delete Article File" height=40 width=40></a>
-<a href="#clear-cache"><img src="https://lh3.googleusercontent.com/Z3_FnDrG2SXvckCtKL0KPhFKI6KmIWD2rZrx05a9Mf4Mt6Yp_0WQouVkmqYz1luahNMZoDfHTClMNEt6mwb9-2JSt5kA" title="Clear Cache" height=40 width=40></a>
-<a href="/articles?TYPE=ARTICLE&DOC_ID={{.}}&SID=TDSARTL-{{.}}"><img src="https://lh3.googleusercontent.com/6GBly1orERRtpAVhHpVZp01HuK75bsK97E1Nc6ejt6V2TLjPzpaE0pcPk2ogp0L1lelmj4Q9KKijpp3vyTf8ZR_9Dkcz" title="Preview Article" height=40 width=40></a>
-<a href="/media"><img src="https://lh3.googleusercontent.com/fazvKTAudGvqzmVfKUCtMseQStH28o5Anr1VGTlZVcw2vn3Z2o4wFjHEtjpsYbC9pZ8XbTamulRfRQmCeA5-SAyy6UDV" title="Media Gallery" height=40 width=40></a>
-<a href="/infodb?DB_FUNC=ARTICLES&CATEGORY=&VIEW=RECENT"><img src="/img/recent.png" title="View Recent Articles" height=40 width=40></a>
+<a href="/admin-articles">Articles Home</a> |
+<a href="/editor?DOC_ID={{.}}&SID=TDSARTL-{{.}}">Article Editor</a> |
+<a href="#update-articles">Update Article</a> |
+<a href="#shared-to2">Access List</a> |
+<a href="#delete-articles">Delete Article File</a> |
+<a href="#clear-cache">Clear Cache</a> |
+<a href="/articles?TYPE=ARTICLE&DOC_ID={{.}}&SID=TDSARTL-{{.}}">Preview Article</a> |
+<a href="/media">Media Gallery</a> |
+<a href="/infodb?DB_FUNC=ARTICLES&CATEGORY=&VIEW=RECENT">View Recent Articles</a>
 <hr>
 `
  
