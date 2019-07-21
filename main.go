@@ -1543,7 +1543,6 @@ type NewsSources  struct {
 	Description string `json:"description"`
 	Country string `json:"country"`
 }
-//edwinxxx
 //D0069
 //education modules
 type SchoolRecord struct {
@@ -15468,25 +15467,22 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			//allow user to connect to chatroom link via mini-browser
 			if err := htmlWidgetBrowserCR.Execute(w, ""); err != nil {
 			  panic(err)
-			} 	
- 
-		case "newChatRoom":			
+			}
+		case "newChatRoom":
 			//invite is populated
 			INV := r.FormValue("INVITE")
 			roomID := r.FormValue("RID")
 			if INV == "SYS_GUEST_CHAT_URL" {
 				redURL := SYS_GUEST_CHAT_URL
 				http.Redirect(w, r, redURL, http.StatusFound)
-				return	
+				return
 			}
-			
 			CC_KEY := r.FormValue("cc_key")
 			if CC_KEY != SYS_RECAPTCHA_KEY && isLoggedIn(w,r) != true {
 				redURL := fmt.Sprintf("/captcha?CC_FUNC=DISP2&INVITE=%v&RID=%v", INV, roomID)
 				http.Redirect(w, r, redURL, http.StatusFound)
-				return			
+				return
 			}
- 
 			//create random room id
 			UID = uid
 			if roomID == "" {
@@ -16717,7 +16713,6 @@ func ulapphLocal(w http.ResponseWriter, r *http.Request) {
 }
 
 var chatTemplateA1 = template.Must(template.New("chatTemplateA").Parse(chatTemplateDispA1))
- 
 const chatTemplateDispA1 = `
 	<!doctype html>
 	<html lang="en">
@@ -16727,9 +16722,7 @@ const chatTemplateDispA1 = `
 	  <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
 	  <link rel="shortcut icon" href="/img/favicon.ico"/>
 `
-	
 var chatTemplateA2 = template.Must(template.New("chatTemplateA").Parse(chatTemplateDispA2))
- 
 const chatTemplateDispA2 = `
 	<style>
 		.note {
@@ -16846,9 +16839,7 @@ const chatTemplateDispA2 = `
 	</body>
 	</html>
 `
- 
 var streamTemplateA2 = template.Must(template.New("streamTemplateA2").Parse(streamTemplateDispA2))
- 
 const streamTemplateDispA2 = `
 	  <!--h3>ULAPPH Cloud Desktop - Stream</h3-->
 		{{if eq .STR_FILLER9 "on" }}
@@ -41056,14 +41047,15 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "No custom bot source has been set for UWM%v. Please check documentation on how to set the bot source. You may <a href=\"/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0\">Create Initial Text File</a>. You may also proceed with the <a href=\"/chat-bubble/ulapphbot.html?u=%v\">default bot</a>.", r.FormValue("u"), r.FormValue("u"))
 		}
 		return
-		
 		//D0069
 		case "school":
 			sFunc := r.FormValue("sFunc")
 			sLevel := r.FormValue("sLevel")
+			//sMaster is the school/offering
 			mSID := r.FormValue("sMaster")
 			resp := ""
 			switch sFunc {
+				//edwinxxx
 				case "enroll":
 					////c.Infof("enroll...")
 					resp = educEnroll(w,r,mSID,uid,sLevel)
@@ -41078,19 +41070,8 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 					resp = updateScores(w,r,mSID,uid)
 				case "student":
 					//resp = fmt.Sprintf("student: level %v", sLevel) 
-					//edwinxxx
-					resp = getSchoolMasterRecord(w,r)
+					resp = getSchoolMasterRecord(w,r,mSID)
 				case "course":
-					//edwinxxx
-					/*dks := StudentRecord{}
-					ld := LevelsData{}
-					ld.Level = sLevel
-					ld.SyllabusURL, ld.ExamURL = getSyllabus(w,r,mSID,sLevel)
-					dks.Levels = append(dks.Levels, ld)
-					data,_ := json.MarshalIndent(dks.Levels, "", "  ")
-					if data != nil {
-						resp = fmt.Sprintf("%v", string(data))
-					}*/
 					//resp = fmt.Sprintf("course: level %v", sLevel) 
 					BLOB_KEY := contentCheckSid(w,r,mSID)
 					////c.Infof("BLOB_KEY: %v", BLOB_KEY)
@@ -41284,7 +41265,6 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//edwinxxx
 //D0069
 func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string) (string) {
 	c := appengine.NewContext(r)
@@ -41294,8 +41274,8 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 	EDUC_BLOB := ""
 	FL_EN := false
 	var g TDSCNFG
-	//edwinxxx
-	thisKey := fmt.Sprintf("STUDENT_REC_%v", uid)
+	//thisKey := fmt.Sprintf("STUDENT_REC_%v", uid)
+	thisKey := fmt.Sprintf("STUDENT_REC_%v_%v", mSID, uid)
 	////c.Infof("thisKey: %v", thisKey)
 	//--check student record
 	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
@@ -41380,17 +41360,15 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 	return resp
 
 }
-//edwinxxx
 //D0069
-func getSchoolMasterRecord(w http.ResponseWriter, r *http.Request) (string) {
+func getSchoolMasterRecord(w http.ResponseWriter, r *http.Request, mSID string) (string) {
 	c := appengine.NewContext(r)
 	//check if student is in the school master record 
 	////c.Infof("getSchoolMasterRecord")
 	resp := ""
 	EDUC_BLOB := ""
 	var g TDSCNFG
-	//edwinxxx
-	thisKey := fmt.Sprintf("SCHOOL_REC")
+	thisKey := fmt.Sprintf("SCHOOL_REC_%v", mSID)
 	////c.Infof("thisKey: %v", thisKey)
 	//--check school record
 	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
@@ -41412,7 +41390,6 @@ func getSchoolMasterRecord(w http.ResponseWriter, r *http.Request) (string) {
 		if err != nil {
 			panic(err)
 		}
-		//edwinxxx
 		data,_ := json.MarshalIndent(dkm.Students, "", "  ")
 		if data != nil {
 			resp = fmt.Sprintf("%v", string(data))
@@ -41422,7 +41399,6 @@ func getSchoolMasterRecord(w http.ResponseWriter, r *http.Request) (string) {
 	return resp
 }
 
-//edwinxxx
 //D0069
 func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score string) (string) {
 	c := appengine.NewContext(r)
@@ -41437,7 +41413,6 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score s
 	EDUC_BLOB := ""
 	FL_EN := false
 	var g TDSCNFG
-	//edwinxxx
 	thisKey := fmt.Sprintf("SCHOOL_REC")
 	////c.Infof("thisKey: %v", thisKey)
 	//--check school record
@@ -41472,7 +41447,6 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score s
 	if EDUC_BLOB == "" {
 		////c.Infof("EDUC_BLOB = empty")
 		//construct from initial data
-		//edwinxxx
 		dkm := SchoolRecord{}
 		dks := StudentRecord{}
 		dks.Student = uid
@@ -41559,7 +41533,7 @@ func checkEnroll(w http.ResponseWriter, r *http.Request, mSID, uid string) (stri
 	EDUC_BLOB := ""
 	FL_EN := false
 	var g TDSCNFG
-	thisKey := fmt.Sprintf("STUDENT_REC_%v", uid)
+	thisKey := fmt.Sprintf("STUDENT_REC_%v_%v", mSID, uid)
 	////c.Infof("thisKey: %v", thisKey)
 	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 	if err := datastore.Get(c, key, &g); err != nil {
@@ -41620,7 +41594,7 @@ func cancelEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, sLevel stri
 	resp := ""
 	EDUC_BLOB := ""
 	var g TDSCNFG
-	thisKey := fmt.Sprintf("STUDENT_REC_%v", uid)
+	thisKey := fmt.Sprintf("STUDENT_REC_%v_%v", mSID, uid)
 	////c.Infof("thisKey: %v", thisKey)
 	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 	if err := datastore.Get(c, key, &g); err != nil {
@@ -41661,7 +41635,6 @@ func cancelEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, sLevel stri
 	////c.Infof("resp: %v", resp)
 	return resp
 }
-//edwinxxx
 //D0069
 func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (string) {
 	c := appengine.NewContext(r)
@@ -41669,7 +41642,7 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 	resp := ""
 	EDUC_BLOB := ""
 	var g TDSCNFG
-	thisKey := fmt.Sprintf("STUDENT_REC_%v", uid)
+	thisKey := fmt.Sprintf("STUDENT_REC_%v_%v", mSID, uid)
 	////c.Infof("thisKey: %v", thisKey)
 	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 	if err := datastore.Get(c, key, &g); err != nil {
@@ -41775,7 +41748,6 @@ func saveStudentRecord(w http.ResponseWriter, r *http.Request, uid string, educD
 
 }
 
-//edwinxxx
 //D0069
 //creates a new blob
 func saveMasterRecord(w http.ResponseWriter, r *http.Request, uid string, educData []byte) {
@@ -48063,7 +48035,6 @@ $(document).ready(function() {
 <a href="/?q=qv#upload-video">Upload New Video</a> |
 <a href="/editor?EDIT_FUNC=READER&MEDIA_ID=0&SID=NEWTEXT&CATEGORY=desktop0">New Text File</a> |
 <a href="/infodb?DB_FUNC=MEDIA&CATEGORY=ALL_RECENT">View Recent</a>
-<hr>
 <div id="slides-area"></div>
 <div id="slides-area-button"></div>
 <div id="slides-copy-button"></div>
@@ -72496,7 +72467,6 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 			//c.Errorf("[S0607]")
 			putStrToMemcacheWithoutExp(w,r,cKeySR,blobkey)
 			////c.Infof("student rec saved")
-		//edwinxxx
 		case "EDUC2":
 			//delete existing blob
 			////c.Infof("EDUC2")
