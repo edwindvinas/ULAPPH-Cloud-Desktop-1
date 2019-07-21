@@ -41311,7 +41311,7 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 		//construct from initial data
 		dks := StudentRecord{}
 		dks.Student = uid
-		dks.School = MSID
+		dks.School = mSID
 		ld := LevelsData{}
 		ld.Level = level
 		ld.Status = "ENROLLED"
