@@ -41322,10 +41322,10 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 
 		educData,_ = json.Marshal(dks)
 		////c.Infof("educDate: %v", educData)
-		saveStudentRecord(w,r,uid,educData)
+		saveStudentRecord(w,r,uid,educData,mSID)
 		resp = "saved new student record"
 		//add in master school record
-		educSchoolMasterRecord(w,r,uid,"")
+		educSchoolMasterRecord(w,r,uid,"",mSID)
 	} else {
 		//read from blob
 		blobByte := getBlobByte(w, r, EDUC_BLOB)
@@ -41353,7 +41353,7 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 
 		educData,_ = json.Marshal(dks)
 		////c.Infof("educDate: %v", educData)
-		saveStudentRecord(w,r,uid,educData)
+		saveStudentRecord(w,r,uid,educData,mSID)
 		resp = "updated existing student record"
 	}
 	////c.Infof("resp: %v", resp)
@@ -41400,7 +41400,7 @@ func getSchoolMasterRecord(w http.ResponseWriter, r *http.Request, mSID string) 
 }
 
 //D0069
-func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score string) (string) {
+func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score, mSID string) (string) {
 	c := appengine.NewContext(r)
 	//check if student is in the school master record 
 	////c.Infof("educSchoolMasterRecord")
@@ -41413,7 +41413,7 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score s
 	EDUC_BLOB := ""
 	FL_EN := false
 	var g TDSCNFG
-	thisKey := fmt.Sprintf("SCHOOL_REC")
+	thisKey := fmt.Sprintf("SCHOOL_REC_%v", mSID)
 	////c.Infof("thisKey: %v", thisKey)
 	//--check school record
 	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
@@ -41457,7 +41457,7 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score s
 
 		educData,_ = json.Marshal(dkm)
 		////c.Infof("educDate: %v", educData)
-		saveMasterRecord(w,r,uid,educData)
+		saveMasterRecord(w,r,uid,educData,mSID)
 		resp = "saved new school record"
 	} else {
 		//read from blob
@@ -41491,7 +41491,7 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score s
 		}
 		educData,_ = json.Marshal(dkm)
 		////c.Infof("educDate: %v", educData)
-		saveMasterRecord(w,r,uid,educData)
+		saveMasterRecord(w,r,uid,educData,mSID)
 		resp = "updated existing master record"
 	}
 	////c.Infof("resp: %v", resp)
@@ -41629,7 +41629,7 @@ func cancelEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, sLevel stri
 		resp = fmt.Sprintf("%v", string(data))
 		//save it
 		educData,_ := json.Marshal(sturec)
-		saveStudentRecord(w,r,uid,educData)
+		saveStudentRecord(w,r,uid,educData,mSID)
 
 	}
 	////c.Infof("resp: %v", resp)
@@ -41693,13 +41693,13 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 		resp = fmt.Sprintf("%v", string(data))
 		//save it
 		educData,_ := json.Marshal(sturec)
-		saveStudentRecord(w,r,uid,educData)
+		saveStudentRecord(w,r,uid,educData,mSID)
 		//get average 
 		c.Infof("xs: %v", xs)
 		aveGrade := fmt.Sprintf("%.2f", average(xs))
 		c.Infof("aveGrade: %v", aveGrade)
 		//update school record
-		educSchoolMasterRecord(w,r,uid,aveGrade)
+		educSchoolMasterRecord(w,r,uid,aveGrade,mSID)
 
 	}
 	////c.Infof("resp: %v", resp)
@@ -41708,7 +41708,7 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 
 //D0069
 //creates a new blob
-func saveStudentRecord(w http.ResponseWriter, r *http.Request, uid string, educData []byte) {
+func saveStudentRecord(w http.ResponseWriter, r *http.Request, uid string, educData []byte, mSID string) {
 	c := appengine.NewContext(r)
 	//upload to blobstore
 	////c.Infof("saveStudentRecord")
@@ -41731,6 +41731,7 @@ func saveStudentRecord(w http.ResponseWriter, r *http.Request, uid string, educD
 	//D0068
 	_ = fw.WriteField("API_KEY", CMD_GEN_KEY)
 	_ = fw.WriteField("UID", uid)
+	_ = fw.WriteField("MSID", mSID)
 	fw.Close()
 	req, err := http.NewRequest("POST", u.String(), &m)
 	if err != nil {
@@ -41750,7 +41751,7 @@ func saveStudentRecord(w http.ResponseWriter, r *http.Request, uid string, educD
 
 //D0069
 //creates a new blob
-func saveMasterRecord(w http.ResponseWriter, r *http.Request, uid string, educData []byte) {
+func saveMasterRecord(w http.ResponseWriter, r *http.Request, uid string, educData []byte, mSID string) {
 	c := appengine.NewContext(r)
 	//upload to blobstore
 	////c.Infof("saveMasterRecord")
@@ -41773,6 +41774,7 @@ func saveMasterRecord(w http.ResponseWriter, r *http.Request, uid string, educDa
 	//D0068
 	_ = fw.WriteField("API_KEY", CMD_GEN_KEY)
 	_ = fw.WriteField("UID", uid)
+	_ = fw.WriteField("MSID", mSID)
 	fw.Close()
 	req, err := http.NewRequest("POST", u.String(), &m)
 	if err != nil {
@@ -69767,28 +69769,22 @@ func taskUpdateStatsOsBr(w http.ResponseWriter, r *http.Request) {
  
 //serves newly uploaded blobstore-icons
 func handleServe(w http.ResponseWriter, r *http.Request) {
-	
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	//prevent access from other than ulapph pages
 	checkReferrer(w,r)
-	
-	
 		c := appengine.NewContext(r)
 		_, uid := checkSession(w,r)
 		//uidO := uid
- 
 		blobkey := r.FormValue("blobKey")
 		sURL, err := imageApi.ServingURL(c, appengine.BlobKey(blobkey), nil)
 		sURLs := fmt.Sprintf("%v", sURL)
 		updateUserActiveData(w, r, c, uid, sURLs)
-        thisURL := sURL.String()
+		thisURL := sURL.String()
 		thisURL = getSchemeNewUrl(w,r,thisURL)
-		
 		if err != nil {
                 serveError(c, w, err)
                 return
-        }
- 
+		}
 		ICON_NAME_R := r.FormValue("ICON_NAME")
 		ICON_NAME_R2 := strings.Replace(ICON_NAME_R, "[", "", -1)
 		ICON_NAME := strings.Replace(ICON_NAME_R2, "]", "", -1)
@@ -69796,18 +69792,14 @@ func handleServe(w http.ResponseWriter, r *http.Request) {
 		URL_ADD_R2 := strings.Replace(URL_ADD_R, "[", "", -1)
 		URL_ADD_R3 := strings.Replace(URL_ADD_R2, "]", "", -1)
 		URL_ADD := strings.Replace(URL_ADD_R3, "@@@", "&", -1)
-		
 		validateURL(w,r,URL_ADD)
-		
-        DESKTOP_R := r.FormValue("DESKTOP")
+		DESKTOP_R := r.FormValue("DESKTOP")
 		DESKTOP_R2 := strings.Replace(DESKTOP_R, "[", "", -1)
 		DESKTOP := strings.Replace(DESKTOP_R2, "]", "", -1)
-		
 		//detect if icon/url already exists
 		FUNC_CODE := "GET_ICON_ID"
 		ICON_ID := 0
 		FL_ICON_EXISTS, ICON_ID_R, URL_ADD_R, _, _  := getIconDtls(w, r, FUNC_CODE, ICON_ID, URL_ADD)
-		
 		if FL_ICON_EXISTS == true {
 			msgDtl := fmt.Sprintf("[U00099] ERROR: Operation not permitted. (%v) already exists. Please see existing ICON_ID (%d).", URL_ADD, ICON_ID_R)
 			msgTyp := "error"
@@ -69817,26 +69809,20 @@ func handleServe(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, sysReq, http.StatusFound)
 			return
 		}
-		
 		//get user privilege
 		FUNC_CODE = "GET_GRP_ID"
 		FL_VALID_USER, GROUP_ID, _  , _ := usersProcessor(w, r, "au", uid, FUNC_CODE)
-		
 		if FL_VALID_USER == true {
-		
 			if GROUP_ID == "GRP_ADMIN" && DESKTOP != "desktop0" {
 				uid = DESKTOP
 			}
 		}
-		
 		q := datastore.NewQuery("TDSICONS").Order("-ICON_ID").Limit(1)
 		//c.Errorf("[S0582]")
-	
 		icons := make([]TDSICONS, 0, 1)
 		if _, err := q.GetAll(c, &icons); err != nil {
 			 panic(err)
 		  }
-		
 		for _, p := range icons{
 			thisID := p.ICON_ID + 1
 			p.SYS_VER = SYS_VERSION
@@ -69854,13 +69840,10 @@ func handleServe(w http.ResponseWriter, r *http.Request) {
 				 panic(err)
 			}
 			//c.Errorf("[S0583]")
- 
- 
 			thisIdxKey := fmt.Sprintf("TDSICONS-%d", thisID)
 			//t := time.Now().Local()
 			//tstamp := t.Format("20060102150405")
 			tstamp := getTimestamp()
- 
 			slideIdx := &IDX_TDSICONS{
 				DOC_KEY: 			thisIdxKey,
 				SEARCH_TYPE: 		"ICONS",
@@ -69885,21 +69868,17 @@ func handleServe(w http.ResponseWriter, r *http.Request) {
 				DATE_ADDED: 		tstamp,
 				DATE_UPDATED: 		tstamp,
 			}
- 
 			putSearchIndexI(w,r,"IDX_TDSICONS",thisIdxKey,slideIdx)
-			
 			//clear icons cache
 			_ = memcache.Delete(c, "ALL_ICONS")
 
 			//clear all icons cache
 			_ = memcache.Delete(c, "ICONS_LIST_JSON")
-			
 			//notify all users of this event via channels
 			msgDtl3 := fmt.Sprintf("UID:%v has added website <a href=\"%v\">%v</a> LINK: %v from desktop %v %v", uid, URL_ADD, ICON_NAME, URL_ADD, DESKTOP, getAccessString(w,r,""))
 			sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid,"/settings",""),"")
 			break
 		}
-		
 		msgDtl := fmt.Sprintf("[U00101] SUCCESS: New icon has been uploaded. You need to go to Settings again to add the icon to your desktop. NOTE: Image URL=%s", thisURL)
 		msgTyp := "success"
 		msgURL := fmt.Sprintf("/%v#page", DESKTOP)
@@ -70029,29 +70008,24 @@ func addLinkToIcons(w http.ResponseWriter, r *http.Request, tName, tUrl, tDesk s
 
 //handles newly uploaded blobstore-profile pic
 func handleServePeople(w http.ResponseWriter, r *http.Request) {
-	
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	//prevent access from other than ulapph pages
 	checkReferrer(w,r)
-	
 		c := appengine.NewContext(r)
 		//u := user.Current(c)
 		//uid := uid
 		_, uid := checkSession(w,r)
- 
 		blobkey := r.FormValue("blobKey3")
 		opts := imageApi.ServingURLOptions{Secure: true}
 		sURL, err := imageApi.ServingURL(c, appengine.BlobKey(blobkey), &opts)
 		sURLs := fmt.Sprintf("%v", sURL)
 		updateUserActiveData(w, r, c, uid, sURLs)
-        thisURL := sURL.String()
+		thisURL := sURL.String()
 		thisURL = getSchemeNewUrl(w,r,thisURL)
-		
 		if err != nil {
                 serveError(c, w, err)
                 return
         }
- 
 		UID_R := r.FormValue("UID")
 		UID_R2 := strings.Replace(UID_R, "[", "", -1)
 		UID := strings.Replace(UID_R2, "]", "", -1)
@@ -70155,9 +70129,7 @@ func handleServePeople(w http.ResponseWriter, r *http.Request) {
 func handleUpload(w http.ResponseWriter, r *http.Request) {
 
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
-	
         c := appengine.NewContext(r)
-		
         blobs, pVals, err := blobstore.ParseUpload(r)
         if err != nil {
                 serveError(c, w, err)
@@ -70184,7 +70156,6 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 //handles newly uploaded people pics 
 func handleUploadPeople(w http.ResponseWriter, r *http.Request) {
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
-	
         c := appengine.NewContext(r)
 		
         blobs, pVals, err := blobstore.ParseUpload(r)
@@ -70209,17 +70180,12 @@ func handleUploadPeople(w http.ResponseWriter, r *http.Request) {
  
 //handles newly uploaded blobstore-ads
 func handleServeAds(w http.ResponseWriter, r *http.Request) {
-	
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
-	
 	//prevent access from other than ulapph pages
 	checkReferrer(w,r)
-	
 	c := appengine.NewContext(r)
 	_, uid := checkSession(w,r)
-	
-	
 	blobkey := r.FormValue("blobKey2")
 	sURL, err := imageApi.ServingURL(c, appengine.BlobKey(blobkey), nil)
 	sURLs := fmt.Sprintf("%v",sURL)
@@ -70300,14 +70266,11 @@ func handleServeAds(w http.ResponseWriter, r *http.Request) {
 func handleServeSlides(w http.ResponseWriter, r *http.Request) {
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
-	
 	//prevent access from other than ulapph pages
 	checkReferrer(w,r)
-	
 	c := appengine.NewContext(r)
 	_, uid := checkSession(w,r)
 	updateUserActiveData(w, r, c, uid, "/serve-slides")
-	
 	FUNC_CODE := "GET_GRP_ID"
 	_, GROUP_ID, _  , _ := usersProcessor(w, r, "au", uid, FUNC_CODE)
 					
@@ -70509,14 +70472,11 @@ func handleServeSlides(w http.ResponseWriter, r *http.Request) {
 func handleServeArticles(w http.ResponseWriter, r *http.Request) {
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
-	
 	//prevent access from other than ulapph pages
 	checkReferrer(w,r)
-	
 	c := appengine.NewContext(r)
 	_, uid := checkSession(w,r)
 	updateUserActiveData(w, r, c, uid, "/serve-articles")
-	
 	FUNC_CODE := "GET_GRP_ID"
 	_, GROUP_ID, _  , _ := usersProcessor(w, r, "au", uid, FUNC_CODE)
 					
@@ -71256,9 +71216,7 @@ func getMimeType(w http.ResponseWriter, r *http.Request, ext string) (F_MIME_TYP
 //handles ads uploads 
 func handleUploadAds(w http.ResponseWriter, r *http.Request) {
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
-	
         c := appengine.NewContext(r)
-		
         blobs, pVals, err := blobstore.ParseUpload(r)
         if err != nil {
                 serveError(c, w, err)
@@ -71283,7 +71241,6 @@ func handleUploadAds(w http.ResponseWriter, r *http.Request) {
 
 //handles slides uploads 
 func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
-	
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
 	
 	c := appengine.NewContext(r)
@@ -71837,9 +71794,7 @@ func clearCachedArticleWebContents(w http.ResponseWriter, r *http.Request) {
 
 //handles upload of articles 
 func handleUploadArticles(w http.ResponseWriter, r *http.Request) {
-	
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
-	
 	c := appengine.NewContext(r)
 	u := user.Current(c)
 	_, uid := checkSession(w,r)
@@ -72367,9 +72322,7 @@ func handleUploadArticles(w http.ResponseWriter, r *http.Request) {
 }
 //handles uploads of media 
 func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
-	
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
-	
 	c := appengine.NewContext(r)
 	////c.Infof("handleUploadMedia")
 	u := user.Current(c)
@@ -72383,7 +72336,6 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 		}
 		checkQuotaMedia(w,r,uid)
 	}
-	
     defer func() { //catch or finally
         if err := recover(); err != nil { //catch
             fmt.Fprintf(os.Stderr, "Exception: %v\n", err)
@@ -72395,7 +72347,6 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
             os.Exit(1)
         }
     }()
-	
 	blobs, pVals, err := blobstore.ParseUpload(r)
 	if err != nil {
 			////c.Infof("blobstore.ParseUpload")
@@ -72404,7 +72355,6 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 	}
 	file := blobs["file"]
 	if len(file) == 0 {
- 
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
 	}
@@ -72419,6 +72369,9 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
         UID_R := fmt.Sprintf("%v", pVals["UID"])
         UID_R2 := strings.Replace(UID_R, "[", "", -1)
         UID := strings.Replace(UID_R2, "]", "", -1)
+	MSID_R := fmt.Sprintf("%v", pVals["MSID"])
+        MSID_R2 := strings.Replace(MSID_R, "[", "", -1)
+        MSID := strings.Replace(MSID_R2, "]", "", -1)
 
 	switch FUNC_CODE {
 		case "EDUC":
@@ -72431,11 +72384,11 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 			}
 			uid = UID
 
-			cKeySR := fmt.Sprintf("STUDENT_REC_BLOB_%v", uid)
+			cKeySR := fmt.Sprintf("STUDENT_REC_BLOB_%v_%v", MSID, uid)
 			SR_BLOB := ""
 			var g TDSCNFG
 			SR_BLOB = getStrMemcacheValueByKey(w,r,cKeySR)
-			thisKey := fmt.Sprintf("STUDENT_REC_%v", uid)
+			thisKey := fmt.Sprintf("STUDENT_REC_%v_%v", MSID, uid)
 			if SR_BLOB == "" {
 				key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 				if err := datastore.Get(c, key, &g); err != nil {
@@ -72476,11 +72429,11 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			cKeySR := fmt.Sprintf("SCHOOL_REC_BLOB")
+			cKeySR := fmt.Sprintf("SCHOOL_REC_BLOB_%v", MSID)
 			SR_BLOB := ""
 			var g TDSCNFG
 			SR_BLOB = getStrMemcacheValueByKey(w,r,cKeySR)
-			thisKey := fmt.Sprintf("SCHOOL_REC")
+			thisKey := fmt.Sprintf("SCHOOL_REC_%v", MSID)
 			if SR_BLOB == "" {
 				key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 				if err := datastore.Get(c, key, &g); err != nil {
