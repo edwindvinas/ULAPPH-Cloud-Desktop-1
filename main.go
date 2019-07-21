@@ -41311,7 +41311,7 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 		//construct from initial data
 		dks := StudentRecord{}
 		dks.Student = uid
-		dks.School = SYS_SERVER_NAME
+		dks.School = MSID
 		ld := LevelsData{}
 		ld.Level = level
 		ld.Status = "ENROLLED"
@@ -41450,7 +41450,7 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score, 
 		dkm := SchoolRecord{}
 		dks := StudentRecord{}
 		dks.Student = uid
-		dks.School = SYS_SERVER_NAME
+		dks.School = mSID
 		dks.OverallGrade = ""
 		dks.Levels = nil
 		dkm.Students = append(dkm.Students, dks)
@@ -41484,7 +41484,7 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score, 
 		if FL_AVE_MODE == false {
 			dks := StudentRecord{}
 			dks.Student = uid
-			dks.School = SYS_SERVER_NAME
+			dks.School = mSID
 			dks.OverallGrade = ""
 			dks.Levels = nil
 			dkm.Students = append(dkm.Students, dks)
