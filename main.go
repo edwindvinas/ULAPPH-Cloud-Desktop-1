@@ -15415,14 +15415,14 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, DEB
 	    }
 	}
 	//get log data 
-	//c.Infof("GETTING UPDATED log...")
-	//if value, err := vm.Get("log"); err == nil {
-	    //if value_str, err := value.ToString(); err == nil {
-		//c.Infof("***********OTTO EXEC LOGS START**************")
-		//c.Infof("%v", value_str)
-		//c.Infof("***********OTTO EXEC LOGS END**************")
-	    //}
-	//}
+	c.Infof("GETTING UPDATED log...")
+	if value, err := vm.Get("log"); err == nil {
+	    if value_str, err := value.ToString(); err == nil {
+		c.Infof("***********OTTO EXEC LOGS START**************")
+		c.Infof("%v", value_str)
+		c.Infof("***********OTTO EXEC LOGS END**************")
+	    }
+	}
 	////c.Infof("resp: %v", resp)
 	//get output data
 	//c.Infof("GETTING UPDATED output...")
@@ -40261,7 +40261,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 	//c.Infof("FL_DEBUG: %v", FL_DEBUG)
 	//Getting current user KVO data
 	cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v_%v", uid, bName, devID)
-	//c.Infof("cKeyA: %v", cKeyA)
+	c.Infof("cKeyA: %v", cKeyA)
 	thisOA := getStrMemcacheValueByKey(w,r,cKeyA)
 	//c.Infof("thisOA: %v", thisOA)
 	var kvo OttoAwareness
