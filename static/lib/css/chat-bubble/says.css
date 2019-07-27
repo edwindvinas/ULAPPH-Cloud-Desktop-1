@@ -39,10 +39,10 @@
 
 /* style media that's inside bubbles */
 .bubble .bubble-content img {
-  width: calc(100% + 32px);
-  margin: -8px -16px;
+  /*width: calc(100% + 32px);*/
+  /*margin: -8px -16px;*/
   overflow: hidden;
-  display: block;
+  /*display: block;*/
   border-radius: 5px 15px 15px 15px;
 }
 
