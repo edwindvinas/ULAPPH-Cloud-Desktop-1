@@ -40261,7 +40261,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 	//c.Infof("FL_DEBUG: %v", FL_DEBUG)
 	//Getting current user KVO data
 	cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v_%v", uid, bName, devID)
-	//c.Infof("cKeyA: %v", cKeyA)
+	c.Infof("cKeyA: %v", cKeyA)
 	thisOA := getStrMemcacheValueByKey(w,r,cKeyA)
 	//c.Infof("thisOA: %v", thisOA)
 	var kvo OttoAwareness

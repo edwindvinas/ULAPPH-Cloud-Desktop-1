@@ -74219,21 +74219,17 @@ func renderJSWMStyleCssTemplates(w http.ResponseWriter, r *http.Request) {
 
 //renders social sharing template 
 func renderSocialSharing(w http.ResponseWriter, r *http.Request, title, turl string) {
- 
 	t := presentTemplates[path.Ext(".social-sharing")]
 	if t == nil {
 		panic(t)
 	}
- 
 	doc := new(TEMPSTRUCT)
 	doc.STR_FILLER1	= turl
 	doc.STR_FILLER2 = title
-		
 	data := struct {
-		
 		*TEMPSTRUCT
 		Template    *template.Template
-	}{	
+	}{
 		doc,
 		t,
 	}
