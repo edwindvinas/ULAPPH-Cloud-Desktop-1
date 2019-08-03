@@ -471,7 +471,8 @@ import (
 	//third party APIs
 	//"user_agent"
 	"github.com/edwindvinas/user_agent"
-	"github.com/dustin/go-humanize"
+	//"github.com/dustin/go-humanize"
+	"github.com/edwindvinas/go-humanize"
 	//"code.google.com/p/go.net/html"
 	"github.com/edwindvinas/html"
 	//google plus API
@@ -490,14 +491,16 @@ import (
 	crand "crypto/rand"
 	"mime/multipart"
 	//html2text scraper
-	"github.com/jaytaylor/html2text"
+	//"github.com/jaytaylor/html2text"
+	"github.com/edwindvinas/html2text"
 	"github.com/edwindvinas/percent"
 	//D0028
 	//things api
 	"github.com/edwindvinas/jsonq"
 	"sort"
 	//firebase
-	"gopkg.in/zabawaba99/firego.v1"
+	//"gopkg.in/zabawaba99/firego.v1"
+	"github.com/edwindvinas/firego.v1"
 	"golang.org/x/oauth2/google"
 	"crypto/rsa"
 	"github.com/dgrijalva/jwt-go"
@@ -523,22 +526,30 @@ import (
 	//D0047
 	"github.com/edwindvinas/sillyname-go"
 	//D0055
-	"github.com/robertkrimen/otto"
+	//"github.com/robertkrimen/otto"
+	"github.com/edwindvinas/otto"
 	//D0059
-	"github.com/tealeg/xlsx"
+	//"github.com/tealeg/xlsx"
+	"github.com/edwindvinas/xlsx"
 	"reflect"
 	//D0065
-	"github.com/shixzie/nlp"
-	"github.com/cdipaolo/goml/text"
+	//"github.com/shixzie/nlp"
+	"github.com/edwindvinas/nlp"
+	//"github.com/cdipaolo/goml/text"
+	"github.com/edwindvinas/goml/text"
 	//D0071
 	//"github.com/disintegration/imaging"
-	"github.com/umahmood/perceptive"
+	//"github.com/umahmood/perceptive"
+	"github.com/edwindvinas/perceptive"
 	"image"
 	//"image/png"
 	//D0075
-	"gopkg.in/jdkato/prose.v2"
-	"github.com/schollz/closestmatch"
-	"github.com/mvdan/xurls"
+	//"gopkg.in/jdkato/prose.v2"
+	"github.com/edwindvinas/prose.v2"
+	//"github.com/schollz/closestmatch"
+	"github.com/edwindvinas/closestmatch"
+	//"github.com/mvdan/xurls"
+	"github.com/edwindvinas/xurls"
 
 )
 //contants configs
