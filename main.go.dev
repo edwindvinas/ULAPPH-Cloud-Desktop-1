@@ -11845,10 +11845,9 @@ func runTopicsHaveNeed(w http.ResponseWriter, r *http.Request, UID, mode string)
 func ulapphWall(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
-	//WALL_KEY := r.FormValue("wall_key")
-	remKey := r.FormValue("wall_key")
-	//if WALL_KEY != CMD_GEN_KEY {
-	if remKey != CMD_GEN_KEY {
+	WALL_KEY := r.FormValue("wall_key")
+	remKey := r.FormValue("remKey")
+	if WALL_KEY != CMD_GEN_KEY {
 		msgDtl := fmt.Sprintf("[U00201] ERROR: Invalid operation.")
 		msgTyp := "error"
 		action := "U00201"
@@ -12060,6 +12059,7 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "SID: %v<br>", SID)
 		remHost := r.FormValue("remHost")
 		remUser := r.FormValue("remUser")
+		remKey := r.FormValue("remKey")
 		srcHost := getSchemeUrl(w,r)
 		k, _ := url.Parse(remHost)
 		m, _ := url.Parse(getSchemeUrl(w,r))
