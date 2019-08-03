@@ -507,7 +507,8 @@ import (
 	//goquery
 	//"github.com/PuerkitoBio/goquery"
 	"github.com/edwindvinas/goquery"
-	"gopkg.in/neurosnap/sentences.v1/english"
+	//"gopkg.in/neurosnap/sentences.v1/english"
+	"github.com/edwindvinas/sentences.v1/english"
 	//D0033
 	"golang.org/x/oauth2"
 	"github.com/google/go-github/github"
@@ -7475,10 +7476,8 @@ func isAdmin(w http.ResponseWriter, r *http.Request) bool {
 //only accessible via admin of the appengine itself
 func adminSetup(w http.ResponseWriter, r *http.Request) {
 	checkHTTPS(w,r)
-	
-	c := appengine.NewContext(r) 	
+	c := appengine.NewContext(r)
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
-	
 	checkSysIns(w,r)
 
 	_, uid := checkSession(w,r)
@@ -7490,7 +7489,6 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 		_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 		FL_ADMIN_USER = true
 	}
- 
 	//check if system is installed already
 	q := datastore.NewQuery("TDSUSERS").Limit(1)
 	//c.Errorf("[S0017]")
@@ -7503,7 +7501,6 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 	for _, _ = range users {
 		recCount++
 	}
- 
 	if recCount <= 0 {
 		msgDtl := "[U00157] ERROR: System appears to be off-line or having a critical error or near quota limits. Contact admin for details."
 		msgTyp := "error"
@@ -7513,27 +7510,21 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, sysReq, http.StatusFound)
 		return
 	}
-	
 	if FL_ADMIN_USER == true {
-	
 		ADMIN_FUNC := r.FormValue("ADMIN_FUNC")
-				
 		switch ADMIN_FUNC {
-			
 			case "BLOCK_IP":
 				ip := r.FormValue("ip")
 				//add to block list
 				blockIP(w,r,ip,"admin")
 				fmt.Fprintf(w, "IP address %v has been temporarily blocked.<br><br>.", ip)
 				return
-				
 			case "UNBLOCK_IP":
 				ip := r.FormValue("ip")
 				//add to block list
 				unBlockIP(w,r,ip,"admin")
 				fmt.Fprintf(w, "IP address %v has been un-blocked.<br><br>.", ip)
 				return
-				
 			//newconfigtemplate
 			case "EDIT_PUB_WP_LIST":
 			//SPC_OPT to /people-edit?EditPeopleFunc=EDIT_CONTACTS_LIST&MEDIA_ID=787
@@ -7549,7 +7540,6 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					http.Redirect(w, r, redURL, http.StatusFound)
 				}
 				return
-				
 			//newconfigtemplate
 			case "EDIT_PUB_UWM":
 			//SPC_OPT to /people-edit?EditPeopleFunc=EDIT_CONTACTS_LIST&MEDIA_ID=787
@@ -7565,7 +7555,6 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					http.Redirect(w, r, redURL, http.StatusFound)
 				}
 				return
-		
 			case "SET_CATEGORY_LIST":
 				MEDIA_ID2 := r.FormValue("MEDIA_ID")
 				MEDIA_ID := str2int(MEDIA_ID2)
@@ -9265,6 +9254,8 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					fmt.Fprintf(w, "THINGS_API_KEY: %v", THINGS_API_KEY)
 					fmt.Fprintf(w, "<li>")
 					fmt.Fprintf(w, "CMD_API_KEY: %v", CMD_API_KEY)
+					fmt.Fprintf(w, "<li>")
+					fmt.Fprintf(w, "CMD_GEN_KEY: %v", CMD_GEN_KEY)
 					fmt.Fprintf(w, "<li>")
 					fmt.Fprintf(w, "SYS_UNINSTALL_KEY: %v", SYS_UNINSTALL_KEY)
 					fmt.Fprintf(w, "</ul>")
