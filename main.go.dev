@@ -11846,7 +11846,7 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	WALL_KEY := r.FormValue("wall_key")
-	remKey := r.FormValue("remKey")
+	remKey := r.FormValue("wall_key")
 	if WALL_KEY != CMD_GEN_KEY {
 		msgDtl := fmt.Sprintf("[U00201] ERROR: Invalid operation.")
 		msgTyp := "error"

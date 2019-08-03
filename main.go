@@ -11845,8 +11845,8 @@ func runTopicsHaveNeed(w http.ResponseWriter, r *http.Request, UID, mode string)
 func ulapphWall(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
-	WALL_KEY := r.FormValue("wall_key")
-	remKey := r.FormValue("remKey")
+	//WALL_KEY := r.FormValue("wall_key")
+	remKey := r.FormValue("wall_key")
 	if WALL_KEY != CMD_GEN_KEY {
 		msgDtl := fmt.Sprintf("[U00201] ERROR: Invalid operation.")
 		msgTyp := "error"
@@ -12059,7 +12059,7 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "SID: %v<br>", SID)
 		remHost := r.FormValue("remHost")
 		remUser := r.FormValue("remUser")
-		remKey := r.FormValue("remKey")
+		//remKey := r.FormValue("remKey")
 		srcHost := getSchemeUrl(w,r)
 		k, _ := url.Parse(remHost)
 		m, _ := url.Parse(getSchemeUrl(w,r))
@@ -67290,7 +67290,7 @@ var wallContentCopyGetHostUser = template.Must(template.New("wallContentCopyGetH
 				{{.HTM_FILLER1}}
 				</select>
 				<br>ULAPPH Remote User: <input type="text" name="remUser" value="{{.STR_FILLER2}}" maxlength="50"/> Ex: myuser@gmail.com<br>
-				<br>ULAPPH Remote Key: <input type="text" name="remKey" value="" maxlength="500"/><br>
+				<br>ULAPPH Remote Key: <input type="text" name="wall_key" value="" maxlength="500"/><br>
 				<input type="hidden" name="SID" value="{{.STR_FILLER1}}">
 			    <input type="hidden" name="WALL_FUNC" value="CONTENT_COPY">
 				<input type="submit" name="submit" value="Copy Content"/>
