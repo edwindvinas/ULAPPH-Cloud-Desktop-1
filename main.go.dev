@@ -11855,6 +11855,7 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 	_, uid := checkSession(w,r)
 	WALL_FUNC := r.FormValue("WALL_FUNC")
 	SYS_RC_HOST_LIST := getWallHosts(w,r)
+	remKey := r.FormValue("remKey")
 	switch {
 	case WALL_FUNC == "SEND_MSG":
 		remHost := r.FormValue("remHost")
@@ -11892,7 +11893,8 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 			msgDtl := fmt.Sprintf("[U00164] ERROR: Cannot send to same ulapph site.")
 			fmt.Fprintf(w, "<font color=red>%v</font>", msgDtl)
 		} else {
-			getDataStr := fmt.Sprintf("%v/wall?WALL_FUNC=SEND_MSG2&remHost=%v&fromUser=%v&srcHost=%v&toUser=%v&wm=%v&wall_key=%v", remHost, remHost, fromUser, srcHost, toUser, encMessage, CMD_GEN_KEY)
+			//getDataStr := fmt.Sprintf("%v/wall?WALL_FUNC=SEND_MSG2&remHost=%v&fromUser=%v&srcHost=%v&toUser=%v&wm=%v&wall_key=%v", remHost, remHost, fromUser, srcHost, toUser, encMessage, CMD_GEN_KEY)
+			getDataStr := fmt.Sprintf("%v/wall?WALL_FUNC=SEND_MSG2&remHost=%v&fromUser=%v&srcHost=%v&toUser=%v&wm=%v&wall_key=%v", remHost, remHost, fromUser, srcHost, toUser, encMessage, remKey)
 			http.Redirect(w, r, getDataStr, http.StatusFound)
 			return
 		}
@@ -11931,40 +11933,40 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 				if len(SPL) > 1 {
 					MEDIA_ID = SPL[1]
 				}
-				sysReq := fmt.Sprintf("/wall?WALL_FUNC=MEDIA_COPY&MEDIA_ID=%v&SID=%v&TITLE=%v&wall_key=%v", MEDIA_ID, SID, TITLE, CMD_GEN_KEY)
+				//sysReq := fmt.Sprintf("/wall?WALL_FUNC=MEDIA_COPY&MEDIA_ID=%v&SID=%v&TITLE=%v&wall_key=%v", MEDIA_ID, SID, TITLE, CMD_GEN_KEY)
+				sysReq := fmt.Sprintf("/wall?WALL_FUNC=MEDIA_COPY&MEDIA_ID=%v&SID=%v&TITLE=%v&wall_key=%v", MEDIA_ID, SID, TITLE, remKey)
 				http.Redirect(w, r, sysReq, http.StatusFound)
 				return
-				
 			case "TDSICONS":
 				ICON_ID := ""
 				SPL := strings.Split(DOC_KEY,"-")
 				if len(SPL) > 1 {
 					ICON_ID = SPL[1]
 				}
-				sysReq := fmt.Sprintf("/wall?WALL_FUNC=ICON_COPY&ICON_ID=%v&wall_key=%v", ICON_ID, CMD_GEN_KEY)
+				//sysReq := fmt.Sprintf("/wall?WALL_FUNC=ICON_COPY&ICON_ID=%v&wall_key=%v", ICON_ID, CMD_GEN_KEY)
+				sysReq := fmt.Sprintf("/wall?WALL_FUNC=ICON_COPY&ICON_ID=%v&wall_key=%v", ICON_ID, remKey)
 				http.Redirect(w, r, sysReq, http.StatusFound)
 				return
-				
 			case "TDSSLIDE":
 				DOC_ID := ""
 				SPL := strings.Split(DOC_KEY,"-")
 				if len(SPL) > 1 {
 					DOC_ID = SPL[1]
 				}
-				sysReq := fmt.Sprintf("/wall?WALL_FUNC=SLIDE_COPY&DOC_ID=%v&SID=%v&TITLE=%v&wall_key=%v", DOC_ID, SID, TITLE, CMD_GEN_KEY)
+				//sysReq := fmt.Sprintf("/wall?WALL_FUNC=SLIDE_COPY&DOC_ID=%v&SID=%v&TITLE=%v&wall_key=%v", DOC_ID, SID, TITLE, CMD_GEN_KEY)
+				sysReq := fmt.Sprintf("/wall?WALL_FUNC=SLIDE_COPY&DOC_ID=%v&SID=%v&TITLE=%v&wall_key=%v", DOC_ID, SID, TITLE, remKey)
 				http.Redirect(w, r, sysReq, http.StatusFound)
 				return
-				
 			case "TDSARTL":
 				DOC_ID := ""
 				SPL := strings.Split(DOC_KEY,"-")
 				if len(SPL) > 1 {
 					DOC_ID = SPL[1]
 				}
-				sysReq := fmt.Sprintf("/wall?WALL_FUNC=ARTICLE_COPY&DOC_ID=%v&SID=%v&TITLE=%v&wall_key=%v", DOC_ID, SID, TITLE, CMD_GEN_KEY)
+				//sysReq := fmt.Sprintf("/wall?WALL_FUNC=ARTICLE_COPY&DOC_ID=%v&SID=%v&TITLE=%v&wall_key=%v", DOC_ID, SID, TITLE, CMD_GEN_KEY)
+				sysReq := fmt.Sprintf("/wall?WALL_FUNC=ARTICLE_COPY&DOC_ID=%v&SID=%v&TITLE=%v&wall_key=%v", DOC_ID, SID, TITLE, remKey)
 				http.Redirect(w, r, sysReq, http.StatusFound)
 				return
-				
 			default:
 				msgDtl := fmt.Sprintf("[U00179] ERROR: Item cannot be copied.")
 				msgTyp := "error"
@@ -11974,10 +11976,8 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 				http.Redirect(w, r, sysReq, http.StatusFound)
 				return
 		}
-	
 	case WALL_FUNC == "SLIDE_COPY":
 		fmt.Fprintf(w, "Copying slide....<br>")
- 
 		DOC_ID := r.FormValue("DOC_ID")
 		SID := r.FormValue("SID")
 		TITLE := r.FormValue("TITLE")
@@ -11986,28 +11986,23 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "SID: %v<br>", SID)
 		fmt.Fprintf(w, "TITLE: %v<br>", TITLE)
 		fmt.Fprintf(w, "uReferrer: %v<br>", uReferrer)
-		
 		if err := htmlHeaderModal.Execute(w, getBasicColors(w,r)); err != nil {
 		  panic(err)
 		}
-		
 		//get remote host & user
 		TEMPDATA := TEMPSTRUCT2{
 			STR_FILLER1: SID,
 			STR_FILLER2: uid,
 			HTM_FILLER1: template.HTML(SYS_RC_HOST_LIST),
 		}
-			
 		if err := wallContentCopyGetHostUser.Execute(w, &TEMPDATA); err != nil {
 		  panic(err)
 		}
 		if err := htmlFooterModal.Execute(w, ""); err != nil {
 		  panic(err)
 		}
-	
 	case WALL_FUNC == "ARTICLE_COPY":
 		fmt.Fprintf(w, "Copying article....")
- 
 		DOC_ID := r.FormValue("DOC_ID")
 		SID := r.FormValue("SID")
 		TITLE := r.FormValue("TITLE")
@@ -12016,7 +12011,6 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "SID: %v<br>", SID)
 		fmt.Fprintf(w, "TITLE: %v<br>", TITLE)
 		fmt.Fprintf(w, "uReferrer: %v<br>", uReferrer)
-		
 		if err := htmlHeaderModal.Execute(w, getBasicColors(w,r)); err != nil {
 		  panic(err)
 		}
@@ -12032,10 +12026,8 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		if err := htmlFooterModal.Execute(w, ""); err != nil {
 		  panic(err)
 		}
-		
 	case WALL_FUNC == "MEDIA_COPY":
 		fmt.Fprintf(w, "Copying media....")
- 
 		MEDIA_ID := r.FormValue("MEDIA_ID")
 		SID := r.FormValue("SID")
 		TITLE := r.FormValue("TITLE")
@@ -12044,7 +12036,6 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "SID: %v<br>", SID)
 		fmt.Fprintf(w, "TITLE: %v<br>", TITLE)
 		fmt.Fprintf(w, "uReferrer: %v<br>", uReferrer)
-		
 		if err := htmlHeaderModal.Execute(w, getBasicColors(w,r)); err != nil {
 		  panic(err)
 		}
@@ -12060,28 +12051,22 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		if err := htmlFooterModal.Execute(w, ""); err != nil {
 		  panic(err)
 		}
-		
 	case WALL_FUNC == "CONTENT_COPY":
 		fmt.Fprintf(w, "Copying content stage3....")
- 
 		SID := r.FormValue("SID")
 		fmt.Fprintf(w, "SID: %v<br>", SID)
-		
 		remHost := r.FormValue("remHost")
 		remUser := r.FormValue("remUser")
 		srcHost := getSchemeUrl(w,r)
-		
 		k, _ := url.Parse(remHost)
 		m, _ := url.Parse(getSchemeUrl(w,r))
 		fmt.Fprintf(w, "remHost: %v<br>", remHost)
 		fmt.Fprintf(w, "getSchemeUrl(w,r): %v<br>", getSchemeUrl(w,r))
-		
 		if k.Host == m.Host {
 			msgDtl := fmt.Sprintf("[U00172] ERROR: Cannot send to same ulapph site.")
 			fmt.Fprintf(w, "<font color=red>%v</font>", msgDtl)
 			return
 		}
- 
 		TARGET := ""
 		DOC_ID := ""
 		MEDIA_ID := ""
@@ -12090,18 +12075,13 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 			TARGET = SPL[0]
 			DOC_ID = SPL[1]
 		}
-		
 		if TARGET == "TDSMEDIA" {
 			MEDIA_ID = DOC_ID
 		}
-		
 		url := ""
-		
 		switch {
-		
 			////////////////////////////////
 			case TARGET == "TDSSLIDE":
-			
 			cKey := fmt.Sprintf("TDSSLIDE_DOCID_CACHE_%v", DOC_ID)
 			TDSSLIDE_DOCID_CACHE := ""
 			FL_PROC_CACHE_OK := false
@@ -12116,18 +12096,12 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 					DESC := TITLE
 					//SHARED_TO = SPL[7]
 					FL_PROC_CACHE_OK = true
-					
 					blobkey := fmt.Sprintf("GET_WALL:%vslides?TYPE=SLIDE@888@MODE=NORMAL@888@PARM=LOOP@888@SECS=8@888@DOC_ID=%v@888@SID=%v", srcHost, DOC_ID, SID)
- 
-					url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_SLIDE&DOC_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, DOC_ID, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, CMD_GEN_KEY)
- 
+					//url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_SLIDE&DOC_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, DOC_ID, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, CMD_GEN_KEY)
+					url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_SLIDE&DOC_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, DOC_ID, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, remKey)
 				}
-			
 			}
-			
 			if FL_PROC_CACHE_OK == false {
-	
- 
 				thisDocID := str2int(DOC_ID)
 				dsKey := fmt.Sprintf("%d", thisDocID)
 				key := datastore.NewKey(c, "TDSSLIDE", dsKey, 0, nil)
@@ -12138,22 +12112,18 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 					//checkError(w,r,err,"CHK_OQ")
 					 panic(err)
 				  }
-				
 				for _, p := range slide{
-						
 					TITLE := p.TITLE
 					DESC := p.DESC
 					IMG_URL := p.TAGS
 					blobkey := fmt.Sprintf("GET_WALL:%vslides?TYPE=SLIDE@888@MODE=NORMAL@888@PARM=LOOP@888@SECS=8@888@DOC_ID=%v@888@SID=%v", srcHost, DOC_ID, SID)
- 
-					url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_SLIDE&DOC_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, thisDocID, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, CMD_GEN_KEY)
+					//url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_SLIDE&DOC_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, thisDocID, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, CMD_GEN_KEY)
+					url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_SLIDE&DOC_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, thisDocID, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, remKey)
 					break
 				}
 			}
- 
 			////////////////////////////////		
 			case TARGET == "TDSARTL":
- 
 			cKey := fmt.Sprintf("TDSARTL_DOCID_CACHE_%v", DOC_ID)
 			TDSARTL_DOCID_CACHE := ""
 			FL_PROC_CACHE_OK := false
@@ -12166,21 +12136,14 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 					TITLE := SPL[5]
 					IMG_URL := SPL[6]
 					DESC := TITLE
-					
 					blobkey := fmt.Sprintf("GET_WALL:%varticles?TYPE=ARTICLE@888@DOC_ID=%v@888@SID=%v", srcHost, DOC_ID, SID)
- 
-					url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_ARTICLE&DOC_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, DOC_ID, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, CMD_GEN_KEY)
-					
+					//url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_ARTICLE&DOC_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, DOC_ID, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, CMD_GEN_KEY)
+					url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_ARTICLE&DOC_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, DOC_ID, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, remKey)
 					FL_PROC_CACHE_OK = true
 				}
-			
 			}
-			
 			if FL_PROC_CACHE_OK == false {
-	
- 
 				thisDocID := str2int(DOC_ID)
-				
 				dsKey := fmt.Sprintf("%d", thisDocID)
 				key := datastore.NewKey(c, "TDSARTL", dsKey, 0, nil)
 				q := datastore.NewQuery("TDSARTL").Filter("__key__ =", key)
@@ -12192,22 +12155,18 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 				  }
 
 				for _, p := range article{
-						
 					TITLE := p.TITLE
 					DESC := p.DESC
 					IMG_URL := p.TAGS
 					blobkey := fmt.Sprintf("GET_WALL:%varticles?TYPE=ARTICLE@888@DOC_ID=%v@888@SID=%v", srcHost, DOC_ID, SID)
- 
-					url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_ARTICLE&DOC_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, thisDocID, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, CMD_GEN_KEY)
+					//url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_ARTICLE&DOC_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, thisDocID, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, CMD_GEN_KEY)
+					url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_ARTICLE&DOC_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, thisDocID, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, remKey)
 					//fmt.Fprintf(w, "<br>url: %v<br>", url)
- 
 					break
 				}
 			}
-			
 			////////////////////////////////
 			case TARGET == "TDSMEDIA":
- 
 			cKey := fmt.Sprintf("TDSMEDIA_MEDID_CACHE_%v", MEDIA_ID)
 			TDSMEDIA_MEDID_CACHE := ""
 			FL_PROC_CACHE_OK := false
@@ -12222,18 +12181,13 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 					DATA_TYPE := SPL[7]
 					DESC := TITLE
 					blobkey := fmt.Sprintf("GET_WALL:%vmedia?FUNC_CODE=PLAY@888@MEDIA_ID=%v@888@SID=TDSMEDIA-%v", srcHost, MEDIA_ID, MEDIA_ID)
-					url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_MEDIA&MEDIA_ID=%v&DATA_TYPE=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, MEDIA_ID, DATA_TYPE, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, CMD_GEN_KEY)
-					
+					//url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_MEDIA&MEDIA_ID=%v&DATA_TYPE=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, MEDIA_ID, DATA_TYPE, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, CMD_GEN_KEY)
+					url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_MEDIA&MEDIA_ID=%v&DATA_TYPE=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, MEDIA_ID, DATA_TYPE, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, remKey)
 					FL_PROC_CACHE_OK = true
 				}
-			
 			}
-			
 			if FL_PROC_CACHE_OK == false {
-	
- 
 				thisDocID := str2int(MEDIA_ID)
-				
 				dsKey := fmt.Sprintf("%d", thisDocID)
 				key := datastore.NewKey(c, "TDSMEDIA", dsKey, 0, nil)
 				q := datastore.NewQuery("TDSMEDIA").Filter("__key__ =", key)
@@ -12244,31 +12198,24 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 					 panic(err)
 				  }
 				for _, p := range media{
-						
 					TITLE := p.TITLE
 					DESC := TITLE
 					IMG_URL := p.IMG_URL
 					DATA_TYPE := p.DATA_TYPE
 					blobkey := fmt.Sprintf("GET_WALL:%vmedia?FUNC_CODE=PLAY@888@MEDIA_ID=%v@888@SID=TDSMEDIA-%v", srcHost, p.MEDIA_ID, p.MEDIA_ID)
- 
-					url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_MEDIA&MEDIA_ID=%v&DATA_TYPE=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, thisDocID, DATA_TYPE, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, CMD_GEN_KEY)
- 
+					//url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_MEDIA&MEDIA_ID=%v&DATA_TYPE=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, thisDocID, DATA_TYPE, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, CMD_GEN_KEY)
+					url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_MEDIA&MEDIA_ID=%v&DATA_TYPE=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, thisDocID, DATA_TYPE, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, remKey)
 					break
 				}
 			}
-			
 		}
-		
- 
 		jsonStr, err := json.Marshal("")
 		client := urlfetch.Client(c)
 		resp, err := client.Post(url,"application/json", bytes.NewBuffer(jsonStr))
-	
 		if err != nil {
 			panic(err)
 		}
 		defer resp.Body.Close()
- 
 		//fmt.Println("response Status:", resp.Status)
 		fmt.Fprintf(w, "<br>response Status: %v", resp.Status)
 		//fmt.Println("response Headers:", resp.Header)
@@ -12277,10 +12224,8 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		//fmt.Println("response Body:", string(body))
 		fmt.Fprintf(w, "<br>response Body: %v", string(body))
 		return
-		
 	case WALL_FUNC == "SAVE_SLIDE" || WALL_FUNC == "SAVE_ARTICLE" || WALL_FUNC == "SAVE_MEDIA":
 		fmt.Fprintf(w, "Requesting approval from user via channel...")
- 
 		fromUser := r.FormValue("fromUser")
 		toUser := r.FormValue("toUser")
 		DOC_ID := r.FormValue("DOC_ID")
@@ -12291,11 +12236,9 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		//for media only
 		DATA_TYPE := r.FormValue("DATA_TYPE")
 		MEDIA_ID := r.FormValue("MEDIA_ID")
-		
 		//validate user
 		FUNC_CODE := "GET_GRP_ID"
 		FL_VALID_USER, _, _  , _ := usersProcessor(w, r, "au", fromUser, FUNC_CODE)
-		
 		if FL_VALID_USER != true {
 			msgDtl := fmt.Sprintf("[U00163] ERROR: Unregistered user. Register first.")
 			msgTyp := "error"
@@ -12303,25 +12246,23 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 			sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, "", action)
 			http.Redirect(w, r, sysReq, http.StatusFound)
 			return
-				
 		}
- 
 		switch WALL_FUNC {
 			case "SAVE_SLIDE":
-				getDataStr := fmt.Sprintf("/wall?WALL_FUNC=SAVE_SLIDE2&DOC_ID=%v&fromUser=%v&toUser=%v&TITLE=%v&IMG_URL=%v&DESC=%v&blobkey=%v&wall_key=%v", DOC_ID, fromUser, toUser, TITLE, IMG_URL, DESC, blobkey, CMD_GEN_KEY)
+				//getDataStr := fmt.Sprintf("/wall?WALL_FUNC=SAVE_SLIDE2&DOC_ID=%v&fromUser=%v&toUser=%v&TITLE=%v&IMG_URL=%v&DESC=%v&blobkey=%v&wall_key=%v", DOC_ID, fromUser, toUser, TITLE, IMG_URL, DESC, blobkey, CMD_GEN_KEY)
+				getDataStr := fmt.Sprintf("/wall?WALL_FUNC=SAVE_SLIDE2&DOC_ID=%v&fromUser=%v&toUser=%v&TITLE=%v&IMG_URL=%v&DESC=%v&blobkey=%v&wall_key=%v", DOC_ID, fromUser, toUser, TITLE, IMG_URL, DESC, blobkey, remKey)
 				thisMsgLink := fmt.Sprintf("<a href=\"#\" onclick=\"getWallDataSlide('%v');return false;\">Save New Slide?<br><img src=\"/img/ucopy.png\" width=100 height=100><img src=\"%v\" width=80 height=80></a> %v<br>", getDataStr, IMG_URL, TITLE)
 				sendChannelMessage(w,r,toUser, thisMsgLink)
 				notifyGuestbook(w, r , "autoNotifyPeopleGB", toUser,  fmt.Sprintf("WALL COPY TDSSLIDE-%v %v from %v LINK: %v", DOC_ID, TITLE, fromUser, ShortenUrl(w,r,fmt.Sprintf("%v%v", getSchemeUrl(w,r), getDataStr))), fromUser)
-				
 			case "SAVE_ARTICLE":
-				getDataStr := fmt.Sprintf("/wall?WALL_FUNC=SAVE_ARTICLE2&DOC_ID=%v&fromUser=%v&toUser=%v&TITLE=%v&IMG_URL=%v&DESC=%v&blobkey=%v&wall_key=%v", DOC_ID, fromUser, toUser, TITLE, IMG_URL, DESC, blobkey, CMD_GEN_KEY)
+				//getDataStr := fmt.Sprintf("/wall?WALL_FUNC=SAVE_ARTICLE2&DOC_ID=%v&fromUser=%v&toUser=%v&TITLE=%v&IMG_URL=%v&DESC=%v&blobkey=%v&wall_key=%v", DOC_ID, fromUser, toUser, TITLE, IMG_URL, DESC, blobkey, CMD_GEN_KEY)
+				getDataStr := fmt.Sprintf("/wall?WALL_FUNC=SAVE_ARTICLE2&DOC_ID=%v&fromUser=%v&toUser=%v&TITLE=%v&IMG_URL=%v&DESC=%v&blobkey=%v&wall_key=%v", DOC_ID, fromUser, toUser, TITLE, IMG_URL, DESC, blobkey, remKey)
 				thisMsgLink := fmt.Sprintf("<a href=\"#\" onclick=\"getWallDataArticle('%v');return false;\">Save New Article?<br><img src=\"/img/ucopy.png\" width=100 height=100><img src=\"%v\" width=80 height=80></a> %v<br>", getDataStr, IMG_URL, TITLE)
 				sendChannelMessage(w,r,toUser, thisMsgLink)
- 
 				notifyGuestbook(w, r , "autoNotifyPeopleGB", toUser,  fmt.Sprintf("WALL COPY TDSARTL-%v %v from %v LINK: %v", DOC_ID, TITLE, fromUser, ShortenUrl(w,r,fmt.Sprintf("%v%v", getSchemeUrl(w,r), getDataStr))), fromUser)
-				
 			case "SAVE_MEDIA":
-				getDataStr := fmt.Sprintf("/wall?WALL_FUNC=SAVE_MEDIA2&MEDIA_ID=%v&DATA_TYPE=%v&fromUser=%v&toUser=%v&TITLE=%v&IMG_URL=%v&DESC=%v&blobkey=%v&wall_key=%v", MEDIA_ID, DATA_TYPE, fromUser, toUser, TITLE, IMG_URL, DESC, blobkey, CMD_GEN_KEY)
+				//getDataStr := fmt.Sprintf("/wall?WALL_FUNC=SAVE_MEDIA2&MEDIA_ID=%v&DATA_TYPE=%v&fromUser=%v&toUser=%v&TITLE=%v&IMG_URL=%v&DESC=%v&blobkey=%v&wall_key=%v", MEDIA_ID, DATA_TYPE, fromUser, toUser, TITLE, IMG_URL, DESC, blobkey, CMD_GEN_KEY)
+				getDataStr := fmt.Sprintf("/wall?WALL_FUNC=SAVE_MEDIA2&MEDIA_ID=%v&DATA_TYPE=%v&fromUser=%v&toUser=%v&TITLE=%v&IMG_URL=%v&DESC=%v&blobkey=%v&wall_key=%v", MEDIA_ID, DATA_TYPE, fromUser, toUser, TITLE, IMG_URL, DESC, blobkey, remKey)
 				thisMsgLink := fmt.Sprintf("<a href=\"#\" onclick=\"getWallDataMedia('%v');return false;\">Save New Media?<br><img src=\"/img/ucopy.png\" width=100 height=100><img src=\"%v\" width=80 height=80></a> %v<br>", getDataStr, IMG_URL, TITLE)
 				sendChannelMessage(w,r,toUser, thisMsgLink)
  
@@ -12747,35 +12688,29 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 			if _, err := q.GetAll(c, &icons); err != nil {
 				 panic(err)
 			}
-			
 			for _, p := range icons{
 				URL_ADD		= p.URL_ADD
-				ICON_NAME 	= p.ICON_NAME	
-				IMG_SRC 	= p.IMG_SRC	
-				BLOB_KEY 	= p.BLOB_KEY
+				ICON_NAME	= p.ICON_NAME
+				IMG_SRC		= p.IMG_SRC
+				BLOB_KEY	= p.BLOB_KEY
 				break
 			}
- 
-			url := fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_ICON&ICON_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&ICON_NAME=%v&IMG_SRC=%v&BLOB_KEY=%v&URL_ADD=%v&wall_key=%v", remHost, iconID, uid, remUser, srcHost, ICON_NAME, IMG_SRC, BLOB_KEY, URL_ADD, CMD_GEN_KEY)
+			//url := fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_ICON&ICON_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&ICON_NAME=%v&IMG_SRC=%v&BLOB_KEY=%v&URL_ADD=%v&wall_key=%v", remHost, iconID, uid, remUser, srcHost, ICON_NAME, IMG_SRC, BLOB_KEY, URL_ADD, CMD_GEN_KEY)
+			url := fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_ICON&ICON_ID=%v&fromUser=%v&toUser=%v&srcHost=%v&ICON_NAME=%v&IMG_SRC=%v&BLOB_KEY=%v&URL_ADD=%v&wall_key=%v", remHost, iconID, uid, remUser, srcHost, ICON_NAME, IMG_SRC, BLOB_KEY, URL_ADD, remKey)
 			fmt.Fprintf(w, "<br>url: %v<br>", url)
-					
 			jsonStr, err := json.Marshal("")
 			client := urlfetch.Client(c)
 			resp, err := client.Post(url,"application/json", bytes.NewBuffer(jsonStr))
-		
 			if err != nil {
 				panic(err)
 			}
 			defer resp.Body.Close()
- 
 			//fmt.Println("response Status:", resp.Status)
 			fmt.Fprintf(w, "<br>response Status: %v", resp.Status)
 			//fmt.Println("response Headers:", resp.Header)
 			fmt.Fprintf(w, "<br>response Headers: %v", resp.Header)
 			return
-		
 		}
-		
 	case WALL_FUNC == "SAVE_ICON":
 		fromUser := r.FormValue("fromUser")
 		toUser := r.FormValue("toUser")
@@ -12785,11 +12720,9 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		ICON_NAME := r.FormValue("ICON_NAME")
 		IMG_SRC := r.FormValue("IMG_SRC")
 		BLOB_KEY := r.FormValue("BLOB_KEY")
-		
 		//validate user
 		FUNC_CODE := "GET_GRP_ID"
 		FL_VALID_USER, _, _  , _ := usersProcessor(w, r, "au", fromUser, FUNC_CODE)
-		
 		if FL_VALID_USER != true {
 			msgDtl := fmt.Sprintf("[U00161] ERROR: Unregistered user (%v). Register first.", fromUser)
 			msgTyp := "error"
@@ -12797,30 +12730,24 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 			sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, "", action)
 			http.Redirect(w, r, sysReq, http.StatusFound)
 			return
-				
 		}
- 
-		getDataStr := fmt.Sprintf("/wall?WALL_FUNC=SAVE_ICON2&ICON_ID=%v&fromUser=%v&toUser=%v&ICON_NAME=%v&IMG_SRC=%v&BLOB_KEY=%v&URL_ADD=%v&wall_key=%v", ICON_ID, fromUser, toUser, ICON_NAME, IMG_SRC, BLOB_KEY, URL_ADD, CMD_GEN_KEY)
- 
+		//getDataStr := fmt.Sprintf("/wall?WALL_FUNC=SAVE_ICON2&ICON_ID=%v&fromUser=%v&toUser=%v&ICON_NAME=%v&IMG_SRC=%v&BLOB_KEY=%v&URL_ADD=%v&wall_key=%v", ICON_ID, fromUser, toUser, ICON_NAME, IMG_SRC, BLOB_KEY, URL_ADD, CMD_GEN_KEY)
+		getDataStr := fmt.Sprintf("/wall?WALL_FUNC=SAVE_ICON2&ICON_ID=%v&fromUser=%v&toUser=%v&ICON_NAME=%v&IMG_SRC=%v&BLOB_KEY=%v&URL_ADD=%v&wall_key=%v", ICON_ID, fromUser, toUser, ICON_NAME, IMG_SRC, BLOB_KEY, URL_ADD, remKey)
 		thisMsgLink := fmt.Sprintf("<a href=\"#\" onclick=\"getWallData('%v');return false;\">Save New Icon?<br><img src=\"/img/ucopy.png\" width=100 height=100><img src=\"%v\" width=80 height=80></a> %v<br>", getDataStr, IMG_SRC, URL_ADD)
 		sendChannelMessage(w,r,toUser, thisMsgLink)
 		notifyGuestbook(w, r , "autoNotifyPeopleGB", toUser,  ShortenUrl(w,r,fmt.Sprintf("%v%v", getSchemeUrl(w,r), getDataStr)), fromUser)
 		wmsg := fmt.Sprintf("<img src=\"%v\" width=80 height=80></a><br>TDSICONS Copied via wall by %v from %v %v", IMG_SRC, toUser, srcHost, getAccessString(w,r,""))
 		sendMessage(w, r, toUser, "CH_MSG_NOTIFY_EVENTS", wmsg, "", getMapLink(w,r,uid,"/wall",""),"")
 		return
-		
 	case WALL_FUNC == "SAVE_ICON2":
-		
 		updateUserActiveData(w, r, c, uid, "Wall copy"+WALL_FUNC)
-		
 		fromUser := r.FormValue("fromUser")
 		URL_ADD := r.FormValue("URL_ADD")
 		ICON_NAME := r.FormValue("ICON_NAME")
 		IMG_SRC := r.FormValue("IMG_SRC")
-		BLOB_KEY := r.FormValue("BLOB_KEY")	
-		
+		BLOB_KEY := r.FormValue("BLOB_KEY")
 		//store new icon
-		q := datastore.NewQuery("TDSICONS").Order("-ICON_ID").Limit(1)	
+		q := datastore.NewQuery("TDSICONS").Order("-ICON_ID").Limit(1)
 		//c.Errorf("[S0083]")
 		icons := make([]TDSICONS, 0, 1)
 		if _, err := q.GetAll(c, &icons); err != nil {
@@ -16805,13 +16732,16 @@ const chatTemplateDispA2 = `
 		<li class="login page">
 		  <div class="form">
                        {{if eq .STR_FILLER5 "worldwide"}}
-                       <img src="/img/globerotate.gif">
+                       <!--img src="/img/globerotate.gif"-->
+		       <h2>Chat Worldwide</h2>
                        {{end}}
                        {{if eq .STR_FILLER5 "country"}}
-                       <img src="/img/cuberotate.gif">
+                       <!--img src="/img/cuberotate.gif"-->
+		       <h2>Chat Country</h2>
                        {{end}}
                        {{if eq .STR_FILLER5 "public"}}
-                       <img src="/img/circlerotate.gif">
+                       <!--img src="/img/circlerotate.gif"-->
+		       <h2>Chat Public</h2>
                        {{end}}
 			<h3 class="title">What's your nickname?</h3>
 			 <input class="usernameInput" type="text" value="{{.STR_FILLER2}}" maxlength="50" />
@@ -20750,14 +20680,12 @@ func getRanAnim() (textEff, imgEff string) {
 //displays common tools
 func commonTools(w http.ResponseWriter, r *http.Request, uid, FORMAT, SID, uReferer string) {
 	fmt.Fprintf(w, "<div class=\"success2\">")
-	
 	if err := htmlBodySearchGlow.Execute(w, randSeq2(10)); err != nil {
 	  panic(err)
-	}	
+	}
 	if err := htmlQuickSearchForms.Execute(w, ""); err != nil {
 	  panic(err)
 	}
-	
 	fmt.Fprintf(w, "</div>")
 	fmt.Fprintf(w, "<div class=\"success2\">")
 	fmt.Fprintf(w, "	<a href=\"/?q=qm#upload-music\">")
@@ -20785,9 +20713,7 @@ func commonTools(w http.ResponseWriter, r *http.Request, uid, FORMAT, SID, uRefe
 	} else {
 		fmt.Fprintf(w, "	<a href=\"https://zxing.appspot.com/generator/\"")
 	}
-	
 	fmt.Fprintf(w, "		<img src=\"https://lh3.googleusercontent.com/5hA7-8LBpTEsTIV_1xv0Se96c_WnGX3bvA6hovg36HjVAt8QmZxXpcEj69lOCh_OgreQb2aU1LrxQ07qW0m4NgOUlV1PGg\" title=\"qrCode\" height=\"40\" width=\"40\"></a></div>")
- 
 	fmt.Fprintf(w, "<div class=\"success2\">")
 	fmt.Fprintf(w, "<a href=\"/?q=home\"><img src=\"/img/home.png\" title=\"Carousel\" height=\"40\" width=\"40\"></a>")
 	fmt.Fprintf(w, "<a href=\"/uwm\"><img src=\"https://lh3.googleusercontent.com/P1Kl0hhScmz294Bhg9o9CsmoENxSJyijLVX1-b8UpQB77HvbzjWVRT1mvbpPzhuQbMJhRTDxz9ZF5P8McqXYugbBgeC3\" title=\"Desktop0\" height=\"40\" width=\"40\"></a>")
@@ -20802,7 +20728,6 @@ func commonTools(w http.ResponseWriter, r *http.Request, uid, FORMAT, SID, uRefe
 	fmt.Fprintf(w, "<a href=\"/media?FUNC_CODE=UVP\"><img src=\"/img/video-player.png\" title=\"Video Player\" height=\"40\" width=\"40\"></a>")
 	fmt.Fprintf(w, "<a href=\"/media?FUNC_CODE=YVP\"><img src=\"/img/youtube-player.png\" title=\"Youtube Player\" height=\"40\" width=\"40\"></a>")
 	fmt.Fprintf(w, "<a href=\"/media?FUNC_CODE=VIEW_THUMBS\"><img src=\"https://lh3.googleusercontent.com/yi50g4HBwhK7dtxPPsr4UFVbYsIa2DEnKg4SKDfbSu0bmBwoUxdtTEvjYw1JjLQI1-6Lq8jMqc-rkZFecKwjYe9Y9TM\" title=\"Photo Gallery\" height=\"40\" width=\"40\"></a>")
-	
 	if FORMAT != "" {
 		if FORMAT == "SLIDE" {
 			fmt.Fprintf(w, "<a href=\"/wall?WALL_FUNC=SLIDE_COPY&uReferrer=%v&wall_key=%v\">", uReferer, CMD_GEN_KEY)
@@ -62576,6 +62501,7 @@ var htmlWidgetWallMessage = template.Must(template.New("User").Parse(`
 			<input type="hidden" name="WALL_FUNC" value="SEND_MSG">
 			<br>Message:<br>
 			<textarea name="wm" rows="4" cols="40" maxlength="500"></textarea>
+			<br>ULAPPH Remote Key: <input type="text" name="remKey" value="" maxlength="500"/><br>
 			<input type="image" name="submit" src="/img/sendmsg.png" with=100 height=40>
 		</form>
 	</div>
@@ -67332,9 +67258,10 @@ var wallIconCopyGetHostUser = template.Must(template.New("wallIconCopyGetHostUse
 			<h1>COPY ICON to ANOTHER ULAPPH WEBSITE...</h1>
 			<hr>
 			Enter the target ULAPPH website and email address?
-			<form name="account" action="/wall" method="post">			
+			<form name="account" action="/wall" method="post">
 				ULAPPH Remote Host: <input type="text" name="remHost" maxlength="50"/> Ex: http://ulap.appspot.com<br>
 				ULAPPH Remote User: <input type="text" name="remUser" maxlength="50"/> Ex: myuser@gmail.com<br>
+				ULAPPH Remote Key: <input type="text" name="remKey" value="" maxlength="500"/><br>
 				<input type="hidden" name="iconID" value="{{.}}">
 			    <input type="hidden" name="WALL_FUNC" value="ICON_COPY2">
 				<input type="submit" name="submit" value="Copy Icon"/>
@@ -67343,7 +67270,7 @@ var wallIconCopyGetHostUser = template.Must(template.New("wallIconCopyGetHostUse
     </div>
 	<script type="text/javascript">
 		location.href = "#ulapph-wall";
-	</script>	
+	</script>
 `))
  
 var wallContentCopyGetHostUser = template.Must(template.New("wallContentCopyGetHostUser").Parse(`
@@ -67355,11 +67282,12 @@ var wallContentCopyGetHostUser = template.Must(template.New("wallContentCopyGetH
 			<b>Copy from one ULAPPH to another...</b>
 			<hr>
 			Enter the target ULAPPH Host and registered email address?
-			<form name="account" action="/wall" method="post">			
+			<form name="account" action="/wall" method="post">
 				<select name="remHost"><option value="">Select</option>
 				{{.HTM_FILLER1}}
 				</select>
 				<br>ULAPPH Remote User: <input type="text" name="remUser" value="{{.STR_FILLER2}}" maxlength="50"/> Ex: myuser@gmail.com<br>
+				<br>ULAPPH Remote Key: <input type="text" name="remKey" value="" maxlength="500"/><br>
 				<input type="hidden" name="SID" value="{{.STR_FILLER1}}">
 			    <input type="hidden" name="WALL_FUNC" value="CONTENT_COPY">
 				<input type="submit" name="submit" value="Copy Content"/>
