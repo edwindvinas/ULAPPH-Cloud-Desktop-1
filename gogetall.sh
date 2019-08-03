@@ -47,8 +47,10 @@ go get	"github.com/edwindvinas/jwt-go-1"
 echo	"github.com/edwindvinas/goquery"
 go get	"github.com/edwindvinas/goquery"
 
-echo	"gopkg.in/neurosnap/sentences.v1/english"
-go get	"gopkg.in/neurosnap/sentences.v1/english"
+#echo	"gopkg.in/neurosnap/sentences.v1/english"
+#go get	"gopkg.in/neurosnap/sentences.v1/english"
+echo	"github.com/edwindvinas/sentences.v1/english"
+go get	"guthub.com/edwindvinas/sentences.v1/english"
 
 echo	"golang.org/x/oauth2"
 go get	"golang.org/x/oauth2"

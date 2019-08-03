@@ -507,7 +507,8 @@ import (
 	//goquery
 	//"github.com/PuerkitoBio/goquery"
 	"github.com/edwindvinas/goquery"
-	"gopkg.in/neurosnap/sentences.v1/english"
+	//"gopkg.in/neurosnap/sentences.v1/english"
+	"github.com/edwindvinas/sentences.v1/english"
 	//D0033
 	"golang.org/x/oauth2"
 	"github.com/google/go-github/github"
