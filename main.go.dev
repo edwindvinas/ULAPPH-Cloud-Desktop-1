@@ -4041,12 +4041,11 @@ func root(w http.ResponseWriter, r *http.Request) {
 					if isAllowed == true {
 						FL_PROC_OK = true
 					}
-					
 				case DOC_STAT == "ULAPPH Only":
-					_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
-					//return
-					FL_PROC_OK = true
- 
+					FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",uReferer)
+					if FL_PROC_OK == false {
+						return
+					}
 				case DOC_STAT == "Worldwide":
 					//continue
 					FL_PROC_OK = true
@@ -11845,9 +11844,9 @@ func runTopicsHaveNeed(w http.ResponseWriter, r *http.Request, UID, mode string)
 func ulapphWall(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
-	WALL_KEY := r.FormValue("wall_key")
+	//WALL_KEY := r.FormValue("wall_key")
 	remKey := r.FormValue("wall_key")
-	if WALL_KEY != CMD_GEN_KEY {
+	if remKey != CMD_GEN_KEY {
 		msgDtl := fmt.Sprintf("[U00201] ERROR: Invalid operation.")
 		msgTyp := "error"
 		action := "U00201"
@@ -12059,7 +12058,7 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "SID: %v<br>", SID)
 		remHost := r.FormValue("remHost")
 		remUser := r.FormValue("remUser")
-		remKey := r.FormValue("remKey")
+		//remKey := r.FormValue("remKey")
 		srcHost := getSchemeUrl(w,r)
 		k, _ := url.Parse(remHost)
 		m, _ := url.Parse(getSchemeUrl(w,r))
@@ -12183,7 +12182,8 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 					IMG_URL := SPL[6]
 					DATA_TYPE := SPL[7]
 					DESC := TITLE
-					blobkey := fmt.Sprintf("GET_WALL:%vmedia?FUNC_CODE=PLAY@888@MEDIA_ID=%v@888@SID=TDSMEDIA-%v", srcHost, MEDIA_ID, MEDIA_ID)
+					//blobkey := fmt.Sprintf("GET_WALL:%vmedia?FUNC_CODE=PLAY@888@MEDIA_ID=%v@888@SID=TDSMEDIA-%v", srcHost, MEDIA_ID, MEDIA_ID)
+					blobkey := fmt.Sprintf("GET_WALL:%vmedia?FUNC_CODE=RAWTEXT@888@MEDIA_ID=%v@888@SID=TDSMEDIA-%v", srcHost, MEDIA_ID, MEDIA_ID)
 					//url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_MEDIA&MEDIA_ID=%v&DATA_TYPE=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, MEDIA_ID, DATA_TYPE, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, CMD_GEN_KEY)
 					url = fmt.Sprintf("%v/wall?WALL_FUNC=SAVE_MEDIA&MEDIA_ID=%v&DATA_TYPE=%v&fromUser=%v&toUser=%v&srcHost=%v&TITLE=%v&DESC=[LINKED DOC] %v&IMG_URL=%v&blobkey=%v&wall_key=%v", remHost, MEDIA_ID, DATA_TYPE, uid, remUser, srcHost, TITLE, DESC, IMG_URL, blobkey, remKey)
 					FL_PROC_CACHE_OK = true
@@ -15012,6 +15012,7 @@ func ulapphTree(w http.ResponseWriter, r *http.Request) {
 	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 	FUNC := r.FormValue("FUNC_CODE")
 	SID := r.FormValue("SID")
+	DISP := r.FormValue("d")
 	switch FUNC {
 		case "SAVEJSON":
 			//////c.Infof("updating json")
@@ -15034,7 +15035,7 @@ func ulapphTree(w http.ResponseWriter, r *http.Request) {
 			docID := str2int(DOC_ID)
 			_, _, TITLE, _, _, _, _, _, _, _, _ := getTDSMEDIABlobKey(w, r, docID)
 
-			renderStaticTemplatesTree(w,r,SID,TITLE)
+			renderStaticTemplatesTree(w,r,SID,TITLE,DISP)
 
 	}
 	return
@@ -27232,6 +27233,7 @@ func validateAccess(w http.ResponseWriter, r *http.Request, FUNC_CODE, lref stri
 					h := r.Header
 					xCountry := h.Get("X-AppEngine-Country")
 					promptRegister(w,r,uid,xCountry,"","https://lh3.googleusercontent.com/W2q6sVO6ADtrwfPYuJVBeT5Vi2G0Z9-V9cV6qm_H-9sSsZ7eii17f2akVHIsTuiWbNxX_EwXmb7OKonHWUI1RBh5R4DujN6Z","")
+					return
 				} else {
 					loginGoogle(w,r,r.URL.String())
 				}
@@ -42439,7 +42441,10 @@ func media(w http.ResponseWriter, r *http.Request) {
 					FL_PROC_OK = true
 				}
 			case DOC_STAT == "ULAPPH Only":
-				_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+				FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",uReferer)
+				if FL_PROC_OK == false {
+					return
+				}
 			case DOC_STAT == "Worldwide":
 				//media; GET_MEDIA; Worldwide
 				FL_PROC_OK = true
@@ -42521,7 +42526,10 @@ func media(w http.ResponseWriter, r *http.Request) {
 					FL_PROC_OK = true
 				}
 			case DOC_STAT == "ULAPPH Only":
-				_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+				FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",uReferer)
+				if FL_PROC_OK == false {
+					return
+				}
 			case DOC_STAT == "Worldwide":
 				//media; GET_MEDIA; Worldwide
 				FL_PROC_OK = true
@@ -43013,8 +43021,10 @@ func media(w http.ResponseWriter, r *http.Request) {
 						FL_PROC_OK = true
 					}
 				case DOC_STAT == "ULAPPH Only":
-					_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
-					FL_PROC_OK = true
+					FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",uReferer)
+					if FL_PROC_OK == false {
+						return
+					}
 					//return
 				case DOC_STAT == "Worldwide":
 					FL_PROC_OK = true
@@ -43117,13 +43127,11 @@ func media(w http.ResponseWriter, r *http.Request) {
 					if isAllowed == true {
 						FL_PROC_OK = true
 					}
-					
 				case DOC_STAT == "ULAPPH Only":
- 
-					_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
-					FL_PROC_OK = true
-					
- 
+					FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",uReferer)
+					if FL_PROC_OK == false {
+						return
+					}
 				case DOC_STAT == "Worldwide":
 					//media; DL; Worldwide
 					encMsg := url.QueryEscape(msgDtl3)
@@ -43199,10 +43207,11 @@ func media(w http.ResponseWriter, r *http.Request) {
 					if isAllowed == true {
 						FL_PROC_OK = true
 					}
-				
 				case DOC_STAT == "ULAPPH Only":
-					_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
-	
+					FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",uReferer)
+					if FL_PROC_OK == false {
+						return
+					}
 				case DOC_STAT == "Worldwide":
 					FL_PROC_OK = true
 			
@@ -43319,12 +43328,9 @@ func media(w http.ResponseWriter, r *http.Request) {
 		//get user privilege
 		FUNC_CODE2 := "GET_GRP_ID"
 		FL_VALID_USER, GROUP_ID, _  , _ := usersProcessor(w, r, "au", uid, FUNC_CODE2)
-		
 		if FL_VALID_USER == true {
 			CATEGORY := fmt.Sprintf("%v",r.FormValue("CATEGORY"))
-			
 			switch FUNC_CODE {
-			
 				case "UPDATE":
 					updateUserActiveData(w, r, c, uid, "/media(update)")
 					DATA_TYPE := strings.ToLower(r.FormValue("DATA_TYPE"))
@@ -43336,22 +43342,17 @@ func media(w http.ResponseWriter, r *http.Request) {
 					PROP := r.FormValue("PROP")
 					AUTHOR := r.FormValue("AUTHOR")
 					IMG_URL := r.FormValue("IMG_URL")
- 
 					CATEGORY := r.FormValue("CATEGORY")
 					FL_SHARED := r.FormValue("FL_SHARED")
 					DOC_STAT := r.FormValue("DOC_STAT")
-		
 					dsKey := fmt.Sprintf("%d", MEDIA_ID)
 					key := datastore.NewKey(c, "TDSMEDIA", dsKey, 0, nil)
 					q := datastore.NewQuery("TDSMEDIA").Filter("__key__ =", key)
 					//c.Errorf("[S0362]")
- 
 					media := make([]TDSMEDIA, 0, 1)
 					if _, err := q.GetAll(c, &media); err != nil {
 						 panic(err)
 					  }
-					
- 
 					NUM_LIKES := float64(0)
 					NUM_COMMENTS := float64(0)
 					NUM_VIEWS := float64(0)
@@ -43718,6 +43719,9 @@ func media(w http.ResponseWriter, r *http.Request) {
 							
 							fmt.Fprintf(w, "<img src=\"/img/ucopy.png\" width=100 height=100>")
 							fmt.Fprintf(w, "<h3>Note: This is a linked document.</h3><hr>")
+							fmt.Fprintf(w, "<br><b>URL:</b> %v", linkedUrl)
+							fmt.Fprintf(w, "<br><b>View:</b> <a href=\"%v\">Click here to view</a>", linkedUrl)
+							fmt.Fprintf(w, "<br><b>Doc ID:</b> %v", mediaID)
 						}
 						//return
 						
@@ -67290,7 +67294,7 @@ var wallContentCopyGetHostUser = template.Must(template.New("wallContentCopyGetH
 				{{.HTM_FILLER1}}
 				</select>
 				<br>ULAPPH Remote User: <input type="text" name="remUser" value="{{.STR_FILLER2}}" maxlength="50"/> Ex: myuser@gmail.com<br>
-				<br>ULAPPH Remote Key: <input type="text" name="remKey" value="" maxlength="500"/><br>
+				<br>ULAPPH Remote Key: <input type="text" name="wall_key" value="" maxlength="500"/><br>
 				<input type="hidden" name="SID" value="{{.STR_FILLER1}}">
 			    <input type="hidden" name="WALL_FUNC" value="CONTENT_COPY">
 				<input type="submit" name="submit" value="Copy Content"/>
@@ -73690,26 +73694,22 @@ func renderStyleCssTemplates2(w http.ResponseWriter, r *http.Request) {
 		// No error, send the content, HTTP 200 response status implied
 		buf.WriteTo(w)
 	}
-	
 }
 
 //renders custom style css template 
-func renderStaticTemplatesTree(w http.ResponseWriter, r *http.Request, SID, TITLE string) {
- 
+func renderStaticTemplatesTree(w http.ResponseWriter, r *http.Request, SID, TITLE, DISP string) {
         t := presentTemplates[path.Ext(".ui-tree")]
         if t == nil {
                 panic(t)
         }
-
         doc := new(TEMPSTRUCT)
         doc.STR_FILLER1 = SID
         doc.STR_FILLER2 = TITLE
-        
+        doc.STR_FILLER3 = DISP
         data := struct {
-                
                 *TEMPSTRUCT
                 Template    *template.Template
-        }{      
+        }{
                 doc,
                 t,
         }
@@ -73728,7 +73728,6 @@ func renderStaticTemplatesTree(w http.ResponseWriter, r *http.Request, SID, TITL
                 // No error, send the content, HTTP 200 response status implied
                 buf.WriteTo(w)
         }
-        
 }
 
 //render style css with random colors 
@@ -74972,10 +74971,8 @@ func checkSpecialOptions(w http.ResponseWriter, r *http.Request, mode, FL_COUNTR
 //it serves owner and public requests to automatically render slides
 func slides(w http.ResponseWriter, r *http.Request) {
 	checkHTTPS(w,r)
-	
 	//fmt.Fprintf(w, "func: slides<br>")
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
-	
 	c := appengine.NewContext(r)
 	//u := user.Current(c)
 	uReferer := r.Referer()
@@ -74988,16 +74985,13 @@ func slides(w http.ResponseWriter, r *http.Request) {
 	SPC_RED := checkSpecialOptions(w,r,"R",FL_COUNTRY_SPECIFIC)
 	if SPC_RED != "" && FL_COUNTRY_SPECIFIC != "" {
 		http.Redirect(w, r, SPC_RED, http.StatusFound)
-		return		
+		return
 	}
-	
 	BLOB_KEY := r.FormValue("BLOB_KEY")
 	i := strings.Index(BLOB_KEY, "GET_WALL:")
 	if i != -1 {
- 
 		//log num views
 		laterIncNumViewsSocial.Call(c, "", SID, "SO_INC_NUM_VIEWS")
- 
 		SPL := strings.Split(BLOB_KEY,"GET_WALL:")
 		if len(SPL) > 1 {
 			linkedUrl := SPL[1]
@@ -75005,9 +74999,7 @@ func slides(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, linkedUrl, http.StatusFound)
 			return
 		}
-		
 	}
-	
 	DESKTOP := r.FormValue("CATEGORY")
 	if deskNum2Name(w,r,DESKTOP) == "" {
 		DESKTOP = "desktop0"
@@ -75024,8 +75016,6 @@ func slides(w http.ResponseWriter, r *http.Request) {
 	SECS := r.FormValue("SECS")
 	GOTO := r.FormValue("GOTO")
 	PRESENTER_SESSION_KEY := r.FormValue("PRESENTER_SESSION_KEY")
-	
-	
 	i = strings.Index(r.URL.String(), "@888@")
 	if i != -1 {
 		targetURL := strings.Replace(r.URL.String(), "@888@", "&", -1)
@@ -75037,7 +75027,6 @@ func slides(w http.ResponseWriter, r *http.Request) {
 		DOC_ID = m["DOC_ID"][0]	
 		SID = m["SID"][0]
 	}
-	
 	i = strings.Index(DOC_ID, "@888@")
 	if i != -1 {
 		SPL := strings.Split(DOC_ID,"@888@")
@@ -75046,8 +75035,6 @@ func slides(w http.ResponseWriter, r *http.Request) {
 			SID = fmt.Sprintf("TDSSLIDE-%v", DOC_ID)
 		}
 	}
-	
- 
 	if BLOB_KEY == "" && DOC_ID == "" {
 		redURL := fmt.Sprintf("/infodb?DB_FUNC=SLIDES&CATEGORY=%v", DESKTOP)
 		http.Redirect(w, r, redURL, http.StatusFound)
@@ -75058,7 +75045,6 @@ func slides(w http.ResponseWriter, r *http.Request) {
 	if DOC_ID != "" {
 		DOC_ID2 = str2int(DOC_ID)
 	}
-	
 	//CTYPE := "SLIDES"
 	PUB_STAT := ""
 	FL_SHARED := ""
@@ -75068,17 +75054,14 @@ func slides(w http.ResponseWriter, r *http.Request) {
 	IMG_URL := ""
 	MUSIC_ID := ""
 	GET_NEXT := ""
- 
 	if DOC_ID != "" {
 		//get blob key
 		i := strings.Index(SID, "TDSSLIDE")
 		if i == -1 {
 			BLOB_KEY, PUB_STAT, FL_SHARED, AUTHOR, FL_COUNTRY_SPECIFIC, TITLE, SHARED_TO, IMG_URL, MUSIC_ID = getTDSARTLBlobKey(w, r, DOC_ID2)
-			
 		} else {
 			BLOB_KEY, PUB_STAT, FL_SHARED, AUTHOR, FL_COUNTRY_SPECIFIC, TITLE, IMG_URL, SHARED_TO, MUSIC_ID, GET_NEXT = getTDSSLIDEBlobKey(w, r, DOC_ID2)
 		}
- 
 		if BLOB_KEY == "" {
 			http.Redirect(w, r, r.Referer(), http.StatusFound)	
 			return
@@ -75087,26 +75070,21 @@ func slides(w http.ResponseWriter, r *http.Request) {
 		i := strings.Index(SID, "TDSSLIDE")
 		if i == -1 {
 			_, PUB_STAT, FL_SHARED, AUTHOR, FL_COUNTRY_SPECIFIC, TITLE, SHARED_TO, IMG_URL, MUSIC_ID = getTDSARTLDocID(w, r, BLOB_KEY)
-			
 		} else {
-			
 			_, PUB_STAT, FL_SHARED, AUTHOR, FL_COUNTRY_SPECIFIC, TITLE, SHARED_TO, MUSIC_ID, GET_NEXT = getTDSSLIDEDocID(w, r, BLOB_KEY)
 		}
 	}
-	
 	SPC_RED = checkSpecialOptions(w,r,"R",FL_COUNTRY_SPECIFIC)
 	if SPC_RED != "" && FL_COUNTRY_SPECIFIC != "" {
 		http.Redirect(w, r, SPC_RED, http.StatusFound)
-		return		
+		return
 	}
- 
 	//notify all users of this event via channels
 	viaStr := getAccessString(w,r,"")
 	msg := ""
 	msgDtl3 := ""
 	msgDtl3b := ""
 	reqStr := ""
-	
 	_, uid := checkSession(w,r)
 	if uid == "" {
 		msg = getGeoString(w,r)
@@ -75122,20 +75100,16 @@ func slides(w http.ResponseWriter, r *http.Request) {
 		msgDtl3b = fmt.Sprintf("UID:%v has viewed SLIDE %v entitled \"%v\" [%v] LINK: %v", msg, SID, TITLE, viaStr, ShortenUrl(w,r,reqStr))
 	}
 	updateUserActiveData(w, r, c, msg, SID)
-		
 	FL_PROC_OK := false
-	
 	switch {
 		case r.FormValue("auth") == "p" && validatePasscode(w,r,"slides",SHARED_TO, r.FormValue("passcode")) == true:
 			FL_PROC_OK = true
-		
 		case PUB_STAT == "Premium" && uid != AUTHOR:
 			auth := r.FormValue("auth")
 			passcode := r.FormValue("passcode")
 			sysReq := fmt.Sprintf("/store?STO_FUNC=Premium&SID=%v&auth=%v&passcode=%v", SID, auth, passcode)
 			http.Redirect(w, r, sysReq, http.StatusFound)
 			return
-	
 		case FL_SHARED == "N":
 			//c := appengine.NewContext(r)
 			_, uid := checkSession(w,r)
@@ -75150,15 +75124,12 @@ func slides(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			FL_PROC_OK = true
- 
 		case PUB_STAT == "Personal" && AUTHOR == uid:
 			//break
 			FL_PROC_OK = true
-		
 		case PUB_STAT == "Personal":
 			c := appengine.NewContext(r)
 			u := user.Current(c)
- 
 			uid := ""
 			if u != nil {
 				//uid = uid
@@ -75173,7 +75144,6 @@ func slides(w http.ResponseWriter, r *http.Request) {
 			} else {
 				uid = "@888@"
 			}
- 
 			if auth == "p" && validatePasscode(w,r,"slides",SHARED_TO, pc) == true {
 				//break
 				FL_PROC_OK = true
@@ -75187,11 +75157,11 @@ func slides(w http.ResponseWriter, r *http.Request) {
 				http.Redirect(w, r, sysReq, http.StatusFound)	
 				return
 			}
-			
 		case PUB_STAT == "ULAPPH Only":
-			_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
-			FL_PROC_OK = true
-			
+			FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			if FL_PROC_OK == false {
+				return
+			}
 		case PUB_STAT == "Worldwide" && FL_SHARED == "Y":
 			//send broadcast message
 			encMsg := url.QueryEscape(msgDtl3)
@@ -75199,23 +75169,18 @@ func slides(w http.ResponseWriter, r *http.Request) {
 			ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
 			laterBroadcastContentsAll.Call(c, encMsg)
 			FL_PROC_OK = true
-	
 	}
-	
 	if FL_PROC_OK == false {
 		return
 	}
 	sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,msg,reqStr,SID),SID)
-	
 	//log num views
 	laterIncNumViewsSocial.Call(c, "", SID, "SO_INC_NUM_VIEWS")
-	
 	if SLIDE_SOUND_SET == "OFF" || SLIDE_SOUND_SET == "" {
 		SOUND = "OFF"
 	} else {
 		SOUND = "ON"
 	}
-	
 	SL_TMP := ""
 	switch {
 	case r.Method != "GET" && r.Method != "HEAD":
@@ -75409,8 +75374,10 @@ func articles(w http.ResponseWriter, r *http.Request) {
 			}
 			
 		case PUB_STAT == "ULAPPH Only":
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
-			FL_PROC_OK = true
+			FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {
+				return
+			}
 			
 		case PUB_STAT == "Worldwide" && FL_SHARED == "Y":
 			//send broadcast message
@@ -76792,7 +76759,10 @@ func readLines4(w http.ResponseWriter, r *http.Request, blobkey string) (string,
 //#APPEND_LOCAL_DATA
 func getBlobText(w http.ResponseWriter, r *http.Request, blobkey string) (blobText string) {
 	c := appengine.NewContext(r)
-	
+	i := strings.Index(blobkey, "GET_WALL:")
+	if i != -1 {
+		return ""
+	}
 	//var lines []string
 	var bSrc bytes.Buffer
 	reader := blobstore.NewReader(c, appengine.BlobKey(blobkey))
@@ -76881,6 +76851,10 @@ func getBlobText(w http.ResponseWriter, r *http.Request, blobkey string) (blobTe
 //no checks of special keywords
 func getBlobTextNoComms(w http.ResponseWriter, r *http.Request, blobkey string) (blobText string) {
 	c := appengine.NewContext(r)
+	i := strings.Index(blobkey, "GET_WALL:")
+	if i != -1 {
+		return ""
+	}
 	//var lines []string
 	var bSrc bytes.Buffer
 	reader := blobstore.NewReader(c, appengine.BlobKey(blobkey))
@@ -76972,19 +76946,20 @@ func getBlobTextNoComms(w http.ResponseWriter, r *http.Request, blobkey string) 
 //gets content of a given blobkey and return data to channel
 func getBlobTextChan(w http.ResponseWriter, r *http.Request, blobChan chan string, blobkey string){
 	c := appengine.NewContext(r)
-	
+	i := strings.Index(blobkey, "GET_WALL:")
+	if i != -1 {
+		blobChan <- ""
+	}
 	//var lines []string
 	var bSrc bytes.Buffer
 	reader := blobstore.NewReader(c, appengine.BlobKey(blobkey))
 	s := bufio.NewScanner(reader)
 	sbuf := make([]byte, 0, 64*1024)
 	s.Buffer(sbuf, 1024*1024)
-	
 	for s.Scan() {
 		bSrc.WriteString(fmt.Sprintf("%v\n", s.Text()))
 	}
 	blobText := fmt.Sprintf("%v", bSrc.String())
-	
 	if err := s.Err(); err != nil {
 		//!!! panic is required here
 		panic(err)
@@ -76996,6 +76971,10 @@ func getBlobTextChan(w http.ResponseWriter, r *http.Request, blobChan chan strin
 //gets contents of a blobkey and parse to get the first image encountered 
 func getBlobTextFirstImageUrl(w http.ResponseWriter, r *http.Request, BLOB_KEY string) (imgUrl string) {
 	c := appengine.NewContext(r)
+	i := strings.Index(BLOB_KEY, "GET_WALL:")
+	if i != -1 {
+		return ""
+	}
 	reader := blobstore.NewReader(c, appengine.BlobKey(BLOB_KEY))
 	s := bufio.NewScanner(reader)
 	for s.Scan() {
@@ -77015,6 +76994,10 @@ func getBlobTextFirstImageUrl(w http.ResponseWriter, r *http.Request, BLOB_KEY s
 //gets contents of a blobkey and parse to get the premium cost custom for the content 
 func getBlobTextPremiumCost(w http.ResponseWriter, r *http.Request, BLOB_KEY string) (premCost string) {
 	c := appengine.NewContext(r)
+	i := strings.Index(BLOB_KEY, "GET_WALL:")
+	if i != -1 {
+		return ""
+	}
 	reader := blobstore.NewReader(c, appengine.BlobKey(BLOB_KEY))
 	s := bufio.NewScanner(reader)
 	for s.Scan() {
@@ -77035,7 +77018,6 @@ func getBlobTextPremiumCost(w http.ResponseWriter, r *http.Request, BLOB_KEY str
 //process quiz submit button
 func getBlobTextQuiz(w http.ResponseWriter, r *http.Request, SID, DATA string) (res string, pass bool, TITLE string, err error) {
 	c := appengine.NewContext(r)
- 
 	SPD := strings.Split(DATA,"$")
 	tot := 0
 	pass = false
@@ -77090,6 +77072,10 @@ func getBlobTextQuiz(w http.ResponseWriter, r *http.Request, SID, DATA string) (
 //gets the contents of blobkey as preview 
 func getBlobTextPremiumPreview(w http.ResponseWriter, r *http.Request, BLOB_KEY string) (preview string) {
 	c := appengine.NewContext(r)
+	i := strings.Index(BLOB_KEY, "GET_WALL:")
+	if i != -1 {
+		return ""
+	}
 	reader := blobstore.NewReader(c, appengine.BlobKey(BLOB_KEY))
 	s := bufio.NewScanner(reader)
 	for s.Scan() {
@@ -77110,7 +77096,6 @@ func getBlobTextPremiumPreview(w http.ResponseWriter, r *http.Request, BLOB_KEY 
 //gets the bytes contents of a blobkey 
 func getBlobByte(w http.ResponseWriter, r *http.Request, blobkey string) (blobByte []byte) {
 	c := appengine.NewContext(r)
- 
 	reader := blobstore.NewReader(c, appengine.BlobKey(blobkey))
 	blobByte, err := ioutil.ReadAll(reader)
 	if err != nil {
@@ -77122,7 +77107,6 @@ func getBlobByte(w http.ResponseWriter, r *http.Request, blobkey string) (blobBy
 //gets the bytes contents of a blobkey and return data to channel
 func getBlobByteChan(w http.ResponseWriter, r *http.Request, blobChan chan []byte, blobkey string) {
 	c := appengine.NewContext(r)
-	
 	//var lines []string
 	reader := blobstore.NewReader(c, appengine.BlobKey(blobkey))
 	blobByte, err := ioutil.ReadAll(reader)
@@ -79896,8 +79880,10 @@ func encrypter(w http.ResponseWriter, r *http.Request, SID, ENCRYPTION_KEY strin
 			}
 			
 		case DOC_STAT == "ULAPPH Only":
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
-			FL_PROC_OK = true
+			FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {
+				return
+			}
  
 		case DOC_STAT == "Worldwide" && FL_SHARED == "Y":
 			//allow
@@ -80080,8 +80066,10 @@ func decrypter(w http.ResponseWriter, r *http.Request, SID, ENCRYPTION_KEY strin
 			}
 			
 		case DOC_STAT == "ULAPPH Only":
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
-			FL_PROC_OK = true
+			FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {
+				return
+			}
  
 		case DOC_STAT == "Worldwide" && FL_SHARED == "Y":
 			//allow
@@ -80630,7 +80618,6 @@ func contentCheckSid(w http.ResponseWriter, r *http.Request, sid string) (blobKe
 			}
 			
 		case DOC_STAT == "ULAPPH Only":
- 
 			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
  
 		case DOC_STAT == "Worldwide" && FL_SHARED == "Y":

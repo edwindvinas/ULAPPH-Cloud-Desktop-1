@@ -84,6 +84,11 @@ tr.angular-ui-tree-empty {
   </style>
   
 <title>Tree for {{.STR_FILLER2}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Angular UI Tree powered by ULAPPH Cloud Desktop!" />
+    <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
+    <meta name="keywords" content="Angular UI Tree for ULAPPH Cloud Desktop" />
+    <meta name="author" content="ULAPPH Cloud Desktop" />
 <script type="text/javascript">//<![CDATA[
 
 angular.module('myApp', ['ui.tree'])
@@ -318,7 +323,7 @@ angular.module('myApp', ['ui.tree'])
   
 </head>
 
-<body>
+<body onload="viewMode()">
   <div ng-app="myApp"> 
   <div ng-controller="myCtrl">
     <!-- Nested node template -->
@@ -330,14 +335,19 @@ angular.module('myApp', ['ui.tree'])
           'glyphicon-chevron-right': collapsed,
           'glyphicon-chevron-down': !collapsed
         }"></span></a> {{"{{"}}node.title{{"}}"}}
-        <a class="pull-right btn btn-danger btn-xs" data-nodrag ng-click="remove(this)"><span
-        class="glyphicon glyphicon-remove"></span></a>
-        <a class="pull-right btn btn-primary btn-xs" data-nodrag ng-click="newSubItem(this)" style="margin-right: 8px;"><span
-        class="glyphicon glyphicon-plus"></span></a>
-        <a class="pull-right btn btn-warning btn-xs" data-nodrag ng-click="editItem(this)" style="margin-right: 8px;"><span
-        class="glyphicon glyphicon-pencil"></span></a>
-        <a class="pull-right btn btn-success btn-xs" data-nodrag ng-click="viewLink(this)" style="margin-right: 8px;"><span
+	{{if eq .STR_FILLER3 "view"}}
+        <a class="pull-right btn btn-success btn-xs" data-nodrag ng-click="viewLink(this)" title="View Link" style="margin-right: 8px;"><span
         class="glyphicon glyphicon-link"></span></a>
+	{{else}}
+        <a class="pull-right btn btn-danger btn-xs" data-nodrag ng-click="remove(this)" title="Remove"><span
+        class="glyphicon glyphicon-remove"></span></a>
+        <a class="pull-right btn btn-primary btn-xs" data-nodrag ng-click="newSubItem(this)" title="New Sub-Item" style="margin-right: 8px;"><span
+        class="glyphicon glyphicon-plus"></span></a>
+        <a class="pull-right btn btn-warning btn-xs" data-nodrag ng-click="editItem(this)" title="Edit Item" style="margin-right: 8px;"><span
+        class="glyphicon glyphicon-pencil"></span></a>
+        <a class="pull-right btn btn-success btn-xs" data-nodrag ng-click="viewLink(this)" title="View Link" style="margin-right: 8px;"><span
+        class="glyphicon glyphicon-link"></span></a>
+	{{end}}
       </div>
       <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
         <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
@@ -348,18 +358,30 @@ angular.module('myApp', ['ui.tree'])
     <div class="row">
       <div class="col-sm-12">
         <h3>{{.STR_FILLER2}}</h3>
-
+	{{if eq .STR_FILLER3 "view"}}
+	<script>
+	    function viewMode() {
+	    	var x = document.getElementById("jsonarea");
+	    	x.style.display = "none";
+		var treeArea = document.getElementsByClassName("col-sm-6")[0];
+		treeArea.setAttribute("style","width:100%");
+	    }
+	</script>
+	{{else}}
         <button ng-click="expandAll()">Expand all</button>
         <button ng-click="collapseAll()">Collapse all</button>
         <button ng-click="saveAll()">Save all</button>
         <button ng-click="showHideJSON()">Show/Hide JSON</button>
         <button ng-click="loadStatus()">Load Status</button>
 		<button ng-click="refresh()">Refresh</button>
+	{{end}}
       </div>
     </div>
 	
     <div class="row">
       <div class="col-sm-12">
+	{{if eq .STR_FILLER3 "view"}}
+	{{else}}
         <h5>Item Details</h5>
 		  ID: <input type="text" ng-model="temp.id">
 		  Title: <input type="text" ng-model="temp.title">
@@ -367,6 +389,7 @@ angular.module('myApp', ['ui.tree'])
 		  <!--Nodes: <input type="text" ng-model="temp.nodes">-->
 		  <a class="pull-right btn btn-info btn-xs" data-nodrag ng-click="saveItem()" style="margin-right: 8px;"><span
         class="glyphicon glyphicon-ok-sign"></span></a>
+	{{end}}
       </div>
     </div>
 
