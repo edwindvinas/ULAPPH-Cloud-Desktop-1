@@ -3694,7 +3694,8 @@ func root(w http.ResponseWriter, r *http.Request) {
 			return
 		case "qu":
 			_, uid := checkSession(w,r)
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			currDesktop := "desktop0"
 			//get user privilege
 			FUNC_CODE := "GET_GRP_ID"
@@ -3740,7 +3741,8 @@ func root(w http.ResponseWriter, r *http.Request) {
 			
 			_, uid := checkSession(w,r)	
 			// validate access of user
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 		
 			currDesktop := "desktop0"
 			
@@ -3778,7 +3780,8 @@ func root(w http.ResponseWriter, r *http.Request) {
 		case "qt":
 			
 			_, uid := checkSession(w,r)
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 
 			currDesktop := "desktop0"
 			
@@ -3816,7 +3819,8 @@ func root(w http.ResponseWriter, r *http.Request) {
 		case "qm":
 			
 			_, uid := checkSession(w,r)
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 		
 			currDesktop := "desktop0"
 			
@@ -3854,7 +3858,8 @@ func root(w http.ResponseWriter, r *http.Request) {
 		case "qv":
 			
 			_, uid := checkSession(w,r)
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 		
 			currDesktop := "desktop0"
 			
@@ -3892,7 +3897,8 @@ func root(w http.ResponseWriter, r *http.Request) {
 		case "token-qr":
  
 			_, uid := checkSession(w,r)
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			
 			auser := ""
 			if u == nil {
@@ -4138,7 +4144,8 @@ func root(w http.ResponseWriter, r *http.Request) {
  
 				case "ULAPPH":
 					if u == nil {
-						_ = validateAccess(w, r, "IS_VALID_USER","/?q=login&LFUNC=ULAPPH")
+						FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER","/?q=login&LFUNC=ULAPPH")
+						if FL_PROC_OK == false {return}
 					}
 					//parse host list
 					cKey := fmt.Sprintf("HOST_LIST")
@@ -4200,7 +4207,8 @@ func root(w http.ResponseWriter, r *http.Request) {
 						promptLogin(w,r,"GOOGLE")
 						return
 					} else {
-						_ = validateAccess(w, r, "IS_VALID_USER",TARGET_URL)
+						FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",TARGET_URL)
+						if FL_PROC_OK == false {return}
 						http.Redirect(w, r, TARGET_URL, http.StatusFound)
 						return
 					}
@@ -4360,7 +4368,8 @@ func root(w http.ResponseWriter, r *http.Request) {
 			var buffer4 bytes.Buffer
  
 			_, uid := checkSession(w,r)
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			
 			deskName := "root"		
 			
@@ -4931,7 +4940,8 @@ func checkPersonalAuthor(w http.ResponseWriter, r *http.Request, AUTHOR, SID str
 	uReferer := r.Referer()
 	
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
+	if FL_PROC_OK == false {return}
 	
 	if uid != AUTHOR {
 		
@@ -6505,7 +6515,8 @@ func advertisement(w http.ResponseWriter, r *http.Request) {
 	checkReferrer(w,r)
  
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
 	
 	AD_FUNC := r.FormValue("AD_FUNC")
 	
@@ -6688,7 +6699,8 @@ func contactUs(w http.ResponseWriter, r *http.Request) {
 	//prevent access from other than ulapph pages
 	checkReferrer(w,r)
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
 	
 	messageTyp := r.FormValue("message-type")
 	inquireEmail := r.FormValue("inquireEmail")
@@ -6998,7 +7010,8 @@ func logout(w http.ResponseWriter, r *http.Request) {
 		case "LOGOUT":
 			//FL_OU_USER, uid := checkSession(w,r)
 			_, uid := checkSession(w,r)
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			
 				
 			//clear cache to reload next time
@@ -7028,7 +7041,8 @@ func logout(w http.ResponseWriter, r *http.Request) {
 						
 		default:
 			_, uid := checkSession(w,r)
-			_ = validateAccess(w, r, "IS_VALID_USER","/logout?LFUNC=LOGOUT")
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER","/logout?LFUNC=LOGOUT")
+			if FL_PROC_OK == false {return}
  
 			//allow user to do some tasks before logging out
 			//rLoad := "60;url=/logout?LFUNC=LOGOUT"
@@ -7214,7 +7228,8 @@ func promptLogin(w http.ResponseWriter, r *http.Request, LFUNC string) {
 		case "TOKEN":
 			FL_TOKEN_PROC := false
 			if duser == "" && dtok == "" {
-				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				if FL_PROC_OK == false {return}
 			} else {
 				FL_TOKEN_PROC = validateToken(w, r, "IS_VALID_USER", duser, dtok)
 			}
@@ -7485,7 +7500,10 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 		FL_ADMIN_USER = true
 	}
 	if FL_ADMIN_USER == false {
-		_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		if FL_PROC_OK == false {
+			return
+		}
 		FL_ADMIN_USER = true
 	}
 	//check if system is installed already
@@ -8292,7 +8310,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					 panic(err)
 				}
 				
-				fmt.Fprintf(w, "<a href=\"/admin-setup?ADMIN_FUNC=TDSUSERS-ACCOUNT-REGISTER#new-user\"><img src=\"/img/new-user.png\" title=\"Add new user\" width=40 height=40/></img></a></hr>")
+				fmt.Fprintf(w, "<a href=\"/admin-setup?ADMIN_FUNC=TDSUSERS-ACCOUNT-REGISTER#new-user\"><img src=\"/img/new-user.png\" title=\"Add new user\" width=40 height=40/></img> Add New User</a></hr>")
 				
 				//display users
 				if err := peopleSettingsTemplateHeader2PEOPLEAdmin.Execute(w, uid); err != nil {
@@ -8408,7 +8426,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					putStrToMemcacheWithoutExp(w,r,"LAST_LOGIN_TIMESTAMP","")
 					
 					//send email to user
-					MESSAGE := fmt.Sprintf("Hi %v! Your registration has been approved. Please go to: %v", USER, getSchemeUrl(w,r))
+					MESSAGE := fmt.Sprintf("Hi %v! Your registration has been approved. You now have access to: %v", USER, getSchemeUrl(w,r))
 					subject := "Registration approved"
 					t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-generic-send-email", map[string][]string{"SUBJECT": {subject}, "TO": {USER}, "FROM": {ADMMAIL}, "MESSAGE": {MESSAGE}})
 					//if _, err := taskqueue.Add(c, t, "online-users"); err != nil {
@@ -9926,7 +9944,8 @@ func uwm(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		FL_OU_USER, uid := checkSession(w,r)
-		_ = validateAccess(w, r, "IS_VALID_USER","/uwm")
+		FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER","/uwm")
+		if FL_PROC_OK == false {return}
 		TARGET_DESKTOP := "UWM"
 		deskName := ""
 		deskName2 := ""
@@ -10267,7 +10286,8 @@ func desktops(w http.ResponseWriter, r *http.Request) {
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER","/desktops")
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER","/desktops")
+	if FL_PROC_OK == false {return}
 	listAllDesktops(w,r,uid)
 	return
 }
@@ -10282,7 +10302,8 @@ func desktop0(w http.ResponseWriter, r *http.Request) {
         var buffer bytes.Buffer
 		
 		_, uid := checkSession(w,r)
-		_ = validateAccess(w, r, "IS_VALID_USER","/desktop0")
+		FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER","/desktop0")
+		if FL_PROC_OK == false {return}
 		
 		deskName := "desktop0"
  
@@ -10638,7 +10659,8 @@ func desktop(w http.ResponseWriter, r *http.Request) {
 		TARGET_DESKTOP := r.FormValue("d")
 		deskName := fmt.Sprintf("desktop%s", TARGET_DESKTOP)
 		deskName1 := fmt.Sprintf("/desktop?d=%v", TARGET_DESKTOP)
-		_ = validateAccess(w, r, "IS_VALID_USER",deskName1)
+		FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",deskName1)
+		if FL_PROC_OK == false {return}
  
 		ncStatsAccess := fmt.Sprintf("STATS.DESKTOP.%s", deskName)
 		laterQueueCounterIncrement.Call(c, ncStatsAccess)
@@ -11538,7 +11560,8 @@ func getPubUWM(w http.ResponseWriter, r *http.Request) (uwmData string) {
 func showHomeGallery(w http.ResponseWriter, r *http.Request) {
 
 	if SYS_SITE_PRIVATE == true {
-		_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		if FL_PROC_OK == false {return}
 	}
 	
 	//get autocomps array
@@ -11613,7 +11636,8 @@ func checkHomepageSettings(w http.ResponseWriter, r *http.Request, redirectURL s
 	redURL := ""
 	
 	if SYS_SITE_PRIVATE == true {
-		_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		if FL_PROC_OK == false {return}
 	}
 	
 	if SYS_DISP_HOMEPAGE_CFG == true {
@@ -12289,7 +12313,8 @@ func ulapphWall(w http.ResponseWriter, r *http.Request) {
 		tstamp := getTimestamp()	
 		tyear := getYear()
 		
-		_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		if FL_PROC_OK == false {return}
 		
 		switch WALL_FUNC {
 		
@@ -12830,7 +12855,8 @@ func contentsAll(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	if SYS_SITE_PRIVATE == true && r.FormValue("bk") != SYS_BYPASS_PRIV_KEY {
-		_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		if FL_PROC_OK == false {return}
 	}
 	query := r.FormValue("q")
 	switch query {
@@ -14075,7 +14101,8 @@ func ulapphCache(w http.ResponseWriter, r *http.Request) {
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
                     		
 	CACHE_TARGET := r.FormValue("q")
 	deskNum := r.FormValue("d")
@@ -14458,7 +14485,8 @@ func settings(w http.ResponseWriter, r *http.Request) {
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
 	
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
 	updateUserActiveData(w, r, c, uid, "/settings")
 	
 	uReferer := r.Referer()
@@ -15009,7 +15037,8 @@ func ranConGen(w http.ResponseWriter, r *http.Request) {
 func ulapphTree(w http.ResponseWriter, r *http.Request) {
 	//fmt.Fprintf(w,"tree goes here")
 	//c := appengine.NewContext(r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
 	FUNC := r.FormValue("FUNC_CODE")
 	SID := r.FormValue("SID")
 	DISP := r.FormValue("d")
@@ -15046,7 +15075,8 @@ func ulapphTree(w http.ResponseWriter, r *http.Request) {
 func ulapphOtto(w http.ResponseWriter, r *http.Request) {
 	//c := appengine.NewContext(r)
 
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
 	SID := r.FormValue("SID")
 	DEBUG :=  strings.ToUpper(r.FormValue("DEBUG"))
 	//UID := r.FormValue("UID") 
@@ -16188,7 +16218,8 @@ func ulapphLocal(w http.ResponseWriter, r *http.Request) {
 	}
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
 	switch LS_FUNC {
 		case "IMG2BYTE":
 			imgUrl := r.FormValue("imgUrl")
@@ -18069,7 +18100,8 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 	FL_IS_BOT := isBot(w,r)
 	switch DIR_FUNC {
 		case "cctv-recent":
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			recent_num := r.FormValue("recent_num")
 			_, uid := checkSession(w,r)
 			if uid == "" {
@@ -18132,7 +18164,8 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			}
 		//D0074
 		case "cctv-call":
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			_, uid := checkSession(w,r)
 			if uid == "" {
 				//do nothing
@@ -18193,7 +18226,8 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			}
 		//D0074
 		case "cctv-review":
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			_, uid := checkSession(w,r)
 			if uid == "" {
 				//do nothing
@@ -18254,7 +18288,8 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			}
 		//D0074
 		case "cctv-capture":
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			_, uid := checkSession(w,r)
 			if uid == "" {
 				//do nothing
@@ -18317,7 +18352,8 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 		//edwinxx
 		//D0076
 		case "cctv-alarm":
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			_, uid := checkSession(w,r)
 			if uid == "" {
 				//do nothing
@@ -18380,7 +18416,8 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			}
 		//D0074
 		case "cctv":
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			_, uid := checkSession(w,r)
 			if uid == "" {
 				//do nothing
@@ -18589,7 +18626,8 @@ func editor(w http.ResponseWriter, r *http.Request) {
 	switch EDIT_FUNC {
 		
 		case "SEMAPHORE":
-			_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
+			if FL_PROC_OK == false {return}
 			if SEMAPHORE_API_KEY == "" {
 				fmt.Fprintf(w, "ERROR: API not available. <a href=\"http://semaphore.co/\">Subscribe</a> to Semaphore first.")
 				return
@@ -18687,7 +18725,8 @@ func editor(w http.ResponseWriter, r *http.Request) {
 			return
 			
 		case "SEMAPHORE-STAT":
-			_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
+			if FL_PROC_OK == false {return}
 			if SEMAPHORE_API_KEY == "" {
 				fmt.Fprintf(w, "ERROR: API not available. <a href=\"http://semaphore.co/\">Subscribe</a> to Semaphore first.")
 				return
@@ -18714,7 +18753,8 @@ func editor(w http.ResponseWriter, r *http.Request) {
 			return
  
 		case "SEMAPHORE-MSG":
-			_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
+			if FL_PROC_OK == false {return}
 			if SEMAPHORE_API_KEY == "" {
 				fmt.Fprintf(w, "ERROR: API not available. <a href=\"http://semaphore.co/\">Subscribe</a> to Semaphore first.")
 				return
@@ -18739,7 +18779,8 @@ func editor(w http.ResponseWriter, r *http.Request) {
 		
 		case "TEXT-CSS":
 			
-			_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
+			if FL_PROC_OK == false {return}
 			TEXT := r.FormValue("TEXT")
 			ACE := r.FormValue("ACE")
 			EDIT_MODE := r.FormValue("EDIT_MODE")
@@ -18796,14 +18837,16 @@ func editor(w http.ResponseWriter, r *http.Request) {
 			return
 		case "DRAW":
 			SRC := r.FormValue("SID")
-			_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
+			if FL_PROC_OK == false {return}
 			if err := textDrawBody.Execute(w, SRC); err != nil {
 			  panic(err)
 			}
 			return
 		case "TIMELINE":
 			SID := r.FormValue("SID")
-			_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
+			if FL_PROC_OK == false {return}
 			//D0070
 			switch {
 			case SID == "GEN":
@@ -19069,7 +19112,8 @@ func editor(w http.ResponseWriter, r *http.Request) {
 			return
 		case "CRYPTO":
 			////c.Infof("CRYPTO")
-			_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
+			if FL_PROC_OK == false {return}
 			if EDIT_MODE == "" {
 				////c.Infof("EDIT_MODE=")
 				//display form to input textarea and select format options
@@ -19233,7 +19277,8 @@ func editor(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		case "TEXT-TO-SPEECH":
-			_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
+			if FL_PROC_OK == false {return}
 			CONTENT := r.FormValue("CONTENT")
 			if CONTENT == "" {
 				if err := textToSpeechBody.Execute(w, ""); err != nil {
@@ -19557,7 +19602,8 @@ func editor(w http.ResponseWriter, r *http.Request) {
 			
 		case "READER_NEXT":
 			
-			_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
+			if FL_PROC_OK == false {return}
 			SID := r.FormValue("SID")
 			CATEGORY := r.FormValue("CATEGORY")
  
@@ -19687,7 +19733,8 @@ func editor(w http.ResponseWriter, r *http.Request) {
 		
 		case "READER_PREVIOUS":	
 			
-			_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
+			if FL_PROC_OK == false {return}
 			SID := r.FormValue("SID")
 			CATEGORY := r.FormValue("CATEGORY")
 			
@@ -19817,7 +19864,8 @@ func editor(w http.ResponseWriter, r *http.Request) {
 			
 		case "READER_RANDOM":	
 			
-			_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
+			if FL_PROC_OK == false {return}
 			SID := r.FormValue("SID")
 			CATEGORY := r.FormValue("CATEGORY")
 			
@@ -21420,14 +21468,12 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if TOOL_FUNC == "MIRROR" {
-		//_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 		if err := htmlMirror.Execute(w, ""); err != nil {
 		  panic(err)
 		}
 		return
 	}
 	if TOOL_FUNC == "MIRROR2" {
-		//_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 		if err := htmlMirror2.Execute(w, ""); err != nil {
 		  panic(err)
 		}
@@ -21644,7 +21690,8 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 				return
  
 			case "ULAPPHStart":
-				_ = validateAccess(w, r, "IS_VALID_USER","/tools")
+				FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER","/tools")
+				if FL_PROC_OK == false {return}
 				clear := r.FormValue("clear")
 				_, uid := checkSession(w,r)
 				if clear == "true" {
@@ -21668,7 +21715,8 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 				return
 			
 			case "MiniBrowserGet":
-				_ = validateAccess(w, r, "IS_VALID_USER","/tools")
+				FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER","/tools")
+				if FL_PROC_OK == false {return}
 				MEDIA_ID := r.FormValue("MEDIA_ID")
 				TITLE := r.FormValue("TITLE")
 				GITURL := r.FormValue("GITURL")
@@ -21771,7 +21819,8 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 				
 		}
 	}
-	_ = validateAccess(w, r, "IS_VALID_USER","/tools")
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER","/tools")
+	if FL_PROC_OK == false {return}
 	
 	if TOOL_FUNC == "Run Monitor Now" {
 		laterUrlFetchInd.Call(c, "URL_FETCH_NOTIFS_IND", uid, "NOW")
@@ -23108,7 +23157,8 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 		//ext-search
 			
 			if SYS_SITE_PRIVATE == true {
-				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				if FL_PROC_OK == false {return}
 			}
 	
 			t := time.Now().Local()
@@ -23514,7 +23564,8 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
  		
 		case SEARCH_TARGET == "InDoc":
 			if SYS_SITE_PRIVATE == true {
-				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				if FL_PROC_OK == false {return}
 			}
 			
 			IDX_TARGET := r.FormValue("IDX")
@@ -23551,7 +23602,8 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 		//Search took x.x secs with x results from 1 site
 		default:
 			if SYS_SITE_PRIVATE == true {
-				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				if FL_PROC_OK == false {return}
 			}
 			t := time.Now().Local()
 			start := fmt.Sprintf(t.Format("20060102150405"))
@@ -23636,7 +23688,8 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 				case SEARCH_FUNC == "glow2" && SEARCH_TARGET == "In ULAPPH" && SEARCH_KEY != "":
 				
 					if SYS_SITE_PRIVATE == true {
-						_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+						FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+						if FL_PROC_OK == false {return}
 					}
  
 					recCtr := 0
@@ -23673,7 +23726,8 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 				case SEARCH_FUNC == "rc1" && SEARCH_TARGET == "In ULAPPH" && SEARCH_KEY != "":
 				
 					if SYS_SITE_PRIVATE == true {
-						_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+						FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+						if FL_PROC_OK == false {return}
 					}
 	
 					recCtr := 0
@@ -24299,7 +24353,8 @@ func people(w http.ResponseWriter, r *http.Request) {
 	//do this here
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	//_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
 	
 	switch PEOPLE_FUNC {
  
@@ -24965,7 +25020,8 @@ func infodb(w http.ResponseWriter, r *http.Request) {
 		case DB_FUNC == "VIEWER-SLIDES-ALL":
 			updateUserActiveData(w, r, c, "", "contentIndex")
 			if SYS_SITE_PRIVATE == true {
-				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				if FL_PROC_OK == false {return}
 			}	
 		
 			//if forced
@@ -25211,7 +25267,8 @@ func infodb(w http.ResponseWriter, r *http.Request) {
 	}
  
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
 	r.ParseForm()
 	
 	
@@ -25258,7 +25315,8 @@ func infodb(w http.ResponseWriter, r *http.Request) {
 	case "SLIDES":
 			updateUserActiveData(w, r, c, "", "contentIndex")
 			if SYS_SITE_PRIVATE == true {
-				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				if FL_PROC_OK == false {return}
 			}	
  
 			CATEGORY := fmt.Sprintf("%v",r.FormValue("CATEGORY"))
@@ -25463,7 +25521,8 @@ func infodb(w http.ResponseWriter, r *http.Request) {
 	case "ARTICLES":
 			updateUserActiveData(w, r, c, "", "contentIndex")
 			if SYS_SITE_PRIVATE == true {
-				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				if FL_PROC_OK == false {return}
 			}	
  
 			CATEGORY := fmt.Sprintf("%v",r.FormValue("CATEGORY"))
@@ -26365,7 +26424,8 @@ func infodb(w http.ResponseWriter, r *http.Request) {
 		case "MEDIA":
 			updateUserActiveData(w, r, c, "", "contentIndex")
 			if SYS_SITE_PRIVATE == true {
-				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+				if FL_PROC_OK == false {return}
 			}	
 			//if mobile
 			FL_DESKTOP := checkDesktop(w,r)
@@ -27516,7 +27576,8 @@ func guestbook(w http.ResponseWriter, r *http.Request) {
 	}
  
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
 	IS_FEEDBACK := r.FormValue("IS_FEEDBACK")
 	//edv 09/29/2015
 	SID := r.FormValue("SID")
@@ -28103,7 +28164,8 @@ func guestbook(w http.ResponseWriter, r *http.Request) {
 			if uid == "" || MID == "" {
 				return
 			}
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			key := datastore.NewKey(c, "Greeting", MID, 0, nil)
 			datastore.Delete(c, key)
 			writeHTMLHeader(w, 200)
@@ -28117,7 +28179,8 @@ func guestbook(w http.ResponseWriter, r *http.Request) {
 			if uid == "" || MID == "" {
 				return
 			}
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			_ = markMsgRead(w,r,MID)
  
 			writeHTMLHeader(w, 200)
@@ -28129,7 +28192,8 @@ func guestbook(w http.ResponseWriter, r *http.Request) {
 			if uid == "" {
 				return
 			}
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
  
 			ctr := 0
 			q := datastore.NewQuery("Greeting").Filter("Author =", uid).KeysOnly()
@@ -28158,7 +28222,8 @@ func guestbook(w http.ResponseWriter, r *http.Request) {
 			if uid == "" {
 				return
 			}
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
  
 			q := datastore.NewQuery("Greeting").Filter("Author =", uid).KeysOnly()
 			//c.Errorf("[S0199]")
@@ -28636,7 +28701,8 @@ func social(w http.ResponseWriter, r *http.Request) {
 			cat := r.FormValue("cat")
 			if cat != "" {
 				//show stats
-				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
+				FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
+				if FL_PROC_OK == false {return}
 				showDesktopStats(w,r,"TDSSLIDE",cat,r.FormValue("catname"))
 				return
 			}
@@ -28652,7 +28718,8 @@ func social(w http.ResponseWriter, r *http.Request) {
 			cat := r.FormValue("cat")
 			if cat != "" {
 				//show stats
-				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
+				FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
+				if FL_PROC_OK == false {return}
 				showDesktopStats(w,r,"TDSARTL",cat,r.FormValue("catname"))
 				return
 			}
@@ -28684,7 +28751,8 @@ func social(w http.ResponseWriter, r *http.Request) {
 			cat := r.FormValue("cat")
 			if cat != "" {
 				//show stats
-				_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
+				FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
+				if FL_PROC_OK == false {return}
 				showDesktopStats(w,r,"TDSMEDIA",cat,r.FormValue("catname"))
 				return
 			}
@@ -29250,7 +29318,8 @@ func social(w http.ResponseWriter, r *http.Request) {
 		
 	}
 	checkReferrer(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
+	if FL_PROC_OK == false {return}
 	SID := r.FormValue("SID")
 	//docID := str2int(DOC_ID)
 	r.ParseForm()
@@ -29283,7 +29352,8 @@ func social(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			}
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			key := datastore.NewKey(c, "Social", MID, 0, nil)
 			datastore.Delete(c, key)
 			writeHTMLHeader(w, 200)
@@ -30308,7 +30378,8 @@ func adminIcons(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
 	
 	updateUserActiveData(w, r, c, uid, "/admin-icons")
 	
@@ -33300,7 +33371,8 @@ func peopleEdit(w http.ResponseWriter, r *http.Request) {
 	u := user.Current(c)
 	h := r.Header
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())	
+	if FL_PROC_OK == false {return}
 	if uid == "" {
 		if u != nil {
 			uid = u.Email
@@ -34920,7 +34992,8 @@ func adminAds(w http.ResponseWriter, r *http.Request) {
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	c := appengine.NewContext(r)
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
 	
 	uReferer := r.Referer()
 	
@@ -36653,7 +36726,8 @@ func adminSlides(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
 	
 	updateUserActiveData(w, r, c, uid, "/admin-slides")
 	
@@ -39307,7 +39381,8 @@ func adminArticles(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	
 	_, uid := checkSession(w,r)
-	_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+	if FL_PROC_OK == false {return}
 	
 	updateUserActiveData(w, r, c, uid, "/admin-articles")
 	
@@ -43002,7 +43077,8 @@ func media(w http.ResponseWriter, r *http.Request) {
 			switch {
 				case DATA_TYPE == "music" || DATA_TYPE == "video":
 					//make music/video shared to registered users
-					_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+					FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",uReferer)
+					if FL_PROC_OK == false {return}
 					FL_PROC_OK = true
 				case AUTHOR == uid:
 					FL_PROC_OK = true
@@ -43324,7 +43400,8 @@ func media(w http.ResponseWriter, r *http.Request) {
 	default:
 		//////////////////////
 		_, uid := checkSession(w,r)
-		_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+		FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
+		if FL_PROC_OK == false {return}
 		//get user privilege
 		FUNC_CODE2 := "GET_GRP_ID"
 		FL_VALID_USER, GROUP_ID, _  , _ := usersProcessor(w, r, "au", uid, FUNC_CODE2)
@@ -51011,7 +51088,8 @@ func serveMediaContent(w http.ResponseWriter, r *http.Request, SID, MIME_TYPE st
 			}
 			
 		case DOC_STAT == "ULAPPH Only":
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			FL_PROC_OK = true
  
 		case DOC_STAT == "Worldwide" && FL_SHARED == "Y":
@@ -51107,7 +51185,8 @@ func settingsDisplayScreen(w http.ResponseWriter, r *http.Request) {
 	tok := r.FormValue("tok")
 	FL_TOKEN_PROC := false
 	if aUser == "" && tok == "" {
-		_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		if FL_PROC_OK == false {return}
 	} else {
 		FL_TOKEN_PROC = validateToken(w, r, "IS_VALID_USER", aUser, tok)
 	}
@@ -51117,7 +51196,8 @@ func settingsDisplayScreen(w http.ResponseWriter, r *http.Request) {
 	deskName := ""
 	if FL_TOKEN_PROC == false {
 		_, uid := checkSession(w,r)
-		_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+		if FL_PROC_OK == false {return}
 		USER_EMAIL_ID = uid
 	} else {
 		deskName = "desktop0"
@@ -56426,7 +56506,6 @@ func appendToSid(w http.ResponseWriter, r *http.Request, UID, FUNC, SID, TEXT st
 				return fmt.Errorf("Invalid operation. Invalid author.")
 			}
 		case DOC_STAT == "ULAPPH Only":
-			//_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 			FUNC_CODE := "GET_GRP_ID"
 			FL_VALID_USER, _, _  , _ := usersProcessor(w, r, "au", UID, FUNC_CODE)
 			if FL_VALID_USER != true {
@@ -75113,7 +75192,8 @@ func slides(w http.ResponseWriter, r *http.Request) {
 		case FL_SHARED == "N":
 			//c := appengine.NewContext(r)
 			_, uid := checkSession(w,r)
-			_ = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",uReferer)
+			if FL_PROC_OK == false {return}
 			if uid != AUTHOR {
 				msgDtl := fmt.Sprintf("[U00106] ERROR: This slide DOC_ID (%s) is accessible only by the author.", DOC_ID)
 				msgTyp := "error"
@@ -75320,7 +75400,8 @@ func articles(w http.ResponseWriter, r *http.Request) {
 	
 		case FL_SHARED == "N":
 			_, uid := checkSession(w,r)
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			if uid != AUTHOR {
 				msgDtl := fmt.Sprintf("[U00108] ERROR: This article DOC_ID (%s) is accessible only by the author.", DOC_ID)
 				//sendEvent(w,r,FDBKMAIL,msgDtl)
@@ -75597,10 +75678,8 @@ func presenter(w http.ResponseWriter, r *http.Request) {
 			return
 			
 		case FL_SHARED == "N":
-			//c := appengine.NewContext(r)
- 
-			//_, uid := checkSession(w,r)
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			
 			if uid != AUTHOR {
 				//updateUserActiveData(w, r, c, uid, "Error: access of personal content (presenter)")
@@ -75615,7 +75694,8 @@ func presenter(w http.ResponseWriter, r *http.Request) {
 			}
 			
 		case PUB_STAT == "ULAPPH Only":
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			
 		case PUB_STAT == "Personal" && uid != AUTHOR:
 			c := appengine.NewContext(r)
@@ -79705,7 +79785,6 @@ func getGaeLatLon(w http.ResponseWriter, r *http.Request) string {
 //tracks the GPS locations
 func ulapphGPS(w http.ResponseWriter, r *http.Request) {
 	_, uid := checkSession(w,r)
-	//_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 	GPS_FUNC := r.FormValue("GPS_FUNC")
 	switch GPS_FUNC {
 		//case "GET_DP":
@@ -80595,7 +80674,8 @@ func contentCheckSid(w http.ResponseWriter, r *http.Request, sid string) (blobKe
 		
 		case (FL_SHARED == "N" || DOC_STAT == "Personal") && SHARED_TO == "" :
  
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
 			
 			if uid != AUTHOR && isValidApiCall(w,r) == false {
 				//updateUserActiveData(w, r, c, uid, "Error: access of personal content (checkSID)")
@@ -80618,7 +80698,8 @@ func contentCheckSid(w http.ResponseWriter, r *http.Request, sid string) (blobKe
 			}
 			
 		case DOC_STAT == "ULAPPH Only":
-			_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
+			if FL_PROC_OK == false {return}
  
 		case DOC_STAT == "Worldwide" && FL_SHARED == "Y":
  
