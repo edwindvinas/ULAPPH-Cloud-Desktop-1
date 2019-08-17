@@ -404,6 +404,11 @@
 //REV DESC:	  	NewsAPI integration 
 //REV AUTH:		Edwin D. Vinas
 /////////////////////////////////////////////////////////////////////////////////////////////////
+//REV ID: 		D0079
+//REV DATE: 		2019-Aug-11
+//REV DESC:	  	U00193 - Enable/disable slides/articles using DISABLED flag 
+//REV AUTH:		Edwin D. Vinas
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------
 //List of firebase channels
@@ -40380,7 +40385,6 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		//clear default otto cache
                 cKey = fmt.Sprintf("ULAPPH_NLP_DEF_OTTO_%v", uid)
 		_ = memcache.Delete(c,cKey)
-		//edwinxxx
 		//clear specific bot/device cache 
 		cKey = fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v_%v", uid, bName, devID)
 		_ = memcache.Delete(c,cKey)
@@ -40533,7 +40537,6 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 						//w.Write([]byte(entry.Answer))
 						if entry.IsAnsOtto == "true" {
 							//call Otto API
-							//edwinxxx
 							resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", tok.Text)
 							//w.Write([]byte(resp))
 							err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
@@ -40558,7 +40561,6 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 							//w.Write([]byte(entry.Answer))
 							if entry.IsAnsOtto == "true" {
 								//call Otto API
-								//edwinxxx
 								resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", tok.Text)
 								//w.Write([]byte(resp))
 								err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
@@ -40621,7 +40623,6 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 						//w.Write([]byte(entry.Answer))
 						if entry.IsAnsOtto == "true" {
 							//call Otto API
-							//edwinxxx
 							resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", sent.Text)
 							//w.Write([]byte(resp))
 							err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
@@ -40646,7 +40647,6 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 							//w.Write([]byte(entry.Answer))
 							if entry.IsAnsOtto == "true" {
 								//call Otto API
-								//edwinxxx
 								resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", sent.Text)
 								//w.Write([]byte(resp))
 								err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
@@ -41067,7 +41067,6 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 			mSID := r.FormValue("sMaster")
 			resp := ""
 			switch sFunc {
-				//edwinxxx
 				case "enroll":
 					////c.Infof("enroll...")
 					resp = educEnroll(w,r,mSID,uid,sLevel)
@@ -76630,13 +76629,10 @@ func readLines3(w http.ResponseWriter, r *http.Request, blobkey, DESKTOP, SID st
 	if OnOffLine == "OFFLINE" {
 		bLine.WriteString(fmt.Sprintf("CACHE MANIFEST\n"))
 	}
-			
 	var lines []string
 	reader := blobstore.NewReader(c, appengine.BlobKey(blobkey))
 	s := bufio.NewScanner(reader)
-	
 	FL_ADS_SERVED := false
-	
 	secCtr := 0
 	for s.Scan() {
 
@@ -76656,61 +76652,53 @@ func readLines3(w http.ResponseWriter, r *http.Request, blobkey, DESKTOP, SID st
 			SPL := strings.Split(s.Text()," ")
 			if len(SPL) > 1 {
 				TARGET := SPL[1]
- 
 				validateURL(w,r,TARGET)
-				
 				//fetch contents of url and append
 				urlData := fetchURL(w,r,TARGET)
 				if urlData != "" {
-					scanner := bufio.NewScanner(strings.NewReader(urlData))	
+					scanner := bufio.NewScanner(strings.NewReader(urlData))
 					for scanner.Scan() {
 						msg := scanner.Text()
 						lines = append(lines, fmt.Sprintf("%v", msg))
 					}
 				}
-				
 			}
 		}
- 
+		//D0079
+		//if readlines contain #DISABLED or #DISABLE
+		if strings.HasPrefix(s.Text(), "#DISABLED") || strings.HasPrefix(s.Text(), "#DISABLE") {
+			//edwinxxxx
+			msgDtl := fmt.Sprintf("[U00193] This content %v is currently disabled by the author.", SID)
+			msgTyp := "error"
+			action := "U00193"
+			sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, "", action)
+			http.Redirect(w, r, sysReq, http.StatusFound)
+			return "r", &Lines{0, lines}, nil
+		}
 		//if readlines contain #REDIRECT
 		if strings.HasPrefix(s.Text(), "#REDIRECT ") || strings.HasPrefix(s.Text(), "#REDIRECT: ") {
 			SPL := strings.Split(s.Text()," ")
 			if len(SPL) > 1 {
 				URL := SPL[1]
-				//append the referrer 
-				//D0060
-				//turl, err := url.Parse(URL)
-				//if err != nil {
-				//	panic(err)
-				//}
-				//if turl.RawQuery == "" {
-				//	URL = fmt.Sprintf("%v?ref=%v",URL, *r.Referer)
-				//} else {
-				//	URL = fmt.Sprintf("%v&ref=%v",URL, *r.Referer)
-				//}
 				validateURL(w,r,URL)
 				http.Redirect(w, r, URL, http.StatusFound)
 				return "r", &Lines{0, lines}, nil
-				//return nil, nil
 			}
 		}
 		if strings.HasPrefix(s.Text(), "#NOADS") {
-			
 			//dont display ads
 			FL_ADS_SERVED = true
-			
 		}
 		if strings.HasPrefix(s.Text(), "* ") {
 			secCtr++
 			//put ad in every 3 slides
 			if secCtr >= ADS_EVERY_X_SLIDES && FL_ADS_SERVED == false {
-				
 				if OnOffLine == "ONLINE" {
 					if SYS_DISP_ADS_CONTENT == true {
 						//put ads
 						for i := 1; i < 4; i++ {
 							//append ads
-							lines = append(lines, " ")	
+							lines = append(lines, " ")
 							//thisAd := fmt.Sprintf("* ")
 							thisAd := fmt.Sprintf("* Advertisement")
 							lines = append(lines, thisAd)
@@ -76718,7 +76706,6 @@ func readLines3(w http.ResponseWriter, r *http.Request, blobkey, DESKTOP, SID st
 							lines = append(lines, fmt.Sprintf("%v", thisFrame))
 							lines = append(lines, " ")
 							lines = append(lines, " ")
-						
 						}
 					}
 				}
@@ -76726,7 +76713,6 @@ func readLines3(w http.ResponseWriter, r *http.Request, blobkey, DESKTOP, SID st
 				secCtr = 0
 			}
 		}
-		
 		lines = append(lines, s.Text())
 		i := strings.Index(s.Text(), ".image ")
 		if OnOffLine == "OFFLINE" && i != -1 {
@@ -76734,9 +76720,7 @@ func readLines3(w http.ResponseWriter, r *http.Request, blobkey, DESKTOP, SID st
 			//img := Image{URL: args[1]}
 			bLine.WriteString(fmt.Sprintf("%v\n", args[1]))
 		}
-		
 	}
-	
 	//for slides that are few
 	if FL_ADS_SERVED == false && OnOffLine == "ONLINE" {
 		if SYS_DISP_ADS_CONTENT == true {
