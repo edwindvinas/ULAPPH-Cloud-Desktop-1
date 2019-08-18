@@ -114,11 +114,12 @@ console.log("Client geolocation failed!");
 }
 
 function geoloc() {
-	if (uwms.value != "" || uwms.value == undefined) {
+	if (uwms.value != "") {
 		//run only on main uwm
 		return;
 	}
 	geoLatLon();
+	console.log("geoloc() running...");
 	if (('speechSynthesis' in window) || ('SpeechRecognition' in window)) {
 		window.speechSynthesis.cancel();
 	}
@@ -131,6 +132,7 @@ function geoloc() {
 };
 
 function geoLatLon() {
+	console.log("geoLatLon() running...");
    	if (isActive == false) {
 		//reduce bill
 		return;
@@ -189,6 +191,7 @@ function speakMessage(thisMsg){
 }
 
 function sendPingRequest(){
+	console.log("sendPingRequest() running...");
 	var p = new Ping();
 	var root = location.protocol + '//' + location.host + '/social?SO_FUNC=get-health';
 	p.ping(root, function(data) {

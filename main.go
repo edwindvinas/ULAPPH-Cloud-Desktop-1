@@ -409,6 +409,11 @@
 //REV DESC:	  	U00193 - Enable/disable slides/articles using DISABLED flag 
 //REV AUTH:		Edwin D. Vinas
 /////////////////////////////////////////////////////////////////////////////////////////////////
+//REV ID: 		D0080
+//REV DATE: 		2019-Aug-17
+//REV DESC:	  	Dynamic favicon icons 
+//REV AUTH:		Edwin D. Vinas
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------
 //List of firebase channels
@@ -621,6 +626,8 @@ const (
 	domRefMatchLO   = "http://ulapph-public-1.appspot.com/"
 	googleRefMatchG   = ".google.com/"
 	googleRefMatchS   = ".google.com/"
+	//D0080
+	DEFAULT_FAVICON = "/img/favicon.ico"
 	//playground enabled
 	PlayEnabled = true
 	//Common Chatbot Knowledge Base
@@ -1548,6 +1555,7 @@ type GotoMyUlapphs  struct {
 	Url string `json:"url"`
 	Picture string `json:"picture"`
 	UserID string `json:"userid"`
+	Privacy string `json:"privacy"`
 }
 //D0078
 type NewsApiSources  struct {
@@ -8753,9 +8761,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 						TXT_VAL: searchServerName,
 						CFG_DESC: "Set via Admin Setup",
 				}
-				
 				thisKey := fmt.Sprintf("SYSTEM_SEARCH_SETTINGS")
- 
 				key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 				_, err := datastore.Put(c, key, &g)
 				//c.Errorf("[S0050]")
@@ -8763,8 +8769,6 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					panic(err)
 					//return
 				}
- 
- 
 				fmt.Fprintf(w, "<h3>SUCCESS: SEARCH HAS BEEN SET. SERVER: %v MEDIA_ID: %v</h3>", searchServerName, mediaID)
 
 			case "SET_TEMPLATES_SAVE":
@@ -8773,7 +8777,6 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 				atemp := r.FormValue("ArticlesTemplate")
 				tlist := r.FormValue("ThemesList")
 				clear := r.FormValue("clear")
-				
 				if clear == "yes" {
 					_ = memcache.Delete(c, "CUSTOM_HOMEPAGE_THEME")
 					_ = memcache.Delete(c, "SYSTEM_SLIDES_TEMPLATE")
@@ -8781,12 +8784,9 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					_ = memcache.Delete(c, "SYSTEM_AVAIL_THEMES")
 					_ = memcache.Delete(c, "SYSTEM_AVAIL_THEMES_CACHE")
 					_ = memcache.Delete(c, "SYSTEM_HOMEPAGE_SETTINGS")
-					
 					fmt.Fprintf(w, "<h3>SUCCESS: TEMPLATES CACHE CLEARED!</h3>")
 					return
 				}
-
-				
 				if htemp != "" && htemp != "0" {
 					MEDIA_ID := str2int(htemp)
 					g := TDSCNFG{
@@ -8798,9 +8798,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 							TXT_VAL: "",
 							CFG_DESC: "Set via Admin Setup",
 					}
-					
 					thisKey := fmt.Sprintf("CUSTOM_HOMEPAGE_THEME")
-	
 					key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 					_, err := datastore.Put(c, key, &g)
 					//c.Errorf("[S0050]")
@@ -8811,7 +8809,6 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					putStrToMemcacheWithoutExp(w,r,thisKey,htemp)
 					fmt.Fprintf(w, "<h3>CUSTOM HOMEPAGE THEME HAS BEEN SET TO %v</h3>", MEDIA_ID)
 				}
-				
 				if stemp != ""  && stemp != "0"{
 					MEDIA_ID := str2int(stemp)
 					g := TDSCNFG{
@@ -8823,9 +8820,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 							TXT_VAL: "",
 							CFG_DESC: "Set via Admin Setup",
 					}
-					
 					thisKey := fmt.Sprintf("SYSTEM_SLIDES_SETTINGS")
-	
 					key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 					_, err := datastore.Put(c, key, &g)
 					//c.Errorf("[S0050]")
@@ -8836,7 +8831,6 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					putStrToMemcacheWithoutExp(w,r,thisKey,stemp)
 					fmt.Fprintf(w, "<h3>SLIDE TEMPLATE HAS BEEN SET TO %v</h3>", MEDIA_ID)
 				}
-				
 				if atemp != ""  && atemp != "0"{
 					MEDIA_ID := str2int(atemp)
 					g := TDSCNFG{
@@ -8848,9 +8842,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 							TXT_VAL: "",
 							CFG_DESC: "Set via Admin Setup",
 					}
-					
 					thisKey := fmt.Sprintf("SYSTEM_ARTICLES_SETTINGS")
-	
 					key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 					_, err := datastore.Put(c, key, &g)
 					//c.Errorf("[S0050]")
@@ -8861,7 +8853,6 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					putStrToMemcacheWithoutExp(w,r,thisKey,atemp)
 					fmt.Fprintf(w, "<h3>ARTICLE TEMPLATE HAS BEEN SET TO %v</h3>", MEDIA_ID)
 				}
-					
 				if tlist != "" {
 					g := TDSCNFG{
 							SYS_VER: 1,
@@ -8872,9 +8863,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 							TXT_VAL: tlist,
 							CFG_DESC: "Set via Admin Setup",
 					}
-					
 					thisKey := fmt.Sprintf("SYSTEM_AVAIL_THEMES")
-	
 					key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 					_, err := datastore.Put(c, key, &g)
 					//c.Errorf("[S0050]")
@@ -8886,10 +8875,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					fmt.Fprintf(w, "<h3>AVAILABLE THEMES HAS BEEN SET TO %v</h3>", tlist)
 				}
 				return
-				
-				
 			case "TDSUSERS-ACCOUNT-UPDATE":
- 
 				USER := fmt.Sprintf("%v",r.FormValue("USER"))
 				ACC_TYP := r.FormValue("ACCOUNT_TYPE")
 				USER_GROUP := r.FormValue("USER_GROUP")
@@ -11639,12 +11625,10 @@ func showHomeGallery(w http.ResponseWriter, r *http.Request) {
 func checkHomepageSettings(w http.ResponseWriter, r *http.Request, redirectURL string) {
 	c := appengine.NewContext(r)
 	redURL := ""
-	
 	if SYS_SITE_PRIVATE == true {
 		FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 		if FL_PROC_OK == false {return}
 	}
-	
 	if SYS_DISP_HOMEPAGE_CFG == true {
 		if SYS_CUSTOM_HOME_THEME == true {
 			//get the media id containing the theme
@@ -11654,10 +11638,9 @@ func checkHomepageSettings(w http.ResponseWriter, r *http.Request, redirectURL s
 			if strings.TrimSpace(htemp) == "" {
 				_, mid := getTDSCNFG(w,r,1,cKey)
 				////c.Infof("mid: %v", mid)
-				
 				if mid > 0 {
 					////c.Infof("mid > 0")
-					_ = renderCustomTemplates(w,r,"gotId",cKey,"",fmt.Sprintf("%v",mid))				
+					_ = renderCustomTemplates(w,r,"gotId",cKey,"",fmt.Sprintf("%v",mid))
 				}
 
 			} else {
@@ -11676,21 +11659,17 @@ func checkHomepageSettings(w http.ResponseWriter, r *http.Request, redirectURL s
 		} else {
 			cfgName := "SYSTEM_HOMEPAGE_SETTINGS"
 			redURL, _ = getTDSCNFG(w,r,0,cfgName)
-			
 			if redURL != "" {
 				cKey := fmt.Sprintf("SYSTEM_HOMEPAGE_SETTINGS")
-				putStrToMemcacheWithoutExp(w,r,cKey,redURL)				
+				putStrToMemcacheWithoutExp(w,r,cKey,redURL)
 			}
- 
 		}
 	}
-	
 	if redURL == "" {
-		redURL = "/contents?q=home"	
+		redURL = "/contents?q=home"
 	}
 	http.Redirect(w, r, redURL, http.StatusFound)
 	return
-	
 }
 
 //gets hosts available which can be used to wall copy 
@@ -15459,26 +15438,24 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			if roomID == "" {
 				roomID = randSeq2(36)
 			}
-			ukey := fmt.Sprintf("%v-%v", UID, roomID)	
+			ukey := fmt.Sprintf("%v-%v", UID, roomID)
 			timestamp := getTimestamp()
 			p := TDSCHAT{
 					OWNER: UID,
-					ROOM_ID: roomID,	
-					START_TSTMP:  timestamp,	
+					ROOM_ID: roomID,
+					START_TSTMP:  timestamp,
 					USER:  ukey,
 			}
 			key := datastore.NewKey(c, "TDSCHAT", ukey, 0, nil)
 			if _, err := datastore.Put(c, key, &p); err != nil {
 				 panic(err)
 			}
- 
 			if uid == "" {
 				uid = ukey
 				_, token = createToken(w,r,ukey,"PC")
 			} else {
 				_, token = createToken(w,r,ukey,"PC")
 			}
-			
 			if INV != "" {
 				geoStr := getGeoString(w,r)
 				geoAcc := getAccessString(w,r,"")
@@ -15495,27 +15472,23 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 				data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_OPEN_WINDOW@888@%v", chatLink)
 				//when sysopen window
 				sendChannelMessage(w,r,INV,data)
-				
 			}
-			
 			if INV != "" {
-				IS_ACTIVE := getActiveStatus(w,r,INV)
- 
+				//IS_ACTIVE := getActiveStatus(w,r,INV)
 				//send knock knock to user
 				PROFILE_PIC_URLME := getProfilePic(w, r, uid)
 				COUNTRY_PIC_URL := getCountryPic(w, r, uid)
 				kmsg := fmt.Sprintf("Knock, knock, knock!!! from user: %v <br><a href=\"#\" onclick=\"knock('%v');return false;\"><img src=\"%v\" height=100 width=100></img><img src=\"%v\" width=48 height=30><img src=\"/img/knock.png\" width=50 height=50/></img></a>",uid, uid, PROFILE_PIC_URLME, COUNTRY_PIC_URL)
 				//update all sys msg
 				cKey := fmt.Sprintf("KNOCK_MSG_%s", INV)
- 
 				putStrToMemcacheWithExp(w,r,cKey,kmsg,30)
-				
-				if IS_ACTIVE == "N" {
+				/*if IS_ACTIVE == "N" {
 					fmt.Fprintf(w, "<font color=blue>ULAPPH CHAT INACTIVE or INVISIBLE:</font><br>Apologies, user (%v) maybe inactive or incognito at this time. Check the <a href=\"/directory?DIR_FUNC=sessions\">site sessions</a> or <a href=\"/directory?DIR_FUNC=sessions2\">all sessions</a> to check the user or you may come back later. If you want, please send email to <b>%v</b> or call/SMS number <b>%v</b>. Thanks!<p><a href=\"/chat?pubchan=worldwide\">Click here</a> to join the worldwide chat broadcast instead...", INV, ADMMAIL, SMS_CONTACT_NBR)
 					return
 				} else {
 					updateUserActiveData(w, r, c, uid, fmt.Sprintf("newChatRoom-active-%v", INV))
-				}
+				}*/
+				updateUserActiveData(w, r, c, uid, fmt.Sprintf("newChatRoom-active-%v", INV))
 			}
 			uag := r.UserAgent()
 			ua := user_agent.New(uag)
@@ -15528,13 +15501,11 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			go getSoundPrefs(w,r,soundPrefChan,soundPrefChanDone,uid)
 			soundPref := <-soundPrefChan
 			<-soundPrefChanDone
- 
 			jwtChan := make(chan string)
 			jwtChanDone := make(chan bool)
 			go procAuthFirebase(w,r,jwtChan,jwtChanDone,uid,token)
 			jwToken := <-jwtChan
 			<-jwtChanDone
-			
 			TEMPDATA := TEMPSTRUCT3{
 				STR_FILLER1: "chat",
 				STR_FILLER2: uid,
@@ -15562,7 +15533,6 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			if err := chatTemplateA2.Execute(w, &TEMPDATA); err != nil {
 			  panic(err)
 			}
- 
 		case "newChatRoomAppRTC":
 			//invite is populated
 			INV := r.FormValue("INVITE")
@@ -16692,7 +16662,7 @@ const chatTemplateDispA1 = `
 	  <meta charset="UTF-8">
 	  <title>Chat::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	  <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	  <link rel="shortcut icon" href="/img/favicon.ico"/>
+	  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 `
 var chatTemplateA2 = template.Must(template.New("chatTemplateA").Parse(chatTemplateDispA2))
 const chatTemplateDispA2 = `
@@ -16880,7 +16850,7 @@ const streamTemplateDispA1 = `
 	  <meta charset="UTF-8">
 	  <title>Stream::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	  <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	  <link rel="shortcut icon" href="/img/favicon.ico"/>
+	  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 		<link rel="stylesheet" href="/css/chat-style.css">
 	<style>
 		.note {
@@ -16958,7 +16928,7 @@ const ulocTemplateDispA = `
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <title>Local Storage:ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-  <link rel="shortcut icon" href="/img/favicon.ico"/>
+  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
   <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
   <script type="text/javascript" language="javascript" src="/js/jquery-1.11.1.min.js"></script>
   <link rel="stylesheet" href="/css/localStorage.css" />
@@ -17250,7 +17220,7 @@ const ulocTemplateDispB = `
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <title>Local Storage::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
   <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-  <link rel="shortcut icon" href="/img/favicon.ico"/>
+  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
   <link rel="stylesheet" href="/css/localStorage.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <script type="text/javascript" language="javascript" src="/js/jquery-1.11.1.min.js"></script>
@@ -18565,7 +18535,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			updateUserActiveData(w, r, c, "", "/directory-people")
 			IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
 			//if this server is not sites server
-			if IS_SEARCH_SERVER != "Y" {	
+			if IS_SEARCH_SERVER != "Y" {
 				redURL := fmt.Sprintf("%v/directory?DIR_FUNC=people", getSchemeNewUrl(w,r,SEARCH_SERVER))
 				http.Redirect(w, r, redURL, http.StatusFound)
 				return
@@ -18577,7 +18547,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			updateUserActiveData(w, r, c, "", "/directory-sessions")
 			IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
 			//if this server is not sites server
-			if IS_SEARCH_SERVER != "Y" {	
+			if IS_SEARCH_SERVER != "Y" {
 				redURL := fmt.Sprintf("%v/directory?DIR_FUNC=sessions", getSchemeNewUrl(w,r,SEARCH_SERVER))
 				http.Redirect(w, r, redURL, http.StatusFound)
 				return
@@ -24246,20 +24216,16 @@ func searchSchemeHandler(w http.ResponseWriter, r *http.Request, turl, sec strin
 func people(w http.ResponseWriter, r *http.Request) {
 	checkReferrer(w,r)
 	c := appengine.NewContext(r)
-	
 	PEOPLE_FUNC := r.FormValue("PEOPLE_FUNC")
 	_, uid := checkSession(w,r)
-	
 	switch PEOPLE_FUNC {
 		case "CHECK-SYS1":
 			//check regularly for new eq
 			writeHTMLHeader(w, 200)
-			
 			cKey := "ALARM_EQ_MSG"
 			ALARM_EQ_MSG := ""
 			ALARM_EQ_MSG = getStrMemcacheValueByKey(w,r,cKey)
 			w.Write([]byte(ALARM_EQ_MSG))
-			
 			//also check alarm for user
 			cKey2 := fmt.Sprintf("ALARM_EQ_MSG_%v", uid)
 			ALARM_EQ_MSG2 := ""
@@ -24524,9 +24490,6 @@ func people(w http.ResponseWriter, r *http.Request) {
 			if _, err := taskqueue.Add(c, t, ""); err != nil {
 				 panic(err)
 			}
- 
- 
-		
 		case "CHECK-GBM":
 			cKey := fmt.Sprintf("GBM_MSG_SNIPPET_%v", uid)
 			GBM_MSG_SNIPPET := ""
@@ -24545,9 +24508,7 @@ func people(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(GBM_MSG_SNIPPET))
 			return
 		case "QUICK-VIEW":
-		
 			updateUserActiveData(w, r, c, uid, "QUICK-VIEW")
-			
 			GUESTBOOK_NUM_MSGS := checkNumMessages(w, r, uid)
 			if GUESTBOOK_NUM_MSGS > 0 {
 				reqStr := fmt.Sprintf("/guestbook?GB_FUNC=REFRESH")
@@ -28528,8 +28489,16 @@ func social(w http.ResponseWriter, r *http.Request) {
 				country := h.Get("X-AppEngine-Country")
 				url = fmt.Sprintf("https://newsapi.org/v2/top-headlines?country=%v", strings.ToLower(country))
 			}
+			//D0080
+			cKey := fmt.Sprintf("NEWSAPI_%v", url)
+			NEWS_CACHE := getBytMemcacheValueByKey(w,r,cKey)
+			if NEWS_CACHE != nil {
+				w.WriteHeader(200)
+				w.Write(NEWS_CACHE)
+				return
+			}
 			//c.Infof("url: %v", url)
-			apiKey := NEWSAPI_API_KEY 
+			apiKey := NEWSAPI_API_KEY
 			turl := fmt.Sprintf("%v", url)
 			req, _ := http.NewRequest("GET", turl, nil)
 			req.Header.Set("Authorization", "Bearer "+apiKey)
@@ -28544,6 +28513,8 @@ func social(w http.ResponseWriter, r *http.Request) {
 				//c.Infof("bodyBytes: %v", string(bodyBytes))
 				w.WriteHeader(200)
 				w.Write(bodyBytes)
+				//D0080
+				putBytesToMemcacheWithExp(w,r,cKey,bodyBytes,MC_PEOPLE_EXPIRES_10_MIN)
 			} else {
 				w.WriteHeader(400)
 			}
@@ -28601,6 +28572,11 @@ func social(w http.ResponseWriter, r *http.Request) {
 			msgDtl3 := fmt.Sprintf("UID:%v has browsed all slides of SID(%v).", uid, SID)
 			sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid,reqStr,SID),SID)
 			laterIncNumLikesSocial.Call(c, uid, SID, "SO_INC_NUM_LIKES", "A")
+			return
+		//D0080
+		case "get-favicon":
+			w.WriteHeader(200)
+			w.Write([]byte(DEFAULT_FAVICON))
 			return
 		case "proc-broadcast-contents":
 			procBroadcastContentsWorldwide(w,r)
@@ -28786,22 +28762,18 @@ func social(w http.ResponseWriter, r *http.Request) {
 			cont := fmt.Sprintf("%v", SYS_DISP_LOGO)
 			w.Write([]byte(cont))
 			return
-			
 		case "get-searchable":
 			writeHTMLHeader(w, 200)
 			cont := fmt.Sprintf("%v", SYS_SEARCHABLE)
 			w.Write([]byte(cont))
 			return
-			
 		case "get-contact":
 			writeHTMLHeader(w, 200)
 			w.Write([]byte(FDBKMAIL))
 			return
-	
 		case "get-log-hits":
 			procLogHits(w,r)
 			return
- 
 		case "CHK_SHR":
 			SID := r.FormValue("SID")
 			passcode := r.FormValue("passcode")
@@ -32631,7 +32603,6 @@ func parse_html(w http.ResponseWriter, r *http.Request, y io.Writer, n *html.Nod
 //applicable only for sites server which then calls all connected desktops under this server
 func getPeopleDirectory (w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	
 	//People Directory
 	IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "Y" {
@@ -32640,10 +32611,8 @@ func getPeopleDirectory (w http.ResponseWriter, r *http.Request) {
 		//foreach host post presence message
 		temp := strings.Split(HOST_LIST,"\n")
 		var buffer3 bytes.Buffer
-				
 		if len(temp) > 0 {
 			for j := 0; j < len(temp); j++ {
- 
 				tURL := ""
 				SPL := strings.Split(temp[j], "|")
 				if len(SPL) < 2 {
@@ -32653,20 +32622,17 @@ func getPeopleDirectory (w http.ResponseWriter, r *http.Request) {
 				}
 				i := strings.Index(getSchemeUrl(w,r), tURL)
 				if tURL != "" && i == -1 {
-					
 					URL := fmt.Sprintf("%v/social?SO_FUNC=get-people-directory", tURL)
 					client := urlfetch.Client(c)
 					if err := r.ParseForm(); err != nil {
 						panic(err)
 					}
-					
 					FL_RESP_OK := true
 					resp, err := client.Get(URL)
 					if err != nil {
 						//panic(err)
 						FL_RESP_OK = false
 					}
-					
 					if FL_RESP_OK == true {
 						bodyBytes, _ := ioutil.ReadAll(resp.Body)
 						//if response is overquota
@@ -32681,7 +32647,7 @@ func getPeopleDirectory (w http.ResponseWriter, r *http.Request) {
 		//cache all replies
 		putBytesToMemcacheWithoutExp(w,r,"OVERALL_PEOPLE",buffer3.Bytes())
 	}
-}	
+}
 
 //update overall cached pages such as people directory
 //applicable only to sites server which calls member desktops under it
@@ -45006,16 +44972,12 @@ func media(w http.ResponseWriter, r *http.Request) {
 								}
 							}
 						}
-					
 					}
-					
 					fmt.Fprintf(w, "</ul>")
 					if err := umpFooterTemplate.Execute(w, "VIDEO"); err != nil {
 						panic(err)
 					}
-					
 					return
-					
 				case "YVP":
 					updateUserActiveData(w, r, c, uid, "/media(yvp)")
 					SEARCH_KEY := r.FormValue("SEARCH_KEY")
@@ -45039,17 +45001,13 @@ func media(w http.ResponseWriter, r *http.Request) {
 						if err != nil {
 							panic(err)
 						}
- 
 						bodyBytes, _ := ioutil.ReadAll(resp.Body)
 						//HOST_LIST = string(bodyBytes)
 						fmt.Fprintf(w, "%v", string(bodyBytes))
-						
 						if err := htmlWidgetPlayerSearch.Execute(w, SEARCH_KEY); err != nil {
 							 panic(err)
 						}
-						
 					} else if (YID != "") {
-						
 						if SIZE == "" {
 							if err := mediaDispTemplateYVP.Execute(w, YID); err != nil {
 								 panic(err)
@@ -45057,26 +45015,21 @@ func media(w http.ResponseWriter, r *http.Request) {
 						} else {
 							if err := mediaDispTemplateYVPL.Execute(w, YID); err != nil {
 								 panic(err)
-							}		
+							}
 						}
 						if err := htmlWidgetPlayerSearch2.Execute(w, YID); err != nil {
 							 panic(err)
 						}
-						
-					
 					} else {
- 
+
 						if err := htmlWidgetPlayerSearch.Execute(w, SEARCH_KEY); err != nil {
 							 panic(err)
 						}
 					}
-					
 					if err := yvpFooterTemplate.Execute(w, "VIDEO"); err != nil {
 						panic(err)
 					}
-					
 					return
-						
 				default:
 					if CATEGORY != "" {
 						redURL := fmt.Sprintf("/infodb?DB_FUNC=MEDIA&CATEGORY=%v", CATEGORY)
@@ -45167,7 +45120,7 @@ const mediaMusicPlayerUMP1 = `
 <head>
 <meta charset="UTF-8">
 <title>Music Player::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <script src="/js/modernizr.custom.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="/js/jquery.cookie.js"></script>
@@ -45223,7 +45176,7 @@ const mediaMIDIPlayerUMP1 = `
 <head>
 <meta charset="UTF-8">
 <title>MIDI Player::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <script src="/js/modernizr.custom.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script type='text/javascript' src='/js/midi.js'></script>
@@ -45314,7 +45267,7 @@ const mediaVideoPlayerUVP1 = `
 <head>
 <meta charset="UTF-8">
 <title>Video Player::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <script src="/js/modernizr.custom.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="/js/jquery.cookie.js"></script>
@@ -45365,7 +45318,7 @@ const mediaYoutubePlayerYVP1 = `
 <head>
 <meta charset="UTF-8">
 <title>Youtube Player::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <script src="/js/modernizr.custom.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="/js/jquery.cookie.js"></script>
@@ -45483,10 +45436,10 @@ const htmlWidgetBrowserA = `
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-  <link rel="shortcut icon" href="/img/favicon.ico"/>
+  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
   <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
   <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
-  <link rel="shortcut icon" href="/img/favicon.ico"/>
+  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
   <link rel="stylesheet" type="text/css" media="all" href="/css/searchbar-style.css">
   <script type="text/javascript" src="/js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="/js/jquery.autocomplete.min.js"></script>
@@ -45509,10 +45462,10 @@ const htmlWidgetBrowserH = `
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-  <link rel="shortcut icon" href="/img/favicon.ico"/>
+  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
   <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
   <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
-  <link rel="shortcut icon" href="/img/favicon.ico"/>
+  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
   <link rel="stylesheet" type="text/css" media="all" href="/css/searchbar-style.css">
   <script type="text/javascript" src="/js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="/js/jquery.autocomplete.min.js"></script>
@@ -45535,10 +45488,10 @@ const htmlWidgetBrowserC1 = `
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <title>Loading ULAPPH Cloud Desktop::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-  <link rel="shortcut icon" href="/img/favicon.ico"/>
+  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
   <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
   <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
-  <link rel="shortcut icon" href="/img/favicon.ico"/>
+  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
   <meta http-equiv="refresh" content="{{.}}" />
   <style type="text/css">
 	 body  {
@@ -45791,7 +45744,7 @@ const htmlWidgetBrowserAUF = `
 <head>
 <meta charset="UTF-8">
 <title>MiniBrowser::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
 	
@@ -45811,7 +45764,7 @@ const htmlWidgetRanGenTool = `
 <head>
 <meta charset="UTF-8">
 <title>Random Generator::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 </head>
  
 <body>
@@ -45830,7 +45783,7 @@ const htmlWidgetFamTreeTool = `
 <head>
 <meta charset="UTF-8">
 <title>Family Tree::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 </head>
  
 <body>
@@ -45849,7 +45802,7 @@ const htmlUrlFetcherA = `
 <head>
 <meta charset="UTF-8">
 <title>URL Fetcher::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
 	
@@ -45871,7 +45824,7 @@ const htmlUwmSharingA = `
 <head>
 <meta charset="UTF-8">
 <title>UWM Sharing::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link href="/css/bootstrap.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/css/switch.css">
 </head>
@@ -45928,7 +45881,7 @@ const htmlDrivesA = `
 <head>
 <meta charset="UTF-8">
 <title>My Drives::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" href="/lib/css/buttons/buttons.css">
 <link rel="stylesheet" href="/lib/css/animate/animate.css">	
 <link rel="stylesheet" href="/lib/css/text-input/text-input.css">	
@@ -46083,7 +46036,7 @@ const htmlDriveJSONtoTableA = `
 <head>
 <meta charset="UTF-8">
 <title>JSON to Table::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
 <script src="/lib/js/json2table/jquery.columns.min.js"></script>
@@ -46118,7 +46071,7 @@ const htmlDesktopsJSONtoTableA = `
 <head>
 <meta charset="UTF-8">
 <title>All Desktops::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
 <script src="/lib/js/json2table/jquery.columns.min.js"></script>
@@ -46230,7 +46183,7 @@ const htmlIconsJSONtoTableA = `
 <head>
 <meta charset="UTF-8">
 <title>All Icons::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
 <script src="/lib/js/json2table/jquery.columns.min.js"></script>
@@ -46270,7 +46223,7 @@ const htmlNotesJSONtoTableA = `
 <head>
 <meta charset="UTF-8">
 <title>All Notes::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
 <script src="/lib/js/json2table/jquery.columns.min.js"></script>
@@ -46309,7 +46262,7 @@ const htmlGithubJSONtoTableA = `
 <head>
 <meta charset="UTF-8">
 <title>JSON to Table::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
 <script src="/lib/js/json2table/jquery.columns.min.js"></script>
@@ -46350,7 +46303,7 @@ const htmlGithubJSONtoTableAB = `
 <head>
 <meta charset="UTF-8">
 <title>JSON to Table::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
 <script src="/lib/js/json2table/jquery.columns.min.js"></script>
@@ -46386,7 +46339,7 @@ const htmlWidgetMyLocalNotesA = `
 <head>
 <meta charset="UTF-8">
 <title>Local Notes::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>	
 <link href="/css/bootstrap.css" rel="stylesheet">
@@ -46436,7 +46389,7 @@ const htmlWidgetDefaultSlideA = `
 <head>
 <meta charset="UTF-8">
 <title>Default Slide::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>	
 <link href="/css/bootstrap.css" rel="stylesheet">
@@ -46581,7 +46534,7 @@ const htmlWidgetMyPreferencesA = `
 <head>
 <meta charset="UTF-8">
 <title>My Preferences::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link href="/css/bootstrap.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/css/spectrum.css">
 <link rel="stylesheet" type="text/css" href="/css/switch.css">
@@ -46794,7 +46747,6 @@ We have listed below some important links about your ULAPPH cloud desktop.
 		<ul><li>
 		<a href="{{.STR_FILLER3}}social?SO_FUNC=ViewPeople&UID={{.STR_FILLER2}}">{{.STR_FILLER3}}social?SO_FUNC=ViewPeople&UID={{.STR_FILLER2}}</a>
 		</li></ul>
-	
 </ul>
 <hr>
 <h3>Force System Settings</h3>
@@ -46802,7 +46754,6 @@ We have listed below some important links about your ULAPPH cloud desktop.
   <input type="checkbox" checked onclick="switch4('SYS_UWM_RAN_COLORS');" id="SYS_UWM_RAN_COLORS">
   <div class="slider round"></div>
 </label> Randomize Desktop Colors<br>
- 
 <hr>
 <h3>Force Screensize</h3>
 <label class="switch">
@@ -46874,7 +46825,7 @@ const htmlEscSearchACR = `
 <head>
 <meta charset="UTF-8">
 <title>Search::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 	
 </head>
@@ -46890,7 +46841,7 @@ const htmlWidgetBrowserACR = `
 <head>
 <meta charset="UTF-8">
 <title>Join Chat::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
 	
@@ -46925,7 +46876,7 @@ const iconsSettingsTemplateHeaderHTML = `
  
 	<title>Settings::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
     <link rel="stylesheet" media="screen,projection,tv" href="/css/pulldown-tabzilla-min.css" />
 	<script src="/js/pulldown-site-min.js"></script>
@@ -46980,7 +46931,7 @@ const genericTableDispHdr2 = `
  
 	<title>{{.STR_FILLER3}}::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -47056,7 +47007,7 @@ const genericTableDispHdrNC2 = `
  
 	<title>{{.STR_FILLER3}}::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -47150,7 +47101,7 @@ const infoDBTemplateHeaderHTMLSlidesAdmin = `
  
 	<title>Slides::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47237,7 +47188,7 @@ const infoDBTemplateHeaderHTMLSlidesDirectory = `
  
 	<title>Directory::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47289,7 +47240,7 @@ const showTrendingRecs = `
  
 	<title>ULAPPH Trending Contents::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47332,7 +47283,7 @@ const showPeopleDirRecs = `
  
 	<title>ULAPPH People Directory::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47373,7 +47324,7 @@ const showSitesDirRecs = `
  
 	<title>ULAPPH Cloud Desktop Directory::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47415,7 +47366,7 @@ const showWhatsNewRecs = `
  
 	<title>ULAPPH Whats New Contents::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47459,7 +47410,7 @@ const showDiscussionsRecs = `
  
 	<title>ULAPPH Recent Discussions::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47505,7 +47456,7 @@ const showAllRecentsRecs = `
  
 	<title>ULAPPH Recents::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -47546,7 +47497,7 @@ const infoDBTemplateHeaderHTMLArticlesAdmin = `
  
 	<title>Articles::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47631,7 +47582,7 @@ const iconsSettingsTemplateHeaderHTMLAds = `
  
 	<title>AdminAds::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -47673,7 +47624,7 @@ const iconsSettingsTemplateHeaderHTMLSL = `
  
 	<title>AdminSlides::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47718,7 +47669,7 @@ const iconsSettingsTemplateHeaderHTMLAL = `
  
 	<title>AdminArticles::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47761,7 +47712,7 @@ const iconsSettingsTemplateHeaderHTMLMD = `
  
 	<title>Media Gallery::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -47877,7 +47828,7 @@ const iconsSettingsTemplateHeaderHTMLMDAdmin = `
  
 	<title>Media Gallery::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -47995,7 +47946,7 @@ const iconsSettingsTemplateHeaderHTMLMDUAdmin = `
  
 	<title>Media Gallery::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -48069,7 +48020,7 @@ const iconsSettingsTemplateHeaderHTMLSLU = `
  
 	<title>Admin Slides::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -48126,7 +48077,7 @@ const iconsSettingsTemplateHeaderHTMLSLA = `
  
 	<title>Admin Articles::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -48243,7 +48194,7 @@ const mediaSimpleGal1A = `
         <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
         <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
         <meta name="author" content="Codrops"/>
-        <link rel="shortcut icon" href="/img/favicon.ico"/>
+        <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
         <link rel="stylesheet" type="text/css" href="/css/style-gamma.css"/>
 		<script src="/js/modernizr.custom.70736.js"></script>
 		<noscript><link rel="stylesheet" type="text/css" href="/css/noJS-gamma.css"/></noscript>
@@ -53805,23 +53756,17 @@ func queueStatsIncLoggedIn(w http.ResponseWriter, r *http.Request) {
 //checks if user is currently active or not
 func getActiveStatus(w http.ResponseWriter, r *http.Request, UID string) (IS_ACTIVE string)  {
 	c := appengine.NewContext(r)
-	
 	IS_ACTIVE = "N"
-	
 	//check cache first
 	usersProcessor_IS_LOGGED_IN := ""
 	usersProcessor_IS_LOGGED_IN_TS := ""
 	usersProcessor_CACHE_KEY := fmt.Sprintf("usersProcessor_IS_LOGGED_IN_%s", UID)
 	usersProcessor_IS_LOGGED_IN = getStrMemcacheValueByKey(w,r,usersProcessor_CACHE_KEY)
-	
 	usersProcessor_CACHE_KEY2 := fmt.Sprintf("usersProcessor_IS_LOGGED_IN_TS_%s", UID)
 	usersProcessor_IS_LOGGED_IN_TS = getStrMemcacheValueByKey(w,r,usersProcessor_CACHE_KEY2)
- 
 	if usersProcessor_IS_LOGGED_IN != "" && usersProcessor_IS_LOGGED_IN_TS != "" {
-		
 		if usersProcessor_IS_LOGGED_IN == "N" {
 			IS_ACTIVE = "N"
-			
 		} else {
 			timeFormat := "20060102150405"
 			then, err := time.Parse(timeFormat, usersProcessor_IS_LOGGED_IN_TS)
@@ -53829,19 +53774,14 @@ func getActiveStatus(w http.ResponseWriter, r *http.Request, UID string) (IS_ACT
 				 //panic(err)
 			}
 			duration := time.Since(then)
-			
 			if duration.Hours() > 2 {
 				IS_ACTIVE = "N"
-				
 			} else {
-				IS_ACTIVE = "Y"	
-				
-			}			
+				IS_ACTIVE = "Y"
+			}
 		}
- 
 		return IS_ACTIVE
 	}
-	
 	//if no cache, use datastore					
 	q := datastore.NewQuery("TDSUSERS").Filter("USER =", UID).Limit(1)
 	//c.Errorf("[S0448]")
@@ -53849,7 +53789,6 @@ func getActiveStatus(w http.ResponseWriter, r *http.Request, UID string) (IS_ACT
 	if _, err := q.GetAll(c, &users); err != nil {
 		 panic(err)
 	  }
-	
 	for _, p := range users{
 			//if p.USER == UID {
 				if p.LOGGED_IN == 0 {
@@ -53858,38 +53797,28 @@ func getActiveStatus(w http.ResponseWriter, r *http.Request, UID string) (IS_ACT
 					putStrToMemcacheWithoutExp(w,r,usersProcessor_CACHE_KEY,"N")
 					usersProcessor_CACHE_KEY2 := fmt.Sprintf("usersProcessor_IS_LOGGED_IN_TS_%s", UID)
 					putStrToMemcacheWithoutExp(w,r,usersProcessor_CACHE_KEY2,p.LAST_LOGIN)
-						
 				} else {
 					if p.LAST_ACTIVE != "" && p.USER != "" {
-	
 						timeFormat := "20060102150405"
 						then, err := time.Parse(timeFormat, p.LAST_ACTIVE)
 						if err != nil {
 							panic(err)
 						}
 						duration := time.Since(then)
-						
 						if duration.Hours() > 2 {
 							IS_ACTIVE = "N"
-							
 						} else {
 							IS_ACTIVE = "Y"	
-							
 						}
-						
-						
 						usersProcessor_CACHE_KEY := fmt.Sprintf("usersProcessor_IS_LOGGED_IN_%s", UID)
 						putStrToMemcacheWithoutExp(w,r,usersProcessor_CACHE_KEY,IS_ACTIVE)
-						
 						usersProcessor_CACHE_KEY = fmt.Sprintf("usersProcessor_IS_LOGGED_IN_TS_%s", UID)
 						putStrToMemcacheWithoutExp(w,r,usersProcessor_CACHE_KEY,p.LAST_ACTIVE)
-						
 					} else {
 						IS_ACTIVE = "N"
 					}
 			}
 	}
- 
 	return IS_ACTIVE
 }
  
@@ -55155,14 +55084,12 @@ func showOverallPeople(w http.ResponseWriter, r *http.Request, FL_BOT bool) {
 		//redirect
 		redURL := fmt.Sprintf("%v/directory?DIR_FUNC=people", getSchemeNewUrl(w,r,SEARCH_SERVER))
 		http.Redirect(w, r, redURL, http.StatusFound)
-		return		
+		return
 	}
-	
 	cKey := fmt.Sprintf("OVERALL_PEOPLE")
 	OVERALL_PEOPLE := ""
 	OVERALL_PEOPLE = getStrMemcacheValueByKey(w,r,cKey)
-	
-	if OVERALL_PEOPLE != "" {	
+	if OVERALL_PEOPLE != "" {
 		if err := showPeopleDir.Execute(w, ""); err != nil {
 			 panic(err)
 		}
@@ -61782,7 +61709,7 @@ var userAccessTemplateMobileRootSearch = template.Must(template.New("userAccessT
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="/css/home1.css">
     <![endif]-->
@@ -61853,7 +61780,7 @@ var userAccessTemplateMobileRootAll = template.Must(template.New("userAccessTemp
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="/css/home1.css">
     <![endif]-->
@@ -61929,7 +61856,7 @@ var userAccessTemplateMobileDesktop0 = template.Must(template.New("userAccessTem
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="/css/home1.css">
     <![endif]-->
@@ -61994,7 +61921,7 @@ var userAccessTemplateDesktop0Head1 = template.Must(template.New("userAccessTemp
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/> 	
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/> 	
 `))
  
  
@@ -62009,7 +61936,7 @@ var userAccessTemplateDesktopNHead1 = template.Must(template.New("userAccessTemp
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/> 	
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/> 	
 `))
  
 //cache files
@@ -62070,7 +61997,7 @@ var userAccessCacheDesktop0Part2 = template.Must(template.New("userAccessCacheDe
 /css/modalWindow.css
 /css/msgs.css
 /img/wireless-icon.png
-/img/favicon.ico
+ULAPPH_DEFAULT_FAVICON
 /img/background.gif
 /img/banaosystems-boot.png
 /img/spinnerSmall.gif
@@ -62119,7 +62046,7 @@ var userAccessTemplateDesktop0Part1 = template.Must(template.New("userAccessTemp
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" type="text/css" media="screen" href="{{.}}"/>
 `))
  
@@ -62134,7 +62061,7 @@ var userAccessTemplateDesktop0Part1a = template.Must(template.New("userAccessTem
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 `))
  
 var userAccessTemplateDesktop0Part2 = template.Must(template.New("userAccessTemplateDesktop0Part2").Parse(`
@@ -62437,7 +62364,7 @@ var htmlHeaderModal = template.Must(template.New("htmlHeaderModal").Parse(`
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -62469,7 +62396,7 @@ var mobileControl = template.Must(template.New("mobileControl").Parse(`
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link href='https://fonts.googleapis.com/css?family=Sansita+One' rel='stylesheet' type='text/css'>
 	<link href='/css/mobileControl.css' rel='stylesheet' type='text/css'>
 </head>
@@ -62603,7 +62530,7 @@ var htmlHeaderModalProfile = template.Must(template.New("htmlHeaderModalProfile"
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -62663,7 +62590,7 @@ var htmlEditorHeader = template.Must(template.New("htmlEditorHeader").Parse(`
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" href="/css/ace-styles.css" type="text/css" media="screen" charset="utf-8">
     <script async="true" src="/js/ace-source-code-pro.js"></script>
     <link rel="stylesheet" href="/css/editor-style.css" type="text/css" media="screen" charset="utf-8">
@@ -63151,7 +63078,7 @@ var htmlEditorHeaderReader = template.Must(template.New("htmlEditorHeaderReader"
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" href="/css/ace-stylesReader.css" type="text/css" media="screen" charset="utf-8">
     <script async="true" src="/js/ace-source-code-pro.js"></script>	
 	<link rel="stylesheet" href="/css/ace-slider-reset.css"> <!-- CSS reset -->
@@ -63529,7 +63456,7 @@ var htmlHeaderModalAds = template.Must(template.New("htmlHeaderModalAds").Parse(
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -63552,7 +63479,7 @@ var htmlHeaderAdmin = template.Must(template.New("htmlHeaderAdmin").Parse(`
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/style-search.css"/>
 	<link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
@@ -63581,7 +63508,7 @@ var htmlHeaderSearchGlow = template.Must(template.New("htmlHeaderSearchGlow").Pa
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -63601,7 +63528,7 @@ var htmlHeaderFB = template.Must(template.New("htmlHeaderFB").Parse(`
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
   </head>
   <body>
 <div id="fb-root"></div>
@@ -63621,7 +63548,7 @@ var htmlQuickSearchTool = template.Must(template.New("htmlQuickSearchTool").Pars
 <head>
 <meta charset="UTF-8">
 <title>Quick Launch::- ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
 </head>
@@ -63967,7 +63894,7 @@ var htmlHeaderGB = template.Must(template.New("htmlHeaderGB").Parse(`
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="/css/home1.css">
     <![endif]-->
@@ -64103,7 +64030,7 @@ var htmlHeaderGBChannel = template.Must(template.New("htmlHeaderGBChannel").Pars
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="/css/home1.css">
     <![endif]-->
@@ -64159,7 +64086,7 @@ var htmlHeaderModalRefresh = template.Must(template.New("htmlHeaderModalRefresh"
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -64182,7 +64109,7 @@ var htmlHeaderModalRefreshNo = template.Must(template.New("htmlHeaderModalRefres
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -64204,7 +64131,7 @@ var htmlHeaderModalRefreshNoHome = template.Must(template.New("htmlHeaderModalRe
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
 	<link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -64234,7 +64161,7 @@ var htmlHeaderModalBlink = template.Must(template.New("htmlHeaderModalBlink").Pa
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -64291,7 +64218,7 @@ var htmlHeaderModalBlinkColor = template.Must(template.New("htmlHeaderModalBlink
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -64352,7 +64279,7 @@ const htmlHeaderGoogleMapsC = `
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<script type='text/javascript' src='https://code.jquery.com/jquery-1.4.4.min.js'></script>
 `
  
@@ -64424,7 +64351,7 @@ var htmlHeaderModalBlinkColorLinkify = template.Must(template.New("htmlHeaderMod
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
 	<link rel="stylesheet" href="/css/calendarview.css" type="text/css" />
@@ -64551,7 +64478,7 @@ var textCSSBody = template.Must(template.New("textCSSBody").Parse(`
 <html>
 	<head>
 		<title>Text Formatter::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-		<link rel="shortcut icon" href="/img/favicon.ico"/>
+		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	</head>
 	<body>
 			<form action="/editor?EDIT_FUNC=TEXT-CSS" method="post">
@@ -64598,7 +64525,7 @@ var textCountdownGet = template.Must(template.New("textCountdownGet").Parse(`
 <html>
 	<head>
 		<title>Countdown Timer::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-		<link rel="shortcut icon" href="/img/favicon.ico"/>
+		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	</head>
 	<body onload="addMinutes(0);">
 			<form action="/tools?FUNC=WIDGET&t=CountDownWidget" method="post">
@@ -64631,7 +64558,7 @@ var textCryptoBody = template.Must(template.New("textCryptoBody").Parse(`
 <html>
 	<head>
 		<title>ULAPPH Encryption::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-		<link rel="shortcut icon" href="/img/favicon.ico"/>
+		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	</head>
 	<body>
 			<form name="text-css" action="/editor?EDIT_FUNC=CRYPTO" method="post" enctype="multipart/form-data">
@@ -64749,7 +64676,7 @@ var textDrawBody = template.Must(template.New("textDrawBody").Parse(`
 <html>
 	<head>
 	<title>ULAPPH Drawing::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" href="/draw/better.css" type="text/css" />
     <link rel="stylesheet" href="/draw/pygments.css" type="text/css" />
  
@@ -64818,7 +64745,7 @@ var textToSpeechBody = template.Must(template.New("textToSpeechBody").Parse(`
 		<meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
 		<meta name="author" content="ULAPPH Cloud Desktop">
 		<meta name="copyright" content="ULAPPH Cloud Desktop">
-		<link rel="shortcut icon" href="/img/favicon.ico"/>
+		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 		
 		<link rel="stylesheet" href="/css/jquery.mobile-1.4.5.min.css"/>
 		
@@ -64916,7 +64843,7 @@ var textSemaphoreBody = template.Must(template.New("textSemaphoreBody").Parse(`
 <html>
 	<head>
 		<title>SemaphoreSMS::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-		<link rel="shortcut icon" href="/img/favicon.ico"/>
+		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 		<link rel="stylesheet" href="/css/chat-style.css">
 		<script type="text/javascript" src="/js/jquery-2.1.1.js"></script>
 		<link rel="stylesheet" href="/css/sol.css">
@@ -64950,7 +64877,7 @@ var textStartBody = template.Must(template.New("textStartBody").Parse(`
 <html>
 	<head>
 		<title>Start Menu::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-		<link rel="shortcut icon" href="/img/favicon.ico"/>
+		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 		<link rel="stylesheet" href="/css/chat-style.css">
 		<script type="text/javascript" src="/js/jquery-2.1.1.js"></script>
 		<link rel="stylesheet" href="/css/sol.css">
@@ -65002,7 +64929,7 @@ var playGoBody = template.Must(template.New("playGoBody").Parse(`
 <html>
 	<head>
 		<title>ULAPPH Go Playground::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-		<link rel="shortcut icon" href="/img/favicon.ico"/>
+		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 		<link rel="stylesheet" href="/css/style-play.css">
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 		<script src="/js/jquery-linedtextarea.js"></script>
@@ -65125,7 +65052,7 @@ var htmlToolsConnection = template.Must(template.New("htmlToolsConnection").Pars
 <meta name="viewport" content="width=620">
 <title>Monitor::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <link rel="stylesheet" href="/css/html5demos.css">
 <script src="/js/h5utils.js"></script></head>
 <body>
@@ -65160,7 +65087,7 @@ var htmlMirror = template.Must(template.New("htmlMirror").Parse(`
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>WebcamJS MirrorB - ULAPPH Cloud Desktop</title>
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="stylesheet" href="/lib/css/buttons/buttons.css">
 	<style type="text/css">
 		body { font-family: Helvetica, sans-serif; }
@@ -65267,7 +65194,7 @@ var htmlMirror2 = template.Must(template.New("htmlMirror2").Parse(`
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>WebcamJS MirrorS - ULAPPH Cloud Desktop</title>
-	<link rel="shortcut icon" href="/img/favicon.ico"/>
+	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<link rel="stylesheet" href="/lib/css/buttons/buttons.css">
 	<style type="text/css">
 		body { font-family: Helvetica, sans-serif; }
@@ -65418,7 +65345,7 @@ var userAccessTemplateDesktopNPart1 = template.Must(template.New("userAccessTemp
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
     <link rel="stylesheet" type="text/css" media="screen" href="{{.}}"/>
  
 `))
@@ -65434,7 +65361,7 @@ var userAccessTemplateDesktopNPart1a = template.Must(template.New("userAccessTem
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 `))
  
 var userAccessTemplateUWMPart1 = template.Must(template.New("userAccessTemplateUWMPart1").Parse(`
@@ -65448,7 +65375,7 @@ var userAccessTemplateUWMPart1 = template.Must(template.New("userAccessTemplateU
     <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="/img/favicon.ico"/>
+    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 	<meta name="theme-color" content="{{.STR_FILLER1}}">
 	<link rel="icon" sizes="192x192" href="/img/banaosystems-login.png">
     <link rel="stylesheet" media="screen,projection,tv" href="/css/mobitouch.css" />
@@ -68483,7 +68410,7 @@ var multiUploaderImagesHdr = template.Must(template.New("multiUploaderImagesHdr"
  
 <title>Dropzone::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <script src="/js/dropzone.js"></script>
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/dropzone.css">
@@ -68533,7 +68460,7 @@ var multiUploaderImagesHdr2 = template.Must(template.New("multiUploaderImagesHdr
  
 <title>Dropzone::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
 <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-<link rel="shortcut icon" href="/img/favicon.ico"/>
+<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
 <script src="/js/dropzone.js"></script>
 <link rel="stylesheet" href="/css/dropzone.css">
 <body>
@@ -74349,10 +74276,12 @@ func renderStaticNewsSources(w http.ResponseWriter, r *http.Request, sources []b
 	doc := new(Doc)
 	if len(ns.Sources) > 0 {
 		for i := 0; i < len(ns.Sources); i++ {
+			//privacy := fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-privacy", ns.Sources[i].ID))
 			g := GotoMyUlapphs {
 				Picture: ns.Sources[i].Country,
 				UserID: ns.Sources[i].Name,
 				Url: ns.Sources[i].ID,
+				Privacy: "",
 			}
 			doc.Ulapphs = append(doc.Ulapphs, g)
 		}
@@ -74401,7 +74330,9 @@ func renderStaticGotoMyUlapphs(w http.ResponseWriter, r *http.Request) {
 	if len(urlArr) > 0 {
 		for i := 0; i < len(urlArr); i++ {
 			SPX := strings.Split(urlArr[i], "|")
-			pix := "/img/no-profile.png"
+			//D0080
+			pix := fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-logo", SPX[1]))
+			privacy := fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-privacy", SPX[1]))
 			if len(SPX) == 5 {
 				pix = SPX[4]
 			}
@@ -74409,6 +74340,7 @@ func renderStaticGotoMyUlapphs(w http.ResponseWriter, r *http.Request) {
 				Picture: pix,
 				UserID: SPX[0],
 				Url: SPX[1],
+				Privacy: privacy,
 			}
 			doc.Ulapphs = append(doc.Ulapphs, g)
 		}
@@ -76667,7 +76599,6 @@ func readLines3(w http.ResponseWriter, r *http.Request, blobkey, DESKTOP, SID st
 		//D0079
 		//if readlines contain #DISABLED or #DISABLE
 		if strings.HasPrefix(s.Text(), "#DISABLED") || strings.HasPrefix(s.Text(), "#DISABLE") {
-			//edwinxxxx
 			msgDtl := fmt.Sprintf("[U00193] This content %v is currently disabled by the author.", SID)
 			msgTyp := "error"
 			action := "U00193"
@@ -79886,7 +79817,6 @@ func encrypter(w http.ResponseWriter, r *http.Request, SID, ENCRYPTION_KEY strin
 	_, uid := checkSession(w,r)
 	c := appengine.NewContext(r)
 	updateUserActiveData(w, r, c, uid, "encryption")
- 
 	SPL := strings.Split(SID,"-")
 	TARGET := SPL[0]
 	DOC_ID := "0"
@@ -79894,16 +79824,13 @@ func encrypter(w http.ResponseWriter, r *http.Request, SID, ENCRYPTION_KEY strin
 		DOC_ID = SPL[1]
 	}
 	docID := str2int(DOC_ID)
-	
 	BLOB_KEY := ""
 	TITLE := ""
 	idx := ""
- 
 	DOC_STAT := ""
 	FL_SHARED := ""
 	AUTHOR := ""
 	SHARED_TO := ""
-	
 	switch TARGET {
 		case "TDSSLIDE":
 			BLOB_KEY, DOC_STAT, FL_SHARED, AUTHOR, _, TITLE, _, SHARED_TO, _, _ = getTDSSLIDEBlobKey(w, r, docID)
@@ -79915,64 +79842,47 @@ func encrypter(w http.ResponseWriter, r *http.Request, SID, ENCRYPTION_KEY strin
 			BLOB_KEY, _, TITLE, AUTHOR, DOC_STAT, FL_SHARED, _, _, _, _, SHARED_TO = getTDSMEDIABlobKey(w, r, docID)
 			idx = "IDX_TDSMEDIA"
 	}
- 
 	FL_PROC_OK := false
-	
 	switch {
-		
 		case uid == AUTHOR:
 			FL_PROC_OK = true
- 
 		case DOC_STAT == "Premium" && uid != AUTHOR:
-			
 			sysReq := fmt.Sprintf("/store?STO_FUNC=Premium&SID=%v", SID)
 			http.Redirect(w, r, sysReq, http.StatusFound)
 			return
-	
 		case (FL_SHARED == "N" || DOC_STAT == "Personal" || (FL_SHARED == "Y" && DOC_STAT == "Personal")) && SHARED_TO == "":
 			isOk := checkPersonalAuthor(w,r,AUTHOR,SID,docID)
 			if isOk == true {
 				FL_PROC_OK = true
 			}
-				
 		case DOC_STAT == "Personal" && SHARED_TO != "":
 			isAllowed := checkPersonalAccess(w,r, AUTHOR, SHARED_TO, SID, docID)
 			if isAllowed == true {
 				//break
 				FL_PROC_OK = true
 			}
-			
 		case DOC_STAT == "ULAPPH Only":
 			FL_PROC_OK = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 			if FL_PROC_OK == false {
 				return
 			}
- 
 		case DOC_STAT == "Worldwide" && FL_SHARED == "Y":
 			//allow
 			FL_PROC_OK = true
-		
 	}
-		
 	if FL_PROC_OK == false {
 		return
 	}
-	
 	//thisCont := getBlobText(w, r, BLOB_KEY)
 	blobChan := make(chan string)
 	go getBlobTextChan(w, r,blobChan, BLOB_KEY)
 	thisCont := <- blobChan
- 
 	//encrypt content
 	block, err := aes.NewCipher([]byte(ENCRYPTION_KEY))
- 
 	if err != nil {
- 
 		panic(err)
- 
 	}
 	b := base64.URLEncoding.EncodeToString([]byte(thisCont))
- 
 	ciphertext := make([]byte, aes.BlockSize+len(b))
 	iv := ciphertext[:aes.BlockSize]
 	if _, err = io.ReadFull(crand.Reader, iv); err != nil {
@@ -79985,7 +79895,6 @@ func encrypter(w http.ResponseWriter, r *http.Request, SID, ENCRYPTION_KEY strin
 	csn2 := getUpUrlString(w,r,"/upload-slides")
     u, err := blobstore.UploadURL(c, csn2, nil)
     if err != nil {
- 
         return
     }
 	switch TARGET {
@@ -80009,9 +79918,8 @@ func encrypter(w http.ResponseWriter, r *http.Request, SID, ENCRYPTION_KEY strin
 			u, err = blobstore.UploadURL(c, csn2, nil)
 			if err != nil {
 				return
-			}	
+			}
 	}
- 
     // Now you can prepare a form that you will submit to that URL.
     var m bytes.Buffer
     fw := multipart.NewWriter(&m)
@@ -80023,12 +79931,10 @@ func encrypter(w http.ResponseWriter, r *http.Request, SID, ENCRYPTION_KEY strin
 		//return
     }
 	str := base64.StdEncoding.EncodeToString(myEncStr)
-	
 	if _, err = file.Write([]byte(str)); err != nil {
 		panic(err)
 		//return
     }
-	
 	_ = fw.WriteField("EDIT_FUNC2", "SAVE_TEXT")
 	_ = fw.WriteField("SID", SID)
 	_ = fw.WriteField("CATEGORY", "desktop0")
@@ -80037,29 +79943,22 @@ func encrypter(w http.ResponseWriter, r *http.Request, SID, ENCRYPTION_KEY strin
 	_ = fw.WriteField("SPC_OPT", "")
 	_ = fw.WriteField("TITLE", TITLE)
 	_ = fw.WriteField("UID", uid)
-	
     // Don't forget to close the multipart writer.
     // If you don't close it, your request will be missing the terminating boundary.
     fw.Close()
- 
     // Now that you have a form, you can submit it to your handler.
     req, err := http.NewRequest("POST", u.String(), &m)
     if err != nil {
- 
         return
     }
     // Don't forget to set the content type, this will contain the boundary.
     req.Header.Set("Content-Type", fw.FormDataContentType())
- 
-	
     // Now submit the request.
     client := urlfetch.Client(c)
     res, err := client.Do(req)
     if err != nil {
- 
         return
     }
- 
     // Check the response status, it should be whatever you return in the `/upload` handler.
     if res.StatusCode != http.StatusCreated {
         return

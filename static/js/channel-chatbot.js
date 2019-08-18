@@ -14,6 +14,10 @@ function onOpen() {
 };
 
 function procMessage(obj) {
+	//do only if chat is ready
+	if (localStorage['chat-ready'] != "Y") {
+		return;
+	}
 	console.log("procMessage...");
     console.log("obj: "+obj);
  	var res = obj.message;

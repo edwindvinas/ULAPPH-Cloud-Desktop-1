@@ -963,7 +963,12 @@ function openWindow(tgt, ttl) {
 			tgt = "https://www.google.com";
 		} else {
 			if (isDataURL(tgt) == false) {
-				tgt = "https://www.google.com.ph/webhp#q=" + tgt;
+				var hs = tgt.indexOf("CHAT_FUNC");
+				if (hs >= 0) {
+					//ok
+				} else {
+					tgt = "https://www.google.com.ph/webhp#q=" + tgt;
+				}
 			} else {
 				var hv = tgt.indexOf("http://");
 				var hs = tgt.indexOf("https://");

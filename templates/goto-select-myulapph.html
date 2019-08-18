@@ -54,7 +54,11 @@
 <ul id="myUL">
   {{range .Ulapphs}}
     <!--<li><a href="{{.Url}}/chat-bubble/ulapphbot.html" title="Chatbot" target="pwa-{{.UserID}}@{{.Url}}"><img src="/chat-bubble/bot-512.png" width=50 height=50></a><a href="{{.Url}}/pwa/" title="PWA Apps" target="pwa-{{.UserID}}@{{.Url}}"><img src="/img/pwa.png" width=50 height=50></a><a href="{{.Url}}/uwm" title="UWM Login" target="{{.UserID}}@{{.Url}}"><img src="{{.Picture}}" width=50 height=50>{{.UserID}} @ {{.Url}}</a></li> -->
-    <li><a href="{{.Url}}/uwm" title="UWM Login" target="{{.UserID}}@{{.Url}}"><img src="{{.Picture}}" width=50 height=50>{{.UserID}} of {{.Url}}</a></li>
+    {{if ne .Privacy "true"}}
+    <li><a href="{{.Url}}/uwm" title="UWM Login" target="{{.UserID}}@{{.Url}}"><img src="{{.Picture}}" width=50 height=50 title="Public">{{.UserID}} of {{.Url}} (Public)</a></li>
+    {{else}}
+    <li><a href="{{.Url}}/uwm" title="UWM Login" target="{{.UserID}}@{{.Url}}"><img src="{{.Picture}}" width=50 height=50 title="Private"><img src="/img/encrypted.png" width=50 height=50>{{.UserID}} of {{.Url}} (Private)</a></li>
+    {{end}}
   {{end}}
 </ul>
 <h1><a href="/logout">Logout</a></h1>

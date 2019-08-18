@@ -21,7 +21,7 @@
   transition: all 200ms;
 }
 .bubble.reply .bubble-content .bubble-button {
-  background: rgba(44, 44, 44, 0.67);
+  background: rgb(59, 59, 59);
   color: #fff;
   padding: 8px 16px;
   border-radius: 15px 15px 5px 5px;

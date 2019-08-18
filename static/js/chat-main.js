@@ -868,7 +868,8 @@ $(function() {
 			return;
 		}
 		if (e1 > 0 || e2 > 0) {
-			alertifyThis(res);
+			chatifyThis(res);
+			//alertifyThis(res);
 			var aSound = document.createElement('audio');
 			var root = location.protocol + '//' + location.host;
 			if (r.value != "") {
