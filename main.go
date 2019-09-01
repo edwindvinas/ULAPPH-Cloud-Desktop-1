@@ -18616,9 +18616,8 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			//D0044
 			renderStaticGotoMyUlapphs(w,r)
 			return
-		//edwinxxx
 		case "TRACKER_SELECT_USER":
-			c.Infof("TRACKER_SELECT_USER")
+			//c.Infof("TRACKER_SELECT_USER")
 			renderStaticTrackerSelectUser(w,r)
 			return
 		//D0044
@@ -29043,7 +29042,6 @@ func social(w http.ResponseWriter, r *http.Request) {
 						fmt.Fprintf(w, "[ERROR] Empty email or message!")
 					}
 					return
-				//edwinxxx
 				case "default":
 					//get percentage
 					res, _, title, cAns, err := getBlobTextQuiz(w,r,SID,ANS)
@@ -29070,7 +29068,6 @@ func social(w http.ResponseWriter, r *http.Request) {
 						//http.Redirect(w, r, comUrl, http.StatusFound)
 						if nameOk == true && fromOk == true {
 							subj := fmt.Sprintf("[QUIZ][%v][%v][%v][%v]", SID, name, from, res)
-							//edwinxxx
 							var buf bytes.Buffer
 							for i:=0; i < len(SPD); i++ {
 								buf.WriteString(fmt.Sprintf("%v<br>\n", SPD[i]))
@@ -54960,7 +54957,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 	//lets serve some cache
 	cKeyC := fmt.Sprintf("JSON_PROC_BROADCAST_LOCATION")
 	JLIST := getBytMemcacheValueByKey(w,r,cKeyC)
-	c.Infof("JLIST: %v", string(JLIST))
+	//c.Infof("JLIST: %v", string(JLIST))
 	//if JLIST != nil {
 	if string(JLIST) != "" {
 		////c.Infof("Serve map cached!")
@@ -54974,7 +54971,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 	LIST := getStrMemcacheValueByKey(w,r,cKey)
 	//DEDUPS := ""
 	ctr := 0
-	c.Infof("LIST: %v", LIST)
+	//c.Infof("LIST: %v", LIST)
 	if LIST != "" {
 		//scan
 		//var buf bytes.Buffer
@@ -55018,7 +55015,6 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 					}
 					//buf.WriteString("")
 					//demo.ulapph@gmail.com|https://|14.7391207,121.0501458|2017-07-01 00:40:15.926259213 +0000 UTC
-					//edwinxxx
 					p := UlapphDesktops {
 						PK:				ctr,
 						Lat:			lat,
@@ -74373,7 +74369,6 @@ func renderStaticNewsSources(w http.ResponseWriter, r *http.Request, sources []b
                 buf.WriteTo(w)
         }
 }
-//edwinxxx
 //renders static templates 
 func renderStaticTrackerSelectUser(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
@@ -74385,7 +74380,7 @@ func renderStaticTrackerSelectUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	urlStr := fmt.Sprintf("%v/search?f=GET_MAP_LIST&esk=%v", SEARCH_SERVER, EXT_SEARCH_GEN_KEY)
-	c.Infof("urlStr: %v", urlStr) 
+	//c.Infof("urlStr: %v", urlStr) 
 	client := urlfetch.Client(c)
 	if err := r.ParseForm(); err != nil {
 		c.Errorf("ERROR ParseForm(): %v", err) 
@@ -74397,7 +74392,7 @@ func renderStaticTrackerSelectUser(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-	c.Infof("bodyBytes: %v", bodyBytes)
+	//c.Infof("bodyBytes: %v", bodyBytes)
 	doc := new(Doc)
 	var g []UlapphDesktops
 	err = json.Unmarshal(bodyBytes, &g)
@@ -76554,7 +76549,6 @@ type Doc struct {
 	Sections []Section
 	//D0077
 	Ulapphs []GotoMyUlapphs
-	//edwinxxx
 	Desktops []UlapphDesktops
 	Tags     []string
 	Images	 []string
@@ -77127,7 +77121,6 @@ func getBlobTextPremiumCost(w http.ResponseWriter, r *http.Request, BLOB_KEY str
 	}
 	return premCost
 }
-//edwinxxx
 //process quiz submit button
 func getBlobTextQuiz(w http.ResponseWriter, r *http.Request, SID, DATA string) (res string, pass bool, TITLE string, cAns string, err error) {
 	c := appengine.NewContext(r)
