@@ -414,6 +414,11 @@
 //REV DESC:	  	Dynamic favicon icons 
 //REV AUTH:		Edwin D. Vinas
 /////////////////////////////////////////////////////////////////////////////////////////////////
+//REV ID: 		D0081
+//REV DATE: 		2019-Aug-19
+//REV DESC:	  	Added dialogflow NLP service for getting intents 
+//REV AUTH:		Edwin D. Vinas
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------
 //List of firebase channels
@@ -561,6 +566,11 @@ import (
 	"github.com/edwindvinas/closestmatch"
 	//"github.com/mvdan/xurls"
 	"github.com/edwindvinas/xurls"
+	//D0081
+	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	"github.com/golang/protobuf/ptypes/struct"
+	"google.golang.org/api/option"
+	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 
 )
 //contants configs
@@ -922,14 +932,17 @@ const (
 	//Enable firebase
 	FL_FIREBASE_ENABLE = false
 	//Firebase Real-time DB
-    FIREBASE_URL = ``
+        FIREBASE_URL = ``
 	//Firebase server json
-    FIREBASE_SERVER_JSON = ``
+        FIREBASE_SERVER_JSON = ``
+	//D0081
+	//Dialogflow Service Account
+        DIALOGFLOW_SERVER_JSON = ``
 	//D0076
 	//AutoML service account json
-    AUTOML_SERVER_JSON = ``
+        AUTOML_SERVER_JSON = ``
 	//AutoML prediction
-    AUTOML_PREDICT_URL = `https://automl.googleapis.com/v1beta1/projects/edwin-daen-vinas/locations/us-central1/models/ICN5145288799912113722:predict`
+        AUTOML_PREDICT_URL = `https://automl.googleapis.com/v1beta1/projects/edwin-daen-vinas/locations/us-central1/models/ICN5145288799912113722:predict`
 	//D0033
 	//MyDrives
 	//Google Drive
@@ -1041,6 +1054,7 @@ var FL_SHOW_CMTS = true
 var FL_SHOW_AUTH = true
 var FL_SHOW_ABOUT = true
 var FL_SHOW_SOCIAL = true
+var FL_DIALOGFLOW_OK = false
 //Youtube API
 var (
 	maxResults = flag.Int64("max-results", 20, "Max YouTube results")
@@ -1376,11 +1390,11 @@ type UlapphDesktops struct {
 	Status		int  `json:"status"`
 	Altitude		int  `json:"altitude"`
 	Placement    string  `json:"placement"`
-	Brand 	string 	`json:"brand"`
-	Model 	string 	`json:"model"`
-	AntennaModel 	string 	`json:"antenna_model"`
-	Username 	string 	`json:"username"`
-	Picture 	string 	`json:"picture"`
+	Brand	string	`json:"brand"`
+	Model	string	`json:"model"`
+	AntennaModel	string	`json:"antenna_model"`
+	Username	string	`json:"username"`
+	Picture	string	`json:"picture"`
 }
 //D0042
 type Discussions struct {
@@ -1610,6 +1624,24 @@ type MasterSyllabus struct {
 	FinishDate string `json:"compDate"`
 	ExamDate string `json:"examDate"`
 }*/
+//D0081
+// DialogflowProcessor has all the information for connecting with Dialogflow
+type DialogflowProcessor struct {
+	projectID        string
+	authJSONFilePath string
+	lang             string
+	timeZone         string
+	sessionClient    *dialogflow.SessionsClient
+	ctx              context.Context
+}
+
+// NLPResponse is the struct for the response
+type NLPResponse struct {
+	Intent     string            `json:"intent"`
+	Confidence float32           `json:"confidence"`
+	Entities   map[string]string `json:"entities"`
+}
+var dp DialogflowProcessor
 
 
 ///////////////////////////////////////////////////////////////	
@@ -2519,6 +2551,7 @@ var (
 		".photo-gallery": parsePresentTemplate2("photo-gallery.html"),
 		//D0077
 		".goto-ulapph": parsePresentTemplate2("goto-select-myulapph.html"),
+		".tracker-select": parsePresentTemplate2("tracker-select-user.html"),
 		//D0078
 		".news-sources": parsePresentTemplate2("newsapi-sources.html"),
 	}
@@ -3571,7 +3604,6 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
-
 }
  
 //main entry to clouddesktop
@@ -15134,6 +15166,11 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, DEB
 	////c.Infof("FL_SID_URL: %v", FL_SID_URL)
 	cKey := fmt.Sprintf("ULAPPH_NLP_%v", SID)
 	////c.Infof("cKey: %v", cKey)
+	if FL_DIALOGFLOW_OK == false {
+		//D0081
+		initDialogflow(w,r,"UlapphRoutingBot", DIALOGFLOW_SERVER_JSON, "en", "Asia/Manila")
+		FL_DIALOGFLOW_OK = true
+	}
 	thisCont := getStrMemcacheValueByKey(w,r,cKey)
 	if thisCont == "" {
 		if FL_SID_URL == false {
@@ -15266,7 +15303,7 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, DEB
 			OttoBotName: bName,
 			OttoUserStatus: "",
 			OttoUserName: "",
-			OttoUserEmail: "",
+			OttoUserEmail: uid,
 			OttoUserNick: "",
 			OttoUserAge: "",
 			OttoUserGender: "",
@@ -15322,6 +15359,27 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, DEB
 	  }
 
 	  return string(b)
+	})
+	//D0081
+	vm.Set("ottoFuncGetIntentDialogflow", func(m,s string) string {
+	  c.Infof("ottoFunc: ottoFuncGetIntentDialogflow")
+	  c.Infof("m: %v", m)
+	  c.Infof("s: %v", s)
+	  // s - input string 
+		// Use NLP
+		response := processNLP(w,r,&dp,m,s)
+		c.Infof("response: %v", response)
+		w.Header().Set("Content-Type", "application/json")
+		//json.NewEncoder(w).Encode(response)
+		var encbuf bytes.Buffer
+		enc := json.NewEncoder(&encbuf)
+		err := enc.Encode(response)
+		if err != nil {
+			c.Errorf("enc.Encode err: %v", err)
+			return "" 
+		}
+		return encbuf.String()
+		//json.NewEncoder(w).Encode(response)
 	})
 
 	cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v_%v", uid, bName, devID)
@@ -15460,6 +15518,7 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 				geoStr := getGeoString(w,r)
 				geoAcc := getAccessString(w,r,"")
 				chatLink := fmt.Sprintf("%vchat?CHAT_FUNC=joinChatRoom&roomID=%v&owner=%v&mode=private", getSchemeUrl(w,r), roomID, uid)
+				chatLink = strings.Replace(chatLink, " ", "%%20", -1)
 				chatURLMessage := fmt.Sprintf("[PRIVATE CHAT] Can we have a chat please? >>> I'm %v %v. Just click this link>>> %v", geoStr, geoAcc, chatLink)
 				//when chat request
 				sendChannelMessage(w,r,INV, chatURLMessage)
@@ -15576,22 +15635,18 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			return	
 			
 		case "joinChatRoom":
-		
 			mode := r.FormValue("mode")
 			roomID := r.FormValue("roomID")
 			owner := r.FormValue("owner")
 			ukey := fmt.Sprintf("%v-%v", uid, roomID)
-			
 			if mode == "" || roomID == "" || owner == "" {
- 
 				return
 			}
-	
 			timestamp := getTimestamp()
 			p := TDSCHAT{
 					OWNER: owner,
-					ROOM_ID: roomID,	
-					START_TSTMP:  timestamp,	
+					ROOM_ID: roomID,
+					START_TSTMP:  timestamp,
 					USER:  ukey,
 			}
 			key := datastore.NewKey(c, "TDSCHAT", ukey, 0, nil)
@@ -15604,9 +15659,7 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			} else {
 				_, token = createToken(w,r,ukey,"PC")
 			}
-			
 			updateUserActiveData(w, r, c, uid, fmt.Sprintf("joinChatRoom(%v)", mode))
- 
 			uag := r.UserAgent()
 			ua := user_agent.New(uag)
 			nameb, _ := ua.Browser()
@@ -15618,13 +15671,11 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			go getSoundPrefs(w,r,soundPrefChan,soundPrefChanDone,uid)
 			soundPref := <-soundPrefChan
 			<-soundPrefChanDone
- 
 			jwtChan := make(chan string)
 			jwtChanDone := make(chan bool)
 			go procAuthFirebase(w,r,jwtChan,jwtChanDone,uid,token)
 			jwToken := <-jwtChan
 			<-jwtChanDone
-			
 			TEMPDATA := TEMPSTRUCT3{
 				STR_FILLER1: "chat",
 				STR_FILLER2: uid,
@@ -15651,31 +15702,25 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			if err := chatTemplateA2.Execute(w, &TEMPDATA); err != nil {
 			  panic(err)
 			}
-			
 		case "isTyping":
 			mode := r.FormValue("mode")
 			roomID := r.FormValue("roomID")
-			
 			if mode == "private" && roomID != "" {
 				PROFILE_PIC_URL := getProfilePic(w, r, UID)
 				msg := fmt.Sprintf("<img src=\"%v\" width=40 height=40> %v is typing...", PROFILE_PIC_URL, NICK)
 				data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", NICK, msg)
 				ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHAT_ROOM", data, roomID)
-			
 			} else {
 				PROFILE_PIC_URL := getProfilePic(w, r, UID)
 				msg := fmt.Sprintf("<img src=\"%v\" width=40 height=40> %v is typing...", PROFILE_PIC_URL, NICK)
 				data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", NICK, msg)
 				ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")
 			}
-		
 		case "addUser2":
 			//private chats
-			
 			mode := r.FormValue("mode")
 			roomID := r.FormValue("roomID")
-			
-			if mode == "private" && roomID != "" {			
+			if mode == "private" && roomID != "" {
 				xCountry := h.Get("X-AppEngine-Country")
 				xRegion  := h.Get("X-AppEngine-Region")
 				xCity    := h.Get("X-AppEngine-City")
@@ -18448,9 +18493,11 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 		case "map":
 			updateUserActiveData(w, r, c, "", "/directory-map")
 			if FL_IS_BOT == true {
-				//c.Infof("Robot not allowed!")
-				fmt.Fprintf(w, "Robot not allowed!")
-				return
+				if r.FormValue("esk") != EXT_SEARCH_GEN_KEY {
+					//c.Infof("Robot not allowed!")
+					fmt.Fprintf(w, "Robot not allowed!")
+					return
+				}
 			}
 			IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
 			//if this server is not sites server
@@ -18568,6 +18615,11 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			////c.Infof("GOTO_MY_ULAPPH...")
 			//D0044
 			renderStaticGotoMyUlapphs(w,r)
+			return
+		//edwinxxx
+		case "TRACKER_SELECT_USER":
+			c.Infof("TRACKER_SELECT_USER")
+			renderStaticTrackerSelectUser(w,r)
 			return
 		//D0044
 		case "FL_ULAPPH_EXISTS":
@@ -22963,6 +23015,7 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(HOST_LIST))
 			return
 		case SEARCH_FUNC == "GET_MAP_LIST":
+			c.Infof("GET_MAP_LIST")
 			if r.FormValue("esk") != EXT_SEARCH_GEN_KEY {
 				fmt.Printf("Unauthorized access")
 				return
@@ -28930,7 +28983,6 @@ func social(w http.ResponseWriter, r *http.Request) {
 				uid = user
 			}
 
- 
 			//send to email
 			nameOk := false
 			fromOk := false
@@ -28976,8 +29028,6 @@ func social(w http.ResponseWriter, r *http.Request) {
 				}
 
 			}
- 
-			
 			switch mode {
 				case "email":
 					if nameOk == true && fromOk == true && msgOk == true {
@@ -28987,16 +29037,16 @@ func social(w http.ResponseWriter, r *http.Request) {
 						msg = fmt.Sprintf("%v \n--sent by [%v] [%v] \n--no-reply \n--geo [%v] \n--via [%v]", msg, name, from, geoStr, geoAcc)
 						to := FDBKMAIL
 						SENDGENEMAIL(c, subj, to, from, msg)
-						fmt.Fprintf(w, "SUCCESS: Message sent!")	
+						fmt.Fprintf(w, "SUCCESS: Message sent!")
 					} else {
 						w.WriteHeader(200)
-						fmt.Fprintf(w, "[ERROR] Empty email or message!")						
+						fmt.Fprintf(w, "[ERROR] Empty email or message!")
 					}
 					return
-					
+				//edwinxxx
 				case "default":
 					//get percentage
-					res, _, title, err := getBlobTextQuiz(w,r,SID,ANS)
+					res, _, title, cAns, err := getBlobTextQuiz(w,r,SID,ANS)
 					if err == nil {
 						content := ""
 						if nameOk == true && fromOk == true {
@@ -29020,9 +29070,14 @@ func social(w http.ResponseWriter, r *http.Request) {
 						//http.Redirect(w, r, comUrl, http.StatusFound)
 						if nameOk == true && fromOk == true {
 							subj := fmt.Sprintf("[QUIZ][%v][%v][%v][%v]", SID, name, from, res)
+							//edwinxxx
+							var buf bytes.Buffer
+							for i:=0; i < len(SPD); i++ {
+								buf.WriteString(fmt.Sprintf("%v<br>\n", SPD[i]))
+							}
 							geoStr := getGeoString(w,r)
 							geoAcc := getAccessString(w,r,"")
-							msg := fmt.Sprintf("[%v] %v<br>%v <br><br>--submitted by [%v] [%v] <br>--no-reply <br>--geo [%v] <br>--via [%v]",SID, title, content, name, from, geoStr, geoAcc)
+							msg := fmt.Sprintf("[%v] %v<br>%v <br>%v<br>****correct answers****<br>%v<br><br>--submitted by [%v] [%v] <br>--no-reply <br>--geo [%v] <br>--via [%v]",SID, title, content, buf.String(), cAns, name, from, geoStr, geoAcc)
 							to := FDBKMAIL
 							SENDGENEMAIL(c, subj, to, from, msg)
 							//fmt.Fprintf(w, "SUCCESS: Message sent!")	
@@ -40385,7 +40440,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 				OttoBotName: bName,
 				OttoUserStatus: "",
 				OttoUserName: "",
-				OttoUserEmail: "",
+				OttoUserEmail: uid,
 				OttoUserNick: "",
 				OttoUserAge: "",
 				OttoUserGender: "",
@@ -54905,7 +54960,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 	//lets serve some cache
 	cKeyC := fmt.Sprintf("JSON_PROC_BROADCAST_LOCATION")
 	JLIST := getBytMemcacheValueByKey(w,r,cKeyC)
-	////c.Infof("JLIST: %v", string(JLIST))
+	c.Infof("JLIST: %v", string(JLIST))
 	//if JLIST != nil {
 	if string(JLIST) != "" {
 		////c.Infof("Serve map cached!")
@@ -54919,7 +54974,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 	LIST := getStrMemcacheValueByKey(w,r,cKey)
 	//DEDUPS := ""
 	ctr := 0
-	////c.Infof("LIST: %v", LIST)
+	c.Infof("LIST: %v", LIST)
 	if LIST != "" {
 		//scan
 		//var buf bytes.Buffer
@@ -54963,6 +55018,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 					}
 					//buf.WriteString("")
 					//demo.ulapph@gmail.com|https://|14.7391207,121.0501458|2017-07-01 00:40:15.926259213 +0000 UTC
+					//edwinxxx
 					p := UlapphDesktops {
 						PK:				ctr,
 						Lat:			lat,
@@ -74317,6 +74373,66 @@ func renderStaticNewsSources(w http.ResponseWriter, r *http.Request, sources []b
                 buf.WriteTo(w)
         }
 }
+//edwinxxx
+//renders static templates 
+func renderStaticTrackerSelectUser(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	//u := user.Current(c)
+	IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
+	//if this server is not sites server
+	if IS_SEARCH_SERVER == "Y" {
+		fmt.Fprintf(w, "Invalid operation")
+		return
+	}
+	urlStr := fmt.Sprintf("%v/search?f=GET_MAP_LIST&esk=%v", SEARCH_SERVER, EXT_SEARCH_GEN_KEY)
+	c.Infof("urlStr: %v", urlStr) 
+	client := urlfetch.Client(c)
+	if err := r.ParseForm(); err != nil {
+		c.Errorf("ERROR ParseForm(): %v", err) 
+		panic(err)
+	}
+	resp, err := client.Get(urlStr)
+	if err != nil {
+		c.Errorf("ERROR client.Get: %v", err) 
+		panic(err)
+	}
+	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+	c.Infof("bodyBytes: %v", bodyBytes)
+	doc := new(Doc)
+	var g []UlapphDesktops
+	err = json.Unmarshal(bodyBytes, &g)
+	if err != nil {
+		panic(err)
+	}
+	doc.Desktops = g
+	//parse template
+        t := presentTemplates[path.Ext(".tracker-select")]
+        if t == nil {
+                panic(t)
+        }
+        data := struct {
+                *Doc
+                Template    *template.Template
+        }{
+                doc,
+                t,
+        }
+        //t.Execute(w, &data)
+        buf := &bytes.Buffer{}
+        err = t.Execute(buf, &data)
+        if err != nil {
+                // Send back error message, for example:
+                msgDtl := url.QueryEscape(fmt.Sprintf("[U00187] Template error: %v", err))
+                msgTyp := "error"
+                action := "U00187"
+                sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, "", action)
+                http.Redirect(w, r, sysReq, http.StatusFound)
+                return
+        } else {
+                // No error, send the content, HTTP 200 response status implied
+                buf.WriteTo(w)
+        }
+}
 
 //renders static templates 
 func renderStaticGotoMyUlapphs(w http.ResponseWriter, r *http.Request) {
@@ -76438,6 +76554,8 @@ type Doc struct {
 	Sections []Section
 	//D0077
 	Ulapphs []GotoMyUlapphs
+	//edwinxxx
+	Desktops []UlapphDesktops
 	Tags     []string
 	Images	 []string
 	//IsMobile bool
@@ -76599,7 +76717,6 @@ func readLines3(w http.ResponseWriter, r *http.Request, blobkey, DESKTOP, SID st
 		//D0079
 		//if readlines contain #DISABLED or #DISABLE
 		if strings.HasPrefix(s.Text(), "#DISABLED") || strings.HasPrefix(s.Text(), "#DISABLE") {
-			//edwinxxxx
 			msgDtl := fmt.Sprintf("[U00193] This content %v is currently disabled by the author.", SID)
 			msgTyp := "error"
 			action := "U00193"
@@ -77010,12 +77127,13 @@ func getBlobTextPremiumCost(w http.ResponseWriter, r *http.Request, BLOB_KEY str
 	}
 	return premCost
 }
- 
+//edwinxxx
 //process quiz submit button
-func getBlobTextQuiz(w http.ResponseWriter, r *http.Request, SID, DATA string) (res string, pass bool, TITLE string, err error) {
+func getBlobTextQuiz(w http.ResponseWriter, r *http.Request, SID, DATA string) (res string, pass bool, TITLE string, cAns string, err error) {
 	c := appengine.NewContext(r)
 	SPD := strings.Split(DATA,"$")
 	tot := 0
+	totq := 0
 	pass = false
 	SPL := strings.Split(SID,"-")
 	TARGET := SPL[0]
@@ -77025,44 +77143,53 @@ func getBlobTextQuiz(w http.ResponseWriter, r *http.Request, SID, DATA string) (
 	}
 	docID := str2int(DOC_ID)
 	BLOB_KEY := ""
+	var buf bytes.Buffer
 	switch TARGET {
 		case "TDSSLIDE":
 			BLOB_KEY, _, _, _, _, TITLE, _, _, _, _  = getTDSSLIDEBlobKey(w, r, docID)
 		case "TDSARTL":
 			BLOB_KEY, _, _, _, _, TITLE, _, _, _ = getTDSARTLBlobKey(w, r, docID)
 		default:
-			return res, false, "", fmt.Errorf("invalid operation")
+			return res, false, "", "", fmt.Errorf("invalid operation")
 	}
-			
 	reader := blobstore.NewReader(c, appengine.BlobKey(BLOB_KEY))
 	s := bufio.NewScanner(reader)
 	for s.Scan() {
 		if strings.HasPrefix(s.Text(), "#") {
- 
+			if strings.Index(s.Text(), "NUM_CORRECT_ANSWERS:") != -1 {
+				SPN := strings.Split(s.Text(),":")
+				if len(SPN) > 0 {
+					totq = str2int(SPN[1])
+				}
+			}
 			for i:=0; i < len(SPD); i++ {
 				//is item found
 				//$id:answer
 				if SPD[i] != "" {
 					if strings.Index(s.Text(), SPD[i]) != -1 {
+						buf.WriteString(fmt.Sprintf("%v = %v<br>\n", s.Text(), SPD[i]))
 						tot++
-					}					
+					}
 				}
- 
 			}
 		}
 	}
 	if err := s.Err(); err != nil {
-		return res, false, "", fmt.Errorf("error operation")
+		return res, false, "", "", fmt.Errorf("error operation")
 	}
 	//compute
- 
- 
-	pct := percent.PercentOf(tot, len(SPD) - 1)
-	res = fmt.Sprintf("%.2f", pct)
-	if pct >= 75 {
-		pass = true
+	//pct := percent.PercentOf(tot, len(SPD) - 1)
+	if totq == 0 {
+		res = fmt.Sprintf("%v out of unknown total answers", tot) 
+	} else {
+		pct := percent.PercentOf(tot, totq)
+		res = fmt.Sprintf("%.2f", pct)
+		if pct >= 75 {
+			pass = true
+		}
 	}
-	return res, pass, TITLE, nil
+	cAns = buf.String()
+	return res, pass, TITLE, cAns, nil
 }
 
 //gets the contents of blobkey as preview 
@@ -82456,6 +82583,112 @@ func Shuffle(slice interface{}) {
             j := rand.Intn(i + 1)
             swap(i, j)
     }
+}
+
+//D0081
+func initDialogflow(w http.ResponseWriter, r *http.Request, pid, svcFile, lang, tz string) (err error) {
+	c := appengine.NewContext(r)
+	c.Infof("initDialogflow")
+	dp.projectID = pid 
+	dp.authJSONFilePath = svcFile 
+	dp.lang = lang
+	dp.timeZone = tz 
+
+	// Auth process: https://dialogflow.com/docs/reference/v2-auth-setup
+	dp.ctx = context.Background()
+	//dp.ctx = appengine.NewContext(r) 
+	//sessionClient, err := dialogflow.NewSessionsClient(dp.ctx, option.WithCredentialsFile("../ULAPPH-Cloud-Desktop-Configs/ulapph-dialogflow-2019-08-19.json"))
+	sessionClient, err := dialogflow.NewSessionsClient(dp.ctx, option.WithCredentialsJSON([]byte(DIALOGFLOW_SERVER_JSON)))
+	if err != nil {
+		c.Errorf("Error in auth with Dialogflow: %v", err)
+		return err
+	}
+	//c.Infof("sessionClient: %v", sessionClient)
+	dp.sessionClient = sessionClient
+	//c.Infof("dp: %v", dp)
+	return
+}
+
+func processNLP(w http.ResponseWriter, req *http.Request, dp *DialogflowProcessor, rawMessage string, username string) (r NLPResponse) {
+	c := appengine.NewContext(req)
+	c.Infof("processNLP")
+	sessionID := username
+	request := dialogflowpb.DetectIntentRequest{
+		Session: fmt.Sprintf("projects/%s/agent/sessions/%s", dp.projectID, sessionID),
+		QueryInput: &dialogflowpb.QueryInput{
+			Input: &dialogflowpb.QueryInput_Text{
+				Text: &dialogflowpb.TextInput{
+					Text:         rawMessage,
+					LanguageCode: dp.lang,
+				},
+			},
+		},
+		QueryParams: &dialogflowpb.QueryParameters{
+			TimeZone: dp.timeZone,
+		},
+	}
+	//c.Infof("request: %v", request)
+	response, err := dp.sessionClient.DetectIntent(dp.ctx, &request)
+	if err != nil {
+		c.Infof("Error in communication with Dialogflow %s", err.Error())
+		return
+	}
+	//c.Infof("response: %v", response)
+	queryResult := response.GetQueryResult()
+	//c.Infof("queryResult: %v", queryResult)
+	if queryResult.Intent != nil {
+		r.Intent = queryResult.Intent.DisplayName
+		r.Confidence = float32(queryResult.IntentDetectionConfidence)
+	}
+	r.Entities = make(map[string]string)
+	params := queryResult.Parameters.GetFields()
+	if len(params) > 0 {
+		for paramName, p := range params {
+			fmt.Printf("Param %s: %s (%s)", paramName, p.GetStringValue(), p.String())
+			extractedValue := extractDialogflowEntities(p)
+			r.Entities[paramName] = extractedValue
+		}
+	}
+	//c.Infof("r: %v", r)
+	return
+}
+
+func extractDialogflowEntities(p *structpb.Value) (extractedEntity string) {
+	kind := p.GetKind()
+	switch kind.(type) {
+	case *structpb.Value_StringValue:
+		return p.GetStringValue()
+	case *structpb.Value_NumberValue:
+		return strconv.FormatFloat(p.GetNumberValue(), 'f', 6, 64)
+	case *structpb.Value_BoolValue:
+		return strconv.FormatBool(p.GetBoolValue())
+	case *structpb.Value_StructValue:
+		s := p.GetStructValue()
+		fields := s.GetFields()
+		extractedEntity = ""
+		for key, value := range fields {
+			if key == "amount" {
+				extractedEntity = fmt.Sprintf("%s%s", extractedEntity, strconv.FormatFloat(value.GetNumberValue(), 'f', 6, 64))
+			}
+			if key == "unit" {
+				extractedEntity = fmt.Sprintf("%s%s", extractedEntity, value.GetStringValue())
+			}
+			if key == "date_time" {
+				extractedEntity = fmt.Sprintf("%s%s", extractedEntity, value.GetStringValue())
+			}
+			// @TODO: Other entity types can be added here
+		}
+		return extractedEntity
+	case *structpb.Value_ListValue:
+		list := p.GetListValue()
+		if len(list.GetValues()) > 1 {
+			// @TODO: Extract more values
+		}
+		extractedEntity = extractDialogflowEntities(list.GetValues()[0])
+		return extractedEntity
+	default:
+		return ""
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

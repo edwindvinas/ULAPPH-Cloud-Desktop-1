@@ -1,4 +1,5 @@
 setInterval( function(){geoLatLon();}, 30000);
+setTimeout(function(){geoloc();},10000);
 
 var isSlow = false;
 var uwms = document.getElementById("uwms");
@@ -114,11 +115,13 @@ console.log("Client geolocation failed!");
 }
 
 function geoloc() {
+	console.log("geoloc called... uwms: "+uwms.value);
 	if (uwms.value != "") {
 		//run only on main uwm
 		return;
 	}
-	geoLatLon();
+	console.log("geoloc running...");
+	//geoLatLon();
 	console.log("geoloc() running...");
 	if (('speechSynthesis' in window) || ('SpeechRecognition' in window)) {
 		window.speechSynthesis.cancel();
@@ -209,7 +212,8 @@ function sendPingRequest(){
 			}
 		} else {
 			isSlow = false;
-			titleBlink("ULAPPH Desktop "+data+"ms","ULAPPH Desktop delay "+data+"ms");
+			var uTitle = document.getElementById("desktop").value + "::" + document.getElementById("dName").value;
+			titleBlink(uTitle+" "+data+"ms",uTitle+" delay "+data+"ms");
 			document.getElementById("ping-res").innerHTML =  e + " " + data + "ms";
 		}
 	});

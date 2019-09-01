@@ -111,5 +111,17 @@ go get "github.com/edwindvinas/html2text"
 echo "github.com/edwindvinas/perceptive"
 go get "github.com/edwindvinas/perceptive"
 
+echo "cloud.google.com/go/dialogflow/apiv2"
+go get "cloud.google.com/go/dialogflow/apiv2"
+
+echo "github.com/golang/protobuf/ptypes/struct"
+go get "github.com/golang/protobuf/ptypes/struct"
+
+echo "google.golang.org/api/option"
+go get "google.golang.org/api/option"
+
+echo "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+go get "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+
 echo "done!"
 
