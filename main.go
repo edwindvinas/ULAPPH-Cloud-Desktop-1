@@ -419,6 +419,11 @@
 //REV DESC:	  	Added dialogflow NLP service for getting intents 
 //REV AUTH:		Edwin D. Vinas
 /////////////////////////////////////////////////////////////////////////////////////////////////
+//REV ID: 		D0082
+//REV DATE: 		2019-Sep-18
+//REV DESC:	  	Save broadcast locations in blobstore 
+//REV AUTH:		Edwin D. Vinas
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------
 //List of firebase channels
@@ -566,11 +571,6 @@ import (
 	"github.com/edwindvinas/closestmatch"
 	//"github.com/mvdan/xurls"
 	"github.com/edwindvinas/xurls"
-	//D0081
-	dialogflow "cloud.google.com/go/dialogflow/apiv2"
-	"github.com/golang/protobuf/ptypes/struct"
-	"google.golang.org/api/option"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 
 )
 //contants configs
@@ -1054,7 +1054,6 @@ var FL_SHOW_CMTS = true
 var FL_SHOW_AUTH = true
 var FL_SHOW_ABOUT = true
 var FL_SHOW_SOCIAL = true
-var FL_DIALOGFLOW_OK = false
 //Youtube API
 var (
 	maxResults = flag.Int64("max-results", 20, "Max YouTube results")
@@ -1625,24 +1624,14 @@ type MasterSyllabus struct {
 	ExamDate string `json:"examDate"`
 }*/
 //D0081
-// DialogflowProcessor has all the information for connecting with Dialogflow
-type DialogflowProcessor struct {
-	projectID        string
-	authJSONFilePath string
-	lang             string
-	timeZone         string
-	sessionClient    *dialogflow.SessionsClient
-	ctx              context.Context
+//edwinxxx
+type DialogflowInput struct {
+	QueryInput struct {Text struct {
+						Text string `json:"text"`
+						Language string `json:"languageCode"`
+					    } `json:"text"`
+			  }`json:"queryInput"`
 }
-
-// NLPResponse is the struct for the response
-type NLPResponse struct {
-	Intent     string            `json:"intent"`
-	Confidence float32           `json:"confidence"`
-	Entities   map[string]string `json:"entities"`
-}
-var dp DialogflowProcessor
-
 
 ///////////////////////////////////////////////////////////////	
 ///////////////////////////////////////////////////////////////
@@ -3215,6 +3204,15 @@ type IDX_TDSMEDIA struct {
 ///////////////////////////////////////////////////////////////
 // DELAY FUNCTIONS
 ///////////////////////////////////////////////////////////////
+//D0082
+// save maps locations
+var laterSaveLocations = delay.Func("laterSaveLocations", func(c appengine.Context, mapData string) {
+	t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-save-locations", map[string][]string{"MDATA": {mapData}})
+	if _, err := taskqueue.Add(c, t, ""); err != nil {
+		panic(err)
+	}
+})
+ 
 // Exec later - download url
 // execute logic with delays
 var laterWgetToCloud = delay.Func("laterWgetToCloud", func(c appengine.Context, WG_FUNC, WURL, UID string) {
@@ -4510,7 +4508,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 						return
 						
 					case dispType == "MOBILE":
-						redURL := fmt.Sprintf("/m")
+						redURL := fmt.Sprintf("/uwm")
 						http.Redirect(w, r, redURL, http.StatusFound)
 						return
 						
@@ -5611,7 +5609,7 @@ func channelMessageHandler(w http.ResponseWriter, r *http.Request) {
  
 func sendChannelMessage(w http.ResponseWriter, r *http.Request, recID string, msg string) {
 	//c := appengine.NewContext(r)
-	//////c.Infof("sendChannelMessag")
+	////c.Infof("sendChannelMessag")
 	if recID == "" || msg == "" {
 		return
 	}
@@ -5658,8 +5656,8 @@ func sendChannelMessage(w http.ResponseWriter, r *http.Request, recID string, ms
 		_, token := createToken(w,r,recID,"")
 		topic = fmt.Sprintf("%v/%v/%v", SYS_SERVER_NAME, "channel", token)
 	}
-	//////c.Infof("topic: %v", topic)
-	//////c.Infof("data: %v", data)
+	////c.Infof("topic: %v", topic)
+	////c.Infof("data: %v", data)
 	sendChannelFirebase(w,r,topic,data)
 }
  
@@ -5714,7 +5712,7 @@ func sendChatPrivate(w http.ResponseWriter, r *http.Request, roomID string, msg 
  
 func sendChannelFirebase(w http.ResponseWriter, r *http.Request, topic string, payload []byte) {
 	c := appengine.NewContext(r)
-	//////c.Infof("sendChannelFirebase")
+	////c.Infof("sendChannelFirebase")
 
 	if topic == "" || payload == nil {
 		return
@@ -7377,8 +7375,8 @@ func displayEchartsBar(w http.ResponseWriter, r *http.Request, TARGET, NAME, div
 //saves a cache of the ACB data 
 func saveAutoCompsBlob(w http.ResponseWriter, r *http.Request, uid string, acb []byte) {
 	c := appengine.NewContext(r)
-	////c.Infof("saveAutoCompsBlob")
-	////c.Infof("uid: %v", uid)
+	//c.Infof("saveAutoCompsBlob")
+	//c.Infof("uid: %v", uid)
 	//D0068
 	//if r.FormValue("API_KEY") == CMD_GEN_KEY {
 	//	//proceed
@@ -7400,7 +7398,7 @@ func saveAutoCompsBlob(w http.ResponseWriter, r *http.Request, uid string, acb [
 		FL_ACB = true
 	}
 	if FL_ACB == false {
-		////c.Infof("FL_ACB = false")
+		//c.Infof("FL_ACB = false")
 		thisKey := fmt.Sprintf("SYSTEM_ACB_%v", uid)
 		g := TDSCNFG{
 				SYS_VER: 1,
@@ -7421,9 +7419,9 @@ func saveAutoCompsBlob(w http.ResponseWriter, r *http.Request, uid string, acb [
 	}
 	//D0068
 	//} else {
-		////c.Infof("FL_ACB = true")
+		//c.Infof("FL_ACB = true")
 		//upload to blobstore
-		////c.Infof("upload to blobstore")
+		//c.Infof("upload to blobstore")
 		csn2 := getUpUrlString(w,r,"/upload-media")
 		u, err := blobstore.UploadURL(c, csn2, nil)
 		if err != nil {
@@ -7647,7 +7645,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 				var isUwm = map[string]bool{}
 				for s.Scan() {
 					if len(s.Text()) > 0 {
-						////c.Infof("%v", s.Text())
+						//c.Infof("%v", s.Text())
 						thisStr := fmt.Sprintf("%v", s.Text())
 						//D0067
 						if len(thisStr) > 3 {
@@ -9940,7 +9938,7 @@ func uwm(w http.ResponseWriter, r *http.Request) {
 			recCount,_ := q.Count(c)
 			if recCount > 0 {
 				//exists
-				//////c.Infof("shared desktop")
+				////c.Infof("shared desktop")
 				cats := make([]TDSCATS, 0, 1)
 				if _, err := q.GetAll(c, &cats); err != nil {
 					//panic(err)
@@ -9955,13 +9953,13 @@ func uwm(w http.ResponseWriter, r *http.Request) {
 		}
 		if FL_SHARED_OK == true {
 			//https://edwin-daen-vinas.appspot.com?q=ushare&SID=TDSMEDIA-4406&TITLE=test
-			//////c.Infof("FL_SHARED_OK")
+			////c.Infof("FL_SHARED_OK")
 			SID := getUWMSource(w,r,user,TARGET_UWM)
 			if SID == "" {
 				fmt.Fprintf(w, "Invalid shared desktop settings!")
 				return
 			}
-			//////c.Infof("redir ushare")
+			////c.Infof("redir ushare")
 			sysReq := fmt.Sprintf("/?q=ushare&SID=%v&TITLE=%v", SID, "Shared Desktop")
 			http.Redirect(w, r, sysReq, http.StatusFound)
 			return
@@ -10349,7 +10347,7 @@ func desktop0(w http.ResponseWriter, r *http.Request) {
 			}
 			
 			if (dispType == "MOBILE")  {
-				redURL := fmt.Sprintf("/m")
+				redURL := fmt.Sprintf("/uwm")
 				http.Redirect(w, r, redURL, http.StatusFound)
 				return
 		   }
@@ -10746,8 +10744,7 @@ func desktop(w http.ResponseWriter, r *http.Request) {
 			sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid,reqStr,""),"")	
 				
 			if (dispType == "MOBILE")  {
-				
-				redURL := fmt.Sprintf("/m")
+				redURL := fmt.Sprintf("/uwm")
 				http.Redirect(w, r, redURL, http.StatusFound)
 				return				
 		   }
@@ -11269,12 +11266,12 @@ func getCountry(w http.ResponseWriter, r *http.Request) (geoCountry string) {
 //this returns the SID only
 func checkWpUwmOnly(w http.ResponseWriter, r *http.Request, uid, unum string) (FL_UWMWPONLY bool) {
 	//c := appengine.NewContext(r)
-	////c.Infof("checkWpUwmOnly()")
+	//c.Infof("checkWpUwmOnly()")
 	if unum != "" {
 		cfgName := fmt.Sprintf("SYSTEM_UWM_WALLP_WPUWMONLY_%v_%v", unum, uid)
-		////c.Infof("cfgName: %v", cfgName)
+		//c.Infof("cfgName: %v", cfgName)
 		cfgVal, _ := getTDSCNFG(w,r,0,cfgName)
-		////c.Infof("cfgVal: %v", cfgVal)
+		//c.Infof("cfgVal: %v", cfgVal)
 		if cfgVal == "true" {
 			FL_UWMWPONLY = true
 		} else {
@@ -11666,17 +11663,17 @@ func checkHomepageSettings(w http.ResponseWriter, r *http.Request, redirectURL s
 			//get the media id containing the theme
 			cKey := fmt.Sprintf("CUSTOM_HOMEPAGE_THEME")
 			htemp := getStrMemcacheValueByKey(w,r,cKey)
-			////c.Infof("htemp: %v", htemp)
+			//c.Infof("htemp: %v", htemp)
 			if strings.TrimSpace(htemp) == "" {
 				_, mid := getTDSCNFG(w,r,1,cKey)
-				////c.Infof("mid: %v", mid)
+				//c.Infof("mid: %v", mid)
 				if mid > 0 {
-					////c.Infof("mid > 0")
+					//c.Infof("mid > 0")
 					_ = renderCustomTemplates(w,r,"gotId",cKey,"",fmt.Sprintf("%v",mid))
 				}
 
 			} else {
-				////c.Infof("got htemp: %v", htemp)
+				//c.Infof("got htemp: %v", htemp)
 				_ = renderCustomTemplates(w,r,"gotId",cKey,"",strings.TrimSpace(htemp))
 			}
 			updateUserActiveData(w, r, c, "", "homepage-custom")
@@ -13388,12 +13385,12 @@ func parseAutocompEntries(w http.ResponseWriter, r *http.Request) {
 	}
 	if AUTOCOMP_CACHE == "" {
 		//get from temp blob
-		////c.Infof("get from temp blob")
+		//c.Infof("get from temp blob")
 		cKeyACB := fmt.Sprintf("ACB_BLOB_%v", uid)
 		ACB_BLOB := ""
 		ACB_BLOB = getStrMemcacheValueByKey(w,r,cKeyACB)
 		if ACB_BLOB == "" {
-			////c.Infof("get from config blob")
+			//c.Infof("get from config blob")
 			var g TDSCNFG
 			thisKey := fmt.Sprintf("SYSTEM_ACB_%v", uid)
 			key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
@@ -13407,9 +13404,9 @@ func parseAutocompEntries(w http.ResponseWriter, r *http.Request) {
 			ACB_BLOB = ""
 			putStrToMemcacheWithoutExp(w,r,cKeyACB,"")
 		}
-		////c.Infof("ACB_BLOB: %v", ACB_BLOB)
+		//c.Infof("ACB_BLOB: %v", ACB_BLOB)
 		if ACB_BLOB != "" {
-			////c.Infof("get blob content")
+			//c.Infof("get blob content")
 			blobChan := make(chan []byte)
 			go getBlobByteChan(w, r,blobChan, ACB_BLOB)
 			thisCont := <- blobChan
@@ -13775,7 +13772,7 @@ func parseAutocompEntries(w http.ResponseWriter, r *http.Request) {
 	w.Write(buf.Bytes())
 	
 	saveAutoCompsBlob(w,r,uid,buf.Bytes())
-	////c.Infof("saveAutoCompsBlob")
+	//c.Infof("saveAutoCompsBlob")
 	fmt.Fprintf(w, "  ];\n")
 	fmt.Fprintf(w, "  // setup autocomplete function pulling from currencies[] array\n")
 	fmt.Fprintf(w, "  $('#autocomplete').autocomplete({\n")
@@ -15060,18 +15057,18 @@ func ulapphTree(w http.ResponseWriter, r *http.Request) {
 	DISP := r.FormValue("d")
 	switch FUNC {
 		case "SAVEJSON":
-			//////c.Infof("updating json")
+			////c.Infof("updating json")
 			bodyBytes, _ := ioutil.ReadAll(r.Body)
-			//////c.Infof("%v", string(bodyBytes))
+			////c.Infof("%v", string(bodyBytes))
 			err := blobFileSaver(w,r,SID,bodyBytes)
 			if err != nil {
-				//////c.Infof("User to Host List has been updated at TDSMEDIA-%v", MEDIA_ID)
-				//////c.Infof("ERROR: %v", err)
+				////c.Infof("User to Host List has been updated at TDSMEDIA-%v", MEDIA_ID)
+				////c.Infof("ERROR: %v", err)
 				return
 			}
 
 		default:
-			//////c.Infof("rendering tree")
+			////c.Infof("rendering tree")
 			SPL := strings.Split(SID,"-")
 			DOC_ID := "0"
 			if len(SPL) > 1 {
@@ -15155,34 +15152,29 @@ func ulapphOtto(w http.ResponseWriter, r *http.Request) {
 
 }
 //D0075
-func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, DEBUG, key, val string) (resp string) {
+func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, FL_DEBUG, key, val string) (resp string) {
 	c := appengine.NewContext(r)
 	//DEBUG = "Y"
 	//check first if SID or SID URL
-	////c.Infof("execOtto()")
+	//c.Infof("execOtto()")
 	SID = html.EscapeString(SID)
-	////c.Infof("SID: %v", SID)
+	//c.Infof("SID: %v", SID)
 	FL_SID_URL := isValidUrl(w,r,SID)
-	////c.Infof("FL_SID_URL: %v", FL_SID_URL)
+	//c.Infof("FL_SID_URL: %v", FL_SID_URL)
 	cKey := fmt.Sprintf("ULAPPH_NLP_%v", SID)
-	////c.Infof("cKey: %v", cKey)
-	if FL_DIALOGFLOW_OK == false {
-		//D0081
-		initDialogflow(w,r,"UlapphRoutingBot", DIALOGFLOW_SERVER_JSON, "en", "Asia/Manila")
-		FL_DIALOGFLOW_OK = true
-	}
+	//c.Infof("cKey: %v", cKey)
 	thisCont := getStrMemcacheValueByKey(w,r,cKey)
 	if thisCont == "" {
 		if FL_SID_URL == false {
 			//get the TDSMEDIA javascript
-			////c.Infof("FL_SID_URL = false")
+			//c.Infof("FL_SID_URL = false")
 			BLOB_KEY := contentCheckSid(w,r,SID)
 			blobChan := make(chan string)
 			go getBlobTextChan(w, r,blobChan, BLOB_KEY)
 			thisCont = <- blobChan
 		} else {
 			//get from remote site
-			////c.Infof("FL_SID_URL = true")
+			//c.Infof("FL_SID_URL = true")
 			STR_GET_REMOTE_DATA := SID
 			thisCont = fetchURL(w,r,STR_GET_REMOTE_DATA)
 		}
@@ -15193,37 +15185,37 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, DEB
 		c.Errorf("execOtto Error: empty SID: %v", SID)
 		return ""
 	}
-	//////c.Infof("thisCont: %v", thisCont)
+	////c.Infof("thisCont: %v", thisCont)
 	//fmt.Fprintf(w,"%v\n", thisCont)
 	//start otto vm
 	vm := otto.New()
 	vm.Set("ottoFuncNlpProseExecWithTokens", func(kb, input string) []string {
-		////c.Infof("ottoFunc: ottoFuncNlpProseExecWithTokens")
-		////c.Infof("input: %v", input)
+		//c.Infof("ottoFunc: ottoFuncNlpProseExecWithTokens")
+		//c.Infof("input: %v", input)
 		doc, err := prose.NewDocument(input)
 		if err != nil {
 			c.Errorf("Prose error: %v", err)
 			return []string{"error"}
 		}
-		////c.Infof("doc: %#v", doc)
+		//c.Infof("doc: %#v", doc)
 		var thisResp []string
 		for _, tok := range doc.Tokens() {
-			//////c.Infof("TEXT: %v TAG: %v LABEL: %v<br>", tok.Text, tok.Tag, tok.Label)
+			////c.Infof("TEXT: %v TAG: %v LABEL: %v<br>", tok.Text, tok.Tag, tok.Label)
 			thisTok := fmt.Sprintf("%v@777@%v@777@%v", tok.Text, tok.Tag, tok.Label)
 			thisResp = append(thisResp, thisTok) 
 		}
 		justString := strings.Join(thisResp,"@888@")
-		////c.Infof("Executing OttoJS: %v", kb)
+		//c.Infof("Executing OttoJS: %v", kb)
 		resp := execOtto(w,r, uid, kb, bName, devID, "N", "input", justString)
-		////c.Infof("resp: %v", resp)
+		//c.Infof("resp: %v", resp)
 		return []string{resp}
 	})
 	vm.Set("ottoFuncFindExactMatch", func(s,l string) string {
 		//get from cache if available
-		////c.Infof("ottoFunc: ottoFuncFindExactMatch")
-		////c.Infof("SID: %v", s)
+		//c.Infof("ottoFunc: ottoFuncFindExactMatch")
+		//c.Infof("SID: %v", s)
                 cKey := fmt.Sprintf("ULAPPH_NLP_%v", s)
-                ////c.Infof("cKey: %v", cKey)
+                //c.Infof("cKey: %v", cKey)
                 thisCont := getStrMemcacheValueByKey(w,r,cKey)
 		if thisCont == "" {
 			BLOB_KEY := contentCheckSid(w,r,s)
@@ -15361,14 +15353,14 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, DEB
 	  return string(b)
 	})
 	//D0081
-	vm.Set("ottoFuncGetIntentDialogflow", func(m,s string) string {
-	  c.Infof("ottoFunc: ottoFuncGetIntentDialogflow")
-	  c.Infof("m: %v", m)
-	  c.Infof("s: %v", s)
-	  // s - input string 
+	//edwinxxx
+	vm.Set("ottoFuncGetIntentDialogflow", func(user,input string) string {
+	  //c.Infof("ottoFunc: ottoFuncGetIntentDialogflow")
 		// Use NLP
-		response := processNLP(w,r,&dp,m,s)
-		c.Infof("response: %v", response)
+		nlpDebug(w,r,FL_DEBUG, "info", "Call processDialoflowNLP()")
+		response := processDialogflowNLP(w,r,devID,input)
+		nlpDebug(w,r,FL_DEBUG, "info", "processDialogflowNLP() resp: "+fmt.Sprintf("%v",response))
+		//c.Infof("response: %v", response)
 		w.Header().Set("Content-Type", "application/json")
 		//json.NewEncoder(w).Encode(response)
 		var encbuf bytes.Buffer
@@ -15378,6 +15370,7 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, DEB
 			c.Errorf("enc.Encode err: %v", err)
 			return "" 
 		}
+		nlpDebug(w,r,FL_DEBUG, "info", "json: "+encbuf.String())
 		return encbuf.String()
 		//json.NewEncoder(w).Encode(response)
 	})
@@ -15424,14 +15417,17 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, DEB
 	}
 	//get log data 
 	//c.Infof("GETTING UPDATED log...")
-	//if value, err := vm.Get("log"); err == nil {
-	    //if value_str, err := value.ToString(); err == nil {
+	if value, err := vm.Get("log"); err == nil {
+	    if value_str, err := value.ToString(); err == nil {
+		nlpDebug(w,r,FL_DEBUG, "info", "**********OTTO EXEC LOGS START**********")
 		//c.Infof("***********OTTO EXEC LOGS START**************")
 		//c.Infof("%v", value_str)
+		nlpDebug(w,r,FL_DEBUG, "info", value_str)
 		//c.Infof("***********OTTO EXEC LOGS END**************")
-	    //}
-	//}
-	////c.Infof("resp: %v", resp)
+		nlpDebug(w,r,FL_DEBUG, "info", "**********OTTO EXEC LOGS END**********")
+	    }
+	}
+	//c.Infof("resp: %v", resp)
 	//get output data
 	//c.Infof("GETTING UPDATED output...")
 	if value, err := vm.Get("output"); err == nil {
@@ -17586,7 +17582,7 @@ func ulapphStream(w http.ResponseWriter, r *http.Request) {
 			}
 			refUwm := getRefUwm(w,r)
 			UWM := ""
-			////c.Infof("refUwm: %v", refUwm)
+			//c.Infof("refUwm: %v", refUwm)
 			if refUwm != "" {
 				UWM = fmt.Sprintf("%v---%v", uid, refUwm)
 			} else {
@@ -17862,7 +17858,7 @@ func ulapphStore(w http.ResponseWriter, r *http.Request) {
 			
 			//D0044
 			//If this for installer purchase
-			////c.Infof("msgDtl: %v", msgDtl)
+			//c.Infof("msgDtl: %v", msgDtl)
 			switch {
 				
 				case PRD_ID == "UCWP3-A" &&
@@ -18132,7 +18128,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			} else {
 				//D0074
 				cKey := fmt.Sprintf("LIST_ALL_CCTV_ACTIVE_%v", SYS_SERVER_NAME)
-				////c.Infof("cKey: %v", cKey)
+				//c.Infof("cKey: %v", cKey)
 				cctv_list := getStrMemcacheValueByKey(w,r,cKey)
 				if strings.TrimSpace(cctv_list) == "" {
 					//cfgName := fmt.Sprintf("PERSONAL_CCTV_LIST_%v", uid)
@@ -18140,7 +18136,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 					cctv_list, _ = getTDSCNFG(w,r,0,cfgName)
 					putStrToMemcacheWithoutExp(w,r,cKey,cctv_list)
 				}
-				////c.Infof("cctv_list: %v", cctv_list)
+				//c.Infof("cctv_list: %v", cctv_list)
 				SPL := strings.Split(cctv_list, "@888@")
 				ctr := 0
 				wstr := ""
@@ -18150,7 +18146,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 					if SPL[i] != "" {
 						cKeyTS := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", SPL[i])
 						catLastUpload := getStrMemcacheValueByKey(w,r,cKeyTS)
-						////c.Infof("catLastUpload: %v", catLastUpload)
+						//c.Infof("catLastUpload: %v", catLastUpload)
 						timestamp := stmpHumanize(catLastUpload)
 						m := strings.Index(timestamp, "hour")
 						if m != -1 {
@@ -18195,7 +18191,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			} else {
 				//D0074
 				cKey := fmt.Sprintf("LIST_ALL_CCTV_ACTIVE_%v", SYS_SERVER_NAME)
-				////c.Infof("cKey: %v", cKey)
+				//c.Infof("cKey: %v", cKey)
 				cctv_list := getStrMemcacheValueByKey(w,r,cKey)
 				if strings.TrimSpace(cctv_list) == "" {
 					//cfgName := fmt.Sprintf("PERSONAL_CCTV_LIST_%v", uid)
@@ -18203,7 +18199,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 					cctv_list, _ = getTDSCNFG(w,r,0,cfgName)
 					putStrToMemcacheWithoutExp(w,r,cKey,cctv_list)
 				}
-				////c.Infof("cctv_list: %v", cctv_list)
+				//c.Infof("cctv_list: %v", cctv_list)
 				SPL := strings.Split(cctv_list, "@888@")
 				ctr := 0
 				wstr := ""
@@ -18213,7 +18209,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 					if SPL[i] != "" {
 						cKeyTS := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", SPL[i])
 						catLastUpload := getStrMemcacheValueByKey(w,r,cKeyTS)
-						////c.Infof("catLastUpload: %v", catLastUpload)
+						//c.Infof("catLastUpload: %v", catLastUpload)
 						timestamp := stmpHumanize(catLastUpload)
 						m := strings.Index(timestamp, "hour")
 						if m != -1 {
@@ -18257,7 +18253,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			} else {
 				//D0074
 				cKey := fmt.Sprintf("LIST_ALL_CCTV_ACTIVE_%v", SYS_SERVER_NAME)
-				////c.Infof("cKey: %v", cKey)
+				//c.Infof("cKey: %v", cKey)
 				cctv_list := getStrMemcacheValueByKey(w,r,cKey)
 				if strings.TrimSpace(cctv_list) == "" {
 					//cfgName := fmt.Sprintf("PERSONAL_CCTV_LIST_%v", uid)
@@ -18265,7 +18261,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 					cctv_list, _ = getTDSCNFG(w,r,0,cfgName)
 					putStrToMemcacheWithoutExp(w,r,cKey,cctv_list)
 				}
-				////c.Infof("cctv_list: %v", cctv_list)
+				//c.Infof("cctv_list: %v", cctv_list)
 				SPL := strings.Split(cctv_list, "@888@")
 				ctr := 0
 				wstr := ""
@@ -18275,7 +18271,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 					if SPL[i] != "" {
 						cKeyTS := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", SPL[i])
 						catLastUpload := getStrMemcacheValueByKey(w,r,cKeyTS)
-						////c.Infof("catLastUpload: %v", catLastUpload)
+						//c.Infof("catLastUpload: %v", catLastUpload)
 						timestamp := stmpHumanize(catLastUpload)
 						m := strings.Index(timestamp, "hour")
 						if m != -1 {
@@ -18324,11 +18320,11 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			} else {
 				//D0074
 				//initiating cctv captures
-				////c.Infof("initiating cctv captures")
+				//c.Infof("initiating cctv captures")
 				//send channel message to initiate capture
 				//cKey := fmt.Sprintf("LIST_ALL_CCTV_ACTIVE_%v", uid)
 				cKey := fmt.Sprintf("LIST_ALL_CCTV_ACTIVE_%v", SYS_SERVER_NAME)
-				////c.Infof("cKey: %v", cKey)
+				//c.Infof("cKey: %v", cKey)
 				cctv_list := getStrMemcacheValueByKey(w,r,cKey)
 				if strings.TrimSpace(cctv_list) == "" {
 					//cfgName := fmt.Sprintf("PERSONAL_CCTV_LIST_%v", uid)
@@ -18336,7 +18332,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 					cctv_list, _ = getTDSCNFG(w,r,0,cfgName)
 					putStrToMemcacheWithoutExp(w,r,cKey,cctv_list)
 				}
-				////c.Infof("cctv_list: %v", cctv_list)
+				//c.Infof("cctv_list: %v", cctv_list)
 				SPL := strings.Split(cctv_list, "@888@")
 				ctr := 0
 				wstr := ""
@@ -18344,7 +18340,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 					if SPL[i] != "" {
 						cKeyTS := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", SPL[i])
 						catLastUpload := getStrMemcacheValueByKey(w,r,cKeyTS)
-						////c.Infof("catLastUpload: %v", catLastUpload)
+						//c.Infof("catLastUpload: %v", catLastUpload)
 						timestamp := stmpHumanize(catLastUpload)
 						m := strings.Index(timestamp, "hour")
 						if m != -1 {
@@ -18353,7 +18349,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 						} else {
 							ctr++
 							data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_CAPTURE@888@%v@888@%v", uid,SPL[i])
-							////c.Infof("Send capture signal: %v", SPL[i])
+							//c.Infof("Send capture signal: %v", SPL[i])
 							sendChannelMessage(w,r,uid,data)
 						}
 					}
@@ -18449,7 +18445,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 				//get list of cctvs
 				//cKey := fmt.Sprintf("LIST_ALL_CCTV_ACTIVE_%v", uid)
 				cKey := fmt.Sprintf("LIST_ALL_CCTV_ACTIVE_%v", SYS_SERVER_NAME)
-				////c.Infof("cKey: %v", cKey)
+				//c.Infof("cKey: %v", cKey)
 				cctv_list := getStrMemcacheValueByKey(w,r,cKey)
 				if strings.TrimSpace(cctv_list) == "" {
 					//cfgName := fmt.Sprintf("PERSONAL_CCTV_LIST_%v", uid)
@@ -18457,7 +18453,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 					cctv_list, _ = getTDSCNFG(w,r,0,cfgName)
 					putStrToMemcacheWithoutExp(w,r,cKey,cctv_list)
 				}
-				////c.Infof("cctv_list: %v", cctv_list)
+				//c.Infof("cctv_list: %v", cctv_list)
 				SPL := strings.Split(cctv_list, "@888@")
 				ctr := 0
 				for i:=0;i<len(SPL);i++ {
@@ -18467,13 +18463,13 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 						//last image
 						cKeyLI := fmt.Sprintf("STRUWM-%v-previous-image", dCat)
 						catLastImage := getStrMemcacheValueByKey(w,r,cKeyLI)
-						////c.Infof("catLastImage: %v", catLastImage)
+						//c.Infof("catLastImage: %v", catLastImage)
 						//last timestamp
 						cKeyTS := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", dCat)
 						catLastUpload := getStrMemcacheValueByKey(w,r,cKeyTS)
-						////c.Infof("catLastUpload: %v", catLastUpload)
+						//c.Infof("catLastUpload: %v", catLastUpload)
 						timestamp := stmpHumanize(catLastUpload)
-						////c.Infof("timestamp: %v", timestamp)
+						//c.Infof("timestamp: %v", timestamp)
 						if catLastImage != "" {
 						buf.WriteString(fmt.Sprintf("<a href=\"%v\" target=\"%v\" title=\"%v\"><img src=\"%v\">%v<br>", catLastImage, catLastUpload, dCat, catLastImage, timestamp))
 						}
@@ -18612,7 +18608,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			}
 		//D0039
 		case "GOTO_MY_ULAPPH":
-			////c.Infof("GOTO_MY_ULAPPH...")
+			//c.Infof("GOTO_MY_ULAPPH...")
 			//D0044
 			renderStaticGotoMyUlapphs(w,r)
 			return
@@ -18622,17 +18618,17 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			return
 		//D0044
 		case "FL_ULAPPH_EXISTS":
-			////c.Infof("FL_ULAPPH_EXISTS...")
+			//c.Infof("FL_ULAPPH_EXISTS...")
 			mode := r.FormValue("m")
 			url := getMyULAPPH(w,r,mode)
 			//fmt.Fprintf(w, url)
 			if len(url) <= 0 {
-				////c.Infof("FL_ULAPPH_EXISTS...NO")
+				//c.Infof("FL_ULAPPH_EXISTS...NO")
 				w.WriteHeader(400)
 			} else {
 				w.WriteHeader(200)
-				////c.Infof("FL_ULAPPH_EXISTS...YES")
-				////c.Infof("url: %v", url)
+				//c.Infof("FL_ULAPPH_EXISTS...YES")
+				//c.Infof("url: %v", url)
 				w.Write([]byte("ok"))
 			}
 			return
@@ -18895,24 +18891,24 @@ func editor(w http.ResponseWriter, r *http.Request) {
 				//get year
 				SPL := strings.Split(start_date, ", ")
 				start_year := SPL[1]
-				////c.Infof("start_year: %v", start_year)
-				////c.Infof("start_date: %v", start_date)
-				////c.Infof("start_time: %v", start_time)
-				////c.Infof("end_date: %v", end_date)
-				////c.Infof("end_time: %v", end_time)
-				////c.Infof("contType: %v", contType)
-				////c.Infof("contCat: %v", contCat)
+				//c.Infof("start_year: %v", start_year)
+				//c.Infof("start_date: %v", start_date)
+				//c.Infof("start_time: %v", start_time)
+				//c.Infof("end_date: %v", end_date)
+				//c.Infof("end_time: %v", end_time)
+				//c.Infof("contType: %v", contType)
+				//c.Infof("contCat: %v", contCat)
 				//compose timestamp
 				start_tstmp := fmt.Sprintf("%v %v", start_date, start_time)
 				end_tstmp := fmt.Sprintf("%v %v", end_date, end_time)
-				////c.Infof("start_tstmp: %v", start_tstmp)
-				////c.Infof("end_tstmp: %v", end_tstmp)
+				//c.Infof("start_tstmp: %v", start_tstmp)
+				//c.Infof("end_tstmp: %v", end_tstmp)
 				rt1, _ := time.Parse("_2 January, 2006 3:04 PM", start_tstmp)
 				start_rt1 := fmt.Sprintf("%v", rt1.Format("20060102150405"))
 				rt2, _ := time.Parse("_2 January, 2006 3:04 PM", end_tstmp)
 				start_rt2 := fmt.Sprintf("%v", rt2.Format("20060102150405"))
-				////c.Infof("start_rt1: %v", start_rt1)
-				////c.Infof("start_rt2: %v", start_rt2)
+				//c.Infof("start_rt1: %v", start_rt1)
+				//c.Infof("start_rt2: %v", start_rt2)
 				start := str2int(start_rt1)
 				end := str2int(start_rt2)
 				tjs := Timelinejs{}
@@ -18945,7 +18941,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 					q = datastore.NewQuery("TDSSLIDE").Filter("CATEGORY =", contCat).Filter("YEAR =", start_year)
 					}
 					recCount,_ := q.Count(c)
-					////c.Infof("recCount: %v", recCount)
+					//c.Infof("recCount: %v", recCount)
 					slide := make([]TDSSLIDE, 0, recCount)
 					if _, err := q.GetAll(c, &slide); err != nil {
 						 panic(err)
@@ -18986,7 +18982,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 					q = datastore.NewQuery("TDSARTL").Filter("CATEGORY =", contCat).Filter("YEAR =", start_year)
 					}
 					recCount,_ := q.Count(c)
-					////c.Infof("recCount: %v", recCount)
+					//c.Infof("recCount: %v", recCount)
 					article := make([]TDSARTL, 0, recCount)
 					if _, err := q.GetAll(c, &article); err != nil {
 						 panic(err)
@@ -19027,7 +19023,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 					q = datastore.NewQuery("TDSMEDIA").Filter("CATEGORY =", contCat).Filter("YEAR =", start_year)
 					}
 					recCount,_ := q.Count(c)
-					////c.Infof("recCount: %v", recCount)
+					//c.Infof("recCount: %v", recCount)
 					media := make([]TDSMEDIA, 0, recCount)
 					if _, err := q.GetAll(c, &media); err != nil {
 						 panic(err)
@@ -19061,7 +19057,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 					//q := datastore.NewQuery("TDSSLIDE").Filter("YEAR =", start_year).Limit(500)
 					q := datastore.NewQuery("TDSSLIDE").Order("-DOC_ID").Limit(500)
 					recCount,_ := q.Count(c)
-					////c.Infof("recCount: %v", recCount)
+					//c.Infof("recCount: %v", recCount)
 					slide := make([]TDSSLIDE, 0, recCount)
 					if _, err := q.GetAll(c, &slide); err != nil {
 						 panic(err)
@@ -19082,7 +19078,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 					//q1 := datastore.NewQuery("TDSARTL").Filter("YEAR =", start_year).Limit(500)
 					q1 := datastore.NewQuery("TDSARTL").Order("-DOC_ID").Limit(500)
 					recCount,_ = q1.Count(c)
-					////c.Infof("recCount: %v", recCount)
+					//c.Infof("recCount: %v", recCount)
 					article := make([]TDSARTL, 0, recCount)
 					if _, err := q1.GetAll(c, &article); err != nil {
 						 panic(err)
@@ -19103,7 +19099,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 					//q2 := datastore.NewQuery("TDSMEDIA").Filter("YEAR =", start_year).Limit(500)
 					q2 := datastore.NewQuery("TDSMEDIA").Order("-MEDIA_ID").Limit(500)
 					recCount,_ = q2.Count(c)
-					////c.Infof("recCount: %v", recCount)
+					//c.Infof("recCount: %v", recCount)
 					media := make([]TDSMEDIA, 0, recCount)
 					if _, err := q2.GetAll(c, &media); err != nil {
 						 panic(err)
@@ -19137,11 +19133,11 @@ func editor(w http.ResponseWriter, r *http.Request) {
 			renderStaticTemplates(w,r,".mermaid")
 			return
 		case "CRYPTO":
-			////c.Infof("CRYPTO")
+			//c.Infof("CRYPTO")
 			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",uReferer)
 			if FL_PROC_OK == false {return}
 			if EDIT_MODE == "" {
-				////c.Infof("EDIT_MODE=")
+				//c.Infof("EDIT_MODE=")
 				//display form to input textarea and select format options
 				if err := textCryptoBody.Execute(w, ""); err != nil {
 				  panic(err)
@@ -19154,7 +19150,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 				sid := r.FormValue("sid")
 				cStr := []byte("")
 				fileName := ""
-				////c.Infof("EDIT_MODE=OK")
+				//c.Infof("EDIT_MODE=OK")
 				if sid != "" {
 					fileName = sid
 					BLOB_KEY := contentCheckSid(w,r,sid)
@@ -19173,9 +19169,9 @@ func editor(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 				if r.FormValue("remote") == "Y" {
-					////c.Infof("remote")
+					//c.Infof("remote")
 					url := r.FormValue("url")
-					////c.Infof("url: %v", url)
+					//c.Infof("url: %v", url)
 					text = fetchURL(w,r,url)
 					fileName = url
 				} else {
@@ -19210,7 +19206,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 					fmt.Fprintf(w, "ERROR: Enter text or upload text file.")
 					return
 				}
-				////c.Infof("mode: %v", mode)
+				//c.Infof("mode: %v", mode)
 				if mode == "v" {
 					cStr = []byte(text)
 					fileName = fileName+"(as-is).txt"
@@ -19228,7 +19224,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 				if mode == "d" || mode == "v" {
 					switch {
 						case dview == "d":
-							////c.Infof("dview=d")
+							//c.Infof("dview=d")
 							w.Header().Set(`Content-Type`, `text/plain`)
 							disp := fmt.Sprintf("attachment; filename=%v", fileName)
 							w.Header().Set(`Content-Disposition`, disp)
@@ -19237,7 +19233,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 
 						case dview == "s" || dview == "a":
 							//fmt.Fprintf(w, "Preparing slide...")
-							////c.Infof("Preparing slide/article...")
+							//c.Infof("Preparing slide/article...")
 							var lines []string
 							s := bufio.NewScanner(bytes.NewReader(cStr))
 							for s.Scan() {
@@ -19262,7 +19258,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 							}
 							//if redirect
 							if r.FormValue("redirect") == "Y" {
-								////c.Infof("redirect...")
+								//c.Infof("redirect...")
 								_, uid := checkSession(w,r)
 								cKey := fmt.Sprintf("ULAPPH_DROP_OPEN_%s_%v", uid, base64.StdEncoding.EncodeToString([]byte(stripchars(strings.TrimSpace(fileName)," "))))
 								putBytesToMemcacheWithExp(w,r,cKey,buf.Bytes(),GEN_CONTENT_EXPIRES)
@@ -19274,8 +19270,8 @@ func editor(w http.ResponseWriter, r *http.Request) {
 								}
 								data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_OPEN_WINDOW@888@%v", redURL)
 								sendChannelMessage(w,r,uid,data)
-								////c.Infof("redURL: %v", redURL)
-								////c.Infof("sendChannelMessage()")
+								//c.Infof("redURL: %v", redURL)
+								//c.Infof("sendChannelMessage()")
 								return
 							}
 							//display slides
@@ -19283,7 +19279,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 							w.Write(buf.Bytes())
 							return
 						case dview == "t":
-							////c.Infof("dview=t")
+							//c.Infof("dview=t")
 							//fmt.Fprintf(w, "Preparing text...")
 							s := bufio.NewScanner(bytes.NewReader(cStr))
 							s.Scan()
@@ -19474,7 +19470,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 			return
  
 		case "GET_TEXT":
-			////c.Infof("GET_TEXT")
+			//c.Infof("GET_TEXT")
 			KEY_TEXT := r.FormValue("KEY_TEXT")
 			FL_DESKTOP := checkDesktop(w,r)
 			lbs := ""
@@ -19487,11 +19483,11 @@ func editor(w http.ResponseWriter, r *http.Request) {
 				case "NEWTEXT":
 					//D0070
 					TSID := r.FormValue("TEMPLATE_SID")
-					////c.Infof("TSID: %v", TSID)
+					//c.Infof("TSID: %v", TSID)
 					if TSID != "" {
 						//get sample text template
 						BLOB_KEY := contentCheckSid(w,r,TSID)
-						////c.Infof("BLOB_KEY: %v", BLOB_KEY)
+						//c.Infof("BLOB_KEY: %v", BLOB_KEY)
 						blobByte := getBlobByte(w, r, BLOB_KEY)
 						writeHTMLHeader(w, 200)
 						w.Write(blobByte)
@@ -20090,10 +20086,10 @@ func editor(w http.ResponseWriter, r *http.Request) {
 			return
 
 		case "APPEND":
-			////c.Infof("APPEND...")
+			//c.Infof("APPEND...")
 			AP_FUNC := r.FormValue("AP_FUNC")
 			UID := r.FormValue("UID")
-			////c.Infof("UID: %v", UID)
+			//c.Infof("UID: %v", UID)
 			if UID == "" {
 				fmt.Fprintf(w, "Invalid operation!")
 				c.Errorf("Invalid user!")
@@ -20102,7 +20098,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 			
 			switch AP_FUNC {
 				case "APPEND-UWM":
-					////c.Infof("APPEND-UWM...")
+					//c.Infof("APPEND-UWM...")
 					UWM := r.FormValue("UWM")
 					SID := getUWMSource(w,r,UID,UWM)
 					if SID == "" {
@@ -20112,7 +20108,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 						return					
 					}
 					thisCont := r.FormValue("TEXT")
-					////c.Infof("appendToSid...")
+					//c.Infof("appendToSid...")
 					err := appendToSid(w,r,UID,AP_FUNC,SID,thisCont)	
 					if err != nil {
 						w.WriteHeader(400)
@@ -20257,12 +20253,12 @@ func timelineAddEventMedia(w http.ResponseWriter, r *http.Request, uid, GROUP_ID
 //D0072
 func photoGalleryShowMedia(w http.ResponseWriter, r *http.Request, uid, GROUP_ID, contCat string, start, end int, p *TDSMEDIA) {
 	//c := appengine.NewContext(r)
-	////c.Infof("photoGalleryShowMedia called")
-	////c.Infof("uid: %v", uid)
-	////c.Infof("GROUP_ID: %v", GROUP_ID)
-	////c.Infof("contCat: %v", contCat)
-	////c.Infof("start: %v", start)
-	////c.Infof("end: %v", end)
+	//c.Infof("photoGalleryShowMedia called")
+	//c.Infof("uid: %v", uid)
+	//c.Infof("GROUP_ID: %v", GROUP_ID)
+	//c.Infof("contCat: %v", contCat)
+	//c.Infof("start: %v", start)
+	//c.Infof("end: %v", end)
 	thisDU := str2int(p.DT_UPLOAD)
 	if ((start <= 0 && end <= 0) || (thisDU >= start && thisDU <= end)) && (p.AUTHOR == uid || GROUP_ID == "GRP_ADMIN" || GROUP_ID == "GRP_USER") {
 		var buffer3 bytes.Buffer
@@ -20912,14 +20908,13 @@ func ulapphCommands(w http.ResponseWriter, r *http.Request) {
 			cfgMedia := r.FormValue("SID")
 			token := r.FormValue("token")
 			//bodyBytes, _ := ioutil.ReadAll(r.Body)
-			////c.Infof("token: %v", token)
-			////c.Infof("config: %v", cfgMedia)
+			//c.Infof("token: %v", token)
+			//c.Infof("config: %v", cfgMedia)
 			err := extractPlannerTasks(w,r,token,cfgMedia)
 			if err != nil {
 				fmt.Fprintf(w, "Error extracting planner tasks: %v", err)
 			}
 			return
-		
 		case "scrape":
 			url := r.FormValue("url")
 			sel := r.FormValue("selector")
@@ -20976,9 +20971,9 @@ func deleteTodos(w http.ResponseWriter, r *http.Request) {
 //update TODOs from XPIMS app
 func updateTodo(w http.ResponseWriter, r *http.Request,uid,stat,todo string) {
 	c := appengine.NewContext(r)
-	////c.Infof("uid: %v", uid)
-	////c.Infof("stat: %v", stat)
-	////c.Infof("todo: %v", todo)
+	//c.Infof("uid: %v", uid)
+	//c.Infof("stat: %v", stat)
+	//c.Infof("todo: %v", todo)
 	
 	if todo != "" {
 		//update items
@@ -20992,27 +20987,27 @@ func updateTodo(w http.ResponseWriter, r *http.Request,uid,stat,todo string) {
 		 }
 		FL_FOUND := false
 		for _, p := range todos {
-			////c.Infof("p.Text: %v", p.Text)
-			////c.Infof("todo: %v", todo)
+			//c.Infof("p.Text: %v", p.Text)
+			//c.Infof("todo: %v", todo)
 			if html.UnescapeString(p.Text) == html.UnescapeString(todo) {
-				////c.Infof("found: %v", p.Id)
+				//c.Infof("found: %v", p.Id)
 				if stat == "x" {
 					p.Done = true
 					p.save(c,uid)
-					////c.Infof("Saved p: %v", p)
+					//c.Infof("Saved p: %v", p)
 				}
 				FL_FOUND = true
 				break				
 			}
 		}
 		if FL_FOUND == false {
-			////c.Infof("not found: %v", todo)
+			//c.Infof("not found: %v", todo)
 			g := Todo{
 					Done: false,
 					Text: todo,
 			}
 			g.save(c,uid)
-			////c.Infof("Saved g: %v", g)			
+			//c.Infof("Saved g: %v", g)			
 		}
 	}
 }
@@ -21205,32 +21200,25 @@ func scraper(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,txt,tlen
 //handles notifications for scraped websites 
 func scraperAlertify(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,txt,tlen string) {
 	var pl []*ChanMessage
-	
 	maxTxtLen := str2int(tlen)
 	if maxTxtLen <= 0 {
 		maxTxtLen = 50
 	}
-	
 	goq, err := goquery.NewDocument(r,url)
 	if err != nil {
 		log.Fatal(err)
 	}
- 
 	// use CSS selector found with the browser inspector
 	// for each, use index and item
 	ctr := 0
 	goq.Find(sel).Each(func(index int, item *goquery.Selection) {
-		
 		var buffer5 bytes.Buffer
-		
 		title := item.Text()
-		
 		if len(title) > maxTxtLen {
 			title = title[0:maxTxtLen]
 		} else {
 			title = title[0:len(title)]
 		}
-									
 		linkTag := item.Find("a")
 		link, _ := linkTag.Attr("href")
 
@@ -21239,10 +21227,8 @@ func scraperAlertify(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,
 			buffer5.WriteString(fmt.Sprintf("%v<br>", s1))
 			if len(s1) > 0 { ctr++}
 		}
-		
 		imgTag := item.Find("img")
 		imgLink, _ := imgTag.Attr("imgsrc")
- 
 		if imgLink == "" {
 			imgTag := item.Find("img")
 			imgLink, _ := imgTag.Attr("src")
@@ -21260,7 +21246,6 @@ func scraperAlertify(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,
 					}
 					buffer5.WriteString(fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"share\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", "scrape", rlink))
 					if len(link) > 0 { ctr++}
- 
 				}
 			} else {
 				if lnk == "Y" || lnk == "y" && link != "" {
@@ -21273,7 +21258,7 @@ func scraperAlertify(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,
 					buffer5.WriteString(fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"share\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", "scrape", rlink))
 					if len(link) > 0 { ctr++}
 				}
-			}				
+			}
 		} else {
 				if img == "Y" || img == "y"  {
 					buffer5.WriteString(fmt.Sprintf("<img src=\"%v\" width=200 height=150><br>", resolveURL(url,imgLink)))
@@ -21290,7 +21275,6 @@ func scraperAlertify(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,
 					if len(link) > 0 { ctr++}
 				}
 		}
- 
 		msg := buffer5.String()
 		i := strings.Index(msg, "<img")
 		if i != -1 {
@@ -21302,20 +21286,16 @@ func scraperAlertify(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,
 			pl = append(pl, g)
 		}
 	})
-	
 	if ctr <= 0 {
 		fmt.Fprintf(w, "<img src=\"/img/scraper.png\" width=50 height=50><img src=\"/img/channel-error.png\" width=50 height=50> No scrape results found!")
 	} else {
 		fmt.Fprintf(w, "<img src=\"/img/scraper.png\" width=50 height=50><img src=\"/img/success.png\" width=50 height=50> %v scrape results found!", ctr)
 	}
-	
 	//now send
 	for _, m := range pl {
- 
 		delaySecond(1)
 		sendChannelMessage(w,r,m.User,m.Message)
 	}
-	
 	return
 }
 
@@ -21323,32 +21303,26 @@ func scraperAlertify(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,
 func scraperJson(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,txt,tlen, itxt string) {
 
 	var pl []*Scraper
-	
 	maxTxtLen := str2int(tlen)
 	if maxTxtLen <= 0 {
 		maxTxtLen = 50
 	}
-	
 	goq, err := goquery.NewDocument(r,url)
 	if err != nil {
 		log.Fatal(err)
 	}
- 
 	// use CSS selector found with the browser inspector
 	// for each, use index and item
 	goq.Find(sel).Each(func(index int, item *goquery.Selection) {
-		
 		p := new(Scraper)
-		
 		//var buffer5 bytes.Buffer
 		title := item.Text()
 		title = strings.Replace(title,"\n","",-1)
-        re_leadclose_whtsp := regexp.MustCompile(`^[\s\p{Zs}]+|[\s\p{Zs}]+$`)
+		re_leadclose_whtsp := regexp.MustCompile(`^[\s\p{Zs}]+|[\s\p{Zs}]+$`)
 		re_inside_whtsp := regexp.MustCompile(`[\s\p{Zs}]{2,}`)
 		final := re_leadclose_whtsp.ReplaceAllString(title, "")
 		final = re_inside_whtsp.ReplaceAllString(final, " ")
 		title = final
-		
 		if strings.ToUpper(itxt) == "Y" {
 			bodyString := fetchURL(w,r,url)
 			text, err := html2text.FromString(bodyString)
@@ -21358,24 +21332,19 @@ func scraperJson(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,txt,
 			}
 			p.Text = text
 		}
-		
 		if len(title) > maxTxtLen {
 			title = title[0:maxTxtLen]
 		} else {
 			title = title[0:len(title)]
 		}
-									
 		linkTag := item.Find("a")
 		link, _ := linkTag.Attr("href")
- 
 		if txt == "Y" || txt == "y"  {
 			s1 := getSentence(title)
 			p.Title = s1
 		}
-		
 		imgTag := item.Find("img")
 		imgLink, _ := imgTag.Attr("imgsrc")
- 
 		if imgLink == "" {
 			imgTag := item.Find("img")
 			imgLink, _ := imgTag.Attr("src")
@@ -21390,7 +21359,6 @@ func scraperJson(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,txt,
 					} else {
 						p.URL = resolveURL(url,link)
 					}
- 
 				}
 			} else {
 				if lnk == "Y" || lnk == "y" && link != "" {
@@ -21401,7 +21369,7 @@ func scraperJson(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,txt,
 						p.URL = resolveURL(url,link)
 					}
 				}
-			}				
+			}
 		} else {
 				if img == "Y" || img == "y"  {
 					p.Image = resolveURL(url,imgLink)
@@ -21415,22 +21383,16 @@ func scraperJson(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,txt,
 					}
 				}
 		}
- 
 		pl = append(pl, p)
 	})
- 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT")
 	data,_ := json.MarshalIndent(pl, "", "  ")
 	w.Write(data)
-		
 	return
 }
- 
- 
 // returns complete url
 func resolveURL(urlm, link string) string {
- 
 	u, err := url.Parse(link)
 	if err != nil {
 		log.Fatal(err)
@@ -21462,10 +21424,10 @@ func getSentence(txt string) (s1 string) {
 //handles /tools url which handles the different tools
 func ulapphTools(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	////c.Infof("checking referrer")
+	//c.Infof("checking referrer")
 	TARGET := r.FormValue("t")
 	TOOL_FUNC := r.FormValue("FUNC")
-	////c.Infof("checking country")
+	//c.Infof("checking country")
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	uReferer := r.Referer()
 	DESKTOP := r.FormValue("CATEGORY")
@@ -21488,7 +21450,7 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if TOOL_FUNC == "THEMES" { 
-		////c.Infof("THEMES")
+		//c.Infof("THEMES")
 		con_url := r.FormValue("con_url")
 		getAvailThemes(w,r,SID,con_url)
 		return
@@ -21506,7 +21468,7 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	checkReferrer(w,r)
-	////c.Infof("checking user session")
+	//c.Infof("checking user session")
 	_, uid := checkSession(w,r)
 	if TOOL_FUNC == "random" {
 		if uid == "" {
@@ -22031,7 +21993,7 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 		} else if (TOOL_FUNC == "CLR_ACS") {
 			turl = "/tools?FUNC=WIDGET&t=ULAPPHStart";
 		} else {
-			turl = "/m";
+			turl = "/uwm";
 		}
 		http.Redirect(w, r, turl, http.StatusFound)	
 		return
@@ -23014,7 +22976,7 @@ func ulapphSearch(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(HOST_LIST))
 			return
 		case SEARCH_FUNC == "GET_MAP_LIST":
-			c.Infof("GET_MAP_LIST")
+			//c.Infof("GET_MAP_LIST")
 			if r.FormValue("esk") != EXT_SEARCH_GEN_KEY {
 				fmt.Printf("Unauthorized access")
 				return
@@ -26998,8 +26960,8 @@ func listAllNotes(w http.ResponseWriter, r *http.Request, uid string) []Notes {
 		}		
 	}
 	BLOB_KEY := contentCheckSid(w,r,SID)
-	////c.Infof("SID: %v", SID)
-	////c.Infof("BLOB_KEY: %v", BLOB_KEY)
+	//c.Infof("SID: %v", SID)
+	//c.Infof("BLOB_KEY: %v", BLOB_KEY)
 	var buf bytes.Buffer
 	reader := blobstore.NewReader(c, appengine.BlobKey(BLOB_KEY))
 	s := bufio.NewScanner(reader)
@@ -27011,7 +26973,7 @@ func listAllNotes(w http.ResponseWriter, r *http.Request, uid string) []Notes {
 	for _, p := range aln.AllNotes {
 		dks = append(dks, p)
 	}
-	////c.Infof("DKS: %v", dks)
+	//c.Infof("DKS: %v", dks)
 	
 	return dks
 	
@@ -27024,7 +26986,7 @@ func listDesktopsButs(w http.ResponseWriter, r *http.Request, uid string) []Desk
 	cKey2 := "DESKTOPS_LIST_JSON"
 	DESKTOPS_LIST := getBytMemcacheValueByKey(w,r,cKey2)
 	if DESKTOPS_LIST == nil || string(DESKTOPS_LIST) == "" {
-		////c.Infof("DESKTOPS_LIST = blank")
+		//c.Infof("DESKTOPS_LIST = blank")
 		docID := 0
 		cfgName := "SYSTEM_Category_List_Media_ID"
 		_, docID = getTDSCNFG(w,r,1,cfgName)
@@ -27039,21 +27001,21 @@ func listDesktopsButs(w http.ResponseWriter, r *http.Request, uid string) []Desk
 			thisGrp := ""
 			for s.Scan() {
 				if len(s.Text()) > 0 {
-					////c.Infof("%v", s.Text())
+					//c.Infof("%v", s.Text())
 					thisStr := fmt.Sprintf("%v", s.Text())
 					//D0067
-					////c.Infof("len: %v", len(thisStr))
+					//c.Infof("len: %v", len(thisStr))
 					if len(thisStr) > 3 { 
 					if string(thisStr[0]) == "#" && string(thisStr[1]) == "<" && string(thisStr[2]) != "/" && thisGrp == "" {
 						//start group
 						//#<Basic Desktops>
-						////c.Infof("start")
+						//c.Infof("start")
 						thisStr := fmt.Sprintf("%v", strings.TrimSpace(s.Text()))
 						thisGrp = thisStr[2:len(thisStr)-1]
 					}
 					if string(thisStr[0]) == "#" && string(thisStr[1]) == "<" && string(thisStr[2]) == "/" {
 						//close group
-						////c.Infof("end")
+						//c.Infof("end")
 						thisGrp = ""
 					}
 					}
@@ -27126,7 +27088,7 @@ func listDesktopsButs(w http.ResponseWriter, r *http.Request, uid string) []Desk
 	} else {
 		//convert again to json
 		json.Unmarshal(DESKTOPS_LIST, &dks)
-		////c.Infof("%v", dks)
+		//c.Infof("%v", dks)
 	}
 	return dks
 }
@@ -27141,7 +27103,7 @@ func listDesktopsIcons(w http.ResponseWriter, r *http.Request, uid string) []Ico
 	ICONS_LIST := getBytMemcacheValueByKey(w,r,cKey2)
 	
 	if ICONS_LIST == nil || string(ICONS_LIST) == "" {
-		////c.Infof("ICONS_LIST = blank")
+		//c.Infof("ICONS_LIST = blank")
 		//------------
 		q := datastore.NewQuery("TDSCATS").Limit(1000)
 		recCount, _  := q.Count(c)
@@ -27252,7 +27214,7 @@ func listDesktopsIcons(w http.ResponseWriter, r *http.Request, uid string) []Ico
 	} else {
 		//convert again to json
 		json.Unmarshal(ICONS_LIST, &dks)
-		////c.Infof("%v", dks)
+		//c.Infof("%v", dks)
 	}
 	return dks
 }
@@ -28365,7 +28327,7 @@ func ulapphComments(w http.ResponseWriter, r *http.Request) {
 	//D0040
 	CC_KEY, _ := getCCKey(w,r,r.PostFormValue("url"))
 	if CC_KEY != SYS_RECAPTCHA_KEY && isLoggedIn(w,r) != true {
-		////c.Infof("Error: Access to this page requires captch verification!")
+		//c.Infof("Error: Access to this page requires captch verification!")
 		fmt.Fprintf(w, "Error: Access to this page requires captch verification!")
 		return
 	}
@@ -28385,38 +28347,38 @@ func ulapphComments(w http.ResponseWriter, r *http.Request) {
 			//lets serve some cache
 			cKeyC := fmt.Sprintf("JSON_COMMENTS_%v", SID)
 			JLIST := getBytMemcacheValueByKey(w,r,cKeyC)
-			////c.Infof("JLIST: %v", string(JLIST))	
+			//c.Infof("JLIST: %v", string(JLIST))	
 			//if JLIST != nil {
 			if string(JLIST) != "" {
-				////c.Infof("Serve map cached!")
+				//c.Infof("Serve map cached!")
 				if err := json.Unmarshal(JLIST, &comments); err != nil {
 					panic(err)
 				}
-				////c.Infof("comments: %v", comments)
+				//c.Infof("comments: %v", comments)
 				result.Comments = comments
 				result.render(w)
 				return
 			}
 			comments, err = getComments(w,r,SID,url)
-			////c.Infof("comments: %v", comments)
+			//c.Infof("comments: %v", comments)
 			if err != nil {
-				////c.Infof("getComments() Error: %v", err)
+				//c.Infof("getComments() Error: %v", err)
 				//Emit(err)
 			}
 			//cache it first
 			data, err := json.Marshal(comments)
 			if err != nil {
-				////c.Infof("json.Marshal() Error: %v", err)
+				//c.Infof("json.Marshal() Error: %v", err)
 			}
 			putBytesToMemcacheWithoutExp(w,r,cKeyC,data)
-			////c.Infof("comments cached: %v", string(data))
+			//c.Infof("comments cached: %v", string(data))
 			result.Comments = comments
 			result.render(w)
 			return
 		case "create":
 			result := &resultContainer{}
 			if r.Method != "POST" {
-				////c.Infof("This request must be a POST request: %v", r.Method)
+				//c.Infof("This request must be a POST request: %v", r.Method)
 				result.Status = http.StatusMethodNotAllowed
 				result.Message = "This request must be a POST request."
 				result.render(w)
@@ -28424,10 +28386,10 @@ func ulapphComments(w http.ResponseWriter, r *http.Request) {
 			}
 
 			parent, err := strconv.Atoi(r.PostFormValue("parent"))
-			////c.Infof("parent: %v", parent)
+			//c.Infof("parent: %v", parent)
 			if err != nil {
 				//Emit(err)
-				////c.Infof("getComments() Error: %v", err)
+				//c.Infof("getComments() Error: %v", err)
 				result.Status = http.StatusBadRequest
 				result.Message = "Invalid parent ID."
 				result.render(w)
@@ -28463,7 +28425,7 @@ func ulapphComments(w http.ResponseWriter, r *http.Request) {
 		case "create2":
 			result := &resultContainer{}
 			if r.Method != "POST" {
-				////c.Infof("This request must be a POST request: %v", r.Method)
+				//c.Infof("This request must be a POST request: %v", r.Method)
 				result.Status = http.StatusMethodNotAllowed
 				result.Message = "This request must be a POST request."
 				result.render(w)
@@ -28471,10 +28433,10 @@ func ulapphComments(w http.ResponseWriter, r *http.Request) {
 			}
 
 			parent, err := strconv.Atoi(r.FormValue("parent"))
-			////c.Infof("parent: %v", parent)
+			//c.Infof("parent: %v", parent)
 			if err != nil {
 				//Emit(err)
-				////c.Infof("getComments() Error: %v", err)
+				//c.Infof("getComments() Error: %v", err)
 				result.Status = http.StatusBadRequest
 				result.Message = "Invalid parent ID."
 				result.render(w)
@@ -28495,7 +28457,7 @@ func ulapphComments(w http.ResponseWriter, r *http.Request) {
 			err = createComment(w,r,r.FormValue("url"), name, res, uid, comment, latlon, parent)
 			if err != nil {
 				//Emit(err)
-				////c.Infof("getComments() Error: %v", err)
+				//c.Infof("getComments() Error: %v", err)
 				result.Status = http.StatusInternalServerError
 				result.Message = "Some internal error occurred."
 				result.render(w)
@@ -28509,8 +28471,8 @@ func ulapphComments(w http.ResponseWriter, r *http.Request) {
 		case "export_comments":
 			SID := r.FormValue("SID")
 			TITLE := r.FormValue("TITLE")
-			////c.Infof("SID: %v", SID)
-			////c.Infof("TITLE: %v", TITLE)
+			//c.Infof("SID: %v", SID)
+			//c.Infof("TITLE: %v", TITLE)
 			err := extractComments(w,r,SID,TITLE)
 			if err != nil {
 				fmt.Fprintf(w,"Error extracting comments: %v", err)
@@ -28519,7 +28481,7 @@ func ulapphComments(w http.ResponseWriter, r *http.Request) {
 
 
 		default:
-			////c.Infof("/comments index!")
+			//c.Infof("/comments index!")
 			return
 	}
 }
@@ -28588,7 +28550,7 @@ func social(w http.ResponseWriter, r *http.Request) {
 			}
 			bodyBytes, _ := ioutil.ReadAll(res.Body)
 			if res.StatusCode == 200 {
-				////c.Infof("bodyBytes: %v", string(bodyBytes))
+				//c.Infof("bodyBytes: %v", string(bodyBytes))
 				w.WriteHeader(200)
 				renderStaticNewsSources(w,r,bodyBytes)
 			} else {
@@ -28673,6 +28635,7 @@ func social(w http.ResponseWriter, r *http.Request) {
 			xhost := r.FormValue("xhost")
 			xpic := r.FormValue("xpic")
 			if xcus != "" {
+				//c.Infof("updateMyULAPPHLoc")
 				//this is manually set
 				xll = xcus
 				//update the users host list
@@ -28682,25 +28645,97 @@ func social(w http.ResponseWriter, r *http.Request) {
 			//get old first		
 			cKey := fmt.Sprintf("PROC_BROADCAST_LOCATION")
 			LOCS := getStrMemcacheValueByKey(w,r,cKey)
+			//c.Infof("LOCS: %v", LOCS)
+			//D0082
 			var buffer3 bytes.Buffer
-			scanner := bufio.NewScanner(strings.NewReader(LOCS))
 			FL_OK := false
-			for scanner.Scan() {
-				SPL := strings.Split(scanner.Text(), "|")
-				if len(SPL) > 0 {
-					if xuid == SPL[0] && xhost == SPL[1] {
-					//replace
-						buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v|%v\n", xuid, xhost, xll, getTimestamp(),xpic))
-						FL_OK = true
-					} else {
-						buffer3.WriteString(fmt.Sprintf("%v\n", scanner.Text()))
+			if LOCS == "" {
+				//get from blobstore
+				MAPS_BLOB := ""
+				//get from cache first
+				cKey := fmt.Sprintf("MAPS_BROADCAST_LOCATIONS_BLOB")
+				MAPS_BLOB = getStrMemcacheValueByKey(w,r,cKey)
+				//c.Infof("MAPS_BLOB: %v", MAPS_BLOB)
+				if MAPS_BLOB == "" {
+					//c.Infof("MAPS_BLOB EMPTY")
+					FL_EN := false
+					var g TDSCNFG
+					thisKey := fmt.Sprintf("MAPS_BROADCAST_LOCATIONS")
+					//c.Infof("thisKey: %v", thisKey)
+					//--check student record
+					key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
+					if err := datastore.Get(c, key, &g); err != nil {
+						//panic(err)
+						//return
+					}
+					if g.TXT_VAL != "" {
+						//c.Infof("g.TXT_VAL: %v", g.TXT_VAL)
+						MAPS_BLOB = g.TXT_VAL 
+						FL_EN = true
+					}
+					if FL_EN == false {
+						//c.Infof("Insert TDSCNFG")
+						g := TDSCNFG{
+								SYS_VER: 1,
+								USER: uid,
+								CFG_ID: thisKey,
+								DAT_TYP: "TXT",
+								NUM_VAL: 0,
+								TXT_VAL: "",
+								CFG_DESC: "Set via code",
+						}
+						key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
+						if _, err := datastore.Put(c, key, &g); err != nil {
+								panic(err)
+								//return
+						}
 					}
 				}
+				//D0082
+				reader := blobstore.NewReader(c, appengine.BlobKey(MAPS_BLOB))
+				scanner := bufio.NewScanner(reader)
+				for scanner.Scan() {
+					SPL := strings.Split(scanner.Text(), "|")
+					if len(SPL) > 0 {
+						if xuid == SPL[0] && xhost == SPL[1] {
+						//replace
+							buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v|%v\n", xuid, xhost, xll, getTimestamp(),xpic))
+							FL_OK = true
+						} else {
+							buffer3.WriteString(fmt.Sprintf("%v\n", scanner.Text()))
+						}
+					}
+				}
+			} else {
+				//D0082
+				//FL_OK := false
+				//c.Infof("LOCS")
+				scanner := bufio.NewScanner(strings.NewReader(LOCS))
+				for scanner.Scan() {
+					SPL := strings.Split(scanner.Text(), "|")
+					if len(SPL) > 0 {
+						if xuid == SPL[0] && xhost == SPL[1] {
+						//replace
+							buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v|%v\n", xuid, xhost, xll, getTimestamp(),xpic))
+							FL_OK = true
+						} else {
+							buffer3.WriteString(fmt.Sprintf("%v\n", scanner.Text()))
+						}
+					}
+				}
+
 			}
 			if FL_OK == false {
 				buffer3.WriteString(fmt.Sprintf("%v|%v|%v|%v|%v\n", xuid, xhost, xll, getTimestamp(), xpic))
 			}
+			//c.Infof("MAP_DATA: %v", buffer3.String())
 			putStrToMemcacheWithoutExp(w,r,cKey,buffer3.String())
+			//save backup to blobstore
+			if buffer3.String() != "" {
+				//c.Infof("laterSaveLocations()")
+				laterSaveLocations.Call(c, buffer3.String())
+				//saveLocations(w,r,buffer3.Bytes())
+			}
 			//save latest long/lat per host
 			cKeyLL := fmt.Sprintf("%v-tracker-%v", xhost, xuid)
 			//c.Infof("cKeyLL: %v", cKeyLL)
@@ -28962,12 +28997,10 @@ func social(w http.ResponseWriter, r *http.Request) {
 			}
 			//FL_PROFILE_FOUND := false
 			updateUserActiveData(w, r, c, uid, "/view-profile@"+UID)
-			
 			viewProfile(w,r,UID,uid)
 			return
- 
+		//automated quiz checking
 		case "QUIZ":
-
 			SID := r.FormValue("SID")
 			ANS := r.FormValue("ANS")
 			mode := r.FormValue("mode")
@@ -29044,7 +29077,7 @@ func social(w http.ResponseWriter, r *http.Request) {
 					return
 				case "default":
 					//get percentage
-					res, _, title, cAns, err := getBlobTextQuiz(w,r,SID,ANS)
+					res, _, title, cAns, myTot, qTot, rmwTot, err := getBlobTextQuiz(w,r,SID,ANS)
 					if err == nil {
 						content := ""
 						if nameOk == true && fromOk == true {
@@ -29074,7 +29107,7 @@ func social(w http.ResponseWriter, r *http.Request) {
 							}
 							geoStr := getGeoString(w,r)
 							geoAcc := getAccessString(w,r,"")
-							msg := fmt.Sprintf("[%v] %v<br>%v <br>%v<br>****correct answers****<br>%v<br><br>--submitted by [%v] [%v] <br>--no-reply <br>--geo [%v] <br>--via [%v]",SID, title, content, buf.String(), cAns, name, from, geoStr, geoAcc)
+							msg := fmt.Sprintf("[%v] %v<br>%v <br>*****results*****<br>Your score: %v<br>Total Items: %v<br>RMW Deductions: %v<br>************<br>%v<br>****correct answers****<br>%v<br><br>--submitted by [%v] [%v] <br>--no-reply <br>--geo [%v] <br>--via [%v]",SID, title, content, myTot, qTot, rmwTot, buf.String(), cAns, name, from, geoStr, geoAcc)
 							to := FDBKMAIL
 							SENDGENEMAIL(c, subj, to, from, msg)
 							//fmt.Fprintf(w, "SUCCESS: Message sent!")	
@@ -29396,7 +29429,7 @@ func social(w http.ResponseWriter, r *http.Request) {
 func showDesktopStats(w http.ResponseWriter, r *http.Request, cType, dCat, dDesc string) {
 	//c := appengine.NewContext(r)
 	checkReferrer(w,r)
-	////c.Infof("Displaying desktop stats")
+	//c.Infof("Displaying desktop stats")
 	//show timelinejs form
 	//get last timestamp
 	timestamp := ""
@@ -29404,17 +29437,17 @@ func showDesktopStats(w http.ResponseWriter, r *http.Request, cType, dCat, dDesc
 		case "TDSSLIDE":
 			cKey := fmt.Sprintf("TDSSLIDE_CAT_LAST_UPLOAD_%v", dCat)
 			catLastUpload := getStrMemcacheValueByKey(w,r,cKey)
-			////c.Infof("catLastUpload: %v", catLastUpload)
+			//c.Infof("catLastUpload: %v", catLastUpload)
 			timestamp = stmpHumanize(catLastUpload)
 		case "TDSARTL":
 			cKey := fmt.Sprintf("TDSARTL_CAT_LAST_UPLOAD_%v", dCat)
 			catLastUpload := getStrMemcacheValueByKey(w,r,cKey)
-			////c.Infof("catLastUpload: %v", catLastUpload)
+			//c.Infof("catLastUpload: %v", catLastUpload)
 			timestamp = stmpHumanize(catLastUpload)
 		case "TDSMEDIA":
 			cKey := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", dCat)
 			catLastUpload := getStrMemcacheValueByKey(w,r,cKey)
-			////c.Infof("catLastUpload: %v", catLastUpload)
+			//c.Infof("catLastUpload: %v", catLastUpload)
 			timestamp = stmpHumanize(catLastUpload)
 	}
 	renderReportForm(w,r,".timelinejs-rep", cType, dCat, dDesc, timestamp)
@@ -31391,7 +31424,7 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 		//	queueStruwmPreviousCompare(w,r)
 		//D0074
 		case "queue-update-cctv-list":
-			////c.Infof("queue-update-cctv-list...")
+			//c.Infof("queue-update-cctv-list...")
 			uid := r.FormValue("uid")
 			desktop := r.FormValue("desktop")
 			struwmUpdateCCTVList(w,r,uid,desktop)
@@ -31407,10 +31440,13 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 			queueAutoMLProc(w,r)
 		case "queue-wget-url":
 			queueWgetUrl(w,r)
+		//D0082
+		case "queue-save-locations":
+			saveLocations(w,r)
 		case "queue-notify-gb":
 			queueNotifyGB(w,r)
 		case "queue-notify-ch":
-			queueNotifyCH(w,r)			
+			queueNotifyCH(w,r)
 		case "queue-stats-inc-logged-in":
 			queueStatsIncLoggedIn(w,r)
 		case "queue-stats-user-active":
@@ -31833,7 +31869,6 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 					//
 				}
 			}
-		
 		//later urlfetcherlus
 		case "URL_FETCH_NOTIFS_IND":
 			//earthquake monitoring
@@ -31843,22 +31878,18 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 			if IS_ACTIVE == "Y" {
 				TASK_MEMCACHER_URLFETCH_NOTIFS_IND(w,r,UID,FREQ)
 			}
- 
 		case "URL_FETCH_LINK":
 			//just execute a link
 			URL := r.FormValue("URL")
- 
 			client := createClient(c, time.Second*600)
 			if err := r.ParseForm(); err != nil {
 				panic(err)
 			}
 			_, _ = client.Get(URL)
-			
 		case "URL_FETCH_NOTIFS":
 			//frequently check url fetch cron tasks
 			FREQ := r.FormValue("f")
 			TASK_MEMCACHER_URL_FETCH_NOTIFS(w,r,FREQ)
-			
 		case "SESSION_ONLINE":
 			tasks, err := taskqueue.Lease(c, 100, "default", 1800)
 			if err == nil {
@@ -32190,7 +32221,7 @@ func TASK_MEMCACHER_motd(w http.ResponseWriter, r *http.Request, DISP_MODE, TITL
 //then it opens windows on the main desktop displaying the Google latest results for that topic
 func TASK_MEMCACHER_RUN_TOPIC_STREAM_UID(w http.ResponseWriter, r *http.Request, UID, UWM, MODE string) {
 	c := appengine.NewContext(r)
-	////c.Infof("TASK_MEMCACHER_RUN_TOPIC_STREAM_UID")	
+	//c.Infof("TASK_MEMCACHER_RUN_TOPIC_STREAM_UID")	
 	if UID == "" {
 		return
 	}
@@ -32208,11 +32239,11 @@ func TASK_MEMCACHER_RUN_TOPIC_STREAM_UID(w http.ResponseWriter, r *http.Request,
 		uid = UWM
 	}
 	topicsource := getTopicsSource(w,r,SPL[0],SPL[1])
-	////c.Infof("topicsource: %v", topicsource)	
+	//c.Infof("topicsource: %v", topicsource)	
 	if len(topicsource) <= 0 {
 		//when no topic source
 		catDesc := deskNum2Name(w,r,fmt.Sprintf("desktop%v", SPL[1]))
-		////c.Infof("catDesc : %v", catDesc)	
+		//c.Infof("catDesc : %v", catDesc)	
 		f := func(c rune) bool {
 			return !unicode.IsLetter(c) && !unicode.IsNumber(c)
 		}
@@ -32450,12 +32481,9 @@ func TASK_MEMCACHER_URLFETCH_NOTIFS_IND (w http.ResponseWriter, r *http.Request,
 			//fmt.Fprintf(w, "%v", buf.String())
 			URL_LIST = buf.String()			
 		}
- 
 	}
- 
 	temp := strings.Split(URL_LIST,"\n")
 	if len(temp) > 0 {
-		
 		for j := 0; j < len(temp); j++ {
 			tURL := strings.TrimSpace(temp[j])
 			if tURL != "" && string(tURL[0]) != "#"  {
@@ -32464,7 +32492,6 @@ func TASK_MEMCACHER_URLFETCH_NOTIFS_IND (w http.ResponseWriter, r *http.Request,
 		}
 	}
 }
- 
 //executes earthquake monitoring in the Philippines
 //an integration with the DOST-PHILVOLCS
 //it parses the Philvolcs data and notifies users online about the earthquake events
@@ -32478,7 +32505,7 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 	//	return
 	//}
 	//dummy
-	FL_DUMMY := false 
+	FL_DUMMY := false
 	//get hourly logs
 	currenttime := time.Now().Local()
 	DATE_YEAR := currenttime.Year()
@@ -32556,6 +32583,7 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 			if SLctr <= 100 {
 				fmt.Fprintf(w, "%v<br>", s.Text())
 				//http://www.phivolcs.dost.gov.ph/html/update_SOEPD/2017_Earthquake_Information/February/2017_0211_1259_B1F.html
+				//https://earthquake.phivolcs.dost.gov.ph/2019_Earthquake_Information/September/2019_0920_0714_B1.html
 				mtch := fmt.Sprintf("LINK:%v_Earthquake_Information", DATE_YEAR)
 				i := strings.Index(s.Text(), mtch)
 				if i != -1 {
@@ -32576,10 +32604,44 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 						//if cKeyValue != "" {
 						if cKeyValue != trimValue {
 							if SYS_EQ_MON_MSG == true {
+								goq, err := goquery.NewDocument(r,thisFrame2)
+								if err != nil {
+									log.Fatal(err)
+								}
+								location := ""
+								mag := ""
+								iLink := ""
+								  goq.Find("body > div > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(2)").Each(func(i int, s *goquery.Selection) {
+									fmt.Printf("%v\n", s.Text())
+									SPL := strings.Split(s.Text(), " of ")
+									if len(SPL) > 0 {
+										location = SPL[1]
+									}
+								  })
+								  goq.Find("body > div > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(5)").Each(func(i int, s *goquery.Selection) {
+									fmt.Printf("%v\n", s.Text())
+									SPL := strings.Split(s.Text(), "Ms ")
+									if len(SPL) > 0 {
+										mag = SPL[1]
+									}
+								  })
+								  goq.Find("body > div > table > tbody > tr:nth-child(3) > td").Each(func(i int, s *goquery.Selection) {
+									imgTag := s.Find("img")
+									imgLink, _ := imgTag.Attr("imgsrc")
+									if imgLink == "" {
+										imgTag := s.Find("img")
+										imgLink, _ = imgTag.Attr("src")
+										if imgLink != "" {
+											dir, _:= filepath.Split(thisFrame2)
+											iLink = fmt.Sprintf("%v%v.jpg", dir, imgLink)
+										}
+									}
+								})
+
 								//msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>][<a href=\"%v\" target=\"eq2\">View All</a>]<hr>Source: PHIVOLCS", thisFrame2, ShortenUrl(w,r,ARLink))
-								msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>]<hr>Source: PHIVOLCS", thisFrame2)
+								msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>] [%v] [%v]<br><img src=\"\" width=100% height=100%><hr>Source: PHIVOLCS", thisFrame2, mag, location, iLink)
 								//msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago. >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v | Philvolcs URL: %v)", ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,ARLink), ShortenUrl(w,r,UFLink))
-								msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago. >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v)", ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,UFLink))
+								msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago in %v with magnitude %v >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v)", location, mag, ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,UFLink))
 								//update all sys msg
 								putStrToMemcacheWithExp(w,r,"ALARM_EQ_MSG",msgDtl3c,30)
 								//sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,"philvolcs",ARLink,""),"")
@@ -32942,7 +33004,7 @@ func getDesktopsDirectory(w http.ResponseWriter, r *http.Request) {
 		_, HOST_LIST := getHostList(w,r)
 		//foreach host post presence message
 		temp := strings.Split(HOST_LIST,"\n")
-		////c.Infof("LEN: %v", len(temp))
+		//c.Infof("LEN: %v", len(temp))
 		var buffer3 bytes.Buffer
 		if len(temp) > 0 {
 			for j := 0; j < len(temp); j++ {
@@ -32957,11 +33019,11 @@ func getDesktopsDirectory(w http.ResponseWriter, r *http.Request) {
 				}
 				i := strings.Index(getSchemeUrl(w,r), tURL)
 				thisStr := fmt.Sprintf("%v", temp[j])
-				////c.Infof("tURL: %v", tURL)
+				//c.Infof("tURL: %v", tURL)
 				if tURL != "" && i == -1 && string(thisStr[0]) != "#" {
 					buffer3.WriteString(fmt.Sprintf("<tr>"))
 						STR_FILLER1 := fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-logo", tURL))
-						////c.Infof("T: %v", STR_FILLER1)
+						//c.Infof("T: %v", STR_FILLER1)
 							j := strings.Index(STR_FILLER1, "[U00000] OVER QUOTA ERROR:")
 							k := strings.Index(STR_FILLER1, "ERROR:")
 							if j == -1 && k == -1 {
@@ -33806,7 +33868,7 @@ func peopleEdit(w http.ResponseWriter, r *http.Request) {
 		recCount,_ := q.Count(c)
 		if recCount > 0 {
 			//exists
-			//////c.Infof("exists")
+			////c.Infof("exists")
 			cats := make([]TDSCATS, 0, 1)
 			if _, err := q.GetAll(c, &cats); err != nil {
 				//panic(err)
@@ -33831,7 +33893,7 @@ func peopleEdit(w http.ResponseWriter, r *http.Request) {
 						panic(err)
 						//return
 				}
-				//////c.Infof("updated")
+				////c.Infof("updated")
 				break
 			}	
 		}
@@ -40257,6 +40319,22 @@ func getPushContents(w http.ResponseWriter, r *http.Request, target string) stri
 	return CACHE_DATA
 }
 
+//D0082
+func nlpDebug(w http.ResponseWriter, r *http.Request, FL_DEBUG, mType, mValue string) {
+	c := appengine.NewContext(r)
+	if FL_DEBUG != "Y" {
+		return
+	}
+	switch mType {
+		case "info":
+			c.Infof("NLPDEBUG: %v", mValue)
+		case "error":
+			c.Errorf("NLPDEBUG: %v", mValue)
+		default:
+			c.Infof("NLPDEBUG: %v", mValue)
+	}
+}
+
 //D0065
 //D0075
 func ulapphNlp(w http.ResponseWriter, r *http.Request) {
@@ -40276,11 +40354,13 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 	devID := r.FormValue("DID")
 	//c.Infof("devID: %v", devID)
 	FL_DEBUG := r.FormValue("DEBUG")
-	//c.Infof("FL_DEBUG: %v", FL_DEBUG)
+	c.Infof("FL_DEBUG: %v", FL_DEBUG)
 	//Getting current user KVO data
 	cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v_%v", uid, bName, devID)
+	nlpDebug(w,r,FL_DEBUG, "info", "KVO: "+cKeyA)
 	//c.Infof("cKeyA: %v", cKeyA)
 	thisOA := getStrMemcacheValueByKey(w,r,cKeyA)
+	nlpDebug(w,r,FL_DEBUG, "info", "OA: "+thisOA)
 	//c.Infof("thisOA: %v", thisOA)
 	var kvo OttoAwareness
 	err := json.Unmarshal([]byte(thisOA), &kvo)
@@ -40410,20 +40490,27 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "NLP cache deleted!")
 		return
 	case "nlpProse":
+		nlpDebug(w,r,FL_DEBUG, "info", "case: nlpProse")
 		if err == nil {
 			switch {
 			case kvo.OttoUserStatus != "":
+				nlpDebug(w,r,FL_DEBUG, "info", "kvo.OttoUserStatus: "+kvo.OttoUserStatus)
 				//execute Otto directly
 				cKeyO := fmt.Sprintf("ULAPPH_NLP_DEF_OTTO_%v", uid)
+				nlpDebug(w,r,FL_DEBUG, "info", "cKeyO: "+cKeyO)
 				//c.Infof("cKeyO: %v", cKeyO)
 				defOttoJS := getStrMemcacheValueByKey(w,r,cKeyO)
+				nlpDebug(w,r,FL_DEBUG, "info", "defOttoJS: "+defOttoJS)
 				//c.Infof("defOttoJS: %v", defOttoJS)
 				if defOttoJS != "" {
 					//c.Infof("Executing default OttoJS: %v", defOttoJS)
+					nlpDebug(w,r,FL_DEBUG, "info", "Execute OttoJS: "+defOttoJS)
 					resp := execOtto(w,r, uid, defOttoJS, bName, devID, FL_DEBUG, "input", inpStr)
+					nlpDebug(w,r,FL_DEBUG, "info", "OttoJS Response: "+resp)
 					//c.Infof("resp: %v", resp)
 					err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
 					if err != nil {
+						nlpDebug(w,r,FL_DEBUG, "error", "nlpProseFormatTemplateResponse: "+fmt.Sprintf("%v",err))
 						//c.Infof("ERROR: %v", err)
 					}
 					//w.Write([]byte(resp))
@@ -40432,7 +40519,8 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			//c.Infof("kvo unmarshal error: %v", err)
-			////c.Infof("cKeyA: %v", cKeyA)
+			nlpDebug(w,r,FL_DEBUG, "error", "kvo unmarshal error: "+fmt.Sprintf("%v",err))
+			//c.Infof("cKeyA: %v", cKeyA)
 			g := OttoAwareness {
 				OttoBotName: bName,
 				OttoUserStatus: "",
@@ -40455,37 +40543,48 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				c.Errorf("json.Marshal() Error: %v", err)
 			}
+			nlpDebug(w,r,FL_DEBUG, "info", "OttoAwareness: "+fmt.Sprintf("%v", g))
 			putBytesToMemcacheWithExp(w,r,cKeyA,data,GEN_CONTENT_EXPIRES)
 		}
 
 		//D0075
 		SID := r.FormValue("SID")
+		nlpDebug(w,r,FL_DEBUG, "info", "SID: "+SID)
 		//c.Infof("SID: %v", SID)
 		//get from cache if available
 		cKey := fmt.Sprintf("ULAPPH_NLP_%v", SID)
+		nlpDebug(w,r,FL_DEBUG, "info", "cKey: "+cKey)
 		//c.Infof("cKey: %v", cKey)
 		thisCont := getStrMemcacheValueByKey(w,r,cKey)
+		nlpDebug(w,r,FL_DEBUG, "info", "thisCont: "+thisCont)
 		if thisCont == "" {
+			nlpDebug(w,r,FL_DEBUG, "info", "thisCont: empty"+thisCont)
 			if SID == "ULAPPH-COMMON-KB" {
+				nlpDebug(w,r,FL_DEBUG, "info", "SID: ULAPPH-COMMON-KB")
 				//SYS_COMMON_CHAT_KB
 				thisCont = fetchURL(w,r,SYS_COMMON_CHAT_KB)
 				if strings.Index(thisCont, "quota") != -1 {
 					thisCont = ""
 				}
 			} else {
+				nlpDebug(w,r,FL_DEBUG, "info", "SID: "+SID)
 				BLOB_KEY := contentCheckSid(w,r,SID)
-				////c.Infof("BLOB_KEY: %v", BLOB_KEY)
+				nlpDebug(w,r,FL_DEBUG, "info", "BLOB_KEY: "+BLOB_KEY)
+				//c.Infof("BLOB_KEY: %v", BLOB_KEY)
 				//blobChan := make(chan []byte)
 				//go getBlobByteChan(w, r,blobChan, BLOB_KEY)
 				//thisCont = <- blobChan
 				thisCont = getBlobTextNoComms(w, r, BLOB_KEY)
+				nlpDebug(w,r,FL_DEBUG, "info", "thisCont: "+thisCont)
 				//thisCont := getBlobText(w, r, BLOB_KEY)
-				////c.Infof("thisCont: %v", thisCont)
+				//c.Infof("thisCont: %v", thisCont)
 			}
 			//putStrToMemcacheWithoutExp(w,r,cKey,thisCont)
+			nlpDebug(w,r,FL_DEBUG, "info", "thisCont: "+"cached")
 			putStrToMemcacheWithExp(w,r,cKey,thisCont,MC_ADS_EXPIRES_30_MIN)
 		}
 		if thisCont == "" {
+			nlpDebug(w,r,FL_DEBUG, "error", "KB data not found")
 			w.Write([]byte("System error. KB data not found!"))
 			return
 		}
@@ -40505,22 +40604,26 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		}
 		//Get default Otto JS
 		cKeyO := fmt.Sprintf("ULAPPH_NLP_DEF_OTTO_%v", uid)
+		nlpDebug(w,r,FL_DEBUG, "info", "cKeyO: "+cKeyO)
 		//c.Infof("cKeyO: %v", cKeyO)
 		defOttoJS := getStrMemcacheValueByKey(w,r,cKeyO)
+		nlpDebug(w,r,FL_DEBUG, "info", "defOttoJS: "+defOttoJS)
 		//c.Infof("defOttoJS: %v", defOttoJS)
 		if defOttoJS == "" {
 			//c.Infof("Finding default ottoJS...")
+			nlpDebug(w,r,FL_DEBUG, "info", "Finding defOttoJS: "+defOttoJS)
 			for _, entry := range entries {
 				if entry.Text == "" && entry.Help == "" && strings.Index(entry.Answer, "TDS") != -1 {
 					defOttoJS = entry.Answer
 					//cKey := fmt.Sprintf("ULAPPH_NLP_DEF_OTTO_%v", uid)
+					nlpDebug(w,r,FL_DEBUG, "info", "defOttoJS: "+defOttoJS)
 					putStrToMemcacheWithoutExp(w,r,cKeyO,defOttoJS)
 					//c.Infof("defOttoJS: %v", defOttoJS)
 					break
 				}
 			}
 		}
-		////c.Infof("entries: %v", entries)
+		//c.Infof("entries: %v", entries)
 		// Create a new document with the default configuration:
 		doc, err := prose.NewDocument(inpStr)
 		if err != nil {
@@ -40530,7 +40633,10 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		var thisResp []string
 		for _, tok := range doc.Tokens() {
 			//c.Infof("****TOKENS****<br>")
+			nlpDebug(w,r,FL_DEBUG, "info", "****TOKENS****")
 			//c.Infof("TEXT: %v TAG: %v LABEL: %v<br>", tok.Text, tok.Tag, tok.Label)
+			thisInfo := fmt.Sprintf("TEXT: %v TAG: %v LABEL: %v<br>", tok.Text, tok.Tag, tok.Label)
+			nlpDebug(w,r,FL_DEBUG, "info", "thisInfo: "+thisInfo)
 			// Go NNP B-GPE
 			// is VBZ O
 			// an DT O
@@ -40541,13 +40647,13 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 				case "true":
 					//unescStr := strings.Replace(entry.Text, "\\", "", -1)
 					//regExpStr := fmt.Sprintf(`%v`, entry.Text)
-					////c.Infof("regExpStr: %v", regExpStr)
+					//c.Infof("regExpStr: %v", regExpStr)
 					//var regIn = regexp.MustCompile(entry.Text)
 					//var regIn = regexp.MustCompile(entry.Text)
 					//if regIn.MatchString(tok.Text) == true {
 					matched, err := regexp.MatchString(entry.Text, tok.Text)
-					////c.Infof("entry.IsRegexp: true")
-					////c.Infof("matched: %v [%v] [%v]", matched, entry.Text, tok.Text)
+					//c.Infof("entry.IsRegexp: true")
+					//c.Infof("matched: %v [%v] [%v]", matched, entry.Text, tok.Text)
 					if err != nil {
 						panic(err)
 					}
@@ -40555,7 +40661,10 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 						//w.Write([]byte(entry.Answer))
 						if entry.IsAnsOtto == "true" {
 							//call Otto API
+							nlpDebug(w,r,FL_DEBUG, "info", "entry.IsAnsOtto: "+entry.IsAnsOtto)
+							nlpDebug(w,r,FL_DEBUG, "info", "call Otto API")
 							resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", tok.Text)
+							nlpDebug(w,r,FL_DEBUG, "info", "resp: "+resp)
 							//w.Write([]byte(resp))
 							err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
 							if err != nil {
@@ -40579,7 +40688,10 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 							//w.Write([]byte(entry.Answer))
 							if entry.IsAnsOtto == "true" {
 								//call Otto API
+								nlpDebug(w,r,FL_DEBUG, "info", "entry.IsAnsOtto: "+entry.IsAnsOtto)
+								nlpDebug(w,r,FL_DEBUG, "info", "call Otto API")
 								resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", tok.Text)
+								nlpDebug(w,r,FL_DEBUG, "info", "resp: "+resp)
 								//w.Write([]byte(resp))
 								err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
 								if err != nil {
@@ -40596,7 +40708,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 						}
 					}
 				default:
-					////c.Infof("default")
+					//c.Infof("default")
 					if entry.Text == tok.Text {
 						//w.Write([]byte(entry.Answer))
 						thisResp = append(thisResp, entry.Answer)
@@ -40618,6 +40730,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		for _, sent := range doc.Sentences() {
 			//c.Infof("****SENTENCES****<br>")
 			//c.Infof("SENTENCE: %v<br>", sent.Text)
+			nlpDebug(w,r,FL_DEBUG, "info", "SENTENCE: "+sent.Text)
 			// Go is an open-source programming language created at Google.
 			//check the ProseData
 			for _, entry := range entries {
@@ -40627,12 +40740,12 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 					//regExpStr := fmt.Sprintf("`%v`", unescStr)
 					//var regIn = regexp.MustCompile(regExpStr)
 					//regExpStr := fmt.Sprintf(`%v`, entry.Text)
-					////c.Infof("regExpStr: %v", regExpStr)
+					//c.Infof("regExpStr: %v", regExpStr)
 					//var regIn = regexp.MustCompile(regExpStr)
 					//var regIn = regexp.MustCompile(entry.Text)
 					matched, err := regexp.MatchString(entry.Text, sent.Text)
-					////c.Infof("entry.IsRegexp: true")
-					////c.Infof("matched: %v [%v] [%v]", matched, entry.Text, sent.Text)
+					//c.Infof("entry.IsRegexp: true")
+					//c.Infof("matched: %v [%v] [%v]", matched, entry.Text, sent.Text)
 					if err != nil {
 						panic(err)
 					}
@@ -40641,6 +40754,8 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 						//w.Write([]byte(entry.Answer))
 						if entry.IsAnsOtto == "true" {
 							//call Otto API
+							nlpDebug(w,r,FL_DEBUG, "info", "entry.IsAnsOtto: "+entry.IsAnsOtto)
+							nlpDebug(w,r,FL_DEBUG, "info", "call Otto API")
 							resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", sent.Text)
 							//w.Write([]byte(resp))
 							err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
@@ -40665,6 +40780,8 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 							//w.Write([]byte(entry.Answer))
 							if entry.IsAnsOtto == "true" {
 								//call Otto API
+								nlpDebug(w,r,FL_DEBUG, "info", "entry.IsAnsOtto: "+entry.IsAnsOtto)
+								nlpDebug(w,r,FL_DEBUG, "info", "call Otto API")
 								resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", sent.Text)
 								//w.Write([]byte(resp))
 								err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
@@ -40682,7 +40799,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 						}
 					}
 				default:
-					////c.Infof("default")
+					//c.Infof("default")
 					if entry.Text == sent.Text {
 						//w.Write([]byte(entry.Answer))
 						//return
@@ -40702,8 +40819,11 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		}*/
 		//If first time to chat, attempt to start conversation
 		if defOttoJS != "" {
+			nlpDebug(w,r,FL_DEBUG, "info", "defOttoJS: "+defOttoJS)
 			//c.Infof("Attemp conversation... Executing default OttoJS: %v", defOttoJS)
+			nlpDebug(w,r,FL_DEBUG, "info", "If first time to chat: "+defOttoJS)
 			resp := execOtto(w,r, uid, defOttoJS, bName, devID, FL_DEBUG, "input", inpStr)
+			nlpDebug(w,r,FL_DEBUG, "info", "resp: "+resp)
 			thisResp = append(thisResp, resp)
 			respString := ""
 			if resp == "" {
@@ -40714,6 +40834,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 			if respString != "" {
 				//c.Infof("respString: %v", respString)
 				//w.Write([]byte(respString))
+				nlpDebug(w,r,FL_DEBUG, "info", "respString: "+respString)
 				err := nlpProseFormatTemplateResponse(w,r,bName,respString,kvo)
 				if err != nil {
 					//c.Infof("ERROR: %v", err)
@@ -40730,6 +40851,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 			if respString != "" {
 				//c.Infof("Initial response: %v", respString)
 				//w.Write([]byte(respString))
+				nlpDebug(w,r,FL_DEBUG, "info", "respString: "+respString)
 				err := nlpProseFormatTemplateResponse(w,r,bName,respString,kvo)
 				if err != nil {
 					//c.Infof("ERROR: %v", err)
@@ -40738,10 +40860,12 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		nlpDebug(w,r,FL_DEBUG, "error", "Sorry, I didn't get that")
 		w.Write([]byte("Sorry, I didn't get that."))
 		//send email to admin about unknown intent 
 		geoStr := getGeoString(w,r)
 		geoAcc := getAccessString(w,r,"")
+		nlpDebug(w,r,FL_DEBUG, "error", "Send email about unknown intent: "+ADMMAIL)
 		subject := fmt.Sprintf("[ULAPPH] Unknown intent [%v]", uid)
 		MESSAGE := fmt.Sprintf("[ULAPPH] Unknown intent [<b>%v</a>] [%v] [%v] [%v] [%v] [%v]", inpStr, SYS_SERVER_NAME, SID, uid, geoStr, geoAcc)
 		t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-generic-send-email", map[string][]string{"SUBJECT": {subject}, "TO": {ADMMAIL}, "FROM": {uid}, "MESSAGE": {MESSAGE}})
@@ -40764,19 +40888,20 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		}
 		//w.Write([]byte("</ul>"))
 		if tctr > 0 {
+			nlpDebug(w,r,FL_DEBUG, "error", "You can try the following examples:: "+buf.String())
 			w.Write([]byte("You can try the following related examples:"))
 			w.Write(buf.Bytes())
 		}
 		return
 
 	default:
-		////c.Infof("inpStr: %v", inpStr)
+		//c.Infof("inpStr: %v", inpStr)
 		s := nl.P(inpStr)
-		////c.Infof("s: %v", s)
+		//c.Infof("s: %v", s)
 		resp := ""
 		if nr, ok := s.(*ulapphBotNlpRes); ok {
-			////c.Infof("Success")
-			////c.Infof("%#v\n", nr)
+			//c.Infof("Success")
+			//c.Infof("%#v\n", nr)
 			//D0068
 			SPL := strings.Split(inpStr, " ")
 			switch {
@@ -40806,7 +40931,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 					}
 			}
 		} else {
-			////c.Infof("Failed")
+			//c.Infof("Failed")
 			//resp = fmt.Sprintf("<i>%v</i> is an invalid talk...", inpStr)
 			resp = "nlp-failed"
 		}
@@ -40819,9 +40944,9 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 //reformat nlp response
 func nlpProseFormatTemplateResponse(w http.ResponseWriter, r *http.Request, bName, resRaw string, p OttoAwareness) error {
     c := appengine.NewContext(r)
-    ////c.Infof("nlpProseFormatTemplateResponse()")
-    ////c.Infof("resRaw: %v", resRaw)
-    ////c.Infof("kvo: %v", p)
+    //c.Infof("nlpProseFormatTemplateResponse()")
+    //c.Infof("resRaw: %v", resRaw)
+    //c.Infof("kvo: %v", p)
     if p.OttoBotName == "" {
 	p.OttoBotName = bName
     }
@@ -40848,15 +40973,15 @@ func nlpProseFormatTemplateResponse(w http.ResponseWriter, r *http.Request, bNam
 //D0068
 func nlpAcbSearch(w http.ResponseWriter, r *http.Request, uid, target string) (string) {
 	c := appengine.NewContext(r)
-	////c.Infof("nlpSearchAcb: %v", target)
-	////c.Infof("uid: %v", uid)
+	//c.Infof("nlpSearchAcb: %v", target)
+	//c.Infof("uid: %v", uid)
 	resp := ""
 
 	cKeyACB := fmt.Sprintf("ACB_BLOB_%v", uid)
 	ACB_BLOB := ""
 	ACB_BLOB = getStrMemcacheValueByKey(w,r,cKeyACB)
 	if ACB_BLOB == "" {
-		////c.Infof("get from config blob")
+		//c.Infof("get from config blob")
 		var g TDSCNFG
 		thisKey := fmt.Sprintf("SYSTEM_ACB_%v", uid)
 		key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
@@ -40866,19 +40991,19 @@ func nlpAcbSearch(w http.ResponseWriter, r *http.Request, uid, target string) (s
 		ACB_BLOB = g.TXT_VAL
 		putStrToMemcacheWithoutExp(w,r,cKeyACB,ACB_BLOB)
 	}
-	////c.Infof("ACB_BLOB: %v", ACB_BLOB)
+	//c.Infof("ACB_BLOB: %v", ACB_BLOB)
 	if strings.Index(ACB_BLOB, "ERROR: ") != -1 || strings.Index(ACB_BLOB, "urlfetch: DEADLINE_EXCEEDED") != -1 {
 		ACB_BLOB = ""
 		putStrToMemcacheWithoutExp(w,r,cKeyACB,"")
 	}
 	if ACB_BLOB != "" {
-		////c.Infof("get blob content")
+		//c.Infof("get blob content")
 		blobChan := make(chan []byte)
 		go getBlobByteChan(w, r,blobChan, ACB_BLOB)
 		thisCont := <- blobChan
 		ctr := 0
 		if thisCont != nil {
-			////c.Infof("thisCont: %v", len(thisCont))
+			//c.Infof("thisCont: %v", len(thisCont))
 			//resp = "Found acb blob"
 			SPL := strings.Split(string(thisCont), "},")
 			for i:=0;i<len(SPL);i++ {
@@ -40915,7 +41040,7 @@ func nlpAcbSearch(w http.ResponseWriter, r *http.Request, uid, target string) (s
 //D0065
 func nlpRecent(w http.ResponseWriter, r *http.Request, target string) (string) {
 	//c := appengine.NewContext(r)
-	////c.Infof("nlpShow: %v", target)
+	//c.Infof("nlpShow: %v", target)
 	switch strings.ToLower(target) {
 	case "slides":
 		rmsg := fmt.Sprintf("<a href=\"/infodb?DB_FUNC=SLIDES&CATEGORY=desktop0&VIEW=RECENT&LAST=2\" target=\"recent\">Latest 2 slides</a>")
@@ -40978,7 +41103,7 @@ func nlpQuote(w http.ResponseWriter, r *http.Request, nr *ulapphBotNlpRes) (stri
 //D0065
 func nlpView(w http.ResponseWriter, r *http.Request, nr *ulapphBotNlpRes) (string) {
 	//c := appengine.NewContext(r)
-	////c.Infof("nlpView: %v", nr)
+	//c.Infof("nlpView: %v", nr)
 	switch strings.ToLower(nr.ContentType) {
 	case "slide":
 		return fmt.Sprintf("<a href=\"/search?f=TDSSLIDE&q=%v\" target=\"TDSSLIDE-%v\">View Slide</a><br>", nr.DocID, nr.DocID)
@@ -40992,7 +41117,7 @@ func nlpView(w http.ResponseWriter, r *http.Request, nr *ulapphBotNlpRes) (strin
 //D0065
 func nlpUpdate(w http.ResponseWriter, r *http.Request, nr *ulapphBotNlpRes) (string) {
 	//c := appengine.NewContext(r)
-	////c.Infof("nlpView: %v", nr)
+	//c.Infof("nlpView: %v", nr)
 	switch (nr.ContentType) {
 	case "slide":
 		return fmt.Sprintf("<a href=\"/search?f=TDSSLIDE-UPD&q=%v\" target=\"TDSSLIDE-%v\">Update Slide</a><br>", nr.DocID, nr.DocID)
@@ -41014,11 +41139,11 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 	//checkReferrer(w,r)
 	//_ = validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 	_, uid := checkSession(w,r)
-	////c.Infof("%v", r)
+	//c.Infof("%v", r)
 	//D0066
 	//bodyBytes, _ := ioutil.ReadAll(r.Body)
 	//w.Write(bodyBytes)
-	////c.Infof("%v", string(bodyBytes))
+	//c.Infof("%v", string(bodyBytes))
 	//data := map[string]interface{}{}
 	//dec := json.NewDecoder(bytes.NewReader(bodyBytes))
 	//dec.Decode(&data)
@@ -41026,15 +41151,15 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 
 	//get func
 	//bFunc, err := jq.String("queryResult","parameters","func")
-	////c.Infof("err: %v", err)
+	//c.Infof("err: %v", err)
 	//bFunc = strings.TrimSpace(bFunc)
 	//D0066
 	bFunc := r.FormValue("bFunc") 
-	////c.Infof("bFunc: %v", bFunc)
+	//c.Infof("bFunc: %v", bFunc)
 	switch bFunc {
 		case "bchat":
 		uwm := r.FormValue("u")
-		////c.Infof("uwm: %v", uwm) 
+		//c.Infof("uwm: %v", uwm) 
 		//D0066
 		botsource := ""
 		//docID := 0
@@ -41086,16 +41211,16 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 			resp := ""
 			switch sFunc {
 				case "enroll":
-					////c.Infof("enroll...")
+					//c.Infof("enroll...")
 					resp = educEnroll(w,r,mSID,uid,sLevel)
 				case "enroll-check":
-					////c.Infof("enroll-check...")
+					//c.Infof("enroll-check...")
 					resp = checkEnroll(w,r,mSID,uid)
 				case "enroll-cancel":
-					////c.Infof("enroll-cancel...")
+					//c.Infof("enroll-cancel...")
 					resp = cancelEnroll(w,r,mSID,uid,sLevel)
 				case "score-update":
-					////c.Infof("score-update...")
+					//c.Infof("score-update...")
 					resp = updateScores(w,r,mSID,uid)
 				case "student":
 					//resp = fmt.Sprintf("student: level %v", sLevel) 
@@ -41103,11 +41228,11 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 				case "course":
 					//resp = fmt.Sprintf("course: level %v", sLevel) 
 					BLOB_KEY := contentCheckSid(w,r,mSID)
-					////c.Infof("BLOB_KEY: %v", BLOB_KEY)
+					//c.Infof("BLOB_KEY: %v", BLOB_KEY)
 					blobByte := getBlobByte(w, r, BLOB_KEY) 
 					msyl := []MasterSyllabus{}
 					err := json.Unmarshal(blobByte, &msyl)
-					////c.Infof("ERROR: %v", err)
+					//c.Infof("ERROR: %v", err)
 					if err != nil {
 						panic(err)
 					}
@@ -41123,9 +41248,9 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 		/*
 		case bFunc == "open" || bFunc == "view" || bFunc == "edit" || bFunc == "update":
 			bTarget, err := jq.String("queryResult","parameters","any")
-			////c.Infof("%v", string(bodyBytes))
-			////c.Infof("bTarget: %v", bTarget)
-			////c.Infof("err: %v", err)
+			//c.Infof("%v", string(bodyBytes))
+			//c.Infof("bTarget: %v", bTarget)
+			//c.Infof("err: %v", err)
 			//determine target
 			redURL := ""
 			switch {
@@ -41175,16 +41300,16 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 					}
 
 			}
-			////c.Infof("%v", redURL)
+			//c.Infof("%v", redURL)
 			data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@%v@888@%v", bTarget, redURL)
-			////c.Infof("%v", data)
+			//c.Infof("%v", data)
 			uid := FDBKMAIL 
 			sendChannelMessage(w,r,uid,data)
 			return
 		*/
 
 		/*case bFunc == "quote":
-			////c.Infof("%v", string(bodyBytes))
+			//c.Infof("%v", string(bodyBytes))
 			_, RAN_MSG, _ := getMOTD(w, r, "")
 			if RAN_MSG == "" {
 				RAN_MSG = "Sorry, no quote found"
@@ -41194,17 +41319,17 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 			}
 			content, err := json.Marshal(res)
 			w.Write(content)
-			////c.Infof("err: %v", err)
+			//c.Infof("err: %v", err)
 			return
 		*/
 		/*
 		case bFunc == "search":
 			bTarget, err := jq.String("queryResult","parameters","search_target")
 			bKey, err := jq.String("queryResult","parameters","any")
-			////c.Infof("%v", string(bodyBytes))
-			////c.Infof("bTarget: %v", bTarget)
-			////c.Infof("bKey: %v", bKey)
-			////c.Infof("err: %v", err)
+			//c.Infof("%v", string(bodyBytes))
+			//c.Infof("bTarget: %v", bTarget)
+			//c.Infof("bKey: %v", bKey)
+			//c.Infof("err: %v", err)
 			redURL := ""
 			switch {
 				case bTarget == "ulapph":
@@ -41222,9 +41347,9 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 				case bTarget == "wiki":
 					redURL = fmt.Sprintf("https://en.wikipedia.org/w/index.php?search=%v", bKey)
 			}
-			////c.Infof("%v", redURL)
+			//c.Infof("%v", redURL)
 			data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@%v@888@%v", bTarget, redURL)
-			////c.Infof("%v", data)
+			//c.Infof("%v", data)
 			uid := FDBKMAIL 
 			sendChannelMessage(w,r,uid,data)
 			return
@@ -41235,8 +41360,8 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 			bNum, err := jq.Int("queryResult","parameters","number")
 			bType, err := jq.String("queryResult","parameters","type")
 			bDelimO, err := jq.String("queryResult","parameters","delim")
-			////c.Infof("bSID: %v", bSID)
-			////c.Infof("bNum: %v", bNum)
+			//c.Infof("bSID: %v", bSID)
+			//c.Infof("bNum: %v", bNum)
 			SPL := strings.Split(fmt.Sprintf("%v", bNum), ".")
 			nSID := ""
 			bNum2 := ""
@@ -41244,9 +41369,9 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 				bNum2 = SPL[0]
 				nSID = fmt.Sprintf("%v-%v", bSID, bNum2)
 			}
-			////c.Infof("bType: %v", bType)
-			////c.Infof("nSID: %v", nSID)
-			////c.Infof("bDelim: %v", bDelimO)
+			//c.Infof("bType: %v", bType)
+			//c.Infof("nSID: %v", nSID)
+			//c.Infof("bDelim: %v", bDelimO)
 			bDelim := ""
 			switch bDelimO {
 				case "semicolon":
@@ -41256,7 +41381,7 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 				case "comma":
 					bDelim = ","
 			}
-			////c.Infof("err: %v", err)
+			//c.Infof("err: %v", err)
 			//depends on type of output
 			switch bType {
 				case "excel":
@@ -41273,13 +41398,13 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 					s := bufio.NewScanner(strings.NewReader(blobText))
 					//secCtr := 0
 					for s.Scan() {
-						////c.Infof("%v", s.Text())
+						//c.Infof("%v", s.Text())
 						SPL := strings.Split(s.Text(), bDelim)
 						for i:=0; i < len(SPL); i++ {
 							buf.WriteString(fmt.Sprintf("%v<br>", SPL[i]))
 						}
 					}
-					////c.Infof("%v", buf.String())
+					//c.Infof("%v", buf.String())
 					subj := fmt.Sprintf("UlapphBot-%v-%v-%v-%v", bFunc, nSID, bType, bDelimO)
 					putBytesToMemcacheWithExp(w,r,subj,buf.Bytes(),GEN_CONTENT_EXPIRES3)
 					getURL := fmt.Sprintf("%vsearch?f=get-auto-content2&API_KEY=%v&cKey=%v", getSchemeUrl(w,r), CMD_API_KEY, subj)
@@ -41288,7 +41413,7 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 					msg := fmt.Sprintf("COPY-PASTE-LINK (don't click):<br>%v<br><br>--no-reply <br>--geo [%v] <br>--via [%v]", getURL, geoStr, geoAcc)
 					to := "edwin.d.vinas@gmail.com" 
 					SENDGENEMAIL(c, subj, to, "ulapphbot@ulapph.com", msg)
-					////c.Infof("SUCCESS: Email sent!")	
+					//c.Infof("SUCCESS: Email sent!")	
 			}
 		*/
 	}
@@ -41298,14 +41423,14 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string) (string) {
 	c := appengine.NewContext(r)
 	//check if there is student record
-	////c.Infof("educEnroll")
+	//c.Infof("educEnroll")
 	resp := ""
 	EDUC_BLOB := ""
 	FL_EN := false
 	var g TDSCNFG
 	//thisKey := fmt.Sprintf("STUDENT_REC_%v", uid)
 	thisKey := fmt.Sprintf("STUDENT_REC_%v_%v", mSID, uid)
-	////c.Infof("thisKey: %v", thisKey)
+	//c.Infof("thisKey: %v", thisKey)
 	//--check student record
 	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 	if err := datastore.Get(c, key, &g); err != nil {
@@ -41313,12 +41438,12 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 		//return
 	}
 	if g.TXT_VAL != "" {
-		////c.Infof("g.TXT_VAL empty")
+		//c.Infof("g.TXT_VAL empty")
 		EDUC_BLOB = g.TXT_VAL 
 		FL_EN = true
 	}
 	if FL_EN == false {
-		////c.Infof("Insert TDSCNFG")
+		//c.Infof("Insert TDSCNFG")
 		g := TDSCNFG{
 				SYS_VER: 1,
 				USER: uid,
@@ -41336,7 +41461,7 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 	}
 	educData := []byte("")
 	if EDUC_BLOB == "" {
-		////c.Infof("EDUC_BLOB = empty")
+		//c.Infof("EDUC_BLOB = empty")
 		//construct from initial data
 		dks := StudentRecord{}
 		dks.Student = uid
@@ -41350,7 +41475,7 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 		dks.Levels = append(dks.Levels, ld)
 
 		educData,_ = json.Marshal(dks)
-		////c.Infof("educDate: %v", educData)
+		//c.Infof("educDate: %v", educData)
 		saveStudentRecord(w,r,uid,educData,mSID)
 		resp = "saved new student record"
 		//add in master school record
@@ -41358,7 +41483,7 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 	} else {
 		//read from blob
 		blobByte := getBlobByte(w, r, EDUC_BLOB)
-		////c.Infof("config: %v", string(blobByte ))
+		//c.Infof("config: %v", string(blobByte ))
 		dks := StudentRecord{}
 		err := json.Unmarshal(blobByte, &dks)
 		if err != nil {
@@ -41381,11 +41506,11 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 		dks.Levels = append(dks.Levels, ld)
 
 		educData,_ = json.Marshal(dks)
-		////c.Infof("educDate: %v", educData)
+		//c.Infof("educDate: %v", educData)
 		saveStudentRecord(w,r,uid,educData,mSID)
 		resp = "updated existing student record"
 	}
-	////c.Infof("resp: %v", resp)
+	//c.Infof("resp: %v", resp)
 	return resp
 
 }
@@ -41393,12 +41518,12 @@ func educEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, level string)
 func getSchoolMasterRecord(w http.ResponseWriter, r *http.Request, mSID string) (string) {
 	c := appengine.NewContext(r)
 	//check if student is in the school master record 
-	////c.Infof("getSchoolMasterRecord")
+	//c.Infof("getSchoolMasterRecord")
 	resp := ""
 	EDUC_BLOB := ""
 	var g TDSCNFG
 	thisKey := fmt.Sprintf("SCHOOL_REC_%v", mSID)
-	////c.Infof("thisKey: %v", thisKey)
+	//c.Infof("thisKey: %v", thisKey)
 	//--check school record
 	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 	if err := datastore.Get(c, key, &g); err != nil {
@@ -41406,7 +41531,7 @@ func getSchoolMasterRecord(w http.ResponseWriter, r *http.Request, mSID string) 
 		//return
 	}
 	if g.TXT_VAL != "" {
-		////c.Infof("g.TXT_VAL empty")
+		//c.Infof("g.TXT_VAL empty")
 		EDUC_BLOB = g.TXT_VAL 
 	}
 	if EDUC_BLOB == "" {
@@ -41424,7 +41549,7 @@ func getSchoolMasterRecord(w http.ResponseWriter, r *http.Request, mSID string) 
 			resp = fmt.Sprintf("%v", string(data))
 		}
 	}
-	////c.Infof("resp: %v", resp)
+	//c.Infof("resp: %v", resp)
 	return resp
 }
 
@@ -41432,7 +41557,7 @@ func getSchoolMasterRecord(w http.ResponseWriter, r *http.Request, mSID string) 
 func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score, mSID string) (string) {
 	c := appengine.NewContext(r)
 	//check if student is in the school master record 
-	////c.Infof("educSchoolMasterRecord")
+	//c.Infof("educSchoolMasterRecord")
 	//c.Infof("score: %v", score)
 	FL_AVE_MODE := false
 	if score != "" {
@@ -41443,7 +41568,7 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score, 
 	FL_EN := false
 	var g TDSCNFG
 	thisKey := fmt.Sprintf("SCHOOL_REC_%v", mSID)
-	////c.Infof("thisKey: %v", thisKey)
+	//c.Infof("thisKey: %v", thisKey)
 	//--check school record
 	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 	if err := datastore.Get(c, key, &g); err != nil {
@@ -41451,12 +41576,12 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score, 
 		//return
 	}
 	if g.TXT_VAL != "" {
-		////c.Infof("g.TXT_VAL empty")
+		//c.Infof("g.TXT_VAL empty")
 		EDUC_BLOB = g.TXT_VAL 
 		FL_EN = true
 	}
 	if FL_EN == false {
-		////c.Infof("Insert TDSCNFG")
+		//c.Infof("Insert TDSCNFG")
 		g := TDSCNFG{
 				SYS_VER: 1,
 				USER: ADMMAIL,
@@ -41474,7 +41599,7 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score, 
 	}
 	educData := []byte("")
 	if EDUC_BLOB == "" {
-		////c.Infof("EDUC_BLOB = empty")
+		//c.Infof("EDUC_BLOB = empty")
 		//construct from initial data
 		dkm := SchoolRecord{}
 		dks := StudentRecord{}
@@ -41485,13 +41610,13 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score, 
 		dkm.Students = append(dkm.Students, dks)
 
 		educData,_ = json.Marshal(dkm)
-		////c.Infof("educDate: %v", educData)
+		//c.Infof("educDate: %v", educData)
 		saveMasterRecord(w,r,uid,educData,mSID)
 		resp = "saved new school record"
 	} else {
 		//read from blob
 		blobByte := getBlobByte(w, r, EDUC_BLOB)
-		////c.Infof("config: %v", string(blobByte ))
+		//c.Infof("config: %v", string(blobByte ))
 		dkm := SchoolRecord{}
 		err := json.Unmarshal(blobByte, &dkm)
 		if err != nil {
@@ -41519,26 +41644,26 @@ func educSchoolMasterRecord(w http.ResponseWriter, r *http.Request, uid, score, 
 			dkm.Students = append(dkm.Students, dks)
 		}
 		educData,_ = json.Marshal(dkm)
-		////c.Infof("educDate: %v", educData)
+		//c.Infof("educDate: %v", educData)
 		saveMasterRecord(w,r,uid,educData,mSID)
 		resp = "updated existing master record"
 	}
-	////c.Infof("resp: %v", resp)
+	//c.Infof("resp: %v", resp)
 	return resp
 }
 
 //D0069
 func getSyllabus(w http.ResponseWriter, r *http.Request, mSID, level string) (string, string) {
 	//c := appengine.NewContext(r)
-	////c.Infof("getSyllabus")
-	////c.Infof("mSID: %v", mSID)
+	//c.Infof("getSyllabus")
+	//c.Infof("mSID: %v", mSID)
 
 	BLOB_KEY := contentCheckSid(w,r,mSID)
-	////c.Infof("BLOB_KEY: %v", BLOB_KEY)
+	//c.Infof("BLOB_KEY: %v", BLOB_KEY)
 	blobByte := getBlobByte(w, r, BLOB_KEY)	
 	msyl := []MasterSyllabus{}
 	err := json.Unmarshal(blobByte, &msyl)
-	////c.Infof("ERROR: %v", err)
+	//c.Infof("ERROR: %v", err)
 	if err != nil {
 		panic(err)
 	}
@@ -41557,25 +41682,25 @@ func getSyllabus(w http.ResponseWriter, r *http.Request, mSID, level string) (st
 func checkEnroll(w http.ResponseWriter, r *http.Request, mSID, uid string) (string) {
 	c := appengine.NewContext(r)
 	//check if there is student record
-	////c.Infof("checkEnroll")
+	//c.Infof("checkEnroll")
 	resp := ""
 	EDUC_BLOB := ""
 	FL_EN := false
 	var g TDSCNFG
 	thisKey := fmt.Sprintf("STUDENT_REC_%v_%v", mSID, uid)
-	////c.Infof("thisKey: %v", thisKey)
+	//c.Infof("thisKey: %v", thisKey)
 	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 	if err := datastore.Get(c, key, &g); err != nil {
 		//panic(err)
 		//return
 	}
 	if g.TXT_VAL != "" {
-		////c.Infof("g.TXT_VAL empty")
+		//c.Infof("g.TXT_VAL empty")
 		EDUC_BLOB = g.TXT_VAL 
 		FL_EN = true
 	}
 	if FL_EN == false {
-		////c.Infof("Insert TDSCNFG")
+		//c.Infof("Insert TDSCNFG")
 		g := TDSCNFG{
 				SYS_VER: 1,
 				USER: uid,
@@ -41597,7 +41722,7 @@ func checkEnroll(w http.ResponseWriter, r *http.Request, mSID, uid string) (stri
 		//read from blob
 		//resp = "updated existing student record"
 		blobByte := getBlobByte(w, r, EDUC_BLOB)
-		////c.Infof("config: %v", string(blobByte ))
+		//c.Infof("config: %v", string(blobByte ))
 		sturec := StudentRecord{}
 		err := json.Unmarshal(blobByte, &sturec)
 		if err != nil {
@@ -41611,7 +41736,7 @@ func checkEnroll(w http.ResponseWriter, r *http.Request, mSID, uid string) (stri
 		}
 
 	}
-	////c.Infof("resp: %v", resp)
+	//c.Infof("resp: %v", resp)
 	return resp
 }
 
@@ -41619,19 +41744,19 @@ func checkEnroll(w http.ResponseWriter, r *http.Request, mSID, uid string) (stri
 func cancelEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, sLevel string) (string) {
 	c := appengine.NewContext(r)
 	//check if there is student record
-	////c.Infof("cancelEnroll")
+	//c.Infof("cancelEnroll")
 	resp := ""
 	EDUC_BLOB := ""
 	var g TDSCNFG
 	thisKey := fmt.Sprintf("STUDENT_REC_%v_%v", mSID, uid)
-	////c.Infof("thisKey: %v", thisKey)
+	//c.Infof("thisKey: %v", thisKey)
 	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 	if err := datastore.Get(c, key, &g); err != nil {
 		//panic(err)
 		//return
 	}
 	if g.TXT_VAL != "" {
-		////c.Infof("g.TXT_VAL empty")
+		//c.Infof("g.TXT_VAL empty")
 		EDUC_BLOB = g.TXT_VAL
 	}
 	if EDUC_BLOB == "" {
@@ -41640,7 +41765,7 @@ func cancelEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, sLevel stri
 		//read from blob
 		//resp = "updated existing student record"
 		blobByte := getBlobByte(w, r, EDUC_BLOB)
-		////c.Infof("config: %v", string(blobByte ))
+		//c.Infof("config: %v", string(blobByte ))
 		sturec := StudentRecord{}
 		err := json.Unmarshal(blobByte, &sturec)
 		if err != nil {
@@ -41661,25 +41786,25 @@ func cancelEnroll(w http.ResponseWriter, r *http.Request, mSID, uid, sLevel stri
 		saveStudentRecord(w,r,uid,educData,mSID)
 
 	}
-	////c.Infof("resp: %v", resp)
+	//c.Infof("resp: %v", resp)
 	return resp
 }
 //D0069
 func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (string) {
 	c := appengine.NewContext(r)
-	////c.Infof("updateScores")
+	//c.Infof("updateScores")
 	resp := ""
 	EDUC_BLOB := ""
 	var g TDSCNFG
 	thisKey := fmt.Sprintf("STUDENT_REC_%v_%v", mSID, uid)
-	////c.Infof("thisKey: %v", thisKey)
+	//c.Infof("thisKey: %v", thisKey)
 	key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
 	if err := datastore.Get(c, key, &g); err != nil {
 		//panic(err)
 		//return
 	}
 	if g.TXT_VAL != "" {
-		////c.Infof("g.TXT_VAL empty")
+		//c.Infof("g.TXT_VAL empty")
 		EDUC_BLOB = g.TXT_VAL
 	}
 	if EDUC_BLOB == "" {
@@ -41688,7 +41813,7 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 		//read from blob
 		//resp = "updated existing student record"
 		blobByte := getBlobByte(w, r, EDUC_BLOB)
-		////c.Infof("config: %v", string(blobByte ))
+		//c.Infof("config: %v", string(blobByte ))
 		sturec := StudentRecord{}
 		err := json.Unmarshal(blobByte, &sturec)
 		if err != nil {
@@ -41697,13 +41822,13 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 		//store to temp
 		xs:=[]float64{}
 		for i:=0;i<len(sturec.Levels);i++ {
-			////c.Infof("examURL: %v", sturec.Levels[i].ExamURL)
+			//c.Infof("examURL: %v", sturec.Levels[i].ExamURL)
 			if sturec.Levels[i].LevelGrade == "" || sturec.Levels[i].LevelGrade == "0" && sturec.Levels[i].ExamURL != "" {
 				//get SID from examURL
 				SID, _ := getRefDoc(w,r,sturec.Levels[i].ExamURL)
-				////c.Infof("SID: %v", SID)
+				//c.Infof("SID: %v", SID)
 				score, timestamp, err := getScoreFromComments(w,r,SID,uid)
-				////c.Infof("score: %v", score)
+				//c.Infof("score: %v", score)
 				if err != nil {
 					fmt.Fprintf(w,"Error extracting score from comments: %v", err)
 				} else {
@@ -41731,17 +41856,57 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 		educSchoolMasterRecord(w,r,uid,aveGrade,mSID)
 
 	}
-	////c.Infof("resp: %v", resp)
+	//c.Infof("resp: %v", resp)
 	return resp
 }
-
+//D0082
+//creates a new blob for broadcast locations
+func saveLocations(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	mapData := r.FormValue("MDATA")
+	//upload to blobstore
+	//c.Infof("saveLocations")
+	//c.Infof("upload to blobstore")
+	csn2 := getUpUrlString(w,r,"/upload-media")
+	u, err := blobstore.UploadURL(c, csn2, nil)
+	if err != nil {
+		return
+	}
+	var m bytes.Buffer
+	fw := multipart.NewWriter(&m)
+	file, err := fw.CreateFormFile("file", "MAP")
+	if err != nil {
+		return
+	}
+	if _, err = file.Write([]byte(mapData)); err != nil {
+		return
+	}
+	_ = fw.WriteField("FUNC_CODE", "MAP")
+	//D0068
+	_ = fw.WriteField("API_KEY", CMD_GEN_KEY)
+	fw.Close()
+	req, err := http.NewRequest("POST", u.String(), &m)
+	if err != nil {
+		return
+	}
+	req.Header.Set("Content-Type", fw.FormDataContentType())
+	client := urlfetch.Client(c)
+	res, err := client.Do(req)
+	if err != nil {
+		return
+	}
+	if res.StatusCode != http.StatusCreated {
+		return
+	}
+	//c.Infof("saved locations")
+}
 //D0069
 //creates a new blob
 func saveStudentRecord(w http.ResponseWriter, r *http.Request, uid string, educData []byte, mSID string) {
 	c := appengine.NewContext(r)
 	//upload to blobstore
-	////c.Infof("saveStudentRecord")
-	////c.Infof("upload to blobstore")
+	//c.Infof("saveStudentRecord")
+	//c.Infof("upload to blobstore")
 	csn2 := getUpUrlString(w,r,"/upload-media")
 	u, err := blobstore.UploadURL(c, csn2, nil)
 	if err != nil {
@@ -41783,8 +41948,8 @@ func saveStudentRecord(w http.ResponseWriter, r *http.Request, uid string, educD
 func saveMasterRecord(w http.ResponseWriter, r *http.Request, uid string, educData []byte, mSID string) {
 	c := appengine.NewContext(r)
 	//upload to blobstore
-	////c.Infof("saveMasterRecord")
-	////c.Infof("upload to blobstore")
+	//c.Infof("saveMasterRecord")
+	//c.Infof("upload to blobstore")
 	csn2 := getUpUrlString(w,r,"/upload-media")
 	u, err := blobstore.UploadURL(c, csn2, nil)
 	if err != nil {
@@ -42747,8 +42912,8 @@ func media(w http.ResponseWriter, r *http.Request) {
 		uwmwponly := r.FormValue("uwmwponly")
 		uwmDesk := r.FormValue("desktop")
 		uwmDesk = strings.Replace(uwmDesk, "uwm", "", -1)
-		////c.Infof("uwmwponly: %v", uwmwponly)
-		////c.Infof("uwmDesk: %v", uwmDesk)
+		//c.Infof("uwmwponly: %v", uwmwponly)
+		//c.Infof("uwmDesk: %v", uwmDesk)
 		cKey := ""
 		cKey2 := ""
 		if SYS_WALLP_ADMIN_ONLY == false {
@@ -42762,8 +42927,8 @@ func media(w http.ResponseWriter, r *http.Request) {
 			cKey = fmt.Sprintf("WALLPAPERS_LIST_%v_%v", uwmDesk, uid)
 			cKey2 = fmt.Sprintf("WALLPAPERS_TOTAL_%v_%v", uwmDesk, uid)
 		}
-		////c.Infof("cKey: %v", cKey)
-		////c.Infof("cKey2: %v", cKey2)
+		//c.Infof("cKey: %v", cKey)
+		//c.Infof("cKey2: %v", cKey2)
 		WALLPAPERS_LIST_ARRAY := ""
 		WALLPAPERS_LIST_TOTAL := ""
 		//validate user
@@ -42777,14 +42942,14 @@ func media(w http.ResponseWriter, r *http.Request) {
 				recCtr := 0
 				WALLPAPERS_LIST_STR := ""
 				if SYS_WALLP_ADMIN_ONLY == false {
-					////c.Infof("uwmwponly: %v", uwmwponly )
+					//c.Infof("uwmwponly: %v", uwmwponly )
 					if uwmwponly == "true" {
 						thisCat := fmt.Sprintf("desktop%v", uwmDesk)
-						////c.Infof("thisCat: %v", thisCat )
+						//c.Infof("thisCat: %v", thisCat )
 						q := datastore.NewQuery("TDSMEDIA").Filter("CATEGORY =", thisCat).Limit(250)
 						//c.Errorf("[S0359]")
 						recCount,_ := q.Count(c)
-						////c.Infof("recCount: %v", uwmwponly )
+						//c.Infof("recCount: %v", uwmwponly )
 						media := make([]TDSMEDIA, 0, recCount)
 						if _, err := q.GetAll(c, &media); err != nil {
 							panic(err)
@@ -43247,8 +43412,8 @@ func media(w http.ResponseWriter, r *http.Request) {
 			D3_NODE_FILTER := r.FormValue("getNode")
 			D3_NODE_LINK_FILTER := r.FormValue("getNodeLink")
 			D3_TRIM := r.FormValue("trimNode")
-		 	////c.Infof("D3_NODE_FILTER: %v", D3_NODE_FILTER)	
-		 	////c.Infof("D3_TRIM: %v", D3_TRIM)	
+		 	//c.Infof("D3_NODE_FILTER: %v", D3_NODE_FILTER)	
+		 	//c.Infof("D3_TRIM: %v", D3_TRIM)	
 			
 			SPL := strings.Split(SID,"-")
 			TARGET := SPL[0]
@@ -43310,7 +43475,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 			
 			}
 			if FL_PROC_OK == true {
-				////c.Infof("FL_PROC_OK...")
+				//c.Infof("FL_PROC_OK...")
  
 				var buf bytes.Buffer
 				reader := blobstore.NewReader(c, appengine.BlobKey(BLOB_KEY))
@@ -43343,7 +43508,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 				//D0060
 				switch {
 				case D3_NODE_FILTER != "" && D3_NODE_FILTER != "undefined" && D3_TRIM == "Y": 
-					////c.Infof("D3_NODE_FILTER process...")
+					//c.Infof("D3_NODE_FILTER process...")
 					//return target notes only
 					s := bufio.NewScanner(bytes.NewReader(buf.Bytes()))
 					var buf bytes.Buffer
@@ -43361,13 +43526,13 @@ func media(w http.ResponseWriter, r *http.Request) {
 							for i:=len(SPL); i > 0; i-- {
 								if i <  len(SPL) {
 									keyWord = strings.Join(SPL[:i], ".")
-									////c.Infof("keyWord: %v", keyWord)
+									//c.Infof("keyWord: %v", keyWord)
 									if strings.HasPrefix(s.Text(), fmt.Sprintf("%v,",keyWord)) {
 										buf.WriteString(fmt.Sprintf("%v\n", s.Text()))
 									}
 								} else {
 									keyWord = strings.Join(SPL[:len(SPL)], ".")
-									////c.Infof("keyWord: %v", keyWord)
+									//c.Infof("keyWord: %v", keyWord)
 									if strings.HasPrefix(s.Text(), keyWord) {
 										buf.WriteString(fmt.Sprintf("%v\n", s.Text()))
 									}
@@ -43378,10 +43543,10 @@ func media(w http.ResponseWriter, r *http.Request) {
 					}
 					w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 					writeHTMLHeader(w, 200)
-					////c.Infof(fmt.Sprintf("%v", buf.String()))
+					//c.Infof(fmt.Sprintf("%v", buf.String()))
 					w.Write(buf.Bytes())
 				case D3_NODE_LINK_FILTER != "" && D3_NODE_LINK_FILTER != "undefined": 
-					////c.Infof("D3_NODE_LINK_FILTER process...")
+					//c.Infof("D3_NODE_LINK_FILTER process...")
 					//return target notes only
 					s := bufio.NewScanner(bytes.NewReader(buf.Bytes()))
 					for s.Scan() {
@@ -43408,7 +43573,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 					}
 				default:
 					w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-					////c.Infof(fmt.Sprintf("%v", buf.String()))
+					//c.Infof(fmt.Sprintf("%v", buf.String()))
 					writeHTMLHeader(w, 200)
 					w.Write(buf.Bytes())
 				}
@@ -44439,7 +44604,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 					}
 				case "VIEW_THUMBS":
 					//D0070
-					////c.Infof("VIEW_THUMBS")
+					//c.Infof("VIEW_THUMBS")
 					PROC := r.FormValue("PROC")
 					updateUserActiveData(w, r, c, uid, "/media(photos)")
 					//also notify all users about this
@@ -44471,25 +44636,25 @@ func media(w http.ResponseWriter, r *http.Request) {
 						} else {
 						FL_RECENT = true
 						}
-						////c.Infof("kword: %v", kword)
-						////c.Infof("start_year: %v", start_year)
-						////c.Infof("start_date: %v", start_date)
-						////c.Infof("start_time: %v", start_time)
-						////c.Infof("end_date: %v", end_date)
-						////c.Infof("end_time: %v", end_time)
-						////c.Infof("contType: %v", contType)
-						////c.Infof("contCat: %v", contCat)
+						//c.Infof("kword: %v", kword)
+						//c.Infof("start_year: %v", start_year)
+						//c.Infof("start_date: %v", start_date)
+						//c.Infof("start_time: %v", start_time)
+						//c.Infof("end_date: %v", end_date)
+						//c.Infof("end_time: %v", end_time)
+						//c.Infof("contType: %v", contType)
+						//c.Infof("contCat: %v", contCat)
 						//compose timestamp
 						start_tstmp := fmt.Sprintf("%v %v", start_date, start_time)
 						end_tstmp := fmt.Sprintf("%v %v", end_date, end_time)
-						////c.Infof("start_tstmp: %v", start_tstmp)
-						////c.Infof("end_tstmp: %v", end_tstmp)
+						//c.Infof("start_tstmp: %v", start_tstmp)
+						//c.Infof("end_tstmp: %v", end_tstmp)
 						rt1, _ := time.Parse("_2 January, 2006 3:04 PM", start_tstmp)
 						start_rt1 := fmt.Sprintf("%v", rt1.Format("20060102150405"))
 						rt2, _ := time.Parse("_2 January, 2006 3:04 PM", end_tstmp)
 						start_rt2 := fmt.Sprintf("%v", rt2.Format("20060102150405"))
-						////c.Infof("start_rt1: %v", start_rt1)
-						////c.Infof("start_rt2: %v", start_rt2)
+						//c.Infof("start_rt1: %v", start_rt1)
+						//c.Infof("start_rt2: %v", start_rt2)
 						start := str2int(start_rt1)
 						end := str2int(start_rt2)
 						if  FL_RECENT == true {
@@ -44512,7 +44677,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 							}
 							recCount,_ := q.Count(c)
 							//c.Infof("media: %v", recCount)
-							////c.Infof("uid: %v", uid)
+							//c.Infof("uid: %v", uid)
 							media := make([]TDSMEDIA, 0, recCount)
 							if _, err := q.GetAll(c, &media); err != nil {
 								 panic(err)
@@ -44614,7 +44779,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 								nRecCtr :=0
 								numRecent, _ := strconv.Atoi(RECENT)
 								for _, p := range media{
-									////c.Infof("photoGalleryShowMedia()")
+									//c.Infof("photoGalleryShowMedia()")
 									if kword != "" {
 										i := strings.Index(strings.ToUpper(p.TITLE), strings.ToUpper(kword))
 										j := strings.Index(strings.ToUpper(p.DESC), strings.ToUpper(kword))
@@ -44703,7 +44868,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 						DOC_ID = SPL[1]
 					}
 					BLOB_KEY := contentCheckSid(w,r,SID)
-					////c.Infof("BLOB_KEY: %v", BLOB_KEY)
+					//c.Infof("BLOB_KEY: %v", BLOB_KEY)
 					switch TARGET {
 						case "TDSSLIDE":
 							laterIncNumViewsSocial.Call(c, "", fmt.Sprintf("TDSSLIDE-%v", DOC_ID), "SO_INC_NUM_VIEWS")
@@ -44722,7 +44887,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 					}
 					w.Header().Set("Content-Type", "application/json")
 					writeHTMLHeader(w, 200)
-					////c.Infof("%v", buf.String())
+					//c.Infof("%v", buf.String())
 					w.Write(buf.Bytes())
 					return
 				case "DELETE":
@@ -54267,13 +54432,13 @@ func updateMyULAPPHLoc(w http.ResponseWriter, r *http.Request, uid, latlon strin
 	
 	cKey := fmt.Sprintf("HOST_LIST2")
 	putBytesToMemcacheWithoutExp(w,r,cKey,buf.Bytes())
-	////c.Infof("User to Host List has been updated with user loc.<br><br>.")
+	//c.Infof("User to Host List has been updated with user loc.<br><br>.")
 	//fmt.Fprintf(w, "%v", buf.String())
 	//update the actual host list file
 	SID := fmt.Sprintf("TDSMEDIA-%v", MEDIA_ID)
 	err := blobFileSaver(w,r,SID,buf.Bytes())
 	if err != nil {
-		////c.Infof("User to Host List has been updated at TDSMEDIA-%v", MEDIA_ID)
+		//c.Infof("User to Host List has been updated at TDSMEDIA-%v", MEDIA_ID)
 		return
 	}
 	return		
@@ -54330,7 +54495,7 @@ func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url []str
 					//url = append(url, tURL)
 					url = append(url, strings.TrimSpace(scanner.Text()))
 					FL_FOUND = true
-					////c.Infof("url: %v", url)
+					//c.Infof("url: %v", url)
 					//lets store this to memory
 				}
 			}
@@ -54756,7 +54921,7 @@ func procDiscussions(w http.ResponseWriter, r *http.Request) {
 	timestamp := fmt.Sprintf("%v", rt.Format("20060102150405"))
 	q := datastore.NewQuery("TDSCOMIDX").Filter("DT_UPDATE > ", timestamp)
 	recCount, _  := q.Count(c)
-	////c.Infof("recCount: %v", recCount)
+	//c.Infof("recCount: %v", recCount)
 	cidx := make([]TDSCOMIDX, 0, recCount)
 	if _, err := q.GetAll(c, &cidx); err != nil {
 		 panic(err)
@@ -54874,20 +55039,17 @@ func procPeopleDir(w http.ResponseWriter, r *http.Request) {
 func showOverallSessions(w http.ResponseWriter, r *http.Request, target string, FL_BOT bool) {
 	//billing fix
 	//dont display sessions if not logged in
-	
 	if FL_BOT == true {
 		showOverallRobot(w,r,target)
 		return
 	}
-	
 	cKey := fmt.Sprintf("ACTIVE_SESS_%v", target)
 	sess := getStrMemcacheValueByKey(w,r,cKey)
 	if sess != "" {
 		writeHTMLHeader(w, 200)
-		w.Write([]byte(sess))	
+		w.Write([]byte(sess))
 		return
 	}
-	
 	var bLine bytes.Buffer
 	bLine.WriteString("<html><head>")
 	bLine.WriteString(fmt.Sprintf("<META http-equiv=\"refresh\" content=\"300;URL=/directory?DIR_FUNC=%v\">", target))
@@ -54898,7 +55060,6 @@ func showOverallSessions(w http.ResponseWriter, r *http.Request, target string, 
 	</style>`
 	bLine.WriteString(style)
 	bLine.WriteString("</head><body>")
-	
 	valCtr := 0
 	for i:=1; i <= 500 ; i++ {
 		keyID := fmt.Sprintf("ACTIVE_ID_%v", i)
@@ -54922,12 +55083,10 @@ func showOverallSessions(w http.ResponseWriter, r *http.Request, target string, 
 						bLine.WriteString(fmt.Sprintf("<a href=\"#\"><img src=\"%v\" width=60 height=60 class=\"img-circle\" title=\"%v (%v) @ %v\"></a> ", copic, uid, tstmp, host))
 					}
 					valCtr++
-				}				
+				}
 			}
- 
 		}
 	}
-	
 	keyID := fmt.Sprintf("ACTIVE_TOT_SESS")
 	putStrToMemcacheWithExp(w,r,keyID,fmt.Sprintf("%v", valCtr),3600)
 	if valCtr <= 0 {
@@ -54936,11 +55095,10 @@ func showOverallSessions(w http.ResponseWriter, r *http.Request, target string, 
 	}
 	bLine.WriteString(fmt.Sprintf("</body></html>"))
 	writeHTMLHeader(w, 200)
-	w.Write([]byte(bLine.String()))	
+	w.Write([]byte(bLine.String()))
 	//cache
 	putStrToMemcacheWithExp(w,r,cKey,bLine.String(),900) //clear cache every 15 minutes
 	return
- 
 }
 
 //shows if access is from a robot or non-humans 
@@ -54960,7 +55118,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 	//c.Infof("JLIST: %v", string(JLIST))
 	//if JLIST != nil {
 	if string(JLIST) != "" {
-		////c.Infof("Serve map cached!")
+		//c.Infof("Serve map cached!")
 		json.Unmarshal(JLIST, &dks)
 		data,_ := json.Marshal(dks)
 		w.Write(data)
@@ -55047,10 +55205,10 @@ func showOverallMap2(w http.ResponseWriter, r *http.Request) {
 	//lets serve some cache
 	cKeyC := fmt.Sprintf("JSON_PROC_BROADCAST_LOCATION2")
 	JLIST := getBytMemcacheValueByKey(w,r,cKeyC)
-	////c.Infof("JLIST: %v", string(JLIST))
+	//c.Infof("JLIST: %v", string(JLIST))
 	//if JLIST != nil {
 	if string(JLIST) != "" {
-		////c.Infof("Serve map cached!")
+		//c.Infof("Serve map cached!")
 		json.Unmarshal(JLIST, &dks)
 		data,_ := json.Marshal(dks)
 		w.Write(data)
@@ -55068,7 +55226,7 @@ func showOverallMap2(w http.ResponseWriter, r *http.Request) {
 		//}
 	}
 	ctr := 0
-	////c.Infof("LIST: %v", LIST)
+	//c.Infof("LIST: %v", LIST)
 	if LIST != "" {
 		//scan
 		//var buf bytes.Buffer
@@ -55080,7 +55238,7 @@ func showOverallMap2(w http.ResponseWriter, r *http.Request) {
 			//ULAPPHServerURL,ServerName,ServerDesc,ServerTag,AlternateURL,Latitude,Longitude,ServerIcon
 			//ent := strings.TrimSpace(XLIST[i])
 			//if ent != "" {
-			////c.Infof("LINE: %v", scanner.Text())
+			//c.Infof("LINE: %v", scanner.Text())
 			thisStr := fmt.Sprintf("%v", scanner.Text())
                         if string(thisStr[0]) == "#" {
 				continue
@@ -55161,20 +55319,20 @@ func showOverallPeople(w http.ResponseWriter, r *http.Request, FL_BOT bool) {
 //shows user location (site server only) 
 func showUserLocation(w http.ResponseWriter, r *http.Request, xhost, xuid string) {
 	//c := appengine.NewContext(r)
-	////c.Infof("showUserLocation()")
+	//c.Infof("showUserLocation()")
 	cKey := fmt.Sprintf("%v-tracker-%v", xhost, xuid)
-	////c.Infof("cKey: %v", cKey)
+	//c.Infof("cKey: %v", cKey)
 	longStr := ""
 	latStr := ""
 	longLat := getStrMemcacheValueByKey(w,r,cKey)
-	////c.Infof("longLat: %v", longLat)
+	//c.Infof("longLat: %v", longLat)
 	SPL := strings.Split(longLat, ",")
 	if len(SPL) > 0 {
 		longStr = SPL[1]
 		latStr = SPL[0]
 	}
-	////c.Infof("longStr: %v", longStr)
-	////c.Infof("latStr: %v", latStr)
+	//c.Infof("longStr: %v", longStr)
+	//c.Infof("latStr: %v", latStr)
 	if longStr != "" && latStr != "" {
 		l := RealtimeLocation{}
 		l.Geometry.Type = "Point"
@@ -55184,7 +55342,7 @@ func showUserLocation(w http.ResponseWriter, r *http.Request, xhost, xuid string
 		data,_ := json.Marshal(l)
 		w.WriteHeader(200)
 		w.Write(data)
-		////c.Infof("realtime: %#v", l)
+		//c.Infof("realtime: %#v", l)
 	} else {
 		l := RealtimeLocation{}
 		data,_ := json.Marshal(l)
@@ -55927,25 +56085,25 @@ func queueRatings(w http.ResponseWriter, r *http.Request) {
 //process taskqueue to embed source to SIDs
 func queueAutoMLProc(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	////c.Infof("queueAutoMLProc()")
+	//c.Infof("queueAutoMLProc()")
 	AML_FUNC := r.FormValue("FUNC")
-	////c.Infof("AML_FUNC: %v", AML_FUNC)
+	//c.Infof("AML_FUNC: %v", AML_FUNC)
 	switch AML_FUNC {
 		case "CCTV":
 		//process cctv events
 		IMG := r.FormValue("IMG")
-		////c.Infof("IMG: %v", IMG)
+		//c.Infof("IMG: %v", IMG)
 		//LABEL := r.FormValue("LABEL")
-		////c.Infof("LABEL: %v", LABEL)
+		//c.Infof("LABEL: %v", LABEL)
 		TITLE := r.FormValue("TITLE")
-		////c.Infof("TITLE: %v", TITLE)
+		//c.Infof("TITLE: %v", TITLE)
 		//STRUWM := r.FormValue("STRUWM")
-		////c.Infof("STRUWM: %v", STRUWM)
+		//c.Infof("STRUWM: %v", STRUWM)
 		UID := r.FormValue("UID")
-		////c.Infof("UID: %v", UID)
+		//c.Infof("UID: %v", UID)
 		g := &AutoMLPayload{}
 		g.Payload.Image.ImageBytes = openImageURLtoBytes(w,r,IMG)
-		//////c.Infof("Payload: %#v", g)
+		////c.Infof("Payload: %#v", g)
 		data, _ := json.Marshal(g)
 		body := bytes.NewBuffer(data)
 		req, _ := http.NewRequest("POST", AUTOML_PREDICT_URL, body)
@@ -55968,23 +56126,23 @@ func queueAutoMLProc(w http.ResponseWriter, r *http.Request) {
 		}
 		client := conf.Client(ctx)
 
-		//////c.Infof("req: %v", req)
+		////c.Infof("req: %v", req)
 		res, err := client.Do(req)
 		if err != nil {
 			c.Errorf("client.Do err: %v", err)
 		}
 		if res.StatusCode != 200 {
-			////c.Infof("res: %v", res)
-			////c.Infof("error posting data")
+			//c.Infof("res: %v", res)
+			//c.Infof("error posting data")
 		}else{
-			////c.Infof("res: %v", res)
+			//c.Infof("res: %v", res)
 			bodyBytes, err := ioutil.ReadAll(res.Body)
 			if err != nil {
 				//return
 				c.Errorf("ioutil.ReadAll err: %v", err)
 				return
 			} else {
-				////c.Infof("response: %#v", string(bodyBytes))
+				//c.Infof("response: %#v", string(bodyBytes))
 				data := map[string]interface{}{}
 				dec := json.NewDecoder(bytes.NewReader(bodyBytes))
 				dec.Decode(&data)
@@ -55993,7 +56151,7 @@ func queueAutoMLProc(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					c.Errorf("ERROR: %v", err)
 				}
-				////c.Infof("jqVal: %v", jqVal)
+				//c.Infof("jqVal: %v", jqVal)
 				if jqVal == "cctvKitchenPersonDetected" {
 					//person was detected
 					CAPTION := fmt.Sprintf("Person detected in the %v", TITLE)
@@ -56001,7 +56159,7 @@ func queueAutoMLProc(w http.ResponseWriter, r *http.Request) {
 					data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_ALARM@888@%v@888@%v", CAPTION, MESSAGE)
 					sendChannelMessage(w,r,UID,data)
 					sendChannelMessage(w,r,"cctv",data)
-					////c.Infof("Channel sent to: %v", UID)
+					//c.Infof("Channel sent to: %v", UID)
 				}
 
 			}
@@ -56012,7 +56170,6 @@ func queueAutoMLProc(w http.ResponseWriter, r *http.Request) {
 
 //process taskqueue to embed source to SIDs
 func queueWgetUrl(w http.ResponseWriter, r *http.Request) {
- 
     c := appengine.NewContext(r)
 	ATS_FUNC := r.FormValue("WG_FUNC")
 	//WCMD := r.FormValue("WCMD")
@@ -56020,21 +56177,17 @@ func queueWgetUrl(w http.ResponseWriter, r *http.Request) {
 	WURL := r.FormValue("WURL")
 	//prep mime list
 	_, _ = getMimeType(w,r,path.Ext(""))
-	
 	switch ATS_FUNC {
 		case "WGET-URL":
 			//WCMD, _ = url.QueryUnescape(WCMD)
 			//SPL := strings.Split(WCMD, "wget ")
 			thisUrl, _ := url.QueryUnescape(WURL)
- 
 			urlRespBytes, err := fetchURLB(w,r,thisUrl)
- 
 			csn2 := getUpUrlString(w,r,"/upload-media")
 			u, err := blobstore.UploadURL(c, csn2, nil)
 			if err != nil {
 				return
 			}
- 
 			var m bytes.Buffer
 			fw := multipart.NewWriter(&m)
 			file, err := fw.CreateFormFile("file", "WGET-URL")
@@ -56086,13 +56239,13 @@ func queueWgetUrl(w http.ResponseWriter, r *http.Request) {
 //D0074
 func struwmUpdateCCTVList(w http.ResponseWriter, r *http.Request, uid, CATEGORY string) {
 	c := appengine.NewContext(r)
-	//////c.Infof("struwmUpdateCCTVList...")
+	////c.Infof("struwmUpdateCCTVList...")
 	//D0074
 	//cKeyLA := fmt.Sprintf("LIST_ALL_CCTV_ACTIVE_%v", uid)
 	cKeyLA := fmt.Sprintf("LIST_ALL_CCTV_ACTIVE_%v", SYS_SERVER_NAME)
-	//////c.Infof("cKeyLA: %v", cKeyLA)
+	////c.Infof("cKeyLA: %v", cKeyLA)
 	//cctvla := getStrMemcacheValueByKey(w,r,cKeyLA)
-	//////c.Infof("cctvla: %v", cctvla)
+	////c.Infof("cctvla: %v", cctvla)
 	//cfgName := fmt.Sprintf("PERSONAL_CCTV_LIST_%v", uid)
 	cfgName := fmt.Sprintf("PERSONAL_CCTV_LIST_%v", SYS_SERVER_NAME)
 	cctvla, _ := getTDSCNFG(w,r,0,cfgName)
@@ -56110,7 +56263,7 @@ func struwmUpdateCCTVList(w http.ResponseWriter, r *http.Request, uid, CATEGORY 
 	if FL_CAT_FOUND == false {
 		//append
 		cctvla2 = fmt.Sprintf("%v@888@%v", cctvla, CATEGORY)
-		//////c.Infof("cctvla2: %v", cctvla2)
+		////c.Infof("cctvla2: %v", cctvla2)
 		putStrToMemcacheWithExp(w,r,cKeyLA,cctvla2,GEN_CONTENT_EXPIRES4)
 		thisKey := cfgName
 		g := TDSCNFG{
@@ -56134,7 +56287,7 @@ func struwmUpdateCCTVList(w http.ResponseWriter, r *http.Request, uid, CATEGORY 
 //func queueStreamMirrorToUwm(w http.ResponseWriter, r *http.Request) {
 func struwmStreamMirrorToUwm(w http.ResponseWriter, r *http.Request, uid, STRUWM, CATEGORY, SRC, CAPTION string) {
 	//c := appengine.NewContext(r)
-	//////c.Infof("struwmStreamMirrorToUwm: %v", CATEGORY)
+	////c.Infof("struwmStreamMirrorToUwm: %v", CATEGORY)
 	/*MSU_FUNC := r.FormValue("MSU_FUNC")
 	uid := r.FormValue("UID")
 	STRUWM := r.FormValue("STRUWM")
@@ -56150,7 +56303,7 @@ func struwmStreamMirrorToUwm(w http.ResponseWriter, r *http.Request, uid, STRUWM
 		UID = fmt.Sprintf("%v---%v", uid, STRUWM)
 	}
 	data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_MIRROR@888@%v@888@%v", SRC, CAPTION)
-	//////c.Infof("%v", data)
+	////c.Infof("%v", data)
 	sendChannelMessage(w,r,UID,data)
 	//also send to main uwm
 	sendChannelMessage(w,r,uid,data)
@@ -56159,7 +56312,7 @@ func struwmStreamMirrorToUwm(w http.ResponseWriter, r *http.Request, uid, STRUWM
 	//save this image to memcache
 	//STRUWM-desktop123-previous = <url>
 	cKey := fmt.Sprintf("STRUWM-%v-previous-image", CATEGORY)
-	//////c.Infof("cKey: %v", cKey)
+	////c.Infof("cKey: %v", cKey)
 	putStrToMemcacheWithExp(w,r,cKey,SRC,GEN_CONTENT_EXPIRES)
 }
 //D0071
@@ -56168,8 +56321,8 @@ func struwmPreviousImageCompare(w http.ResponseWriter, r *http.Request, uid, STR
 	//get previous image
 	cKey := fmt.Sprintf("STRUWM-%v-previous-image", CATEGORY)
 	prevURL := getStrMemcacheValueByKey(w,r,cKey)
-	//////c.Infof("prevURL: %v", prevURL)
-	//////c.Infof("currURL: %v", SRC)
+	////c.Infof("prevURL: %v", prevURL)
+	////c.Infof("currURL: %v", SRC)
 	if prevURL == "" {
 		cKey := fmt.Sprintf("STRUWM-%v-previous-image", CATEGORY)
 		putStrToMemcacheWithExp(w,r,cKey,SRC,GEN_CONTENT_EXPIRES)
@@ -56180,8 +56333,8 @@ func struwmPreviousImageCompare(w http.ResponseWriter, r *http.Request, uid, STR
 	imgB := openImageURL(w,r,SRC)
 
 
-	//////c.Infof("imgA: %v", imgA)
-	//////c.Infof("imgB: %v", imgB)
+	////c.Infof("imgA: %v", imgA)
+	////c.Infof("imgB: %v", imgB)
 	distance, err := perceptive.CompareImages(imgA, imgB, perceptive.Difference)
 	if err != nil {
 		panic(err)
@@ -56191,22 +56344,22 @@ func struwmPreviousImageCompare(w http.ResponseWriter, r *http.Request, uid, STR
 
 	if distance == 0 {
 		// images are likely the same
-		//////c.Infof("distance[%v]: images are likely the same", distance)
+		////c.Infof("distance[%v]: images are likely the same", distance)
 	} else if distance >= 1 && distance <= 10 {
 		// images are potentially a variation
-		//////c.Infof("distance[%v]: images are potentially a variation", distance)
+		////c.Infof("distance[%v]: images are potentially a variation", distance)
 		if distance > 1 {
 			FL_INTRUDER = true
 		}
 	} else {
 		// images are likely different
-		//////c.Infof("distance[%v]: images are likely different", distance)
+		////c.Infof("distance[%v]: images are likely different", distance)
 		FL_INTRUDER = true
 	}
 	//D0076
 	if FL_INTRUDER == true && AUTOML == "Y" {
 		cKey := fmt.Sprintf("CCTV_AUTODETECTION_FLAG_%v", SYS_SERVER_NAME)
-		////c.Infof("cKey: %v", cKey)
+		//c.Infof("cKey: %v", cKey)
 		cctv_status := getStrMemcacheValueByKey(w,r,cKey)
 		if (strings.TrimSpace(cctv_status) == "") {
 			//get status in DS
@@ -56242,7 +56395,7 @@ func openImageURLtoBytes(w http.ResponseWriter, r *http.Request, imgURL string) 
 //get image url and output imageApi.Image
 func openImageURL(w http.ResponseWriter, r *http.Request, imgURL string) image.Image {
 	c := appengine.NewContext(r)
-	//////c.Infof("openImageURL...")
+	////c.Infof("openImageURL...")
 	client := urlfetch.Client(c)
 	if err := r.ParseForm(); err != nil {
 		//panic(err)
@@ -56497,16 +56650,16 @@ func appendToSid(w http.ResponseWriter, r *http.Request, UID, FUNC, SID, TEXT st
 	blobChan := make(chan string)
 	go getBlobTextChan(w, r,blobChan, BLOB_KEY)
 	thisCont := <- blobChan
-	//////c.Infof("getBlobTextChan...")
-	//////c.Infof("thisCont: %v", thisCont)
+	////c.Infof("getBlobTextChan...")
+	////c.Infof("thisCont: %v", thisCont)
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("%v", thisCont))
 	buf.WriteString(fmt.Sprintf(" \n"))
 	FL_PROC_OK := false
 	switch  {
 		case FUNC == "APPEND-UWM" && TEXT != "":
-			//////c.Infof("APPEND-UWM APPEND...")
-			//////c.Infof("TEXT: %v", TEXT)
+			////c.Infof("APPEND-UWM APPEND...")
+			////c.Infof("TEXT: %v", TEXT)
 			FL_PROC_OK = true
 			//buf.WriteString(fmt.Sprintf(" %v\n", template.HTML(TEXT)))
 			buf.WriteString(fmt.Sprintf(" %v\n", html.UnescapeString(TEXT)))
@@ -56571,7 +56724,7 @@ func appendToSid(w http.ResponseWriter, r *http.Request, UID, FUNC, SID, TEXT st
 
 	}
 	if FL_PROC_OK == true {
-		//////c.Infof("FL_PROC_OK...")
+		////c.Infof("FL_PROC_OK...")
 		//update content
 		// Now you can prepare a form that you will submit to that URL.
 		var m bytes.Buffer
@@ -69158,12 +69311,12 @@ func checkQuotaMedia(w http.ResponseWriter, r *http.Request, uid string) {
 		
 		//get current count
 		CURR_COUNT := countData(w, r, "MEDIA", uid)
-		//////c.Infof("NUM_QUOTA: %v", NUM_QUOTA)
-		//////c.Infof("CURR_COUNT: %v", CURR_COUNT)
+		////c.Infof("NUM_QUOTA: %v", NUM_QUOTA)
+		////c.Infof("CURR_COUNT: %v", CURR_COUNT)
 		
 		//validate
 		if CURR_COUNT > NUM_QUOTA {
-			//////c.Infof("CURR_COUNT > NUM_QUOTA")
+			////c.Infof("CURR_COUNT > NUM_QUOTA")
 			//prevent operation
 			msgDtl := fmt.Sprintf("[U00116] ERROR: Quota for media has been reached. Please upgrade your account. USER_ACC_TYP: %v, NUM_QUOTA: %v, CURR_COUNT: %v", USER_ACC_TYP, NUM_QUOTA, CURR_COUNT)
 			//send message
@@ -69184,8 +69337,8 @@ func checkQuotaMedia(w http.ResponseWriter, r *http.Request, uid string) {
 func countData(w http.ResponseWriter, r *http.Request, TARGET, UID string) (CURR_COUNT int) {
  
 	c := appengine.NewContext(r)
-	//////c.Infof("countData...")
-	//////c.Infof("UID: %v", UID)
+	////c.Infof("countData...")
+	////c.Infof("UID: %v", UID)
  
 	switch TARGET {
 		case "SLIDES":
@@ -69207,7 +69360,7 @@ func countData(w http.ResponseWriter, r *http.Request, TARGET, UID string) (CURR
 			//OPTIMIZE THIS
 			CURR_COUNT = 999999
 	}
-	//////c.Infof("CURR_COUNT: %v", CURR_COUNT)
+	////c.Infof("CURR_COUNT: %v", CURR_COUNT)
 	return CURR_COUNT
 }
 
@@ -69230,7 +69383,7 @@ func countryChecker(w http.ResponseWriter, r *http.Request) (FL_PROC_OK bool){
 		ipStr := getIpAdd(w,r)
 		//check if blocked
 		if isIpAddressBlocked(w,r,ipStr) == true {
-			////c.Infof("isIpAddressBlocked == true")
+			//c.Infof("isIpAddressBlocked == true")
 			FL_PROC_OK = false
 		} else {
 			//if from a blocked range
@@ -69239,7 +69392,7 @@ func countryChecker(w http.ResponseWriter, r *http.Request) (FL_PROC_OK bool){
 					if strings.Index(ipStr, k) != -1 && v == true {
 						//block ip
 						blockIP(w,r,ipStr,"auto")
-						////c.Infof("blockIP == true")
+						//c.Infof("blockIP == true")
 						FL_PROC_OK = false
 						break
 					}
@@ -69258,17 +69411,17 @@ func countryChecker(w http.ResponseWriter, r *http.Request) (FL_PROC_OK bool){
 					} else {
 						//FL_PROC_OK = false
 						FL_PROC_OK = checkInBoundAppidAllowed(w,r)
-						////c.Infof("checkInBoundAppidAllowed")
+						//c.Infof("checkInBoundAppidAllowed")
 					}
 				case isCountryNotAllowed[xCountry] == true:
-					////c.Infof("isCountryNotAllowed")
+					//c.Infof("isCountryNotAllowed")
 					FL_PROC_OK = false
 				case xRegion == "?" && xCity == "?"  && isBot(w,r) != true:
 					FL_PROC_OK = true
 				case xRegion == "?" && xCity == "?" && isSearchEngineAllowed[xsef] == false:
 					//FL_PROC_OK = false
 					FL_PROC_OK = checkInBoundAppidAllowed(w,r)
-					////c.Infof("checkInBoundAppidAllowed2")
+					//c.Infof("checkInBoundAppidAllowed2")
 				case isIpAddressBlocked(w,r,ipStr) == true:
 					msgDtl := fmt.Sprintf("[U88888] ERROR: Access from your IP address %v has been temporarily blocked due to high usage which appears to be a robot.", ipStr)
 					msgTyp := "error"
@@ -69495,10 +69648,10 @@ func checkIfOkToRun(w http.ResponseWriter, r *http.Request) (IS_OK_TO_RUN bool) 
 func taskUpdateSearchIndex(w http.ResponseWriter, r *http.Request) {
 	//check unindexed slides
 	c := appengine.NewContext(r)
-	//////c.Infof("taskUpdateSearchIndex()")
+	////c.Infof("taskUpdateSearchIndex()")
 	q := datastore.NewQuery("TDSSLIDE").Order("DOC_ID")
 	recCount, _  := q.Count(c)
-	//////c.Infof("recCount: %v", recCount)
+	////c.Infof("recCount: %v", recCount)
 	slide := make([]TDSSLIDE, 0, recCount)
 	if _, err := q.GetAll(c, &slide); err != nil {
 		 panic(err)
@@ -69544,7 +69697,7 @@ func taskUpdateSearchIndex(w http.ResponseWriter, r *http.Request) {
 				}
 
 				putSearchIndexS(w,r,"IDX_TDSSLIDE",thisIdxKey,slideIdx)
-				//////c.Infof("Cron indexed TDSSLIDE-%v", p.DOC_ID) 
+				////c.Infof("Cron indexed TDSSLIDE-%v", p.DOC_ID) 
 			}
 		}
 	}
@@ -69552,7 +69705,7 @@ func taskUpdateSearchIndex(w http.ResponseWriter, r *http.Request) {
 	//check unindexed articles
 	q = datastore.NewQuery("TDSARTL").Order("-DOC_ID")
 	recCount,_ = q.Count(c)
-	//////c.Infof("recCount: %v", recCount)
+	////c.Infof("recCount: %v", recCount)
 
 	articles := make([]TDSARTL, 0, recCount)
 	if _, err := q.GetAll(c, &articles); err != nil {
@@ -69599,7 +69752,7 @@ func taskUpdateSearchIndex(w http.ResponseWriter, r *http.Request) {
 				}
 
 				putSearchIndexA(w,r,"IDX_TDSARTL",thisIdxKey,articleIdx)
-				//////c.Infof("Cron indexed TDSARTL-%v", p.DOC_ID)
+				////c.Infof("Cron indexed TDSARTL-%v", p.DOC_ID)
 			}
 
 		}
@@ -70737,7 +70890,7 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 
 		FL_IMAGE_CHANGED := false
 		if strings.TrimSpace(STRUWM) != "" && DATA_TYPE == "image" {
-			//////c.Infof("Struwm checking...")
+			////c.Infof("Struwm checking...")
 			sURL, _ := imageApi.ServingURL(c, appengine.BlobKey(blobkey), nil)
 			thisURL := sURL.String()
 			thisURL = getSchemeNewUrl(w,r,thisURL)
@@ -70749,15 +70902,15 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 				}
 				blobstore.Delete(c, appengine.BlobKey(blobkey))
-				//////c.Infof("Image did not change. Deleted image. %v-%v", CATEGORY, TITLE)
+				////c.Infof("Image did not change. Deleted image. %v-%v", CATEGORY, TITLE)
 				//D0074
 				tstamp := getTimestamp()
 				cKeyClu := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", CATEGORY)
-				//////c.Infof("cKeyClu: %v", cKeyClu)
-				//////c.Infof("tstamp: %v", tstamp)
+				////c.Infof("cKeyClu: %v", cKeyClu)
+				////c.Infof("tstamp: %v", tstamp)
 				putStrToMemcacheWithExp(w,r,cKeyClu,tstamp,GEN_CONTENT_EXPIRES4)
 				if STRUWMI == "Y" {
-					//////c.Infof("STRUWMI...")
+					////c.Infof("STRUWMI...")
 					laterUpdateCctvList.Call(c, uid, CATEGORY)
 				}
 				w.WriteHeader(200)
@@ -71086,12 +71239,12 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 			//laterMirrorStreamPreviousCompare.Call(c, "STRUWM-COMPARE", uid, STRUWM, thisURL, TITLE, CATEGORY, blobkey, MEDIA_ID)
 			tstamp := getTimestamp()
 			cKeyClu := fmt.Sprintf("TDSMEDIA_CAT_LAST_UPLOAD_%v", CATEGORY)
-			//////c.Infof("cKeyClu: %v", cKeyClu)
-			//////c.Infof("tstamp: %v", tstamp)
+			////c.Infof("cKeyClu: %v", cKeyClu)
+			////c.Infof("tstamp: %v", tstamp)
 			putStrToMemcacheWithExp(w,r,cKeyClu,tstamp,GEN_CONTENT_EXPIRES4)
 			//D0074
 			if STRUWMI == "Y" {
-				//////c.Infof("STRUWMI...")
+				////c.Infof("STRUWMI...")
 				laterUpdateCctvList.Call(c, uid, CATEGORY)
 			}
 		}
@@ -71112,7 +71265,7 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT")
 
-		//////c.Infof("OPT: %v", OPT)
+		////c.Infof("OPT: %v", OPT)
 		if OPT == "OpenScreenshots" {
 			w.WriteHeader(200)
 			w.Write([]byte(thisURL))
@@ -71333,8 +71486,8 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 					tstamp := getTimestamp()
 					p.DT_UPLOAD = tstamp
 					cKeyClu := fmt.Sprintf("TDSSLIDE_CAT_LAST_UPLOAD_%v", p.CATEGORY)
-					//////c.Infof("cKeyClu: %v", cKeyClu)
-					//////c.Infof("tstamp: %v", tstamp)
+					////c.Infof("cKeyClu: %v", cKeyClu)
+					////c.Infof("tstamp: %v", tstamp)
 					putStrToMemcacheWithoutExp(w,r,cKeyClu,tstamp)
 					FL_COUNTRY_SPECIFIC := p.FL_COUNTRY_SPECIFIC
 					thisID = p.DOC_ID
@@ -71896,8 +72049,8 @@ func handleUploadArticles(w http.ResponseWriter, r *http.Request) {
 					tstamp := getTimestamp()
 					p.DT_UPLOAD = tstamp
 					cKeyClu := fmt.Sprintf("TDSARTL_CAT_LAST_UPLOAD_%v", p.CATEGORY)
-					//////c.Infof("cKeyClu: %v", cKeyClu)
-					//////c.Infof("tstamp: %v", tstamp)
+					////c.Infof("cKeyClu: %v", cKeyClu)
+					////c.Infof("tstamp: %v", tstamp)
 					putStrToMemcacheWithoutExp(w,r,cKeyClu,tstamp)
 					thisID = p.DOC_ID
 					thisKey := fmt.Sprintf("%d", p.DOC_ID)
@@ -72323,7 +72476,7 @@ func handleUploadArticles(w http.ResponseWriter, r *http.Request) {
 func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 	if FL_PROC_OK := checkQuotaSystem(w, r); FL_PROC_OK != true {return}
 	c := appengine.NewContext(r)
-	//////c.Infof("handleUploadMedia")
+	////c.Infof("handleUploadMedia")
 	u := user.Current(c)
 	uid := ""
 	if u != nil {
@@ -72339,7 +72492,7 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
         if err := recover(); err != nil { //catch
             fmt.Fprintf(os.Stderr, "Exception: %v\n", err)
 			//send panic message in desktop
-			//////c.Infof("ERROR: %v", err)
+			////c.Infof("ERROR: %v", err)
 			geoStr := getGeoString(w,r)
 			contentMsg := fmt.Sprintf("[ULAPPH] ERROR in handleUploadMedia(): %v >>> %v from %v", uid, getSchemeUrl(w,r), geoStr)
 			laterNotifyGB.Call(c, "autoNotifyPeopleGB", ADMMAIL, contentMsg, uid)
@@ -72348,7 +72501,7 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
     }()
 	blobs, pVals, err := blobstore.ParseUpload(r)
 	if err != nil {
-			//////c.Infof("blobstore.ParseUpload")
+			////c.Infof("blobstore.ParseUpload")
 			serveError(c, w, err)
 			return
 	}
@@ -72373,6 +72526,51 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
         MSID := strings.Replace(MSID_R2, "]", "", -1)
 
 	switch FUNC_CODE {
+		//D0082
+		case "MAP":
+			//delete existing blob
+			//c.Infof("MAP")
+			if API_KEY != CMD_GEN_KEY {
+				////c.Infof("Invalid api key")
+				return
+			}
+			uid = UID
+
+			cKeySR := fmt.Sprintf("MAPS_BROADCAST_LOCATIONS_BLOB")
+			SR_BLOB := ""
+			var g TDSCNFG
+			SR_BLOB = getStrMemcacheValueByKey(w,r,cKeySR)
+			thisKey := fmt.Sprintf("MAPS_BROADCAST_LOCATIONS")
+			if SR_BLOB == "" {
+				key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
+				if err := datastore.Get(c, key, &g); err != nil {
+					//return
+				}
+				SR_BLOB = g.TXT_VAL
+			}
+			//c.Infof("SR_BLOB: %v", SR_BLOB)
+			if SR_BLOB != "" {
+				blobstore.Delete(c, appengine.BlobKey(SR_BLOB))
+			}
+			blobkey := string(file[0].BlobKey)
+			//c.Infof("blobkey: %v", blobkey)
+			g = TDSCNFG{
+					SYS_VER: 1,
+					USER: uid,
+					CFG_ID: thisKey,
+					DAT_TYP: "TXT",
+					NUM_VAL: 0,
+					TXT_VAL: blobkey,
+					CFG_DESC: "Set via code",
+			}
+			key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
+			if _, err := datastore.Put(c, key, &g); err != nil {
+					panic(err)
+					//return
+			}
+			//c.Errorf("[S0607]")
+			putStrToMemcacheWithoutExp(w,r,cKeySR,blobkey)
+			//c.Infof("save map blobstore")
 		case "EDUC":
 			//delete existing blob
 			//////c.Infof("EDUC")
@@ -76294,7 +76492,6 @@ func serveCompile(w http.ResponseWriter, r *http.Request) {
 //create google appengine project id
 func createProjectID(w http.ResponseWriter, r *http.Request, pid, tok, uid string) error {
 	c := appengine.NewContext(r)
-	
 	var encbuf bytes.Buffer
 	enc := json.NewEncoder(&encbuf)
 	err := enc.Encode(map[string]string{
@@ -76304,14 +76501,12 @@ func createProjectID(w http.ResponseWriter, r *http.Request, pid, tok, uid strin
 			  //"labels": "",
 			  //"name": fmt.Sprintf("Project %v", pid),
 			  "name": pid,
-			  "projectId": pid,					
+			  "projectId": pid,
 			})
 	if err != nil {
 		c.Errorf("client.Do err: %v", err)
 		return err
- 
 	}
-	
 	req, _ := http.NewRequest("POST", "https://cloudresourcemanager.googleapis.com/v1/projects", strings.NewReader(encbuf.String()))
 	thisLength := strconv.Itoa(len(encbuf.Bytes()))
 	req.Header.Set("Content-Length", thisLength)
@@ -77122,11 +77317,12 @@ func getBlobTextPremiumCost(w http.ResponseWriter, r *http.Request, BLOB_KEY str
 	return premCost
 }
 //process quiz submit button
-func getBlobTextQuiz(w http.ResponseWriter, r *http.Request, SID, DATA string) (res string, pass bool, TITLE string, cAns string, err error) {
+func getBlobTextQuiz(w http.ResponseWriter, r *http.Request, SID, DATA string) (res string, pass bool, TITLE string, cAns string, tot int, totq int, rmwTot int,  err error) {
 	c := appengine.NewContext(r)
 	SPD := strings.Split(DATA,"$")
-	tot := 0
-	totq := 0
+	//tot := 0
+	//totq := 0
+	totAns := 0
 	pass = false
 	SPL := strings.Split(SID,"-")
 	TARGET := SPL[0]
@@ -77143,16 +77339,20 @@ func getBlobTextQuiz(w http.ResponseWriter, r *http.Request, SID, DATA string) (
 		case "TDSARTL":
 			BLOB_KEY, _, _, _, _, TITLE, _, _, _ = getTDSARTLBlobKey(w, r, docID)
 		default:
-			return res, false, "", "", fmt.Errorf("invalid operation")
+			return res, false, "", "", 0, 0, 0, fmt.Errorf("invalid operation")
 	}
 	reader := blobstore.NewReader(c, appengine.BlobKey(BLOB_KEY))
 	s := bufio.NewScanner(reader)
 	for s.Scan() {
 		if strings.HasPrefix(s.Text(), "#") {
 			if strings.Index(s.Text(), "NUM_CORRECT_ANSWERS:") != -1 {
+				//c.Infof("NCA: %v", s.Text())
 				SPN := strings.Split(s.Text(),":")
+				//c.Infof("SPN: %v", SPN)
 				if len(SPN) > 0 {
-					totq = str2int(SPN[1])
+					//c.Infof("value: %v", SPN[1])
+					totq = str2int(strings.TrimSpace(SPN[1]))
+					//c.Infof("totq: %v", totq)
 				}
 			}
 			for i:=0; i < len(SPD); i++ {
@@ -77168,7 +77368,17 @@ func getBlobTextQuiz(w http.ResponseWriter, r *http.Request, SID, DATA string) (
 		}
 	}
 	if err := s.Err(); err != nil {
-		return res, false, "", "", fmt.Errorf("error operation")
+		return res, false, "", "", 0, 0, 0, fmt.Errorf("error operation")
+	}
+	//right-minus wrong
+	for i:=0; i < len(SPD); i++ {
+		if strings.Index(SPD[i], "true") != -1 {
+			totAns++
+		}
+	}
+	if totq > 0 && totAns > totq {
+		rmwTot = totAns - totq
+		tot = tot - rmwTot
 	}
 	//compute
 	//pct := percent.PercentOf(tot, len(SPD) - 1)
@@ -77180,9 +77390,12 @@ func getBlobTextQuiz(w http.ResponseWriter, r *http.Request, SID, DATA string) (
 		if pct >= 75 {
 			pass = true
 		}
+		if rmwTot > 0 {
+			res = fmt.Sprintf("%v due to %v deductions", res, rmwTot) 
+		}
 	}
 	cAns = buf.String()
-	return res, pass, TITLE, cAns, nil
+	return res, pass, TITLE, cAns, tot, totq, rmwTot, nil
 }
 
 //gets the contents of blobkey as preview 
@@ -79769,7 +79982,7 @@ func ShortenUrl(w http.ResponseWriter, r *http.Request, longUrl string) (shorten
 	c := appengine.NewContext(r)
 
 	if SYS_ENABLE_URL_SHORTENER  == false {
-		return longUrl
+		return url.QueryEscape(longUrl)
 	}
 	var encbuf bytes.Buffer
 	enc := json.NewEncoder(&encbuf)
@@ -80637,7 +80850,6 @@ func IsBase64(s string) bool {
 //checks content of SID and perform security validations before a blobkey is returned
 func contentCheckSid(w http.ResponseWriter, r *http.Request, sid string) (blobKey string) {
 	//c := appengine.NewContext(r)
-	
 	SPL := strings.Split(sid,"-")
 	TARGET := SPL[0]
 	DOC_ID := "0"
@@ -80645,13 +80857,11 @@ func contentCheckSid(w http.ResponseWriter, r *http.Request, sid string) (blobKe
 		DOC_ID = SPL[1]
 	}
 	docID := str2int(DOC_ID)
-	
-	BLOB_KEY := ""					
+	BLOB_KEY := ""
 	DOC_STAT := ""
 	FL_SHARED := ""
 	AUTHOR := ""
 	SHARED_TO := ""
-	
 	switch TARGET {
 		case "TDSSLIDE":
 			BLOB_KEY, DOC_STAT, FL_SHARED, AUTHOR, _, _, _, SHARED_TO, _, _ = getTDSSLIDEBlobKey(w, r, docID)
@@ -80661,29 +80871,20 @@ func contentCheckSid(w http.ResponseWriter, r *http.Request, sid string) (blobKe
 			BLOB_KEY, _, _, AUTHOR, DOC_STAT, FL_SHARED, _, _, _, _, SHARED_TO = getTDSMEDIABlobKey(w, r, docID)	
 	}
 	_, uid := checkSession(w,r)
-	
 	switch {
- 
 		case DOC_STAT == "Premium" && uid != AUTHOR:
- 
 			auth := r.FormValue("auth")
 			passcode := r.FormValue("passcode")
 			sysReq := fmt.Sprintf("/store?STO_FUNC=Premium&SID=%v&auth=%v&passcode=%v", sid, auth, passcode)
 			http.Redirect(w, r, sysReq, http.StatusFound)
 			return
-			
 		case DOC_STAT == "Personal" && uid == AUTHOR:
 			//allow
- 
-		
 		case (FL_SHARED == "N" || DOC_STAT == "Personal") && SHARED_TO == "" :
- 
 			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 			if FL_PROC_OK == false {return}
-			
 			if uid != AUTHOR && isValidApiCall(w,r) == false {
 				//updateUserActiveData(w, r, c, uid, "Error: access of personal content (checkSID)")
-				
 				msgDtl := fmt.Sprintf("[U00167] ERROR: This document ID (%s) is accessible only by the author (%v) or by admin.", sid, AUTHOR)
 				//sendEvent(w,r, FDBKMAIL, msgDtl)
 				msgTyp := "error"
@@ -80693,22 +80894,16 @@ func contentCheckSid(w http.ResponseWriter, r *http.Request, sid string) (blobKe
 				http.Redirect(w, r, sysReq, http.StatusFound)
 				return
 			}
-			
 		case DOC_STAT == "Personal" && SHARED_TO != "":
- 
 			isAllowed :=  checkPersonalAccess(w,r, AUTHOR, SHARED_TO, sid, docID)
 			if isAllowed == true {
 				break
 			}
-			
 		case DOC_STAT == "ULAPPH Only":
 			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
 			if FL_PROC_OK == false {return}
- 
 		case DOC_STAT == "Worldwide" && FL_SHARED == "Y":
- 
 			//allow
-		
 	}
 	return BLOB_KEY
 }
@@ -82578,112 +82773,50 @@ func Shuffle(slice interface{}) {
     }
 }
 
-//D0081
-func initDialogflow(w http.ResponseWriter, r *http.Request, pid, svcFile, lang, tz string) (err error) {
-	c := appengine.NewContext(r)
-	c.Infof("initDialogflow")
-	dp.projectID = pid 
-	dp.authJSONFilePath = svcFile 
-	dp.lang = lang
-	dp.timeZone = tz 
-
-	// Auth process: https://dialogflow.com/docs/reference/v2-auth-setup
-	dp.ctx = context.Background()
-	//dp.ctx = appengine.NewContext(r) 
-	//sessionClient, err := dialogflow.NewSessionsClient(dp.ctx, option.WithCredentialsFile("../ULAPPH-Cloud-Desktop-Configs/ulapph-dialogflow-2019-08-19.json"))
-	sessionClient, err := dialogflow.NewSessionsClient(dp.ctx, option.WithCredentialsJSON([]byte(DIALOGFLOW_SERVER_JSON)))
-	if err != nil {
-		c.Errorf("Error in auth with Dialogflow: %v", err)
-		return err
-	}
-	//c.Infof("sessionClient: %v", sessionClient)
-	dp.sessionClient = sessionClient
-	//c.Infof("dp: %v", dp)
-	return
-}
-
-func processNLP(w http.ResponseWriter, req *http.Request, dp *DialogflowProcessor, rawMessage string, username string) (r NLPResponse) {
+//edwinxxx
+func processDialogflowNLP(w http.ResponseWriter, req *http.Request, deviceID, rawMessage string) string {
 	c := appengine.NewContext(req)
-	c.Infof("processNLP")
-	sessionID := username
-	request := dialogflowpb.DetectIntentRequest{
-		Session: fmt.Sprintf("projects/%s/agent/sessions/%s", dp.projectID, sessionID),
-		QueryInput: &dialogflowpb.QueryInput{
-			Input: &dialogflowpb.QueryInput_Text{
-				Text: &dialogflowpb.TextInput{
-					Text:         rawMessage,
-					LanguageCode: dp.lang,
-				},
-			},
-		},
-		QueryParams: &dialogflowpb.QueryParameters{
-			TimeZone: dp.timeZone,
-		},
-	}
-	//c.Infof("request: %v", request)
-	response, err := dp.sessionClient.DetectIntent(dp.ctx, &request)
-	if err != nil {
-		c.Infof("Error in communication with Dialogflow %s", err.Error())
-		return
-	}
-	//c.Infof("response: %v", response)
-	queryResult := response.GetQueryResult()
-	//c.Infof("queryResult: %v", queryResult)
-	if queryResult.Intent != nil {
-		r.Intent = queryResult.Intent.DisplayName
-		r.Confidence = float32(queryResult.IntentDetectionConfidence)
-	}
-	r.Entities = make(map[string]string)
-	params := queryResult.Parameters.GetFields()
-	if len(params) > 0 {
-		for paramName, p := range params {
-			fmt.Printf("Param %s: %s (%s)", paramName, p.GetStringValue(), p.String())
-			extractedValue := extractDialogflowEntities(p)
-			r.Entities[paramName] = extractedValue
-		}
-	}
-	//c.Infof("r: %v", r)
-	return
-}
+	c.Infof("processDialogflowNLP")
 
-func extractDialogflowEntities(p *structpb.Value) (extractedEntity string) {
-	kind := p.GetKind()
-	switch kind.(type) {
-	case *structpb.Value_StringValue:
-		return p.GetStringValue()
-	case *structpb.Value_NumberValue:
-		return strconv.FormatFloat(p.GetNumberValue(), 'f', 6, 64)
-	case *structpb.Value_BoolValue:
-		return strconv.FormatBool(p.GetBoolValue())
-	case *structpb.Value_StructValue:
-		s := p.GetStructValue()
-		fields := s.GetFields()
-		extractedEntity = ""
-		for key, value := range fields {
-			if key == "amount" {
-				extractedEntity = fmt.Sprintf("%s%s", extractedEntity, strconv.FormatFloat(value.GetNumberValue(), 'f', 6, 64))
-			}
-			if key == "unit" {
-				extractedEntity = fmt.Sprintf("%s%s", extractedEntity, value.GetStringValue())
-			}
-			if key == "date_time" {
-				extractedEntity = fmt.Sprintf("%s%s", extractedEntity, value.GetStringValue())
-			}
-			// @TODO: Other entity types can be added here
-		}
-		return extractedEntity
-	case *structpb.Value_ListValue:
-		list := p.GetListValue()
-		if len(list.GetValues()) > 1 {
-			// @TODO: Extract more values
-		}
-		extractedEntity = extractDialogflowEntities(list.GetValues()[0])
-		return extractedEntity
-	default:
+	rdr := strings.NewReader(DIALOGFLOW_SERVER_JSON)
+	DIALOGFLOW_KEY_JSON, err := ioutil.ReadAll(rdr)
+	if err != nil {
+		c.Errorf("[ioutil.ReadAll] ERROR: %v", err)
 		return ""
 	}
+	ctx := newappengine.NewContext(req)
+	conf, err := google.JWTConfigFromJSON(DIALOGFLOW_KEY_JSON, "https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/dialogflow")
+	if err != nil {
+		c.Errorf("[google.JWTConfigFromJSON] ERROR: %v", err)
+		return ""
+	}
+	client := conf.Client(ctx)
+	c.Infof("client: %v", client)
+	//call api
+	//dfInput := `{queryInput: {"text": {"text": "test", "languageCode": "en-US"}}}`
+	dfInput := new(DialogflowInput)
+	dfInput.QueryInput.Text.Text = rawMessage
+	dfInput.QueryInput.Text.Language = "en-US" 
+	c.Infof("dfInput: %v", dfInput)
+	data, err := json.Marshal(dfInput)
+	c.Infof("data: %v", string(data))
+	if err != nil {
+		c.Errorf("json.Marshal() Error: %v", err)
+	}
+	res, err := client.Post(fmt.Sprintf("https://dialogflow.googleapis.com/v2/projects/%v/agent/sessions/%v:detectIntent", "ulapph-net", deviceID), "application/json", strings.NewReader(string(data)))
+	if err != nil {
+		//return
+		c.Errorf("ERROR: client.Post %v", err)
+		return ""
+	}
+	b, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		c.Errorf("ERROR: client.Post %v", err)
+		return ""
+	}
+	c.Infof("bodyBytes: %v", string(b))
+	return ""
 }
-
 ////////////////////////////////////////////////////////////////////////////////////
 //TO GOD BE THE GLORY
 //IN GOD WE TRUST

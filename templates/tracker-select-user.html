@@ -62,7 +62,7 @@ function trackNow(user) {
    var root = location.protocol + '//' + location.host;
    var n = root.indexOf("ulapph.com");
    if (n > 0) {
-	   root = "https://ulapph-portal.com";
+	   root = "https://ulapph-portal.appspot.com";
    }
    var rlink = root + "/pwa/tracker/realtime.html?xuid=" + user + "&xhost=" + root + "/";
    location.href = rlink;

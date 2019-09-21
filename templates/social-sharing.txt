@@ -34,6 +34,7 @@
 		<button type="submit" class="button button-glow button-rounded button-raised button-primary">Go</button>
 	</form>
 {{else}}
+  <center>
   <!--a href="{{.STR_FILLER1}}" target="{{.STR_FILLER2}}-info" class="button button-block button-rounded button-large">You are about to share <b>{{.STR_FILLER2}}</b></a-->
   <a href="{{.STR_FILLER1}}" target="{{.STR_FILLER2}}-info" class="button button-block button-rounded button-large"><b>{{.STR_FILLER2}}</b></a>
   <a href="{{.STR_FILLER1}}" target="{{.STR_FILLER2}}-info" class="button button-block button-rounded button-large">{{.STR_FILLER1}}</a>
@@ -136,6 +137,7 @@
   <!--a href="http://service.weibo.com/share/share.php?url={{.STR_FILLER1}}&appkey=&title={{.STR_FILLER2}}&pic=&ralateUid=" title="weibo" target="ulapphshare" class="button button-primary button-box button-giant button-longshadow-right">
 		<i class="fa fa-weibo"></i>
   </a-->
+  </center>
 {{end}}
 
 <script>

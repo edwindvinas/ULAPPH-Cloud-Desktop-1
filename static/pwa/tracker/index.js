@@ -40,7 +40,8 @@ realtime.on('update', function(e) {
                 c = feature.geometry.coordinates;
 	    var cdt = new Date().toLocaleDateString();
 	    var coords = coordPart(c[1], 'NS') + ', ' + coordPart(c[0], 'EW');
-	    var geostr = "<br><b>Google Map</b>: <a href=\"https://www.google.com/search?q=" + coords + "\" target=\"vmap\">Show Location Map</a><br><b>Tracker</b>: <a href=\"/pwa/tracker/realtime.html?xuid=" + uid + "&amp;xhost=https://ulapph-net.appspot.com/\" target=\"tracker\">Realtime Tracker</a>";
+        var trackUrl = root + "/pwa/tracker/realtime.html?xuid=" + uid + "&amp;xhost=https://ulapph-net.appspot.com/";
+	    var geostr = "<br><b>Google Map</b>: <a href=\"https://www.google.com/search?q=" + coords + "\" target=\"vmap\">Show Location Map</a><br><b>Tracker</b>: <a href=" + trackUrl + " target=\"tracker\">Realtime Tracker</a><br><b>Social Media</b>: <a href=/share?SH_FUNC=all&title=ULAPPH_Tracker&url=" + encodeURIComponent(trackUrl) + " target=\"share\">Share</a>";
             return '<b>' + uid + '</b>' + '<br>' + coords + '<br>' + cdt + geostr;
                 //coordPart(c[1], 'NS') + ', ' + coordPart(c[0], 'EW') + '<br>' + cdt;
         },
