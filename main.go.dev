@@ -424,6 +424,11 @@
 //REV DESC:	  	Save broadcast locations in blobstore 
 //REV AUTH:		Edwin D. Vinas
 /////////////////////////////////////////////////////////////////////////////////////////////////
+//REV ID: 		D0083
+//REV DATE: 		2019-Sep-22
+//REV DESC:	  	Add trending and whats new in json format 
+//REV AUTH:		Edwin D. Vinas
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------
 //List of firebase channels
@@ -1419,7 +1424,7 @@ type TDSCOMIDX struct {
 	USERS []string
 	NUM_COMMENTS int
 	TAGS []string
-} 
+}
 //D0040			
 type TDSCOMMENT struct {
 	CID int
@@ -1624,13 +1629,24 @@ type MasterSyllabus struct {
 	ExamDate string `json:"examDate"`
 }*/
 //D0081
-//edwinxxx
 type DialogflowInput struct {
 	QueryInput struct {Text struct {
 						Text string `json:"text"`
 						Language string `json:"languageCode"`
 					    } `json:"text"`
 			  }`json:"queryInput"`
+}
+//D0083
+//ulapph trending, whats new struct
+type UlapphSources struct {
+	Source string `json:"source"`
+	Author string `json:"author"`
+	Title string `json:"title"`
+	Description string `json:"description"`
+	URL string `json:"url"`
+	Image string `json:"urlToImage"`
+	PublishedAt string `json:"publishedAt"`
+	Content string `json:"publishedAt"`
 }
 
 ///////////////////////////////////////////////////////////////	
@@ -2923,32 +2939,30 @@ type TDSPROF struct {
 	FILLER_3 string
 	RINGTONE string
 }
- 
 //slide datastore
 type TDSSLIDE struct {
-    FL_COUNTRY_SPECIFIC string
-	SYS_VER int	
+	FL_COUNTRY_SPECIFIC string
+	SYS_VER int
 	DOC_ID	int
-	DOC_STAT string	
-	TITLE string	
-	DESC string	
-	AUTHOR string	
-	YEAR string	
-	CATEGORY string	
-	TAGS string	
+	DOC_STAT string
+	TITLE string
+	DESC string
+	AUTHOR string
+	YEAR string
+	CATEGORY string
+	TAGS string
 	FL_SHARED string
-    SHARED_TO string	
-	BLOB_URL string	
-	DT_UPLOAD string	
-	NUM_LIKES int	
-	NUM_COMMENTS int	
-	LIKED_BY string	
+	SHARED_TO string
+	BLOB_URL string
+	DT_UPLOAD string
+	NUM_LIKES int
+	NUM_COMMENTS int
+	LIKED_BY string
 	COMMENTS_BY string
 	NUM_VIEWS int64
 	MUSIC_ID int
 	GET_NEXT string
 }
- 
 //article datastore
 type TDSARTL struct {
 	FL_COUNTRY_SPECIFIC string
@@ -7160,15 +7174,12 @@ func displayCurrAccLog(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			panic(err)
 		}
-		
 		resp, err := client.Get(urlStr)
 		if err != nil {
 			panic(err)
 		}
- 
 		bodyBytes, _ := ioutil.ReadAll(resp.Body)
 		FETCH_URL := string(bodyBytes)
-		
 		if strings.Index(FETCH_URL, "PRESENCE:") != -1 {
 			fmt.Fprintf(w, "%v", FETCH_URL)
 		}
@@ -15353,7 +15364,6 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, FL_
 	  return string(b)
 	})
 	//D0081
-	//edwinxxx
 	vm.Set("ottoFuncGetIntentDialogflow", func(user,input string) string {
 	  //c.Infof("ottoFunc: ottoFuncGetIntentDialogflow")
 		// Use NLP
@@ -18365,7 +18375,6 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 				}
 				return
 			}
-		//edwinxx
 		//D0076
 		case "cctv-alarm":
 			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
@@ -21923,7 +21932,6 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "</body></html>")
 		return
 	}
-	
 	//D0042
 	if TOOL_FUNC == "ALL_COMMENTS" {
 		if err := showAllRecents.Execute(w, getStartColor(w,r)); err != nil {
@@ -21938,7 +21946,6 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	
 	if TOOL_FUNC == "ALL_DESKTOPS" {
 		listAllDesktops(w,r,uid)
 		return
@@ -31608,7 +31615,6 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 					//
 				}
 			}
-			
 		case "TASK_RULE_PROC":
 			TASK_MEMCACHER_rulesProcessor(w,r)
 		case "CACHE_TOP_STATS":
@@ -31893,15 +31899,13 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 		case "SESSION_ONLINE":
 			tasks, err := taskqueue.Lease(c, 100, "default", 1800)
 			if err == nil {
-				taskqueue.DeleteMulti(c, tasks, "default")	
+				taskqueue.DeleteMulti(c, tasks, "default")
 			}
 			//also update users online
 			TASK_MEMCACHER_frequent(w,r)
-			
 		case "TASK_DWEETIO":
 			//runtime
 			TASK_Dweetio(w,r)
-			
 		case "API_GOOGLE_PLUS_IND":
 			UID := r.FormValue("UID")
 			IS_OK_TO_RUN := checkIfOkToRun(w, r)
@@ -32604,6 +32608,7 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 						//if cKeyValue != "" {
 						if cKeyValue != trimValue {
 							if SYS_EQ_MON_MSG == true {
+								c.Infof("thisFrame2: %v", thisFrame2)
 								goq, err := goquery.NewDocument(r,thisFrame2)
 								if err != nil {
 									log.Fatal(err)
@@ -32612,20 +32617,23 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 								mag := ""
 								iLink := ""
 								  goq.Find("body > div > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(2)").Each(func(i int, s *goquery.Selection) {
-									fmt.Printf("%v\n", s.Text())
+									//fmt.Printf("%v\n", s.Text())
+									c.Infof("%v\n", s.Text())
 									SPL := strings.Split(s.Text(), " of ")
 									if len(SPL) > 0 {
 										location = SPL[1]
 									}
 								  })
 								  goq.Find("body > div > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(5)").Each(func(i int, s *goquery.Selection) {
-									fmt.Printf("%v\n", s.Text())
+									//fmt.Printf("%v\n", s.Text())
+									c.Infof("%v\n", s.Text())
 									SPL := strings.Split(s.Text(), "Ms ")
 									if len(SPL) > 0 {
 										mag = SPL[1]
 									}
 								  })
 								  goq.Find("body > div > table > tbody > tr:nth-child(3) > td").Each(func(i int, s *goquery.Selection) {
+									c.Infof("%v\n", s.Text())
 									imgTag := s.Find("img")
 									imgLink, _ := imgTag.Attr("imgsrc")
 									if imgLink == "" {
@@ -32639,7 +32647,7 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 								})
 
 								//msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>][<a href=\"%v\" target=\"eq2\">View All</a>]<hr>Source: PHIVOLCS", thisFrame2, ShortenUrl(w,r,ARLink))
-								msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>] [%v] [%v]<br><img src=\"\" width=100% height=100%><hr>Source: PHIVOLCS", thisFrame2, mag, location, iLink)
+								msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>] [%v] [%v]<br><img src=\"\" width=100%% height=100%%><hr>Source: PHIVOLCS", thisFrame2, mag, location, iLink)
 								//msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago. >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v | Philvolcs URL: %v)", ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,ARLink), ShortenUrl(w,r,UFLink))
 								msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago in %v with magnitude %v >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v)", location, mag, ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,UFLink))
 								//update all sys msg
@@ -32820,14 +32828,29 @@ func TASK_MEMCACHER_frequent (w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	
 }
 
 //gets all trending contents from all member desktops under the site server
 //applicable for sites server only
 func getTrendingContents(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-//Trending Contents
+	//D0083
+	//toggle between html/json
+	cKey := "GT_TOGGLE_STATUS"
+	GT_TARGET := ""
+	GT_TOGGLE_STATUS := getStrMemcacheValueByKey(w,r,cKey)
+	if GT_TOGGLE_STATUS == "" {
+		GT_TARGET = "html"
+	} else {
+		switch GT_TOGGLE_STATUS {
+			case "html":
+				GT_TARGET = "json"
+			case "json":
+				GT_TARGET = "html"
+		}
+	}
+	putStrToMemcacheWithoutExp(w,r,cKey,GT_TARGET)
+	//Trending Contents
 	IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "Y" {
 		//scan host list
@@ -32835,10 +32858,8 @@ func getTrendingContents(w http.ResponseWriter, r *http.Request) {
 		//foreach host post presence message
 		temp := strings.Split(HOST_LIST,"\n")
 		var buffer3 bytes.Buffer
-				
 		if len(temp) > 0 {
 			for j := 0; j < len(temp); j++ {
- 
 				tURL := ""
 				SPL := strings.Split(temp[j], "|")
 				if len(SPL) < 2 {
@@ -32849,24 +32870,23 @@ func getTrendingContents(w http.ResponseWriter, r *http.Request) {
 				i := strings.Index(getSchemeUrl(w,r), tURL)
 				thisStr := fmt.Sprintf("%v", temp[j])
 				if tURL != "" && i == -1 && string(thisStr[0]) != "#" {
-					
-					URL := fmt.Sprintf("%v/social?SO_FUNC=get-trending", tURL)
+					URL := fmt.Sprintf("%v/social?SO_FUNC=get-trending&t=%v", tURL, GT_TARGET)
+					//c.Infof("URL: %v", URL)
 					client := urlfetch.Client(c)
 					if err := r.ParseForm(); err != nil {
 						panic(err)
 					}
-					
 					FL_RESP_OK := true
 					resp, err := client.Get(URL)
 					if err != nil {
 						//panic(err)
 						FL_RESP_OK = false
 					}
-					
 					if FL_RESP_OK == true {
 						bodyBytes, _ := ioutil.ReadAll(resp.Body)
 						//HOST_LIST = string(bodyBytes)
 						//fmt.Fprintf(w, "%v", string(bodyBytes))
+						//c.Infof("bodyBytes: %v", string(bodyBytes))
 						j := strings.Index(string(bodyBytes), "[U00000] OVER QUOTA ERROR:")
 						if j == -1 {
 							buffer3.Write(bodyBytes)
@@ -32876,15 +32896,38 @@ func getTrendingContents(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		//cache all replies
-		putBytesToMemcacheWithoutExp(w,r,"OVERALL_TRENDING",buffer3.Bytes())	
+		//D0083
+		switch GT_TARGET {
+			case "json":
+				c.Infof("saved json")
+				putBytesToMemcacheWithoutExp(w,r,"OVERALL_TRENDING_JSON",buffer3.Bytes())
+			default:
+				c.Infof("saved html")
+				putBytesToMemcacheWithoutExp(w,r,"OVERALL_TRENDING",buffer3.Bytes())
+		}
 	}
 }
-
 //gets whats new contents from all desktops who are member of a sites server
 //applicable for sites server only
 func getWhatsNewContents(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-//WhatsNew Contents
+	//D0083
+	//toggle between html/json
+	cKey := "GT_TOGGLE_STATUS"
+	GT_TARGET := ""
+	GT_TOGGLE_STATUS := getStrMemcacheValueByKey(w,r,cKey)
+	if GT_TOGGLE_STATUS == "" {
+		GT_TARGET = "html"
+	} else {
+		switch GT_TOGGLE_STATUS {
+			case "html":
+				GT_TARGET = "json"
+			case "json":
+				GT_TARGET = "html"
+		}
+	}
+	putStrToMemcacheWithoutExp(w,r,cKey,GT_TARGET)
+	//WhatsNew Contents
 	IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "Y" {
 		//scan host list
@@ -32892,10 +32935,8 @@ func getWhatsNewContents(w http.ResponseWriter, r *http.Request) {
 		//foreach host post presence message
 		temp := strings.Split(HOST_LIST,"\n")
 		var buffer3 bytes.Buffer
-				
 		if len(temp) > 0 {
 			for j := 0; j < len(temp); j++ {
- 
 				tURL := ""
 				SPL := strings.Split(temp[j], "|")
 				if len(SPL) < 2 {
@@ -32906,20 +32947,19 @@ func getWhatsNewContents(w http.ResponseWriter, r *http.Request) {
 				i := strings.Index(getSchemeUrl(w,r), tURL)
 				thisStr := fmt.Sprintf("%v", temp[j])
 				if tURL != "" && i == -1 && string(thisStr[0]) != "#" {
-					
-					URL := fmt.Sprintf("%v/social?SO_FUNC=get-whats-new", tURL)
+					//D0083
+					URL := fmt.Sprintf("%v/social?SO_FUNC=get-whats-new&t=%v", tURL, GT_TARGET)
+					//c.Infof("URL: %v", URL)
 					client := urlfetch.Client(c)
 					if err := r.ParseForm(); err != nil {
 						panic(err)
 					}
-					
 					FL_RESP_OK := true
 					resp, err := client.Get(URL)
 					if err != nil {
 						//panic(err)
 						FL_RESP_OK = false
 					}
-					
 					if FL_RESP_OK == true {
 						bodyBytes, _ := ioutil.ReadAll(resp.Body)
 						//if response is overquota
@@ -32932,8 +32972,16 @@ func getWhatsNewContents(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		//cache all replies
-		putBytesToMemcacheWithoutExp(w,r,"OVERALL_WHATS_NEW",buffer3.Bytes())
-	}	
+		//D0083
+		switch GT_TARGET {
+			case "json":
+				c.Infof("saved json")
+				putBytesToMemcacheWithoutExp(w,r,"OVERALL_WHATS_NEW_JSON",buffer3.Bytes())
+			default:
+				c.Infof("saved html")
+				putBytesToMemcacheWithoutExp(w,r,"OVERALL_WHATS_NEW",buffer3.Bytes())
+		}
+	}
 }
 
 //D0042
@@ -33082,94 +33130,72 @@ func getDesktopsDirectory(w http.ResponseWriter, r *http.Request) {
 							} else {
 								buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 							}
- 
 						STR_FILLER1 = fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-tot-slides", tURL))
- 
 							if j == -1 && k == -1 {
 								buffer3.WriteString(fmt.Sprintf("<td data-order=\"%v\">%v</td>", STR_FILLER1, STR_FILLER1))
 							} else {
 								buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 							}
-							
 						STR_FILLER1 = fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-tot-articles", tURL))
- 
 							if j == -1 && k == -1 {
 								buffer3.WriteString(fmt.Sprintf("<td data-order=\"%v\">%v</td>", STR_FILLER1, STR_FILLER1))
 							} else {
 								buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 							}
-							
 						STR_FILLER1 = fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-tot-media", tURL))
- 
 							if j == -1 && k == -1 {
 								buffer3.WriteString(fmt.Sprintf("<td data-order=\"%v\">%v</td>", STR_FILLER1, STR_FILLER1))
 							} else {
 								buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 							}
-							
 						STR_FILLER1 = fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-tot-users", tURL))
- 
 							if j == -1 && k == -1 {
 								buffer3.WriteString(fmt.Sprintf("<td data-order=\"%v\">%v</td>", STR_FILLER1, STR_FILLER1))
 							} else {
 								buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 							}
-							
 						STR_FILLER1 = fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-contact", tURL))
- 
 							if j == -1 && k == -1 {
 								buffer3.WriteString(fmt.Sprintf("<td data-order=\"%v\">%v</td>", STR_FILLER1, STR_FILLER1))
 							} else {
 								buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 							}
-						
 						if j == -1 && k == -1 {
 						buffer3.WriteString(fmt.Sprintf("<td data-order=\"%v\">%v</td>", tags, tags))
 						} else {
 						buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 						}
-						
 					buffer3.WriteString(fmt.Sprintf("</tr>"))
 				}
 			}
 		}
 		//cache all replies
 		putBytesToMemcacheWithoutExp(w,r,"OVERALL_SITES",buffer3.Bytes())
-	}	
+	}
 }
 
 //a taskqueue cacheing logic for getting trending contents, whats new etc
 func TASK_MEMCACHER_general (w http.ResponseWriter, r *http.Request) {
-	
 	getTrendingContents(w,r)
- 
 	getWhatsNewContents(w,r)
-	
 	getDesktopsDirectory(w,r)
-	
 	putStrToMemcacheWithExp(w,r,"CACHE_TOP_STATS","",60)
-		
 	fmt.Fprintf(w, "Task completed")
 }
 
 //caches profile pic for a user 
 func cacheProfilePic(w http.ResponseWriter, r *http.Request, uid string) string {
- 
     c := appengine.NewContext(r)
 	//var buffer3 bytes.Buffer
- 
 	PROFILE_PIC := ""
 	cKey := fmt.Sprintf("PROFILE_PIC_%v", uid)
 	if item, err := memcache.Get(c, cKey); err == memcache.ErrCacheMiss {
- 
 	} else if err != nil {
 		//c.Errorf("error getting item: %v", err)
 	} else {
- 
 		PROFILE_PIC = fmt.Sprintf("%s", item.Value)
 	}
 	if PROFILE_PIC == "" {
- 
 		q := datastore.NewQuery("TDSPROF").Filter("UID =", uid).Limit(1)
 		//c.Errorf("[S0232]")
 		profile := make([]TDSPROF, 0, 1)
@@ -33895,11 +33921,10 @@ func peopleEdit(w http.ResponseWriter, r *http.Request) {
 				}
 				////c.Infof("updated")
 				break
-			}	
+			}
 		}
 		fmt.Fprintf(w, "UWM sharing settings have been saved!")
 		return
-		
 	case "SetStartMenuTheme":
 		color := r.FormValue("COLOR1")
 		if len(color) != 6 {
@@ -33908,7 +33933,6 @@ func peopleEdit(w http.ResponseWriter, r *http.Request) {
 		}
 		color = fmt.Sprintf("#%v", color)
 		cfgName := fmt.Sprintf("PERSONAL_StartMenu_Color_%v", uid)
-		
 		g := TDSCNFG{
 				SYS_VER: 1,
 				USER: uid,
@@ -33923,21 +33947,18 @@ func peopleEdit(w http.ResponseWriter, r *http.Request) {
 				panic(err)
 		}
 		//c.Errorf("[S0246]")
- 
 		//update cache
 		cKey := fmt.Sprintf("START_MENU_COLOR_%v", uid)
 		putStrToMemcacheWithoutExp(w,r,cKey,color)
 		fmt.Fprintf(w, "Start Menu Color has been set<br>.")
-		
 	case "SetActiveWindowsTheme":
 		color := r.FormValue("COLOR2")
 		if len(color) != 6 {
 			fmt.Fprintf(w, "Invalid color value.")
 			return
-		}	
+		}
 		color = fmt.Sprintf("#%v", color)
 		cfgName := fmt.Sprintf("PERSONAL_ActiveWindows_Color_%v", uid)
-		
 		g := TDSCNFG{
 				SYS_VER: 1,
 				USER: uid,
@@ -54842,72 +54863,145 @@ func procBroadcastPresence2(w http.ResponseWriter, r *http.Request) {
 			//}
 		}
 	}
-	
 }
 
 //process trending contents in this cloud desktop
 func procTrending(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
-	
+    //D0083
+    mode := r.FormValue("t")
+    var td []UlapphSources
 	q := datastore.NewQuery("TDSSLIDE").Order("-NUM_VIEWS").Limit(DEFAULT_NUM_TREN_NEW)
 	//c.Errorf("[S0454]")
 	slides := make([]TDSSLIDE, 0, DEFAULT_NUM_TREN_NEW)
 	if _, err := q.GetAll(c, &slides); err != nil {
 		 panic(err)
 	}
-	
-	if err := slidesTrending.Execute(w, slides); err != nil {
-	  panic(err)
+	//D0083
+	if mode == "html" || mode == "" {
+		if err := slidesTrending.Execute(w, slides); err != nil {
+		  panic(err)
+		}
+	} else {
+		//D0083
+		for _, p := range slides {
+			reqStr := fmt.Sprintf("%vslides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%v&SID=TDSSLIDE-%v&MUSIC_ID=%v&GET_NEXT=%v&SOUND=%v&FL_COUNTRY_SPECIFIC=%v", getSchemeUrl(w,r), p.DOC_ID, p.DOC_ID, p.MUSIC_ID, p.GET_NEXT, SLIDE_SOUND_SET, p.FL_COUNTRY_SPECIFIC)
+			g :=  UlapphSources {
+				Source: SYS_SERVER_NAME,
+				Author: p.AUTHOR,
+				Title: p.TITLE,
+				Description: p.DESC,
+				URL: reqStr,
+				Image: p.TAGS,
+				PublishedAt: p.DT_UPLOAD,
+				Content: "",
+			}
+			td = append(td, g)
+		}
+		//data,_ := json.Marshal(td)
+		//w.Write(data)
 	}
- 
 	q = datastore.NewQuery("TDSARTL").Order("-NUM_VIEWS").Limit(DEFAULT_NUM_TREN_NEW)
 	//c.Errorf("[S0455]")
 	articles := make([]TDSARTL, 0, DEFAULT_NUM_TREN_NEW)
 	if _, err := q.GetAll(c, &articles); err != nil {
 		 panic(err)
 	}
-	
-	if err := articlesTrending.Execute(w, articles); err != nil {
-	  panic(err)
-	}	
-	
+	//D0083
+	if mode == "html" || mode == "" {
+		if err := articlesTrending.Execute(w, articles); err != nil {
+		  panic(err)
+		}
+	} else {
+		//D0083
+		for _, p := range articles {
+			reqStr := fmt.Sprintf("%varticles?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v&MUSIC_ID=%v&FL_COUNTRY_SPECIFIC=%v", getSchemeUrl(w,r), p.DOC_ID, p.DOC_ID, p.MUSIC_ID, p.FL_COUNTRY_SPECIFIC)
+			g :=  UlapphSources {
+				Source: SYS_SERVER_NAME,
+				Author: p.AUTHOR,
+				Title: p.TITLE,
+				Description: p.DESC,
+				URL: reqStr,
+				Image: p.TAGS,
+				PublishedAt: p.DT_UPLOAD,
+				Content: "",
+			}
+			td = append(td, g)
+		}
+		data,_ := json.Marshal(td)
+		w.Write(data)
+	}
 }
-
 //process whats new contents in this cloud desktop 
 func procWhatsNew(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
-	
+    //D0083
+    mode := r.FormValue("t")
+    var td []UlapphSources
 	q := datastore.NewQuery("TDSSLIDE").Order("-DOC_ID").Limit(DEFAULT_NUM_TREN_NEW)
 	//c.Errorf("[S0456]")
 	slides := make([]TDSSLIDE, 0, DEFAULT_NUM_TREN_NEW)
 	if _, err := q.GetAll(c, &slides); err != nil {
 		 panic(err)
 	}
-	
-	if err := slidesWhatsNew.Execute(w, slides); err != nil {
-	  panic(err)
+	//D0083
+	if mode == "html" || mode == "" {
+		if err := slidesWhatsNew.Execute(w, slides); err != nil {
+		  panic(err)
+		}
+	} else {
+		//D0083
+		for _, p := range slides {
+			reqStr := fmt.Sprintf("%vslides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%v&SID=TDSSLIDE-%v&MUSIC_ID=%v&GET_NEXT=%v&SOUND=%v&FL_COUNTRY_SPECIFIC=%v", getSchemeUrl(w,r), p.DOC_ID, p.DOC_ID, p.MUSIC_ID, p.GET_NEXT, SLIDE_SOUND_SET, p.FL_COUNTRY_SPECIFIC)
+			g :=  UlapphSources {
+				Source: SYS_SERVER_NAME,
+				Author: p.AUTHOR,
+				Title: p.TITLE,
+				Description: p.DESC,
+				URL: reqStr,
+				Image: p.TAGS,
+				PublishedAt: p.DT_UPLOAD,
+				Content: "",
+			}
+			td = append(td, g)
+		}
 	}
- 
 	q = datastore.NewQuery("TDSARTL").Order("-DOC_ID").Limit(DEFAULT_NUM_TREN_NEW)
 	//c.Errorf("[S0457]")
 	articles := make([]TDSARTL, 0, DEFAULT_NUM_TREN_NEW)
 	if _, err := q.GetAll(c, &articles); err != nil {
 		 panic(err)
 	}
-	
-	if err := articlesWhatsNew.Execute(w, articles); err != nil {
-	  panic(err)
+	//D0083
+	if mode == "html" || mode == "" {
+		if err := articlesWhatsNew.Execute(w, articles); err != nil {
+		  panic(err)
+		}
+	} else {
+		//D0083
+		for _, p := range articles {
+			reqStr := fmt.Sprintf("%varticles?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v&MUSIC_ID=%v&FL_COUNTRY_SPECIFIC=%v", getSchemeUrl(w,r), p.DOC_ID, p.DOC_ID, p.MUSIC_ID, p.FL_COUNTRY_SPECIFIC)
+			g :=  UlapphSources {
+				Source: SYS_SERVER_NAME,
+				Author: p.AUTHOR,
+				Title: p.TITLE,
+				Description: p.DESC,
+				URL: reqStr,
+				Image: p.TAGS,
+				PublishedAt: p.DT_UPLOAD,
+				Content: "",
+			}
+			td = append(td, g)
+		}
+		data,_ := json.Marshal(td)
+		w.Write(data)
 	}
-	
 }
 
 //D0042
 //Gets the newly discussed contents
 //it process comments index
 func procDiscussions(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
 	// 20170708191743
 	// 20170708191743
@@ -54926,10 +55020,8 @@ func procDiscussions(w http.ResponseWriter, r *http.Request) {
 	if _, err := q.GetAll(c, &cidx); err != nil {
 		 panic(err)
 	}
-	  
 	//For each record populate struct
 	var cx []Discussions
-	
 	for _, p := range cidx{
 		//get content record
 		//D0042
@@ -54964,42 +55056,36 @@ func procDiscussions(w http.ResponseWriter, r *http.Request) {
 				_, DOC_STAT, FL_SHARED, _, _, TITLE, IMAGE, _, MUSIC_ID, GET_NEXT = getTDSSLIDEBlobKey(w, r, docID)
 				URL_DIS = fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=%v&TITLE=%v", SID, TITLE)
 				URL_CON = fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&DOC_ID=%v&SID=%v&FORCE=%v&MODE=%v&PARM=%v&SECS=%v&TITLE=%v&MUSIC_ID=%v&GET_NEXT=%v&SOUND=ON", DOC_ID, SID, "N", "NORMAL", "LOOP", "8", TITLE, MUSIC_ID, GET_NEXT)
-			
 			case "TDSARTL":
 				_, DOC_STAT, FL_SHARED, _, _, TITLE, _, IMAGE, MUSIC_ID = getTDSARTLBlobKey(w, r, docID)
 				URL_DIS = fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=%v&TITLE=%v", SID, TITLE)
 				URL_CON = fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=%v&FORCE=%v&TITLE=%v&MUSIC_ID=%v", DOC_ID, SID, "N", TITLE, MUSIC_ID)
-				
 			case "TDSMEDIA":
 				_, _, TITLE, _, DOC_STAT, FL_SHARED, IMAGE, _, _, _, _ = getTDSMEDIABlobKey(w, r, docID)
 				URL_DIS = fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=%v&TITLE=%v", SID, TITLE)
 				URL_CON = fmt.Sprintf("https://ulapph-public-1.appspot.com/media?FUNC_CODE=PLAY&MEDIA_ID=%v&SID=TDSMEDIA-%v", docID, docID)
 		}
- 
 		g := Discussions{
-			IMAGE: IMAGE, 	
-			TITLE: TITLE, 	 			
-			USERS: USERS, 			
-			ACTIVITY: ACTIVITY,	
+			IMAGE: IMAGE,
+			TITLE: TITLE,
+			USERS: USERS,
+			ACTIVITY: ACTIVITY,
 			DT_UPDATE: DT_UPDATE,
-			COMMENTS: COMMENTS,	
+			COMMENTS: COMMENTS,
 			URL_DIS: URL_DIS,
 			URL_CON: URL_CON,
 			FL_SHARED: FL_SHARED,
 			DOC_STAT: DOC_STAT,
 		}
-		
 		cx = append(cx, g)
 	}
 	if err := recentDiscussions.Execute(w, cx); err != nil {
 	  panic(err)
 	}
-	
 }
 
 //process the people directory for this cloud desktop 
 func procPeopleDir(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
 	//billing fix
 	q := datastore.NewQuery("TDSUSERS").Filter("LOGGED_IN =", 1)
@@ -55388,26 +55474,46 @@ func showOverallSites(w http.ResponseWriter, r *http.Request, FL_BOT bool) {
 		fmt.Fprintf(w, "Sorry, no cache available at this time. <a href=\"/m\">Click here</a> to open quick search.")
 	}
 }
-
 //shows overall trending contents 
 func showOverallTrending(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
-	
+    //D0083
+    mode := r.FormValue("t")
 	updateUserActiveData(w, r, c, "", "showOverallTrending")
-	
 	IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "N" {
 		//redirect
-		redURL := fmt.Sprintf("%v/social?SO_FUNC=show-trending", getSchemeNewUrl(w,r,SEARCH_SERVER))
-		http.Redirect(w, r, redURL, http.StatusFound)
-		return		
+		//D0083
+		if mode != "json" {
+			redURL := fmt.Sprintf("%v/social?SO_FUNC=show-trending", getSchemeNewUrl(w,r,SEARCH_SERVER))
+			http.Redirect(w, r, redURL, http.StatusFound)
+		} else {
+			urlStr := fmt.Sprintf("%v/social?SO_FUNC=show-trending&t=json", SEARCH_SERVER)
+			client := urlfetch.Client(c)
+			if err := r.ParseForm(); err != nil {
+				panic(err)
+			}
+			resp, err := client.Get(urlStr)
+			if err != nil {
+				panic(err)
+			}
+			bodyBytes, _ := ioutil.ReadAll(resp.Body)
+			w.Write(bodyBytes)
+		}
+		return
 	}
-	
 	cKey := fmt.Sprintf("OVERALL_TRENDING")
+	//D0083
+	if mode == "json" {
+		cKey = fmt.Sprintf("OVERALL_TRENDING_JSON")
+	}
 	OVERALL_TRENDING := ""
 	OVERALL_TRENDING = getStrMemcacheValueByKey(w,r,cKey)
-	if OVERALL_TRENDING != "" {	
+	if OVERALL_TRENDING != "" {
+		if mode == "json" {
+			w.Write([]byte(OVERALL_TRENDING))
+			return
+		}
 		if err := showTrending.Execute(w, ""); err != nil {
 			 panic(err)
 		}
@@ -55417,35 +55523,54 @@ func showOverallTrending(w http.ResponseWriter, r *http.Request) {
 		//show cache
 		//fmt.Fprintf(w, "SOC_FUNC: %s<br>", SOC_FUNC)
 		w.Write([]byte(OVERALL_TRENDING))
-		
 		if err := showTrendingFooter.Execute(w, ""); err != nil {
 			 panic(err)
 		}
 	} else {
 		fmt.Fprintf(w, "Sorry, no cache available at this time.")
 	}
-	
 }
 
 //shows overall whats new 
 func showOverallWhatsNew(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
-	
+    //D0083
+    mode := r.FormValue("t")
 	updateUserActiveData(w, r, c, "", "showOverallWhatsNew")
-	
 	IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "N" {
 		//redirect
-		redURL := fmt.Sprintf("%v/social?SO_FUNC=show-whats-new", getSchemeNewUrl(w,r,SEARCH_SERVER))
-		http.Redirect(w, r, redURL, http.StatusFound)
-		return		
+		//D0083
+		if mode != "json" {
+			redURL := fmt.Sprintf("%v/social?SO_FUNC=show-whats-new&t=%v", getSchemeNewUrl(w,r,SEARCH_SERVER),mode)
+			http.Redirect(w, r, redURL, http.StatusFound)
+		} else {
+			urlStr := fmt.Sprintf("%v/social?SO_FUNC=show-whats-new&t=json", SEARCH_SERVER)
+			client := urlfetch.Client(c)
+			if err := r.ParseForm(); err != nil {
+				panic(err)
+			}
+			resp, err := client.Get(urlStr)
+			if err != nil {
+				panic(err)
+			}
+			bodyBytes, _ := ioutil.ReadAll(resp.Body)
+			w.Write(bodyBytes)
+		}
+		return
 	}
-	
 	cKey := fmt.Sprintf("OVERALL_WHATS_NEW")
+	//D0083
+	if mode == "json" {
+		cKey = fmt.Sprintf("OVERALL_WHATS_NEW_JSON")
+	}
 	OVERALL_WHATS_NEW := ""
 	OVERALL_WHATS_NEW = getStrMemcacheValueByKey(w,r,cKey)
-	if OVERALL_WHATS_NEW != "" {	
+	if OVERALL_WHATS_NEW != "" {
+		if mode == "json" {
+			w.Write([]byte(OVERALL_WHATS_NEW))
+			return
+		}
 		if err := showWhatsNew.Execute(w, ""); err != nil {
 			 panic(err)
 		}
@@ -55455,14 +55580,12 @@ func showOverallWhatsNew(w http.ResponseWriter, r *http.Request) {
 		//show cache
 		//fmt.Fprintf(w, "SOC_FUNC: %s<br>", SOC_FUNC)
 		w.Write([]byte(OVERALL_WHATS_NEW))
-		
 		if err := showTrendingFooter.Execute(w, SYS_ADD_THIS_PUB_ID); err != nil {
 			 panic(err)
 		}
 	} else {
 		fmt.Fprintf(w, "Sorry, no cache available at this time.")
 	}
-	
 }
 
 //D0042
@@ -73866,19 +73989,17 @@ func getBasicColors(w http.ResponseWriter, r *http.Request) *TEMPSTRUCT {
 
 //checks if user specified to randomized colors 
 func isRandomColors(w http.ResponseWriter, r *http.Request, uid string) string {
-	
 	if SYS_UWM_RAN_COLORS == true {
 		return "Y"
 	}
-	
 	cfgName := "SYS_UWM_RAN_COLORS_"+uid
 	sysConf := getStrMemcacheValueByKey(w,r,cfgName)
 	if sysConf == "Y" {
-		return sysConf	
+		return sysConf
 	} else {
 		if sysConf == "" {
 			//get from config
-			sysConf, _ = getTDSCNFG(w,r,0,cfgName)			
+			sysConf, _ = getTDSCNFG(w,r,0,cfgName)
 		}
 	}
 	return sysConf
@@ -73891,30 +74012,25 @@ func getStartColor(w http.ResponseWriter, r *http.Request) string {
 
 	if isRandomColors(w,r,uid) == "Y" {
 		color1, _, _ := getRandomColors()
-		return color1	
+		return color1
 	}
-	
 	cKey := fmt.Sprintf("START_MENU_COLOR_%v", uid)
 	color := ""
 	color = getStrMemcacheValueByKey(w,r,cKey)
-	
 	if strings.TrimSpace(color) == "" {
 		cfgName := fmt.Sprintf("PERSONAL_StartMenu_Color_%v", uid)
 		color, _ = getTDSCNFG(w,r,0,cfgName)
 		cKey := fmt.Sprintf("START_MENU_COLOR_%v", uid)
 		putStrToMemcacheWithoutExp(w,r,cKey,color)
 	}
-	
 	if color == "" {
 		color = fmt.Sprintf("#%v", SYS_SLIDE_COLOR)
 	}
-	
 	return color
 }
 
 //renders custom style css template 
 func renderStyleCssTemplates2(w http.ResponseWriter, r *http.Request) {
- 
 	color := getStartColor(w,r)
 	t := presentTemplates[path.Ext(".style-css2")]
 	if t == nil {
@@ -82773,7 +82889,6 @@ func Shuffle(slice interface{}) {
     }
 }
 
-//edwinxxx
 func processDialogflowNLP(w http.ResponseWriter, req *http.Request, deviceID, rawMessage string) string {
 	c := appengine.NewContext(req)
 	c.Infof("processDialogflowNLP")

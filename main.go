@@ -1,4 +1,6 @@
-//GAE_APP_DOM_ID#ulapph-public-1.appspot.com
+//golang-programming.appspot.com
+//GAE_APP_DOM_ID#golang-programming.appspot.com
+//22/09/2019 05:53:12
 //LAST_UPGRADE#03/04/2019 12:57:59 PM PST
 //TOTAL_LINES#80740
 //DO NOT REMOVE ABOVE LINE///////////////////////////////////////////////////////////////////////
@@ -15,7 +17,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //REV ID: 		D0002
 //REV DATE: 	2014-Oct-08
-//REV DESC:		Started public domain ulapph-public-1.appspot.com at GoDaddy.com
+//REV DESC:		Started public domain golang-programming.appspot.com at GoDaddy.com
 //REV AUTH:		Edwin D. Vinas
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //REV ID: 		D0003
@@ -424,6 +426,11 @@
 //REV DESC:	  	Save broadcast locations in blobstore 
 //REV AUTH:		Edwin D. Vinas
 /////////////////////////////////////////////////////////////////////////////////////////////////
+//REV ID: 		D0083
+//REV DATE: 		2019-Sep-22
+//REV DESC:	  	Add trending and whats new in json format 
+//REV AUTH:		Edwin D. Vinas
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------
 //List of firebase channels
@@ -578,23 +585,23 @@ const (
 	///////////////////////////////////////////////////////////////
 	// BUILD PARAMETERS
 	///////////////////////////////////////////////////////////////
-	UCD_BUILD_STR = "BUILD_2017-04-21-08-51-00"
+    UCD_BUILD_STR = `BUILD_2019-09-22-05-53-13`
 	///////////////////////////////////////////////////////////////
 	// ON SITE TOTAL DOWN, REDIRECT TO A DEFAULT PAGE/DOC
 	// !!!CONFIG-STARTS-HERE!!!
 	///////////////////////////////////////////////////////////////
 	//Youtube channel showing how to use the current version
-	SYS_TUTORIALS_CHANNEL = "https://www.youtube.com/embed?list=PLHGslGB8z3_kDrebayoNNLc7VnXVfjuRZ&autoplay=0"
+    SYS_TUTORIALS_CHANNEL = `https://goo.gl/UnWu5I`
 	//uninstaller admin key
-    SYS_UNINSTALL_KEY = ``
+    SYS_UNINSTALL_KEY = `dleuaoonrfq0nzqx`
 	//default issue page
     SYS_DOWN_ENABLE = false
 	//change url to https
-	SYS_CHG_HTTPS = false
+    SYS_CHG_HTTPS = true
 	//enable https
-    SYS_HTTPS = false
+    SYS_HTTPS = true
 	//default start menu
-    SYS_DEFAULT_MENU_GIT = "https://raw.githubusercontent.com/edwindvinas/ULAPPH-Cloud-Desktop/master/ULAPPH%20Cloud%20Desktop%20System%20Start%20Menu"
+    SYS_DEFAULT_MENU_GIT = `https://raw.githubusercontent.com/edwindvinas/ULAPPH-Cloud-Desktop/master/ULAPPH%20Cloud%20Desktop%20System%20Start%20Menu`
     DEFAULT_DOWN_URL = `/img/overquota.png`
 	//overquota additional info message
     ADDTL_QUOTA_ERR_MSG = `This application will be up again at around 3:30 - 4:30PM PST.`
@@ -605,39 +612,39 @@ const (
 	CLOUD_NAME = "ULAPPH"
 	COMPANY_ID = "BSIDEV"
 	//server nick name
-    SYS_SERVER_NAME = ``
-    APP_DESC = ``
-    SITE_SLOGAN = ``
+    SYS_SERVER_NAME = `golang-programming`
+    APP_DESC = `Golang Programming`
+    SITE_SLOGAN = `A place for gophers and golang programmers who loves Go, Golang or whatever we call this awesome language!`
 	//referral id
     //SYS_REFERRAL_ID = ``
 	//app buttons
-    APP_LEFT_BUTTON = ``
-    APP_RIGHT_BUTTON = ``
-    APP_TOP_BUTTON = ``
-    APP_BOTTOM_BUTTON = ``
-    APP_PLAY_BUTTON = ``
+    APP_LEFT_BUTTON = `Slides`
+    APP_RIGHT_BUTTON = `Articles`
+    APP_TOP_BUTTON = `Help`
+    APP_BOTTOM_BUTTON = `About`
+    APP_PLAY_BUTTON = `Index`
 	//current version
 	SYS_VERSION = 1
 	// admin/programmer/superuser email (only this user can access admin-setup)
-    ADMMAIL = `demo.ulapph@gmail.com`
+    ADMMAIL = `ulapph@gmail.com`
 	// system email log
-    SYSMAIL = `demo.ulapph@gmail.com`
+    SYSMAIL = `ulapph@gmail.com`
 	// advertisements email log
-    ADSMAIL = `demo.ulapph@gmail.com`
+    ADSMAIL = `ctcunanan@gmail.com`
 	// reports/bot email
-    REPMAIL = `demo.ulapph@gmail.com`
+    REPMAIL = `edwin.d.vinas@gmail.com`
 	// customer feedback email
-    FDBKMAIL = `demo.ulapph@gmail.com`
+    FDBKMAIL = `edwin.d.vinas@gmail.com`
 	// premium/super user flag to disable/enable certain features
-	SYS_SUPER_USER = false
+    SYS_SUPER_USER = false
 	//domain referer match
-	domRefMatchG   = "http://ulapph-public-1.appspot.com/"
-	domRefMatchS   = "https://ulapph-public-1.appspot.com/"
-	domRefMatchLO   = "http://ulapph-public-1.appspot.com/"
+	domRefMatchG   = "http://golang-programming.appspot.com/"
+	domRefMatchS   = "https://golang-programming.appspot.com/"
+	domRefMatchLO   = "http://golang-programming.appspot.com/"
 	googleRefMatchG   = ".google.com/"
 	googleRefMatchS   = ".google.com/"
 	//D0080
-	DEFAULT_FAVICON = "/img/favicon.ico"
+    DEFAULT_FAVICON = `/img/favicon.ico`
 	//playground enabled
 	PlayEnabled = true
 	//Common Chatbot Knowledge Base
@@ -649,9 +656,9 @@ const (
 	// Change them via Ulapph Cloud Desktop Manager VBA tool
 	///////////////////////////////////////////////////////////////
 	//enable/diable expanded UWM on login
-	SYS_UWM_EXPANDED = false
+    SYS_UWM_EXPANDED = false
 	//bypass access to contentsAll by key
-	SYS_BYPASS_PRIV_KEY = ``
+    SYS_BYPASS_PRIV_KEY = `6LeMOAoUAAAAAOyz7DSRQwN-fFtmSdYdJkDbcnFf`
 	//enable/disable search engine
     SYS_SEARCHABLE = true
 	//extended search flag
@@ -662,11 +669,11 @@ const (
 	//allow search engines before this timeslot
     SYS_SEARCH_BEF_TIME = `05:00:00`
 	//enable/disable site private
-    SYS_SITE_PRIVATE = false
+    SYS_SITE_PRIVATE = true
 	//enable display of default slide or article as homepage
     SYS_DISP_HOMEPAGE_CFG = true
 	//enable custom home theme
-	SYS_CUSTOM_HOME_THEME = false
+    SYS_CUSTOM_HOME_THEME = false
 	//enable/disable slide/article templates
     SYS_ENABLE_TEMPLATES = true
 	//enable/disable manual registration of users
@@ -681,17 +688,17 @@ const (
 	//slide gradient from
     SYS_SLIDE_TO = ``
 	// enable/disable switching from slide to article for mobile devices
-    SYS_CHK_AUTO_SL2ART = false
+    SYS_CHK_AUTO_SL2ART = true
 	//enable/disable display of 1,2,3 slides/article ads
-    SYS_DISP_ADS_CONTENT = true
+    SYS_DISP_ADS_CONTENT = false
 	//advertisement server
-    SYS_DISP_ADS_HOST = ``
+    SYS_DISP_ADS_HOST = `https://ulapph-public-1.appspot.com/`
 	//chat redirect server
     SYS_CHAT_REDIR = ``
 	//chat help text
-    SYS_CHAT_HELP = ``
+    SYS_CHAT_HELP = `https://goo.gl/vX4wdC`
 	//default url for chat support
-    SYS_GUEST_CHAT_URL = ``
+    SYS_GUEST_CHAT_URL = `https://goo.gl/lBasrn`
 	//enable/disable display of alertify contents/ads at the right
     SYS_DISP_ADS_RIGHT = true
 	//enable/disable social sites (contentsAll)
@@ -699,17 +706,17 @@ const (
 	//max allowed comments
     SYS_MAX_SOC_COMMENTS = 100
 	//re-captcha key
-    SYS_RECAPTCHA_KEY = ``
+    SYS_RECAPTCHA_KEY = `6LeMOAoUAAAAAOyz7DSRQwN-fFtmSdYdJkDbcnFf`
 	//re-captcha secret
-    SYS_RECAPTCHA_SECRET = ``
+    SYS_RECAPTCHA_SECRET = `6LeMOAoUAAAAAD8SI7IL3hT-DP4nJIhbLicO8UWP`
 	//enable/disable search form (contentsAll)
     SYS_DISP_SEARCH = false
 	//enable/disable motd (all)
-    SYS_DISP_MOTD = true
+    SYS_DISP_MOTD = false
 	//enable/disable bible on guest/main desktops
     //SYS_DISP_BELIEF = true
 	//link to bible or belief
-    SYS_DISP_URL_BELIEF = ``
+    SYS_DISP_URL_BELIEF = `/bible?BIB_FUNC=biblegateway`
 	//enable/disable stream on guest/main desktops
     //SYS_DISP_STREAM = true
 	// enable/disable ads view/click emailer
@@ -721,7 +728,7 @@ const (
 	//enable/disable about page
     SYS_DISP_ABOUT = true
 	//enable/disable logo
-    SYS_DISP_LOGO = ``
+    SYS_DISP_LOGO = `http://2.bp.blogspot.com/-O2uOFWMD_zs/Ve3Iq9rfX_I/AAAAAAAAPxE/ZKRsGxscEsY/s1600/go_lang_mascot_by_kirael_art-d7kunhu.gif`
 	// enable/disable action - want to own private ulapph
     SYS_ACTION_WANT_OWN = false
 	// enable/disable system messages log
@@ -781,17 +788,17 @@ const (
 	//allow auto open slides
     SYS_OPEN_AUTO = `Y`
 	//contentsall display headers
-    SYS_CONTENTS_HDR_ON = `Y`
+    SYS_CONTENTS_HDR_ON = `N`
 	//enable ajax loader
     SYS_AJAX_LOAD_ON = `N`
 	//trim content titles
 	//SYS_CON_TRIM_TITLE = 25
 	//firebase channels
-    SYS_CHAT_PUB_ROOM_ID = ``
-    SYS_CHAT_WORLD_ROOM_ID = ``
-    SYS_CHAT_COUNTRY_ROOM_ID = ``
+    SYS_CHAT_PUB_ROOM_ID = `cys353aieonwgdgrqft3iw6o1qgfytnn`
+    SYS_CHAT_WORLD_ROOM_ID = `q8bgfhevlwt55sxa89jw6mgqmp1vt286gubibaaiwfp4kuadahji3ikzngp8e7lc`
+    SYS_CHAT_COUNTRY_ROOM_ID = `urog29rjwlyarewzcnnjhurjhykakg8lsan4rzxhcqaiswi3hetzr9r2juknpejo`
 	//set uwm colors random
-    SYS_UWM_RAN_COLORS = false
+    SYS_UWM_RAN_COLORS = true
 	//animated toolbar icons
 	//SYS_TOOLBAR_ICONS_ANIM = ``
 	//enable/disable local note after media upload
@@ -821,8 +828,8 @@ const (
     MC_ADS_EXPIRES_30_MIN = 1800
 	MC_ADS_EXPIRES_1_DAY = 86400 //1440min * 60 secs
     MC_PEOPLE_EXPIRES_10_MIN = 600
-    TOT_ONLINE_EXPIRES_MIN = 1800 //30mins
-	GEN_CONTENT_EXPIRES = 3600 //1hour
+    TOT_ONLINE_EXPIRES_MIN = 1800
+    GEN_CONTENT_EXPIRES = 3600
 	GEN_CONTENT_EXPIRES2 = 7200 //2hour
 	GEN_CONTENT_EXPIRES3 = 10800 //3hour
 	GEN_CONTENT_EXPIRES4 = 13400 //4hour
@@ -843,56 +850,56 @@ const (
 	//TDSUSERS login expiration
     LOGIN_HOURS_EXPR = 6
 	//def ringtone
-    DEFAULT_RING_TONE = ``
-    DEFAULT_CHAT_TONE = ``
-    DEFAULT_SLIDE_TONE = ``
+    DEFAULT_RING_TONE = `/audio/pop.wav`
+    DEFAULT_CHAT_TONE = `/audio/pop.wav`
+    DEFAULT_SLIDE_TONE = `/audio/page-flip-15.wav`
 	//set SOUND slides on/off
     SLIDE_SOUND_SET = `ON`
 	//enable/disable custom wallpapers by non-admins
     SYS_WALLP_ADMIN_ONLY = false
 	//force wallpaper image
-	FIXED_WALLPAPER_IMG = ``
+    FIXED_WALLPAPER_IMG = ``
 	//when no wallpaper was set, use default list (indicate list and total)
 	WALLPAPERS_LIST_DEF_LST = ""
 	WALLPAPERS_LIST_DEF_TOT = "20"
 	//Tiles Banners
-    LATEST_ARTICLES_SLIDES_BG = ``
-    PINNED_ARTICLES_SLIDES_BG = ``
-    TOP_ARTICLES_SLIDES_BG = ``
+    LATEST_ARTICLES_SLIDES_BG = `/img/background19.png`
+    PINNED_ARTICLES_SLIDES_BG = `/img/background12.jpg`
+    TOP_ARTICLES_SLIDES_BG = `/img/background10.jpg`
 	//End of slides/aeticles about us info
-    INFO_ABOUT_US = ``
+    INFO_ABOUT_US = `This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming.`
 	//max url fetch lines per user
     MAX_URL_FETCH_LINES = 1000
 	//Mime types list
 	MIME_TYPES_LIST_URL = "https://golang.org/misc/nacl/testdata/mime.types?m=text"
 	//Encryption key
-    ENCRYPTION_KEY = ``
+    ENCRYPTION_KEY = `^%^dwdowcwer&Te2`
 	//D0028
 	//extended search gen key
-    EXT_SEARCH_GEN_KEY = ``
+    EXT_SEARCH_GEN_KEY = `6pt90h4f3qwcbgclwkql6vseucunzzkkg3q6g5cttjmxpce9hfvl4l2liplgyyyy`
 	//Things API key
-    THINGS_API_KEY = ``
+    THINGS_API_KEY = `zny3g7stnm2f0fnekklnuonoqivyfl40`
 	//Commands API key
-    CMD_API_KEY = ``
+    CMD_API_KEY = `sjaqp6bcl2g5a9akfexbc8rx1tsnbrod`
 	//Generic API Key
-    CMD_GEN_KEY = ``
+    CMD_GEN_KEY = `6pt90h4f3qwcbgclwkql6vseucunzzkkg3q6g5cttjmxpce9hfvl4l2liplgly5s`
 	//D0078
 	//News API key
     NEWSAPI_API_KEY = ``
 	//paypal	
-    PAYPAL_PREMIUM_COST = ``
-    PAYPAL_CURRENCY = ``
-    PAYPAL_MERCHANT_ID = ``
+    PAYPAL_PREMIUM_COST = `100.00`
+    PAYPAL_CURRENCY = `PHP`
+    PAYPAL_MERCHANT_ID = `Q5BH8YRV8RWBC`
 	//general autocomplete
-    GITURL_AUTOCOMP_LIST = ``
+    GITURL_AUTOCOMP_LIST = `https://raw.githubusercontent.com/edwindvinas/ULAPPH-Cloud-Desktop/master/AUTOCOMPLETE/general`
     GITURL_PUSH_LEFT = ``
     GITURL_PUSH_RIGHT = ``
-    GITURL_PUSH_TOP = ``
-    GITURL_PUSH_BOTTOM = ``
+    GITURL_PUSH_TOP = `https://raw.githubusercontent.com/edwindvinas/ULAPPH-Cloud-Desktop/master/PUSH_MENU/general_top`
+    GITURL_PUSH_BOTTOM = `https://raw.githubusercontent.com/edwindvinas/ULAPPH-Cloud-Desktop/master/PUSH_MENU/general_bottom`
 	//apps provider
-    GITURL_PROVIDER_MSFT = ``
-    GITURL_PROVIDER_DB = ``
-    GITURL_PROVIDER_GOGL = ``
+    GITURL_PROVIDER_MSFT = `https://raw.githubusercontent.com/edwindvinas/ULAPPH-Cloud-Desktop/master/PROVIDERS/Microsoft`
+    GITURL_PROVIDER_DB = `https://raw.githubusercontent.com/edwindvinas/ULAPPH-Cloud-Desktop/master/PROVIDERS/Dropbox`
+    GITURL_PROVIDER_GOGL = `https://raw.githubusercontent.com/edwindvinas/ULAPPH-Cloud-Desktop/master/PROVIDERS/Google`
 	///////////////////////////////////////////////////////////////
 	// SMS GATEWAY
 	///////////////////////////////////////////////////////////////
@@ -903,13 +910,13 @@ const (
 	///////////////////////////////////////////////////////////////
 	// SOCIAL SITES
 	///////////////////////////////////////////////////////////////
-    SOCIAL_LINK_PLUS = ``
-    SOCIAL_LINK_YOUTUBE = ``
-    SOCIAL_LINK_FB = ``
-    SOCIAL_LINK_LINKEDIN = ``
-    SOCIAL_LINK_TWITTER = ``
+    SOCIAL_LINK_PLUS = `https://plus.google.com/b/108555237139194483891/108555237139194483891/posts/p/pub`
+    SOCIAL_LINK_YOUTUBE = `https://www.youtube.com/channel/UCfmBlIM8pbOs3Vaq1lTZ22Q`
+    SOCIAL_LINK_FB = `https://www.facebook.com/ulapphcorporation`
+    SOCIAL_LINK_LINKEDIN = `https://ph.linkedin.com/in/ulapph`
+    SOCIAL_LINK_TWITTER = `https://twitter.com/ulapph`
 	//ADD THIS PUB ID
-    SYS_ADD_THIS_PUB_ID = ``
+    SYS_ADD_THIS_PUB_ID = `ra-57db4059789a4643`
 	////////////////////////////////////////////////////////////////
 	// GOOGLE ADSENSE & OTHER ADS
 	////////////////////////////////////////////////////////////////
@@ -922,19 +929,30 @@ const (
 	// API KEYS
 	///////////////////////////////////////////////////////////////
 	//Youtube Dev Key
-	YOUTUBE_DEVELOPER_KEY = "AIzaSyDAcog64LHTqpjgACEXp3k9B7sbD9I9q2I"
+    YOUTUBE_DEVELOPER_KEY = `AIzaSyDAcog64LHTqpjgACEXp3k9B7sbD9I9q2I`
 	//Google Plus
 	apiKey = ""
 	plusResMax = 20
 	//URL Shortener Key
-	SYS_ENABLE_URL_SHORTENER = false
-        apiKeyUs = ``
+    SYS_ENABLE_URL_SHORTENER = false
+    apiKeyUs = `AIzaSyDY93rCNZv_IXLUaz0aRWhX6BIjaH7HLU0`
 	//Enable firebase
-	FL_FIREBASE_ENABLE = false
+    FL_FIREBASE_ENABLE = true
 	//Firebase Real-time DB
-        FIREBASE_URL = ``
+    FIREBASE_URL = `https://ulapph-firebase.firebaseio.com`
 	//Firebase server json
-        FIREBASE_SERVER_JSON = ``
+    FIREBASE_SERVER_JSON = `{
+  "type": "service_account",
+  "project_id": "ulapph-firebase",
+  "private_key_id": "5f3626687353271490f85802e19f12e619da482f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCj3VGVXLNu076d\nHUXXo7orJRM3EDN7Be1m0jYXHPkx+tgDQAOMkJNrhkO+B3/1d4lGpD6HrCbF292k\ntR0LYljDIBmuVGk/G7ama+wdvPHNegvlECnIHfQwC4pjtWRfqCe+lGp01viGK0cU\nY27e3Wa+bGIwjn1dZ8dvK7V0LmQW25Pde7NwAcykGMxEnhdArOD4bVbsRR/DXOEh\n1ZFT6Hip2AWbIKf0K8UjZJXNtljXvd24lx97klDfjqpm464v2j5Vs3zaR0tLPj8e\nBROxQEn9RN4H1MhY4R4iOruoPPl4MAIBXfw9Gmz0JXxeByXJqOtSUk4O4i8NU0Hm\nsfC+9MhDAgMBAAECggEAOOFROXSVQGo151nK7aCCtglHkzyHcjPLhX6AkiNXiPbW\n1sH4uWlSEufnSeZWj4Fv4FqQ7g1e5B1+4XaQ32vC/fB9mZrpcaOQElKyAlyc3sN3\nr4qdxj5HjgnjftrvPZkkOq5QCcC5QfFx2ezuBmR6Dq2Wo95CPBMTEk7szKhxy9Db\noXCJUccUTJ/A1RslWJ84lAVFejWJQegXDqdAYxlZEZZT/Il1y3qNOXioWpbCgdrn\nlGu9g9g4rzCzd/4HH79uzOhGzBlPvoS80rAM98KrWHjQs8diMd03UWD2KHRAQRXe\n0DYyGjUr4suGmyzQyS7uIkYZwpKKu1MOfApqkuxV+QKBgQDi68j7ztF7Eqhhv1Fn\nlgiku3qSpLFAuoxqtC08EM4Nr5o3uMRjH/dXHKtIxRm6LGMlhlkHvwJD5DhobfjL\nLvULtFCvlfjDJEVl+aIXZ9i8g7U1YlGZrcFFvd0orFcpg1JNaNHWAD/QxXrdJDbM\npTMfS11yNTyH95LP86Tg5JLlZQKBgQC43PH8WYMqBC0046tjbbAGxW3nxFS2eQcY\n9jkyEbz69qWtLC06AQXG9dtGw0d/y3dr8M0lCATGTooBAsUQMvRn7uW8kvRWwJ5P\n4a3KJ9n2kTmUrTVsNatwkB1vln15vdvZjPTeVhHC3Czz16LF5M3Cj5c4XeRLyfaq\nVpwMydGQhwKBgFvZcnWyJgp559wA05NpIECFfjyjGvgHSlTab0DT0IOro3GQgTVa\nOARzn0UKOrqnws3qjljbULBoTQjAEqczb454Qvx/aLycDtcS7zAoIYtUiGF+VWct\n9IAlNMKE15b/B647kkvbt/jqJiwiv2egKowtNjrHH6QtaqhvhzpcarUdAoGBAKN1\nkm8dQzJ6wPJcQabITXafSiA+ZN14RMNYrJhOQPjz8Okf/9mjH9WefUaj02v3oGAM\na4jL/1TOC477QP6i36OrBO7qTi0LYrClj8MJ29v+65hAU9Wb2zzL4YtS2R41t9k0\nnyydlFTl1MXELUSonRvlVcRcmUo+ieJydMeGCMyvAoGBALQNm0tNNM9DkuQcpHgH\nZuNtuu7be8msbMXo64p8xy5rgfLdUeRm84zO7RPiIG5jCNMVTjoP+MWFvEwu2P/i\n3g93g+13AN9XYyPFAUneuh3bVPfhJ2lWIcv9OGY7ac81NwXqdt8p85FfrSoFCCOx\nxfQDCCGrMu+hicKAYsVVBCr5\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-0c602@ulapph-firebase.iam.gserviceaccount.com",
+  "client_id": "116374727305043020615",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-0c602%40ulapph-firebase.iam.gserviceaccount.com"
+}`
 	//D0081
 	//Dialogflow Service Account
         DIALOGFLOW_SERVER_JSON = ``
@@ -946,21 +964,21 @@ const (
 	//D0033
 	//MyDrives
 	//Google Drive
-    GOOGLE_OAUTH2_CLIENTID = ``
-    GOOGLE_OAUTH2_SECRET = ``
-    GOOGLE_OAUTH2_AUTH = ``
-    GOOGLE_OAUTH2_TOKEN = ``
-    GOOGLE_OAUTH2_STATE = ``
+    GOOGLE_OAUTH2_CLIENTID = `384770638439-li51fgnt09n6dgodqon6ef8e8ji3qlif.apps.googleusercontent.com`
+    GOOGLE_OAUTH2_SECRET = `tA4fh2zo7gbRulPz05HSE2nn`
+    GOOGLE_OAUTH2_AUTH = `https://accounts.google.com/o/oauth2/auth`
+    GOOGLE_OAUTH2_TOKEN = `https://accounts.google.com/o/oauth2/token`
+    GOOGLE_OAUTH2_STATE = `115vvjp8kvwqrjnvbmoc0btd1vbwqsz6`
 	//GAE Admin API
-    ADMIN_OAUTH2_CLIENTID = ``
-    ADMIN_OAUTH2_SECRET = ``
+    ADMIN_OAUTH2_CLIENTID = `176777409325-vj412ou1mgrjcn9175aaspjusbufeacc.apps.googleusercontent.com`
+    ADMIN_OAUTH2_SECRET = `DCfUCEvNszKNN6x8q0LMAehD`
 	//Github
 	//GITHUB_USER_NAME = ``
-    GITHUB_CLIENT_ID = ``
-    GITHUB_CLIENT_SECRET = ``
-    GITHUB_OAUTH2_STATE = ``
-    GITHUB_AUTH_URL = ``
-    GITHUB_TOKEN_URL = ``
+    GITHUB_CLIENT_ID = `a0862d07437d34482af4`
+    GITHUB_CLIENT_SECRET = `54499413716d7aa502f6ef321eed38ff37c16410`
+    GITHUB_OAUTH2_STATE = `115vvjp8kvwqrjnvbmoc0btd1vbwqsz6`
+    GITHUB_AUTH_URL = `https://github.com/login/oauth/authorize`
+    GITHUB_TOKEN_URL = `https://github.com/login/oauth/access_token`
 	//Microsoft
 	MICROSOFT_USER_NAME = ``
     MICROSOFT_CLIENT_ID = ``
@@ -1030,19 +1048,19 @@ const (
     MOTD_11_mediaID = 282
     MOTD_11_name = `TableTopics`
 	//people
-    MOTD_12_mediaID = 706
+    MOTD_12_mediaID = 0
     MOTD_12_name = `People`
 	//inventions
-    MOTD_13_mediaID = 707
+    MOTD_13_mediaID = 0
     MOTD_13_name = `Invention`
 	//timeline & history
-    MOTD_14_mediaID = 708
+    MOTD_14_mediaID = 0
     MOTD_14_name = `Timeline`
 	//general knowledge
-    MOTD_15_mediaID = 709
+    MOTD_15_mediaID = 0
     MOTD_15_name = `GeneralInfo`
 	//culture
-    MOTD_16_mediaID = 710
+    MOTD_16_mediaID = 0
     MOTD_16_name = `Culture`
 	///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////
@@ -1419,7 +1437,7 @@ type TDSCOMIDX struct {
 	USERS []string
 	NUM_COMMENTS int
 	TAGS []string
-} 
+}
 //D0040			
 type TDSCOMMENT struct {
 	CID int
@@ -1624,13 +1642,24 @@ type MasterSyllabus struct {
 	ExamDate string `json:"examDate"`
 }*/
 //D0081
-//edwinxxx
 type DialogflowInput struct {
 	QueryInput struct {Text struct {
 						Text string `json:"text"`
 						Language string `json:"languageCode"`
 					    } `json:"text"`
 			  }`json:"queryInput"`
+}
+//D0083
+//ulapph trending, whats new struct
+type UlapphSources struct {
+	Source string `json:"source"`
+	Author string `json:"author"`
+	Title string `json:"title"`
+	Description string `json:"description"`
+	URL string `json:"url"`
+	Image string `json:"urlToImage"`
+	PublishedAt string `json:"publishedAt"`
+	Content string `json:"publishedAt"`
 }
 
 ///////////////////////////////////////////////////////////////	
@@ -1651,15 +1680,15 @@ var FL_CHECK_SAM_QUOTA = false
 
 //List of Accounts and Quotas
 //Free Account
-var freeAccess = map[string]int{"QUOTA_SLIDES":5,"QUOTA_ARTICLES":5,"QUOTA_MEDIA":50,"QUOTA_MSG_IN":100,"QUOTA_MSG_OUT":100,}
+    var freeAccess = map[string]int{"QUOTA_SLIDES":5,"QUOTA_ARTICLES":5,"QUOTA_MEDIA":50,"QUOTA_MSG_IN":100,"QUOTA_MSG_OUT":100,}
 //Bronze
-var bronzeAccess = map[string]int{"QUOTA_SLIDES":50,"QUOTA_ARTICLES":50,"QUOTA_MEDIA":500,"QUOTA_MSG_IN":500,"QUOTA_MSG_OUT":500,}
+    var bronzeAccess = map[string]int{"QUOTA_SLIDES":50,"QUOTA_ARTICLES":50,"QUOTA_MEDIA":500,"QUOTA_MSG_IN":500,"QUOTA_MSG_OUT":500,}
 //Silver
-var silverAccess = map[string]int{"QUOTA_SLIDES":500,"QUOTA_ARTICLES":500,"QUOTA_MEDIA":1000,"QUOTA_MSG_IN":1000,"QUOTA_MSG_OUT":1000,}
+    var silverAccess = map[string]int{"QUOTA_SLIDES":500,"QUOTA_ARTICLES":500,"QUOTA_MEDIA":1000,"QUOTA_MSG_IN":1000,"QUOTA_MSG_OUT":1000,}
 //Gold
 //D0071
 //var goldAccess = map[string]int{"QUOTA_SLIDES":5000,"QUOTA_ARTICLES":5000,"QUOTA_MEDIA":10000,"QUOTA_MSG_IN":10000,"QUOTA_MSG_OUT":10000,}
-var goldAccess = map[string]int{"QUOTA_SLIDES":5000,"QUOTA_ARTICLES":5000,"QUOTA_MEDIA":1000000,"QUOTA_MSG_IN":1000000,"QUOTA_MSG_OUT":1000000,}
+    var goldAccess = map[string]int{"QUOTA_SLIDES":5000,"QUOTA_ARTICLES":5000,"QUOTA_MEDIA":10000,"QUOTA_MSG_IN":10000,"QUOTA_MSG_OUT":10000,}
 ///////////////////////////////////////////////////////////////
 // BROWSERS
 ///////////////////////////////////////////////////////////////
@@ -1876,13 +1905,13 @@ var adsEffs = []string{"flash",
 // EXCEPTIONS, COUNTRY RESTRICTIONS
 ///////////////////////////////////////////////////////////////
 //List of undeletable accounts - these can't be maintained in web admin-setup
-var isExceptionAccount = map[string]bool{"demo.ulapph@gmail.com":true,}
+    var isExceptionAccount = map[string]bool{"ulapph@gmail.com":true,}
 //List of allowed search engines (note enable SYS_SEARCHABLE flag as well)
-var isSearchEngineAllowed = map[string]bool{"US.?.?":true,"CN.?.?":true,"RU.?.?":true,"UA.?.?":true,"MX.?.?":true,"TM.?.?":true,}
+    var isSearchEngineAllowed = map[string]bool{"US.?.?":false,"CN.?.?":false,"RU.?.?":false,"UA.?.?":false,"MX.?.?":false,"TM.?.?":false,}
 //List of allowed countries
-var isCountryAllowed = map[string]bool{}
+    var isCountryAllowed = map[string]bool{"PH":true,}
 //List of disallowed countries
-var isCountryNotAllowed = map[string]bool{"RU":false,}
+    var isCountryNotAllowed = map[string]bool{"RU":false,}
 //D0078
 //List of countries
 var xCountry2LatLon = map[string]string{
@@ -2544,7 +2573,7 @@ var (
 		//D0078
 		".news-sources": parsePresentTemplate2("newsapi-sources.html"),
 	}
-	contactEmail      = "demo.ulapph@gmail.com"
+	contactEmail      = "ulapph@gmail.com"
 	gitHubCredentials = ""
 )
 var funcs = template.FuncMap{
@@ -2923,32 +2952,30 @@ type TDSPROF struct {
 	FILLER_3 string
 	RINGTONE string
 }
- 
 //slide datastore
 type TDSSLIDE struct {
-    FL_COUNTRY_SPECIFIC string
-	SYS_VER int	
+	FL_COUNTRY_SPECIFIC string
+	SYS_VER int
 	DOC_ID	int
-	DOC_STAT string	
-	TITLE string	
-	DESC string	
-	AUTHOR string	
-	YEAR string	
-	CATEGORY string	
-	TAGS string	
+	DOC_STAT string
+	TITLE string
+	DESC string
+	AUTHOR string
+	YEAR string
+	CATEGORY string
+	TAGS string
 	FL_SHARED string
-    SHARED_TO string	
-	BLOB_URL string	
-	DT_UPLOAD string	
-	NUM_LIKES int	
-	NUM_COMMENTS int	
-	LIKED_BY string	
+	SHARED_TO string
+	BLOB_URL string
+	DT_UPLOAD string
+	NUM_LIKES int
+	NUM_COMMENTS int
+	LIKED_BY string
 	COMMENTS_BY string
 	NUM_VIEWS int64
 	MUSIC_ID int
 	GET_NEXT string
 }
- 
 //article datastore
 type TDSARTL struct {
 	FL_COUNTRY_SPECIFIC string
@@ -3622,14 +3649,14 @@ func root(w http.ResponseWriter, r *http.Request) {
 	i := strings.Index(query, "token-qr@@@")
 	if i != -1 {
 		SPL := strings.Split(query, "@@@")
-		redURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/?q=token-qr&user=%v&tok=%v&isDesktop=%v&targetURL=%v", SPL[1], SPL[2], SPL[3], SPL[4])
+		redURL := fmt.Sprintf("https://golang-programming.appspot.com/?q=token-qr&user=%v&tok=%v&isDesktop=%v&targetURL=%v", SPL[1], SPL[2], SPL[3], SPL[4])
 		http.Redirect(w, r, redURL, http.StatusFound)
 		return
 	}
 	i = strings.Index(query, "login@888@")
 	if i != -1 {
 		query = strings.Replace(query, "@888@", "&", -1)
-		redURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/?q=%v", query)
+		redURL := fmt.Sprintf("https://golang-programming.appspot.com/?q=%v", query)
 		http.Redirect(w, r, redURL, http.StatusFound)
 		return
 	}
@@ -3668,11 +3695,11 @@ func root(w http.ResponseWriter, r *http.Request) {
 					if FL_VALID_USER == true {
 						if GROUP_ID == "GRP_ADMIN" || GROUP_ID == "GRP_USER" {
 							//notify all users of this event via channels
-							msgDtl3 := fmt.Sprintf("UID:%v has returned to ULAPPH https://ulapph-public-1.appspot.com %v", uid, viaStr)
+							msgDtl3 := fmt.Sprintf("UID:%v has returned to ULAPPH https://golang-programming.appspot.com %v", uid, viaStr)
 							data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "ULAPPH", msgDtl3)
 							ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")	
 							ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
-							sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid, "https://ulapph-public-1.appspot.com",""),"")
+							sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid, "https://golang-programming.appspot.com",""),"")
 							checkHomepageSettings(w,r,"")
 							updateUserActiveData(w, r, c, uid, "homepage")
 							return
@@ -3684,22 +3711,22 @@ func root(w http.ResponseWriter, r *http.Request) {
 						msgDtl3 := ""
 						if u == nil {
 							msg := getGeoString(w,r)
-							msgDtl3 = fmt.Sprintf("UID:%v has visited ULAPPH https://ulapph-public-1.appspot.com %v", msg, viaStr)
-							msgDtl3b := fmt.Sprintf("UID:%v has visited ULAPPH https://ulapph-public-1.appspot.com %v", msg, viaStrB)
+							msgDtl3 = fmt.Sprintf("UID:%v has visited ULAPPH https://golang-programming.appspot.com %v", msg, viaStr)
+							msgDtl3b := fmt.Sprintf("UID:%v has visited ULAPPH https://golang-programming.appspot.com %v", msg, viaStrB)
 							data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "ULAPPH-VISITOR", msgDtl3b)
 							ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")
 							ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
 							updateUserActiveData(w, r, c, "", "homepage")
 						}else{
 							msg = uid
-							msgDtl3 = fmt.Sprintf("UID:%v has visited ULAPPH https://ulapph-public-1.appspot.com %v", msg, viaStr)
-							msgDtl3b := fmt.Sprintf("UID:%v has visited ULAPPH https://ulapph-public-1.appspot.com %v", msg, viaStrB)
+							msgDtl3 = fmt.Sprintf("UID:%v has visited ULAPPH https://golang-programming.appspot.com %v", msg, viaStr)
+							msgDtl3b := fmt.Sprintf("UID:%v has visited ULAPPH https://golang-programming.appspot.com %v", msg, viaStrB)
 							data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "ULAPPH-VISITOR", msgDtl3b)
 							ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")
 							ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
 							updateUserActiveData(w, r, c, uid, "homepage")
 						}
-						sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,msg, "https://ulapph-public-1.appspot.com",""),"")
+						sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,msg, "https://golang-programming.appspot.com",""),"")
 						checkHomepageSettings(w,r,"")
 						return
 					}
@@ -3707,12 +3734,12 @@ func root(w http.ResponseWriter, r *http.Request) {
 				//WHEN USER IS NOT LOGGED IN
 					//notify all users of this event via channels
 					msg := getGeoString(w,r)
-					msgDtl3 := fmt.Sprintf("UID:%v has visited ULAPPH https://ulapph-public-1.appspot.com %v", msg, viaStr)
-					msgDtl3b := fmt.Sprintf("UID:%v has visited ULAPPH https://ulapph-public-1.appspot.com %v", msg, viaStrB)
+					msgDtl3 := fmt.Sprintf("UID:%v has visited ULAPPH https://golang-programming.appspot.com %v", msg, viaStr)
+					msgDtl3b := fmt.Sprintf("UID:%v has visited ULAPPH https://golang-programming.appspot.com %v", msg, viaStrB)
 					data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "ULAPPH-VISITOR", msgDtl3b)
 					ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")	
 					ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
-					sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,msg, "https://ulapph-public-1.appspot.com",""),"")
+					sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,msg, "https://golang-programming.appspot.com",""),"")
 					checkHomepageSettings(w,r,"")
 					updateUserActiveData(w, r, c, "", "homepage")
 					return
@@ -3721,12 +3748,12 @@ func root(w http.ResponseWriter, r *http.Request) {
 			//WHEN BROWSER IS INTERNET EXPLORER								
 				//notify all users of this event via channels
 				msg := getGeoString(w,r)
-				msgDtl3 := fmt.Sprintf("UID:%v has visited ULAPPH https://ulapph-public-1.appspot.com/?q=home %v", msg, viaStr)
-				msgDtl3b := fmt.Sprintf("UID:%v has visited ULAPPH https://ulapph-public-1.appspot.com/?q=home %v", msg, viaStrB)
+				msgDtl3 := fmt.Sprintf("UID:%v has visited ULAPPH https://golang-programming.appspot.com/?q=home %v", msg, viaStr)
+				msgDtl3b := fmt.Sprintf("UID:%v has visited ULAPPH https://golang-programming.appspot.com/?q=home %v", msg, viaStrB)
 				data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "ULAPPH-VISITOR", msgDtl3b)
 				ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS", data, "")	
 				ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
-				sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,msg, "https://ulapph-public-1.appspot.com/?q=home",""),"")
+				sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,msg, "https://golang-programming.appspot.com/?q=home",""),"")
 				checkHomepageSettings(w,r,"")
 				updateUserActiveData(w, r, c, "", "homepage")
 				return
@@ -4304,7 +4331,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 					}
 					renderStaticWithTEMPSTRUCT2(w,r,&TEMPDATA,".htmlHeaderBodyToken")
 					
-					qrUrl := fmt.Sprintf("https://ulapph-public-1.appspot.com/?q=token-qr@@@%v@@@%v@@@%v@@@%v", uid, token, isDesktopClient, targetURL)
+					qrUrl := fmt.Sprintf("https://golang-programming.appspot.com/?q=token-qr@@@%v@@@%v@@@%v@@@%v", uid, token, isDesktopClient, targetURL)
 					apiLink := fmt.Sprintf("https://chart.googleapis.com/chart?cht=qr&chs=340x340&chl=%v&choe=UTF-8", qrUrl)
 					
 					thisFrame := fmt.Sprintf("<iframe src='%v' frameborder=0 scrolling=false allowtransparency=true width=350px height=350px align=center></iframe>", apiLink)
@@ -6113,7 +6140,7 @@ func registration(w http.ResponseWriter, r *http.Request) {
 					
 				} else {
 					//send message to admin
-					approverLink := fmt.Sprintf("https://ulapph-public-1.appspot.com/admin-setup?ADMIN_FUNC=TDSUSERS-APPROVE&USER=%v", uid)
+					approverLink := fmt.Sprintf("https://golang-programming.appspot.com/admin-setup?ADMIN_FUNC=TDSUSERS-APPROVE&USER=%v", uid)
 					contentMsg := fmt.Sprintf("[ULAPPH] Registered new user pending approval by admin. USER: %v >>> APPROVER LINK: %v", uid, approverLink)
 					laterNotifyGB.Call(c, "autoNotifyPeopleGB", ADMMAIL, contentMsg, uid)	
 					//notify all users of this event via channels
@@ -7160,15 +7187,12 @@ func displayCurrAccLog(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			panic(err)
 		}
-		
 		resp, err := client.Get(urlStr)
 		if err != nil {
 			panic(err)
 		}
- 
 		bodyBytes, _ := ioutil.ReadAll(resp.Body)
 		FETCH_URL := string(bodyBytes)
-		
 		if strings.Index(FETCH_URL, "PRESENCE:") != -1 {
 			fmt.Fprintf(w, "%v", FETCH_URL)
 		}
@@ -7875,7 +7899,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 						CATEGORY = r.FormValue("CATEGORY")
 						ADS_IMG = r.FormValue("IMG_URL")
 						MUSIC_ID := r.FormValue("MUSIC_ID")
-						ADS_URL = fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v&MUSIC_ID=%v", DOC_ID, DOC_ID, MUSIC_ID)
+						ADS_URL = fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v&MUSIC_ID=%v", DOC_ID, DOC_ID, MUSIC_ID)
 					
 					case "SLIDE":
 						ADS_TYPE = "SLIDE"
@@ -7885,7 +7909,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 						CATEGORY = r.FormValue("CATEGORY")
 						ADS_IMG = r.FormValue("IMG_URL")
 						MUSIC_ID := r.FormValue("MUSIC_ID")
-						ADS_URL = fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%v&SID=TDSSLIDE-%v&MUSIC_ID=%v&GET_NEXT=&SOUND=ON", DOC_ID, DOC_ID, MUSIC_ID)
+						ADS_URL = fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%v&SID=TDSSLIDE-%v&MUSIC_ID=%v&GET_NEXT=&SOUND=ON", DOC_ID, DOC_ID, MUSIC_ID)
 						
 					default:
 						MEDIA_ID2 := r.FormValue("MEDIA_ID")
@@ -7895,9 +7919,9 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 						ADS_TYPE = "HTML"
 						ADS_IMG = r.FormValue("IMG_URL")
 						if TYPE == "text" {
-							ADS_URL = fmt.Sprintf("https://ulapph-public-1.appspot.com/media?FUNC_CODE=RAWTEXT&MEDIA_ID=%v&SID=TDSMEDIA-%v", MEDIA_ID, MEDIA_ID)
+							ADS_URL = fmt.Sprintf("https://golang-programming.appspot.com/media?FUNC_CODE=RAWTEXT&MEDIA_ID=%v&SID=TDSMEDIA-%v", MEDIA_ID, MEDIA_ID)
 						} else {
-							ADS_URL = fmt.Sprintf("https://ulapph-public-1.appspot.com/media?FUNC_CODE=PLAY&MEDIA_ID=%v&SID=TDSMEDIA-%v", MEDIA_ID, MEDIA_ID)
+							ADS_URL = fmt.Sprintf("https://golang-programming.appspot.com/media?FUNC_CODE=PLAY&MEDIA_ID=%v&SID=TDSMEDIA-%v", MEDIA_ID, MEDIA_ID)
 						}
 						
 					
@@ -9173,7 +9197,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 							
 						} else {
 							//send message to admin
-							approverLink := fmt.Sprintf("https://ulapph-public-1.appspot.com/admin-setup?ADMIN_FUNC=TDSUSERS-APPROVE&USER=%v", uid)
+							approverLink := fmt.Sprintf("https://golang-programming.appspot.com/admin-setup?ADMIN_FUNC=TDSUSERS-APPROVE&USER=%v", uid)
 							contentMsg := fmt.Sprintf("[ULAPPH] Registered new user pending approval by admin. USER: %v >>> APPROVER LINK: %v", uid, approverLink)
 							laterNotifyGB.Call(c, "autoNotifyPeopleGB", ADMMAIL, contentMsg, uid)	
 							//notify all users of this event via channels
@@ -9626,8 +9650,8 @@ func webtop(w http.ResponseWriter, r *http.Request, aUser string, tUser string, 
 					
 	   if (dispType == "DESKTOP")  {
 		    //webtop
-			msgDtl3 := fmt.Sprintf("UID:%v accessed https://ulapph-public-1.appspot.com/webtop %v", uid, getAccessString(w,r,""))
-			reqStr := fmt.Sprintf("https://ulapph-public-1.appspot.com/webtop") 				
+			msgDtl3 := fmt.Sprintf("UID:%v accessed https://golang-programming.appspot.com/webtop %v", uid, getAccessString(w,r,""))
+			reqStr := fmt.Sprintf("https://golang-programming.appspot.com/webtop") 				
 			sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid,reqStr,""),"")
 			TASK_MEMCACHER_desktopWP_loginWP := ""
 			wpKey := fmt.Sprintf("TASK_MEMCACHER_desktopWP_%v_%s", deskName, "loginWP")
@@ -9993,8 +10017,8 @@ func uwm(w http.ResponseWriter, r *http.Request) {
 			}
 		   dispType := "DESKTOP"
 		   if (dispType == "DESKTOP")  {
-				msgDtl3 := fmt.Sprintf("UID:%v accessed https://ulapph-public-1.appspot.com/uwm %v", uid, getAccessString(w,r,""))
-				reqStr := fmt.Sprintf("https://ulapph-public-1.appspot.com/uwm")
+				msgDtl3 := fmt.Sprintf("UID:%v accessed https://golang-programming.appspot.com/uwm %v", uid, getAccessString(w,r,""))
+				reqStr := fmt.Sprintf("https://golang-programming.appspot.com/uwm")
 				sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid,reqStr,""),"")
 				TASK_MEMCACHER_desktopWP_loginWP := ""
 				wpKey := fmt.Sprintf("TASK_MEMCACHER_desktopWP_%v_%s", deskName, "loginWP")
@@ -10352,8 +10376,8 @@ func desktop0(w http.ResponseWriter, r *http.Request) {
 				return
 		   }
 		   if (dispType == "DESKTOP")  {
-				msgDtl3 := fmt.Sprintf("UID:%v accessed https://ulapph-public-1.appspot.com/desktop0 %v", uid, getAccessString(w,r,""))
-				sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid,"https://ulapph-public-1.appspot.com/desktop0",""),"")	
+				msgDtl3 := fmt.Sprintf("UID:%v accessed https://golang-programming.appspot.com/desktop0 %v", uid, getAccessString(w,r,""))
+				sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid,"https://golang-programming.appspot.com/desktop0",""),"")	
  
 				USERS_ONLINE_CACHE_KEY := "USERS_ONLINE_LIST"
 				putStrToMemcacheWithoutExp(w,r,USERS_ONLINE_CACHE_KEY,"")
@@ -10739,8 +10763,8 @@ func desktop(w http.ResponseWriter, r *http.Request) {
 				uwm(w,r)	
 				return
 			}
-			msgDtl3 := fmt.Sprintf("UID:%v accessed https://ulapph-public-1.appspot.com/desktop?d=%v %v", uid, dVal, getAccessString(w,r,""))
-			reqStr := fmt.Sprintf("https://ulapph-public-1.appspot.com/desktop?d=%v", dVal)
+			msgDtl3 := fmt.Sprintf("UID:%v accessed https://golang-programming.appspot.com/desktop?d=%v %v", uid, dVal, getAccessString(w,r,""))
+			reqStr := fmt.Sprintf("https://golang-programming.appspot.com/desktop?d=%v", dVal)
 			sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid,reqStr,""),"")	
 				
 			if (dispType == "MOBILE")  {
@@ -11164,7 +11188,7 @@ func promptRegister(w http.ResponseWriter, r *http.Request, uid string, xCountry
 		if err := sysmsgErrorTemplate.Execute(w, message); err != nil {
 		  panic(err)
 		}
-		//fmt.Fprintf(w, "<div class=\"info\"><a href=\"https://ulapph-public-1.appspot.com\">Register</a> for an account at OPO.ULAPPH.COM instead.</div>")
+		//fmt.Fprintf(w, "<div class=\"info\"><a href=\"https://golang-programming.appspot.com\">Register</a> for an account at OPO.ULAPPH.COM instead.</div>")
 		//fmt.Fprintf(w, "<div class=\"warning\"><a href=\"/admin-setup\">Click here</a> to manage users if you are an administrator.</div>")	
 		fmt.Fprintf(w, "<div class=\"error\"><a href=\"/logout\">Logout</a> from this system if you don't want to proceed.</div>")	
 		if err := htmlFooterModal.Execute(w, ""); err != nil {
@@ -11172,7 +11196,7 @@ func promptRegister(w http.ResponseWriter, r *http.Request, uid string, xCountry
 		}
 		return
 	}
-   fmt.Fprintf(w, "<div class=\"info2\"><img src=\"https://ulapph-public-1.appspot.com/img/ulapph-logo.png\" title=\"ULAPPH Logo\" width=200 height=100></img></div>")
+   fmt.Fprintf(w, "<div class=\"info2\"><img src=\"https://golang-programming.appspot.com/img/ulapph-logo.png\" title=\"ULAPPH Logo\" width=200 height=100></img></div>")
    fmt.Fprintf(w, "<div class=\"info2\"><h3>Welcome to %v</h3>", getSchemeUrl(w,r))
    fmt.Fprintf(w, "<p>You are logged in as <b>%v</b>", uid)
    fmt.Fprintf(w, "<br><img src='%v' width=20 height=20 title='%v'></div>", avatar, provider)
@@ -13371,7 +13395,7 @@ func parseAutocompEntries(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "	  		}else {\n")
 			fmt.Fprintf(w, "	  			res = str.replace(\"http://\", \"https://\");\n")
 			fmt.Fprintf(w, "	  		}\n")
-			fmt.Fprintf(w, "	        var thehtml = \"<strong><a href='#' onClick=\\\"location.href='\" + res + \"'; return false;\\\">Open Here</a></strong> | <strong><a href='#' onClick=\\\"parent.postMessage('\" + res + \"', 'https://ulapph-public-1.appspot.com'); return false;\\\">Child Window</a></strong> | <strong><a href='#' onClick=\\\"window.open('\" + res + \"'); return false;\\\">In New Tab</a></strong> | <strong><a href='#' onClick=\\\"window.open();return false;\\\">Blank Window</a></strong>\";\n")
+			fmt.Fprintf(w, "	        var thehtml = \"<strong><a href='#' onClick=\\\"location.href='\" + res + \"'; return false;\\\">Open Here</a></strong> | <strong><a href='#' onClick=\\\"parent.postMessage('\" + res + \"', 'https://golang-programming.appspot.com'); return false;\\\">Child Window</a></strong> | <strong><a href='#' onClick=\\\"window.open('\" + res + \"'); return false;\\\">In New Tab</a></strong> | <strong><a href='#' onClick=\\\"window.open();return false;\\\">Blank Window</a></strong>\";\n")
 			fmt.Fprintf(w, "	        $('#outputcontent').html(thehtml);\n")
 			fmt.Fprintf(w, "	}\n")
 			fmt.Fprintf(w, "  });\n")
@@ -13429,7 +13453,7 @@ func parseAutocompEntries(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintf(w, "	  		}else {\n")
 				fmt.Fprintf(w, "	  			res = str.replace(\"http://\", \"https://\");\n")
 				fmt.Fprintf(w, "	  		}\n")
-				fmt.Fprintf(w, "	        var thehtml = \"<strong><a href='#' onClick=\\\"location.href='\" + res + \"'; return false;\\\">Open Here</a></strong> | <strong><a href='#' onClick=\\\"parent.postMessage('\" + res + \"', 'https://ulapph-public-1.appspot.com'); return false;\\\">Child Window</a></strong> | <strong><a href='#' onClick=\\\"window.open('\" + res + \"'); return false;\\\">In New Tab</a></strong> | <strong><a href='#' onClick=\\\"window.open();return false;\\\">Blank Window</a></strong>\";\n")
+				fmt.Fprintf(w, "	        var thehtml = \"<strong><a href='#' onClick=\\\"location.href='\" + res + \"'; return false;\\\">Open Here</a></strong> | <strong><a href='#' onClick=\\\"parent.postMessage('\" + res + \"', 'https://golang-programming.appspot.com'); return false;\\\">Child Window</a></strong> | <strong><a href='#' onClick=\\\"window.open('\" + res + \"'); return false;\\\">In New Tab</a></strong> | <strong><a href='#' onClick=\\\"window.open();return false;\\\">Blank Window</a></strong>\";\n")
 				fmt.Fprintf(w, "	        $('#outputcontent').html(thehtml);\n")
 				fmt.Fprintf(w, "	}\n")
 				fmt.Fprintf(w, "  });\n")
@@ -13786,7 +13810,7 @@ func parseAutocompEntries(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "	  		}else {\n")
 	fmt.Fprintf(w, "	  			res = str.replace(\"http://\", \"https://\");\n")
 	fmt.Fprintf(w, "	  		}\n")
-	  fmt.Fprintf(w, "	        var thehtml = \"<strong><a href='#' onClick=\\\"location.href='\" + res + \"'; return false;\\\">Open Here</a></strong> | <strong><a href='#' onClick=\\\"parent.postMessage('\" + res + \"', 'https://ulapph-public-1.appspot.com'); return false;\\\">Child Window</a></strong> | <strong><a href='#' onClick=\\\"window.open('\" + res + \"'); return false;\\\">In New Tab</a></strong> | <strong><a href='#' onClick=\\\"window.open();return false;\\\">Blank Window</a></strong>\";\n")
+	  fmt.Fprintf(w, "	        var thehtml = \"<strong><a href='#' onClick=\\\"location.href='\" + res + \"'; return false;\\\">Open Here</a></strong> | <strong><a href='#' onClick=\\\"parent.postMessage('\" + res + \"', 'https://golang-programming.appspot.com'); return false;\\\">Child Window</a></strong> | <strong><a href='#' onClick=\\\"window.open('\" + res + \"'); return false;\\\">In New Tab</a></strong> | <strong><a href='#' onClick=\\\"window.open();return false;\\\">Blank Window</a></strong>\";\n")
 	  fmt.Fprintf(w, "	        $('#outputcontent').html(thehtml);\n")
 	fmt.Fprintf(w, "	}\n")
 	fmt.Fprintf(w, "  });\n")
@@ -14169,7 +14193,7 @@ func ulapphCache(w http.ResponseWriter, r *http.Request) {
 		case "desktop0":
 			
 			//check if cache needs reload
-			//CACHE_MANIFEST_RELOAD_FLAG_demo.ulapph@gmail.com
+			//CACHE_MANIFEST_RELOAD_FLAG_ulapph@gmail.com
 			CACHE_MANIFEST_RELOAD_FLAG := ""
 			cKey := fmt.Sprintf("CACHE_MANIFEST_RELOAD_FLAG_%s", uid)
 			CACHE_MANIFEST_RELOAD_FLAG = getStrMemcacheValueByKey(w,r,cKey)
@@ -14230,7 +14254,7 @@ func ulapphCache(w http.ResponseWriter, r *http.Request) {
 		case "desktopN":
 			
 			//check if cache needs reload
-			//CACHE_MANIFEST_RELOAD_FLAG_demo.ulapph@gmail.com
+			//CACHE_MANIFEST_RELOAD_FLAG_ulapph@gmail.com
 			CACHE_MANIFEST_RELOAD_FLAG := ""
 			cKey := fmt.Sprintf("CACHE_MANIFEST_RELOAD_FLAG_%s", deskName)
 			CACHE_MANIFEST_RELOAD_FLAG = getStrMemcacheValueByKey(w,r,cKey)
@@ -14323,7 +14347,7 @@ func SENDINVITE(c appengine.Context, desktop, uid, inviteEmail string) string {
  
     if (SYS_INV_ENABLE == true) {
 		SUBJECT := fmt.Sprintf("[ULAPPH INVITATION] Invitation to join ULAPPH from %s", uid)
-		BODY := fmt.Sprintf("Hi %s!<br><br>Your friend (%s) has just joined ULAPPH and he would like you to join as well. Just visit https://ulapph-public-1.appspot.com in order to join ULAPPH -- the free Cloud Desktop in the Philippines!<br><br>You need to have a valid Google email account. We will be waiting for you.<br><br>Thank you!<br><br> *** ULAPPH *** ", inviteEmail, uid)
+		BODY := fmt.Sprintf("Hi %s!<br><br>Your friend (%s) has just joined ULAPPH and he would like you to join as well. Just visit https://golang-programming.appspot.com in order to join ULAPPH -- the free Cloud Desktop in the Philippines!<br><br>You need to have a valid Google email account. We will be waiting for you.<br><br>Thank you!<br><br> *** ULAPPH *** ", inviteEmail, uid)
 				msg := &mail.Message{
 					Sender: fmt.Sprintf("ULAPPH <anything@%v.appspotmail.com>", SYS_SERVER_NAME),
 					To:      []string{inviteEmail},
@@ -15353,7 +15377,6 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, FL_
 	  return string(b)
 	})
 	//D0081
-	//edwinxxx
 	vm.Set("ottoFuncGetIntentDialogflow", func(user,input string) string {
 	  //c.Infof("ottoFunc: ottoFuncGetIntentDialogflow")
 		// Use NLP
@@ -16701,9 +16724,9 @@ const chatTemplateDispA1 = `
 	<html lang="en">
 	<head>
 	  <meta charset="UTF-8">
-	  <title>Chat::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	  <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	  <title>Chat::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	  <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	  <link rel="shortcut icon" href="/img/favicon.ico"/>
 `
 var chatTemplateA2 = template.Must(template.New("chatTemplateA").Parse(chatTemplateDispA2))
 const chatTemplateDispA2 = `
@@ -16889,9 +16912,9 @@ const streamTemplateDispA1 = `
 	<html lang="en">
 	<head>
 	  <meta charset="UTF-8">
-	  <title>Stream::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	  <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	  <title>Stream::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	  <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	  <link rel="shortcut icon" href="/img/favicon.ico"/>
 		<link rel="stylesheet" href="/css/chat-style.css">
 	<style>
 		.note {
@@ -16968,9 +16991,9 @@ const ulocTemplateDispA = `
 <html manifest="/cache?q=ulocA&f=" lang="en-US" class="no-js">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <title>Local Storage:ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
-  <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+  <title>Local Storage:golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+  <link rel="shortcut icon" href="/img/favicon.ico"/>
+  <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
   <script type="text/javascript" language="javascript" src="/js/jquery-1.11.1.min.js"></script>
   <link rel="stylesheet" href="/css/localStorage.css" />
   <script src="/js/localStorage.js"></script>
@@ -17259,9 +17282,9 @@ const ulocTemplateDispB = `
 <html manifest="/cache?q=ulocB&f=" lang="en-US" class="no-js">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <title>Local Storage::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-  <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+  <title>Local Storage::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+  <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+  <link rel="shortcut icon" href="/img/favicon.ico"/>
   <link rel="stylesheet" href="/css/localStorage.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <script type="text/javascript" language="javascript" src="/js/jquery-1.11.1.min.js"></script>
@@ -17565,7 +17588,7 @@ func ulapphStream(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	if mode == "guest" || uid == "" {
-			redURL := "https://ulapph-public-1.appspot.com/rag?f=slides&d=desktop0&n=1"
+			redURL := "https://golang-programming.appspot.com/rag?f=slides&d=desktop0&n=1"
 			http.Redirect(w, r, redURL, http.StatusFound)
 			return
 	}
@@ -18365,7 +18388,6 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 				}
 				return
 			}
-		//edwinxx
 		//D0076
 		case "cctv-alarm":
 			FL_PROC_OK := validateAccess(w, r, "IS_VALID_USER",r.URL.String())
@@ -19123,7 +19145,7 @@ func editor(w http.ResponseWriter, r *http.Request) {
 				}
 				return
 			default:
-				srcURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/media?FUNC_CODE=RAWJSON&SID=%v", SID)
+				srcURL := fmt.Sprintf("https://golang-programming.appspot.com/media?FUNC_CODE=RAWJSON&SID=%v", SID)
 				if err := textTimelineBody.Execute(w, srcURL); err != nil {
 				  panic(err)
 				}
@@ -21244,7 +21266,7 @@ func scraperAlertify(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,
 					} else {
 						buffer5.WriteString(fmt.Sprintf("<a href=\"%v\" target=\"view\">HTTP Link</a><br>", resolveURL(url,link)))
 					}
-					buffer5.WriteString(fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"share\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", "scrape", rlink))
+					buffer5.WriteString(fmt.Sprintf("<a href=\"https://golang-programming.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"share\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", "scrape", rlink))
 					if len(link) > 0 { ctr++}
 				}
 			} else {
@@ -21255,7 +21277,7 @@ func scraperAlertify(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,
 					} else {
 						buffer5.WriteString(fmt.Sprintf("<a href=\"%v\" target=\"view\">HTTP Link</a><br>", resolveURL(url,link)))
 					}
-					buffer5.WriteString(fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"share\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", "scrape", rlink))
+					buffer5.WriteString(fmt.Sprintf("<a href=\"https://golang-programming.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"share\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", "scrape", rlink))
 					if len(link) > 0 { ctr++}
 				}
 			}
@@ -21271,7 +21293,7 @@ func scraperAlertify(w http.ResponseWriter, r *http.Request,uid,url,sel,img,lnk,
 					} else {
 						buffer5.WriteString(fmt.Sprintf("<a href=\"%v\" target=\"view\">HTTP Link</a><br>", resolveURL(url,link)))
 					}
-					buffer5.WriteString(fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"share\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", "scrape", rlink))
+					buffer5.WriteString(fmt.Sprintf("<a href=\"https://golang-programming.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"share\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", "scrape", rlink))
 					if len(link) > 0 { ctr++}
 				}
 		}
@@ -21923,7 +21945,6 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "</body></html>")
 		return
 	}
-	
 	//D0042
 	if TOOL_FUNC == "ALL_COMMENTS" {
 		if err := showAllRecents.Execute(w, getStartColor(w,r)); err != nil {
@@ -21938,7 +21959,6 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	
 	if TOOL_FUNC == "ALL_DESKTOPS" {
 		listAllDesktops(w,r,uid)
 		return
@@ -22116,13 +22136,13 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
  
 				lines = append(lines, fmt.Sprintf("* Read the ULAPPH Remote Control User Guide"))
 				lines = append(lines, fmt.Sprintf(""))
-				lines = append(lines, fmt.Sprintf(".link https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&DOC_ID=201&SID=TDSSLIDE-201 How to use the ULAPPH Mobile Remote Control?"))
+				lines = append(lines, fmt.Sprintf(".link https://golang-programming.appspot.com/slides?TYPE=SLIDE&DOC_ID=201&SID=TDSSLIDE-201 How to use the ULAPPH Mobile Remote Control?"))
 				lines = append(lines, fmt.Sprintf(".image https://lh3.googleusercontent.com/RZQzgCQKExx5_c7DGLvt58VY7wzrqnnK5VB8c98dt-RNjQ2VVKr4irV_oJlpTyet5yJyGfH5zEs3ftbTtjxtTUxHn2GB 400 1000"))
 				lines = append(lines, fmt.Sprintf(""))
  
 				lines = append(lines, fmt.Sprintf("* You should use same login for website & remote control..."))
 				lines = append(lines, fmt.Sprintf(""))
-				lines = append(lines, fmt.Sprintf(".link https://ulapph-public-1.appspot.com/logout Click here to logout!"))
+				lines = append(lines, fmt.Sprintf(".link https://golang-programming.appspot.com/logout Click here to logout!"))
 				lines = append(lines, fmt.Sprintf(""))
 				
 				//append in auto-slides-------------
@@ -22561,16 +22581,16 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 			case "getURL":
 					reqStr := ""
 					if FORMAT == "SLIDE" {
-						reqStr = fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&DOC_ID=%v&SID=TDSSLIDE-%v", DOC_ID, DOC_ID)
+						reqStr = fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&DOC_ID=%v&SID=TDSSLIDE-%v", DOC_ID, DOC_ID)
 					} else {
-						reqStr = fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v", DOC_ID, DOC_ID)
+						reqStr = fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v", DOC_ID, DOC_ID)
 					}
 				    fmt.Fprintf(w, "<a href=\"%v\">%v</a>", reqStr, reqStr)
 					return
 			case "getPURL":
 					reqStr := ""
 					if FORMAT == "SLIDE" {
-						reqStr = fmt.Sprintf("https://ulapph-public-1.appspot.com/presenter?TYPE=SLIDE&MODE=PRESENTER&PARM=AUTO&SECS=10&DOC_ID=%v", DOC_ID)
+						reqStr = fmt.Sprintf("https://golang-programming.appspot.com/presenter?TYPE=SLIDE&MODE=PRESENTER&PARM=AUTO&SECS=10&DOC_ID=%v", DOC_ID)
 						data := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_OPEN_LINK@888@%v@888@%v@888@%v", reqStr,uid,DOC_ID)
 						sendChannelMessage(w,r,uid,data)
 						dummyCmd(w,r,uid)
@@ -22733,7 +22753,7 @@ func ulapphTools(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintf(w, "<div class=\"success2\"><a href=\"https://www.towerhobbies.com/ucc.html\">Currency Converter</a></div>")	
 				fmt.Fprintf(w, "<div class=\"success2\"><a href=\"https://scientific-calculator.appspot.com/\">Calculator</a></div>")
 				fmt.Fprintf(w, "<div class=\"success2\"><a href=\"https://www.magicscroll.net/\">E-Books Reader</a></div>")
-				fmt.Fprintf(w, "<div class=\"success2\"><a href=\"https://ulapph-public-1.appspot.com/tools?FUNC=MIRROR\" target=\"mirr\">Show Webcam Mirror</a></div>")
+				fmt.Fprintf(w, "<div class=\"success2\"><a href=\"https://golang-programming.appspot.com/tools?FUNC=MIRROR\" target=\"mirr\">Show Webcam Mirror</a></div>")
 				fmt.Fprintf(w, "<div class=\"success2\"><a href=\"/tools?t=CON_STAT\">Check Internet Connection</a></div>")	
 				fmt.Fprintf(w, "<div class=\"success2\"><a href=\"https://webaudiodemos.appspot.com/AudioRecorder/index.html\">Voice Recorder</a></div>")
 				fmt.Fprintf(w, "<div class=\"success2\"><a href=\"https://html5-demos.appspot.com/static/getusermedia/photobooth.html\">Live Photobooth</a></div>")
@@ -24087,13 +24107,13 @@ func searchIndex(w http.ResponseWriter, r *http.Request, searchChan chan []byte,
 				buffer3.WriteString(fmt.Sprintf("	<div class=\"right\">"))
 				buffer3.WriteString(fmt.Sprintf("	  <ul class=\"item_stats\">"))
 				buffer3.WriteString(fmt.Sprintf("		<li>"))
-				buffer3.WriteString(fmt.Sprintf("       <a href=\"https://ulapph-public-1.appspot.com/search?t=InDoc&IDX=%v&SID=%v&q=%v\" target=\"%v\"><img src=\"/img/doc-search.png\" title=\"Search InDoc\" height=\"16\" width=\"16\"></a>", IDX_TARGET, p.DOC_KEY, SEARCH_KEY, p.DOC_KEY))
+				buffer3.WriteString(fmt.Sprintf("       <a href=\"https://golang-programming.appspot.com/search?t=InDoc&IDX=%v&SID=%v&q=%v\" target=\"%v\"><img src=\"/img/doc-search.png\" title=\"Search InDoc\" height=\"16\" width=\"16\"></a>", IDX_TARGET, p.DOC_KEY, SEARCH_KEY, p.DOC_KEY))
 				buffer3.WriteString(fmt.Sprintf("		</li>"))
 				buffer3.WriteString(fmt.Sprintf("		<li>"))
-				buffer3.WriteString(fmt.Sprintf("       <a href=\"https://ulapph-public-1.appspot.com/wall?WALL_FUNC=IDX_COPY&SOURCE_TBL=%v&DOC_KEY=%v&SOURCE_TYPE=%v&TITLE=%v&wall_key=%v\"><img src=\"/img/ucopy.png\" title=\"Wall Copy\" height=\"16\" width=\"16\"></a>", p.SOURCE_TBL, p.DOC_KEY, p.SOURCE_TYPE, p.DOC_TITLE, CMD_GEN_KEY))
+				buffer3.WriteString(fmt.Sprintf("       <a href=\"https://golang-programming.appspot.com/wall?WALL_FUNC=IDX_COPY&SOURCE_TBL=%v&DOC_KEY=%v&SOURCE_TYPE=%v&TITLE=%v&wall_key=%v\"><img src=\"/img/ucopy.png\" title=\"Wall Copy\" height=\"16\" width=\"16\"></a>", p.SOURCE_TBL, p.DOC_KEY, p.SOURCE_TYPE, p.DOC_TITLE, CMD_GEN_KEY))
 				buffer3.WriteString(fmt.Sprintf("		</li>"))
 				buffer3.WriteString(fmt.Sprintf("		<li>"))
-				buffer3.WriteString(fmt.Sprintf("       <a href=\"https://ulapph-public-1.appspot.com/uloc?LS_FUNC=IDX_COPY&SOURCE_TBL=%v&DOC_KEY=%v&SOURCE_TYPE=%v&IMG_SRC=%v&TITLE=%v\"><img src=\"/img/uloc.png\" title=\"Save to ULOC\" height=\"16\" width=\"16\"></a>", p.SOURCE_TBL, p.DOC_KEY, p.SOURCE_TYPE, p.IMG_URL, p.DOC_TITLE))
+				buffer3.WriteString(fmt.Sprintf("       <a href=\"https://golang-programming.appspot.com/uloc?LS_FUNC=IDX_COPY&SOURCE_TBL=%v&DOC_KEY=%v&SOURCE_TYPE=%v&IMG_SRC=%v&TITLE=%v\"><img src=\"/img/uloc.png\" title=\"Save to ULOC\" height=\"16\" width=\"16\"></a>", p.SOURCE_TBL, p.DOC_KEY, p.SOURCE_TYPE, p.IMG_URL, p.DOC_TITLE))
 				buffer3.WriteString(fmt.Sprintf("		</li>"))
 				buffer3.WriteString(fmt.Sprintf("		<li>"))
 				buffer3.WriteString(fmt.Sprintf("		  <img src=\"/img/comment-icon.png\" width=16 height=16 title=\"Comments\">"))
@@ -24150,13 +24170,13 @@ func searchIndex(w http.ResponseWriter, r *http.Request, searchChan chan []byte,
 				buffer3.WriteString(fmt.Sprintf("	<div class=\"right\">"))
 				buffer3.WriteString(fmt.Sprintf("	  <ul class=\"item_stats\">"))
 				buffer3.WriteString(fmt.Sprintf("		<li>"))
-				buffer3.WriteString(fmt.Sprintf("       <a href=\"https://ulapph-public-1.appspot.com/search?t=InDoc&IDX=%v&SID=%v&q=%v\" target=\"%v\"><img src=\"/img/doc-search.png\" title=\"Search InDoc\" height=\"16\" width=\"16\"></a>", IDX_TARGET, p.DOC_KEY, SEARCH_KEY, p.DOC_KEY))
+				buffer3.WriteString(fmt.Sprintf("       <a href=\"https://golang-programming.appspot.com/search?t=InDoc&IDX=%v&SID=%v&q=%v\" target=\"%v\"><img src=\"/img/doc-search.png\" title=\"Search InDoc\" height=\"16\" width=\"16\"></a>", IDX_TARGET, p.DOC_KEY, SEARCH_KEY, p.DOC_KEY))
 				buffer3.WriteString(fmt.Sprintf("		</li>"))
 				buffer3.WriteString(fmt.Sprintf("		<li>"))
-				buffer3.WriteString(fmt.Sprintf("       <a href=\"https://ulapph-public-1.appspot.com/wall?WALL_FUNC=IDX_COPY&SOURCE_TBL=%v&DOC_KEY=%v&SOURCE_TYPE=%v&TITLE=%v&wall_key=%v\"><img src=\"/img/ucopy.png\" title=\"Wall Copy\" height=\"16\" width=\"16\"></a>", p.SOURCE_TBL, p.DOC_KEY, p.SOURCE_TYPE, p.DOC_TITLE, CMD_GEN_KEY))
+				buffer3.WriteString(fmt.Sprintf("       <a href=\"https://golang-programming.appspot.com/wall?WALL_FUNC=IDX_COPY&SOURCE_TBL=%v&DOC_KEY=%v&SOURCE_TYPE=%v&TITLE=%v&wall_key=%v\"><img src=\"/img/ucopy.png\" title=\"Wall Copy\" height=\"16\" width=\"16\"></a>", p.SOURCE_TBL, p.DOC_KEY, p.SOURCE_TYPE, p.DOC_TITLE, CMD_GEN_KEY))
 				buffer3.WriteString(fmt.Sprintf("		</li>"))
 				buffer3.WriteString(fmt.Sprintf("		<li>"))
-				buffer3.WriteString(fmt.Sprintf("       <a href=\"https://ulapph-public-1.appspot.com/uloc?LS_FUNC=IDX_COPY&SOURCE_TBL=%v&DOC_KEY=%v&SOURCE_TYPE=%v&IMG_SRC=%v&TITLE=%v\"><img src=\"/img/uloc.png\" title=\"Save to ULOC\" height=\"16\" width=\"16\"></a>", p.SOURCE_TBL, p.DOC_KEY, p.SOURCE_TYPE, p.IMG_URL, p.DOC_TITLE))
+				buffer3.WriteString(fmt.Sprintf("       <a href=\"https://golang-programming.appspot.com/uloc?LS_FUNC=IDX_COPY&SOURCE_TBL=%v&DOC_KEY=%v&SOURCE_TYPE=%v&IMG_SRC=%v&TITLE=%v\"><img src=\"/img/uloc.png\" title=\"Save to ULOC\" height=\"16\" width=\"16\"></a>", p.SOURCE_TBL, p.DOC_KEY, p.SOURCE_TYPE, p.IMG_URL, p.DOC_TITLE))
 				buffer3.WriteString(fmt.Sprintf("		</li>"))
 				buffer3.WriteString(fmt.Sprintf("		<li>"))
 				buffer3.WriteString(fmt.Sprintf("		  <img src=\"/img/comment-icon.png\" width=16 height=16 title=\"Comments\">"))
@@ -24311,7 +24331,7 @@ func people(w http.ResponseWriter, r *http.Request) {
 			url := r.FormValue("url")
 			url = resolveURL(domRefMatchS,url)
 			//send shareable link
-			MSG := fmt.Sprintf("<img src=\"/img/jswm.png\" width=50 height=50> New window opened: [%v] %v <a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", title, ShortenUrl(w,r,url), title, url, title)
+			MSG := fmt.Sprintf("<img src=\"/img/jswm.png\" width=50 height=50> New window opened: [%v] %v <a href=\"https://golang-programming.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", title, ShortenUrl(w,r,url), title, url, title)
 			if uid != "" && url != "" && title != "" {
 				//when a UWM window is opened
 				sendChannelMessage(w,r,uid, MSG)
@@ -27289,7 +27309,7 @@ func validateAccess(w http.ResponseWriter, r *http.Request, FUNC_CODE, lref stri
 		} else {
 			msgDtl := fmt.Sprintf("[U00167] ERROR: Hi!, You appear to us as a bot! We currently disallow robots from accessing some parts of the website. Thanks!")
 			msgTyp := "error"
-			msgURL := fmt.Sprintf("https://ulapph-public-1.appspot.com")
+			msgURL := fmt.Sprintf("https://golang-programming.appspot.com")
 			action := fmt.Sprintf("Apologies for this issue.")
 			sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, msgURL, action)
 			http.Redirect(w, r, sysReq, http.StatusFound)
@@ -28292,12 +28312,12 @@ func share(w http.ResponseWriter, r *http.Request) {
 			switch TARGET {
 				case "TDSSLIDE":
 					_, _, _, _, _, TITLE, _, _, MUSIC_ID, GET_NEXT := getTDSSLIDEBlobKey(w, r, docID)
-					reqStr := fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&DOC_ID=%v&SID=%v&MODE=NORMAL&PARM=LOOP&SECS=8&TITLE=%v&MUSIC_ID=%v&GET_NEXT=%v&SOUND=ON", DOC_ID, SID, TITLE, MUSIC_ID, GET_NEXT)
-					redir = fmt.Sprintf("https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v", TITLE, ShortenUrl(w,r,reqStr))
+					reqStr := fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&DOC_ID=%v&SID=%v&MODE=NORMAL&PARM=LOOP&SECS=8&TITLE=%v&MUSIC_ID=%v&GET_NEXT=%v&SOUND=ON", DOC_ID, SID, TITLE, MUSIC_ID, GET_NEXT)
+					redir = fmt.Sprintf("https://golang-programming.appspot.com/share?SH_FUNC=all&title=%v&url=%v", TITLE, ShortenUrl(w,r,reqStr))
 				case "TDSARTL":
 					_, _, _, _, _, TITLE, _, _, MUSIC_ID := getTDSARTLBlobKey(w, r, docID)
-					reqStr := fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=%v&TITLE=%v&MUSIC_ID=%v", DOC_ID, SID, TITLE, MUSIC_ID)
-					redir = fmt.Sprintf("https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v", TITLE, ShortenUrl(w,r,reqStr))
+					reqStr := fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=%v&TITLE=%v&MUSIC_ID=%v", DOC_ID, SID, TITLE, MUSIC_ID)
+					redir = fmt.Sprintf("https://golang-programming.appspot.com/share?SH_FUNC=all&title=%v&url=%v", TITLE, ShortenUrl(w,r,reqStr))
 				default:
 					fmt.Fprintf(w, "Sorry, slide & article only shared using this method.<br>")
 					return
@@ -29088,7 +29108,7 @@ func social(w http.ResponseWriter, r *http.Request) {
 						rh := r.Header
 						oLatLong := rh.Get("X-AppEngine-CityLatLong")
 						//D0061
-						comUrl  := fmt.Sprintf("%v/comments?C_FUNC=create2&SID=%v&res=%v&parent=-1&name=%v&comment=%v&latlon=%v&url=&cc_key=%v", "https://ulapph-public-1.appspot.com", SID, res, uid, content, oLatLong, SYS_RECAPTCHA_KEY)
+						comUrl  := fmt.Sprintf("%v/comments?C_FUNC=create2&SID=%v&res=%v&parent=-1&name=%v&comment=%v&latlon=%v&url=&cc_key=%v", "https://golang-programming.appspot.com", SID, res, uid, content, oLatLong, SYS_RECAPTCHA_KEY)
 						//Post data to server
 						//URL := fmt.Sprintf("%v/social?SO_FUNC=proc-broadcast-contents&encMsg=%v", SEARCH_SERVER, encMsg)
 						req, err := http.NewRequest("POST", comUrl, nil)
@@ -31608,7 +31628,6 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 					//
 				}
 			}
-			
 		case "TASK_RULE_PROC":
 			TASK_MEMCACHER_rulesProcessor(w,r)
 		case "CACHE_TOP_STATS":
@@ -31893,15 +31912,13 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 		case "SESSION_ONLINE":
 			tasks, err := taskqueue.Lease(c, 100, "default", 1800)
 			if err == nil {
-				taskqueue.DeleteMulti(c, tasks, "default")	
+				taskqueue.DeleteMulti(c, tasks, "default")
 			}
 			//also update users online
 			TASK_MEMCACHER_frequent(w,r)
-			
 		case "TASK_DWEETIO":
 			//runtime
 			TASK_Dweetio(w,r)
-			
 		case "API_GOOGLE_PLUS_IND":
 			UID := r.FormValue("UID")
 			IS_OK_TO_RUN := checkIfOkToRun(w, r)
@@ -32548,7 +32565,7 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 	}
 	*/
 	//UFLink := "http://www.phivolcs.dost.gov.ph/html/update_SOEPD/EQLatest.html"
-	//ARLink := "https://ulapph-public-1.appspot.com/infodb?DB_FUNC=ULAPPH-EQ-PH&SID=ULAPPH-EQ-PH"
+	//ARLink := "https://golang-programming.appspot.com/infodb?DB_FUNC=ULAPPH-EQ-PH&SID=ULAPPH-EQ-PH"
 	UFLink := "https://earthquake.phivolcs.dost.gov.ph/"
 	//cKey := fmt.Sprintf("ULAPPH_EQ_%s", "PH")
 	cKeyP := fmt.Sprintf("ULAPPH_EQ_%s_PREV", "PH")
@@ -32604,6 +32621,7 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 						//if cKeyValue != "" {
 						if cKeyValue != trimValue {
 							if SYS_EQ_MON_MSG == true {
+								c.Infof("thisFrame2: %v", thisFrame2)
 								goq, err := goquery.NewDocument(r,thisFrame2)
 								if err != nil {
 									log.Fatal(err)
@@ -32612,20 +32630,23 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 								mag := ""
 								iLink := ""
 								  goq.Find("body > div > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(2)").Each(func(i int, s *goquery.Selection) {
-									fmt.Printf("%v\n", s.Text())
+									//fmt.Printf("%v\n", s.Text())
+									c.Infof("%v\n", s.Text())
 									SPL := strings.Split(s.Text(), " of ")
 									if len(SPL) > 0 {
 										location = SPL[1]
 									}
 								  })
 								  goq.Find("body > div > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(5)").Each(func(i int, s *goquery.Selection) {
-									fmt.Printf("%v\n", s.Text())
+									//fmt.Printf("%v\n", s.Text())
+									c.Infof("%v\n", s.Text())
 									SPL := strings.Split(s.Text(), "Ms ")
 									if len(SPL) > 0 {
 										mag = SPL[1]
 									}
 								  })
 								  goq.Find("body > div > table > tbody > tr:nth-child(3) > td").Each(func(i int, s *goquery.Selection) {
+									c.Infof("%v\n", s.Text())
 									imgTag := s.Find("img")
 									imgLink, _ := imgTag.Attr("imgsrc")
 									if imgLink == "" {
@@ -32639,7 +32660,7 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 								})
 
 								//msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>][<a href=\"%v\" target=\"eq2\">View All</a>]<hr>Source: PHIVOLCS", thisFrame2, ShortenUrl(w,r,ARLink))
-								msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>] [%v] [%v]<br><img src=\"\" width=100% height=100%><hr>Source: PHIVOLCS", thisFrame2, mag, location, iLink)
+								msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>] [%v] [%v]<br><img src=\"\" width=100%% height=100%%><hr>Source: PHIVOLCS", thisFrame2, mag, location, iLink)
 								//msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago. >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v | Philvolcs URL: %v)", ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,ARLink), ShortenUrl(w,r,UFLink))
 								msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago in %v with magnitude %v >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v)", location, mag, ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,UFLink))
 								//update all sys msg
@@ -32820,14 +32841,29 @@ func TASK_MEMCACHER_frequent (w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	
 }
 
 //gets all trending contents from all member desktops under the site server
 //applicable for sites server only
 func getTrendingContents(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-//Trending Contents
+	//D0083
+	//toggle between html/json
+	cKey := "GT_TOGGLE_STATUS"
+	GT_TARGET := ""
+	GT_TOGGLE_STATUS := getStrMemcacheValueByKey(w,r,cKey)
+	if GT_TOGGLE_STATUS == "" {
+		GT_TARGET = "html"
+	} else {
+		switch GT_TOGGLE_STATUS {
+			case "html":
+				GT_TARGET = "json"
+			case "json":
+				GT_TARGET = "html"
+		}
+	}
+	putStrToMemcacheWithoutExp(w,r,cKey,GT_TARGET)
+	//Trending Contents
 	IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "Y" {
 		//scan host list
@@ -32835,10 +32871,8 @@ func getTrendingContents(w http.ResponseWriter, r *http.Request) {
 		//foreach host post presence message
 		temp := strings.Split(HOST_LIST,"\n")
 		var buffer3 bytes.Buffer
-				
 		if len(temp) > 0 {
 			for j := 0; j < len(temp); j++ {
- 
 				tURL := ""
 				SPL := strings.Split(temp[j], "|")
 				if len(SPL) < 2 {
@@ -32849,24 +32883,23 @@ func getTrendingContents(w http.ResponseWriter, r *http.Request) {
 				i := strings.Index(getSchemeUrl(w,r), tURL)
 				thisStr := fmt.Sprintf("%v", temp[j])
 				if tURL != "" && i == -1 && string(thisStr[0]) != "#" {
-					
-					URL := fmt.Sprintf("%v/social?SO_FUNC=get-trending", tURL)
+					URL := fmt.Sprintf("%v/social?SO_FUNC=get-trending&t=%v", tURL, GT_TARGET)
+					//c.Infof("URL: %v", URL)
 					client := urlfetch.Client(c)
 					if err := r.ParseForm(); err != nil {
 						panic(err)
 					}
-					
 					FL_RESP_OK := true
 					resp, err := client.Get(URL)
 					if err != nil {
 						//panic(err)
 						FL_RESP_OK = false
 					}
-					
 					if FL_RESP_OK == true {
 						bodyBytes, _ := ioutil.ReadAll(resp.Body)
 						//HOST_LIST = string(bodyBytes)
 						//fmt.Fprintf(w, "%v", string(bodyBytes))
+						//c.Infof("bodyBytes: %v", string(bodyBytes))
 						j := strings.Index(string(bodyBytes), "[U00000] OVER QUOTA ERROR:")
 						if j == -1 {
 							buffer3.Write(bodyBytes)
@@ -32876,15 +32909,38 @@ func getTrendingContents(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		//cache all replies
-		putBytesToMemcacheWithoutExp(w,r,"OVERALL_TRENDING",buffer3.Bytes())	
+		//D0083
+		switch GT_TARGET {
+			case "json":
+				c.Infof("saved json")
+				putBytesToMemcacheWithoutExp(w,r,"OVERALL_TRENDING_JSON",buffer3.Bytes())
+			default:
+				c.Infof("saved html")
+				putBytesToMemcacheWithoutExp(w,r,"OVERALL_TRENDING",buffer3.Bytes())
+		}
 	}
 }
-
 //gets whats new contents from all desktops who are member of a sites server
 //applicable for sites server only
 func getWhatsNewContents(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-//WhatsNew Contents
+	//D0083
+	//toggle between html/json
+	cKey := "GT_TOGGLE_STATUS"
+	GT_TARGET := ""
+	GT_TOGGLE_STATUS := getStrMemcacheValueByKey(w,r,cKey)
+	if GT_TOGGLE_STATUS == "" {
+		GT_TARGET = "html"
+	} else {
+		switch GT_TOGGLE_STATUS {
+			case "html":
+				GT_TARGET = "json"
+			case "json":
+				GT_TARGET = "html"
+		}
+	}
+	putStrToMemcacheWithoutExp(w,r,cKey,GT_TARGET)
+	//WhatsNew Contents
 	IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "Y" {
 		//scan host list
@@ -32892,10 +32948,8 @@ func getWhatsNewContents(w http.ResponseWriter, r *http.Request) {
 		//foreach host post presence message
 		temp := strings.Split(HOST_LIST,"\n")
 		var buffer3 bytes.Buffer
-				
 		if len(temp) > 0 {
 			for j := 0; j < len(temp); j++ {
- 
 				tURL := ""
 				SPL := strings.Split(temp[j], "|")
 				if len(SPL) < 2 {
@@ -32906,20 +32960,19 @@ func getWhatsNewContents(w http.ResponseWriter, r *http.Request) {
 				i := strings.Index(getSchemeUrl(w,r), tURL)
 				thisStr := fmt.Sprintf("%v", temp[j])
 				if tURL != "" && i == -1 && string(thisStr[0]) != "#" {
-					
-					URL := fmt.Sprintf("%v/social?SO_FUNC=get-whats-new", tURL)
+					//D0083
+					URL := fmt.Sprintf("%v/social?SO_FUNC=get-whats-new&t=%v", tURL, GT_TARGET)
+					//c.Infof("URL: %v", URL)
 					client := urlfetch.Client(c)
 					if err := r.ParseForm(); err != nil {
 						panic(err)
 					}
-					
 					FL_RESP_OK := true
 					resp, err := client.Get(URL)
 					if err != nil {
 						//panic(err)
 						FL_RESP_OK = false
 					}
-					
 					if FL_RESP_OK == true {
 						bodyBytes, _ := ioutil.ReadAll(resp.Body)
 						//if response is overquota
@@ -32932,8 +32985,16 @@ func getWhatsNewContents(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		//cache all replies
-		putBytesToMemcacheWithoutExp(w,r,"OVERALL_WHATS_NEW",buffer3.Bytes())
-	}	
+		//D0083
+		switch GT_TARGET {
+			case "json":
+				c.Infof("saved json")
+				putBytesToMemcacheWithoutExp(w,r,"OVERALL_WHATS_NEW_JSON",buffer3.Bytes())
+			default:
+				c.Infof("saved html")
+				putBytesToMemcacheWithoutExp(w,r,"OVERALL_WHATS_NEW",buffer3.Bytes())
+		}
+	}
 }
 
 //D0042
@@ -33082,94 +33143,72 @@ func getDesktopsDirectory(w http.ResponseWriter, r *http.Request) {
 							} else {
 								buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 							}
- 
 						STR_FILLER1 = fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-tot-slides", tURL))
- 
 							if j == -1 && k == -1 {
 								buffer3.WriteString(fmt.Sprintf("<td data-order=\"%v\">%v</td>", STR_FILLER1, STR_FILLER1))
 							} else {
 								buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 							}
-							
 						STR_FILLER1 = fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-tot-articles", tURL))
- 
 							if j == -1 && k == -1 {
 								buffer3.WriteString(fmt.Sprintf("<td data-order=\"%v\">%v</td>", STR_FILLER1, STR_FILLER1))
 							} else {
 								buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 							}
-							
 						STR_FILLER1 = fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-tot-media", tURL))
- 
 							if j == -1 && k == -1 {
 								buffer3.WriteString(fmt.Sprintf("<td data-order=\"%v\">%v</td>", STR_FILLER1, STR_FILLER1))
 							} else {
 								buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 							}
-							
 						STR_FILLER1 = fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-tot-users", tURL))
- 
 							if j == -1 && k == -1 {
 								buffer3.WriteString(fmt.Sprintf("<td data-order=\"%v\">%v</td>", STR_FILLER1, STR_FILLER1))
 							} else {
 								buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 							}
-							
 						STR_FILLER1 = fetchURL(w,r,fmt.Sprintf("%v/social?SO_FUNC=get-contact", tURL))
- 
 							if j == -1 && k == -1 {
 								buffer3.WriteString(fmt.Sprintf("<td data-order=\"%v\">%v</td>", STR_FILLER1, STR_FILLER1))
 							} else {
 								buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 							}
-						
 						if j == -1 && k == -1 {
 						buffer3.WriteString(fmt.Sprintf("<td data-order=\"%v\">%v</td>", tags, tags))
 						} else {
 						buffer3.WriteString(fmt.Sprintf("<td>...</td>"))
 						}
-						
 					buffer3.WriteString(fmt.Sprintf("</tr>"))
 				}
 			}
 		}
 		//cache all replies
 		putBytesToMemcacheWithoutExp(w,r,"OVERALL_SITES",buffer3.Bytes())
-	}	
+	}
 }
 
 //a taskqueue cacheing logic for getting trending contents, whats new etc
 func TASK_MEMCACHER_general (w http.ResponseWriter, r *http.Request) {
-	
 	getTrendingContents(w,r)
- 
 	getWhatsNewContents(w,r)
-	
 	getDesktopsDirectory(w,r)
-	
 	putStrToMemcacheWithExp(w,r,"CACHE_TOP_STATS","",60)
-		
 	fmt.Fprintf(w, "Task completed")
 }
 
 //caches profile pic for a user 
 func cacheProfilePic(w http.ResponseWriter, r *http.Request, uid string) string {
- 
     c := appengine.NewContext(r)
 	//var buffer3 bytes.Buffer
- 
 	PROFILE_PIC := ""
 	cKey := fmt.Sprintf("PROFILE_PIC_%v", uid)
 	if item, err := memcache.Get(c, cKey); err == memcache.ErrCacheMiss {
- 
 	} else if err != nil {
 		//c.Errorf("error getting item: %v", err)
 	} else {
- 
 		PROFILE_PIC = fmt.Sprintf("%s", item.Value)
 	}
 	if PROFILE_PIC == "" {
- 
 		q := datastore.NewQuery("TDSPROF").Filter("UID =", uid).Limit(1)
 		//c.Errorf("[S0232]")
 		profile := make([]TDSPROF, 0, 1)
@@ -33895,11 +33934,10 @@ func peopleEdit(w http.ResponseWriter, r *http.Request) {
 				}
 				////c.Infof("updated")
 				break
-			}	
+			}
 		}
 		fmt.Fprintf(w, "UWM sharing settings have been saved!")
 		return
-		
 	case "SetStartMenuTheme":
 		color := r.FormValue("COLOR1")
 		if len(color) != 6 {
@@ -33908,7 +33946,6 @@ func peopleEdit(w http.ResponseWriter, r *http.Request) {
 		}
 		color = fmt.Sprintf("#%v", color)
 		cfgName := fmt.Sprintf("PERSONAL_StartMenu_Color_%v", uid)
-		
 		g := TDSCNFG{
 				SYS_VER: 1,
 				USER: uid,
@@ -33923,21 +33960,18 @@ func peopleEdit(w http.ResponseWriter, r *http.Request) {
 				panic(err)
 		}
 		//c.Errorf("[S0246]")
- 
 		//update cache
 		cKey := fmt.Sprintf("START_MENU_COLOR_%v", uid)
 		putStrToMemcacheWithoutExp(w,r,cKey,color)
 		fmt.Fprintf(w, "Start Menu Color has been set<br>.")
-		
 	case "SetActiveWindowsTheme":
 		color := r.FormValue("COLOR2")
 		if len(color) != 6 {
 			fmt.Fprintf(w, "Invalid color value.")
 			return
-		}	
+		}
 		color = fmt.Sprintf("#%v", color)
 		cfgName := fmt.Sprintf("PERSONAL_ActiveWindows_Color_%v", uid)
-		
 		g := TDSCNFG{
 				SYS_VER: 1,
 				USER: uid,
@@ -34852,7 +34886,7 @@ func peopleEdit(w http.ResponseWriter, r *http.Request) {
 					
 					//notify all users of this event via channels
 					reqStr := fmt.Sprintf("/people-edit?EditPeopleFunc=EditPeople&UID=%v&SID=%v", UID, UID)
-					msgDtl3 := fmt.Sprintf("UID:%v has updated his/her <a href=\"%v\">profile</a>. https://ulapph-public-1.appspot.com/people-edit?EditPeopleFunc=EditPeople&UID=%v&SID=%v", UID, reqStr, UID, UID)
+					msgDtl3 := fmt.Sprintf("UID:%v has updated his/her <a href=\"%v\">profile</a>. https://golang-programming.appspot.com/people-edit?EditPeopleFunc=EditPeople&UID=%v&SID=%v", UID, reqStr, UID, UID)
 					sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,UID,reqStr,""),"")
 					
 					USERS_ONLINE_CACHE_KEY := "USERS_ONLINE_LIST"
@@ -37486,7 +37520,7 @@ func adminSlides(w http.ResponseWriter, r *http.Request) {
 								fmt.Fprintf(w, "<b>SID:</b> TDSSLIDE-%v<br>", p.DOC_ID)
 								fmt.Fprintf(w, "<b>Publish Status:</b> %v<br>", p.DOC_STAT)
 								fmt.Fprintf(w, "<b>Category:</b> %v<br>", p.CATEGORY)
-								URL_DIS := fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSSLIDE-%v&TITLE=%v", p.DOC_ID, p.TITLE)
+								URL_DIS := fmt.Sprintf("https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSSLIDE-%v&TITLE=%v", p.DOC_ID, p.TITLE)
 								fmt.Fprintf(w, "<b>Discussion:</b> <a href=\"%v\">View Comments</a><br>", URL_DIS)
 								fmt.Fprintf(w, "<b>Author: </b> %v<br>", p.AUTHOR)
 								fmt.Fprintf(w, "<b>Shared Status:</b> %v<br>", p.FL_SHARED)
@@ -39091,7 +39125,7 @@ func dispTopContents(w http.ResponseWriter, r *http.Request, deskName, DISP_CODE
 				
 				//notify all users of this event via channels
 				viaStr := getAccessString(w,r,"")
-				msgDtl3 := fmt.Sprintf("UID:%v accessed all contents for https://ulapph-public-1.appspot.com/desktop0 %v.", uid, viaStr)
+				msgDtl3 := fmt.Sprintf("UID:%v accessed all contents for https://golang-programming.appspot.com/desktop0 %v.", uid, viaStr)
 				reqStr := fmt.Sprintf("/desktop0") 			
 				sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid,reqStr,""),"")
 			}		
@@ -39106,7 +39140,7 @@ func dispTopContents(w http.ResponseWriter, r *http.Request, deskName, DISP_CODE
 			}
 			//notify all users of this event via channels
 			viaStr := getAccessString(w,r,"")
-			msgDtl3 := fmt.Sprintf("UID:%v accessed all contents index https://ulapph-public-1.appspot.com/contents?q=home %v.", uid, viaStr)
+			msgDtl3 := fmt.Sprintf("UID:%v accessed all contents index https://golang-programming.appspot.com/contents?q=home %v.", uid, viaStr)
 			reqStr := fmt.Sprintf("/contents?q=home")
 			sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid,reqStr,""),"")
 			
@@ -39287,7 +39321,7 @@ func dispTopContents(w http.ResponseWriter, r *http.Request, deskName, DISP_CODE
 			
 			//notify all users of this event via channels
 			viaStr := getAccessString(w,r,"")
-			msgDtl3 := fmt.Sprintf("UID:%v accessed all contents for https://ulapph-public-1.appspot.com/contents?q=%v %v.", uid, deskName, viaStr)
+			msgDtl3 := fmt.Sprintf("UID:%v accessed all contents for https://golang-programming.appspot.com/contents?q=%v %v.", uid, deskName, viaStr)
 			reqStr := fmt.Sprintf("/contents?q=%v",deskName)
 			sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,uid,reqStr,""),"")
 			
@@ -40095,7 +40129,7 @@ func adminArticles(w http.ResponseWriter, r *http.Request) {
 								fmt.Fprintf(w, "<b>SID:</b> TDSARTL-%v<br>", p.DOC_ID)
 								fmt.Fprintf(w, "<b>Publish Status:</b> %v<br>", p.DOC_STAT)
 								fmt.Fprintf(w, "<b>Category:</b> %v<br>", p.CATEGORY)
-								URL_DIS := fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSARTL-%v&TITLE=%v", p.DOC_ID, p.TITLE)
+								URL_DIS := fmt.Sprintf("https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSARTL-%v&TITLE=%v", p.DOC_ID, p.TITLE)
 								fmt.Fprintf(w, "<b>Discussion:</b> <a href=\"%v\">View Comments</a><br>", URL_DIS)
 								fmt.Fprintf(w, "<b>Author: </b> %v<br>", p.AUTHOR)
 								fmt.Fprintf(w, "<b>Shared Status:</b> %v<br>", p.FL_SHARED)
@@ -43038,7 +43072,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 		thisWpTitle := ""
 		thisWpDesc := ""
 		//get image based on array and random
-		//https://ulapph-public-1.appspot.com/img/Andromeda-Galaxy.jpg|Title|Description@888@
+		//https://golang-programming.appspot.com/img/Andromeda-Galaxy.jpg|Title|Description@888@
 		SPL := strings.Split(WALLPAPERS_LIST_ARRAY,"@888@")
 		if len(SPL) > 0 {
 			if len(SPL) == 1 {
@@ -43697,7 +43731,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 						tstamp := getTimestamp()
 						//insert media into search idx
 						thisIdxKey := fmt.Sprintf("TDSMEDIA-%d", p.MEDIA_ID)
-						thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", p.MEDIA_ID, p.IMG_URL)
+						thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", p.MEDIA_ID, p.IMG_URL)
 						TITLE := strings.Replace(p.TITLE, "_", " ", -1)
 						DESC := strings.Replace(p.DESC, "_", " ", -1)
 						thisCont := ""
@@ -43935,12 +43969,12 @@ func media(w http.ResponseWriter, r *http.Request) {
 					msgDtl3 := ""
 					if u == nil {
 						msg = getGeoString(w,r)
-						shareMe := fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"MEDIA-%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", TITLE, ShortenUrl(w,r,reqStr), TITLE)
-						msgDtl3 = fmt.Sprintf("UID:%v has viewed MEDIA (<a href=\"%v\" target=\"preview\">%v <img src=\"%v\" width=100 height=70></a>) %v %v https://ulapph-public-1.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%v", msg, reqStr, TITLE, IMG_URL, shareMe, mediaID, mediaID)	
+						shareMe := fmt.Sprintf("<a href=\"https://golang-programming.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"MEDIA-%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", TITLE, ShortenUrl(w,r,reqStr), TITLE)
+						msgDtl3 = fmt.Sprintf("UID:%v has viewed MEDIA (<a href=\"%v\" target=\"preview\">%v <img src=\"%v\" width=100 height=70></a>) %v %v https://golang-programming.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%v", msg, reqStr, TITLE, IMG_URL, shareMe, mediaID, mediaID)	
 					}else{
 						msg = uid
-						shareMe := fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"MEDIA-%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", TITLE, ShortenUrl(w,r,reqStr), TITLE)
-						msgDtl3 = fmt.Sprintf("UID:%v has viewed MEDIA (<a href=\"%v\" target=\"preview\">%v <img src=\"%v\" width=100 height=70></a>) %v %v https://ulapph-public-1.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%v", msg, reqStr, TITLE, IMG_URL, shareMe, mediaID, mediaID)
+						shareMe := fmt.Sprintf("<a href=\"https://golang-programming.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"MEDIA-%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", TITLE, ShortenUrl(w,r,reqStr), TITLE)
+						msgDtl3 = fmt.Sprintf("UID:%v has viewed MEDIA (<a href=\"%v\" target=\"preview\">%v <img src=\"%v\" width=100 height=70></a>) %v %v https://golang-programming.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%v", msg, reqStr, TITLE, IMG_URL, shareMe, mediaID, mediaID)
 						reqStr = fmt.Sprintf("%vmedia?FUNC_CODE=VIEW&MEDIA_ID=%v", domRefMatchS, mediaID)
 					}
 					updateUserActiveData(w, r, c, msg, SID)
@@ -44045,7 +44079,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 									fmt.Fprintf(w, "<b>Author: </b> %v<br>", p.AUTHOR)
 									fmt.Fprintf(w, "<b>Publish Status:</b> %v<br>", p.DOC_STAT)
 									fmt.Fprintf(w, "<b>Category:</b> %v<br>", p.CATEGORY)
-									URL_DIS := fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSMEDIA-%v&TITLE=%v", p.MEDIA_ID, TITLE)
+									URL_DIS := fmt.Sprintf("https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSMEDIA-%v&TITLE=%v", p.MEDIA_ID, TITLE)
 									fmt.Fprintf(w, "<b>Discussion:</b> <a href=\"%v\">View Comments</a><br>", URL_DIS)
 									fmt.Fprintf(w, "<b>Media Type:</b> %v<br>", p.DATA_TYPE)
 									fmt.Fprintf(w, "<b>Mime Type:</b> %v<br>", p.MIME_TYPE)
@@ -44170,11 +44204,11 @@ func media(w http.ResponseWriter, r *http.Request) {
 									fmt.Fprintf(w, "<b>Author: </b> %v<br>", p.AUTHOR)
 									fmt.Fprintf(w, "<b>Publish Status:</b> %v<br>", p.DOC_STAT)
 									fmt.Fprintf(w, "<b>Category:</b> %v<br>", p.CATEGORY)
-									URL_DIS := fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSMEDIA-%v&TITLE=%v", p.MEDIA_ID, TITLE)
+									URL_DIS := fmt.Sprintf("https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSMEDIA-%v&TITLE=%v", p.MEDIA_ID, TITLE)
 									fmt.Fprintf(w, "<b>Discussion:</b> <a href=\"%v\">View Comments</a><br>", URL_DIS)
-									prevLink := fmt.Sprintf("https://ulapph-public-1.appspot.com/editor?EDIT_FUNC=READER_PREVIOUS&SID=TDSMEDIA-%v&CATEGORY=%v", p.MEDIA_ID, p.CATEGORY)
-									ranLink := fmt.Sprintf("https://ulapph-public-1.appspot.com/editor?EDIT_FUNC=READER_RANDOM&SID=TDSMEDIA-%v&CATEGORY=%v", p.MEDIA_ID, p.CATEGORY)
-									nextLink := fmt.Sprintf("https://ulapph-public-1.appspot.com/editor?EDIT_FUNC=READER_NEXT&SID=TDSMEDIA-%v&CATEGORY=%v", p.MEDIA_ID, p.CATEGORY)
+									prevLink := fmt.Sprintf("https://golang-programming.appspot.com/editor?EDIT_FUNC=READER_PREVIOUS&SID=TDSMEDIA-%v&CATEGORY=%v", p.MEDIA_ID, p.CATEGORY)
+									ranLink := fmt.Sprintf("https://golang-programming.appspot.com/editor?EDIT_FUNC=READER_RANDOM&SID=TDSMEDIA-%v&CATEGORY=%v", p.MEDIA_ID, p.CATEGORY)
+									nextLink := fmt.Sprintf("https://golang-programming.appspot.com/editor?EDIT_FUNC=READER_NEXT&SID=TDSMEDIA-%v&CATEGORY=%v", p.MEDIA_ID, p.CATEGORY)
 									fmt.Fprintf(w, "<b>Explore:</b> [<a href=\"%v\" target=explore>Previous</a>] [<a href=\"%v\" target=explore>Random</a>] [<a href=\"%v\" target=explore>Next</a>]<br>", prevLink, ranLink, nextLink)
 									fmt.Fprintf(w, "<b>Media Type:</b> %v<br>", DATA_TYPE)
 									fmt.Fprintf(w, "<b>Mime Type:</b> %v<br>", p.MIME_TYPE)
@@ -44265,7 +44299,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 									fmt.Fprintf(w, "<b>Author: </b> %v<br>", p.AUTHOR)
 									fmt.Fprintf(w, "<b>Publish Status:</b> %v<br>", p.DOC_STAT)
 									fmt.Fprintf(w, "<b>Category:</b> %v<br>", p.CATEGORY)
-									URL_DIS := fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSMEDIA-%v&TITLE=%v", p.MEDIA_ID, TITLE)
+									URL_DIS := fmt.Sprintf("https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSMEDIA-%v&TITLE=%v", p.MEDIA_ID, TITLE)
 									fmt.Fprintf(w, "<b>Discussion:</b> <a href=\"%v\">View Comments</a><br>", URL_DIS)
 									fmt.Fprintf(w, "<b>Media Type:</b> %v<br>", p.DATA_TYPE)
 									fmt.Fprintf(w, "<b>Mime Type:</b> %v<br>", p.MIME_TYPE)
@@ -44331,7 +44365,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 									fmt.Fprintf(w, "<b>Author: </b> %v<br>", p.AUTHOR)
 									fmt.Fprintf(w, "<b>Publish Status:</b> %v<br>", p.DOC_STAT)
 									fmt.Fprintf(w, "<b>Category:</b> %v<br>", p.CATEGORY)
-									URL_DIS := fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSMEDIA-%v&TITLE=%v", p.MEDIA_ID, TITLE)
+									URL_DIS := fmt.Sprintf("https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSMEDIA-%v&TITLE=%v", p.MEDIA_ID, TITLE)
 									fmt.Fprintf(w, "<b>Discussion:</b> <a href=\"%v\">View Comments</a><br>", URL_DIS)
 									fmt.Fprintf(w, "<b>Media Type:</b> %v<br>", p.DATA_TYPE)
 									fmt.Fprintf(w, "<b>Mime Type:</b> %v<br>", p.MIME_TYPE)
@@ -44397,7 +44431,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 									fmt.Fprintf(w, "<b>Author: </b> %v<br>", p.AUTHOR)
 									fmt.Fprintf(w, "<b>Publish Status:</b> %v<br>", p.DOC_STAT)
 									fmt.Fprintf(w, "<b>Category:</b> %v<br>", p.CATEGORY)
-									URL_DIS := fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSMEDIA-%v&TITLE=%v", p.MEDIA_ID, TITLE)
+									URL_DIS := fmt.Sprintf("https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSMEDIA-%v&TITLE=%v", p.MEDIA_ID, TITLE)
 									fmt.Fprintf(w, "<b>Discussion:</b> <a href=\"%v\">View Comments</a><br>", URL_DIS)
 									fmt.Fprintf(w, "<b>Media Type:</b> %v<br>", p.DATA_TYPE)
 									fmt.Fprintf(w, "<b>Mime Type:</b> %v<br>", p.MIME_TYPE)
@@ -44456,7 +44490,7 @@ func media(w http.ResponseWriter, r *http.Request) {
 									fmt.Fprintf(w, "<b>Author: </b> %v<br>", p.AUTHOR)
 									fmt.Fprintf(w, "<b>Publish Status:</b> %v<br>", p.DOC_STAT)
 									fmt.Fprintf(w, "<b>Category:</b> %v<br>", p.CATEGORY)
-									URL_DIS := fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSMEDIA-%v&TITLE=%v", p.MEDIA_ID, TITLE)
+									URL_DIS := fmt.Sprintf("https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSMEDIA-%v&TITLE=%v", p.MEDIA_ID, TITLE)
 									fmt.Fprintf(w, "<b>Discussion:</b> <a href=\"%v\">View Comments</a><br>", URL_DIS)
 									fmt.Fprintf(w, "<b>Media Type:</b> %v<br>", DATA_TYPE)
 									fmt.Fprintf(w, "<b>Mime Type:</b> %v<br>", p.MIME_TYPE)
@@ -45336,8 +45370,8 @@ const mediaMusicPlayerUMP1 = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Music Player::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>Music Player::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <script src="/js/modernizr.custom.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="/js/jquery.cookie.js"></script>
@@ -45392,8 +45426,8 @@ const mediaMIDIPlayerUMP1 = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MIDI Player::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>MIDI Player::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <script src="/js/modernizr.custom.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script type='text/javascript' src='/js/midi.js'></script>
@@ -45483,8 +45517,8 @@ const mediaVideoPlayerUVP1 = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Video Player::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>Video Player::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <script src="/js/modernizr.custom.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="/js/jquery.cookie.js"></script>
@@ -45534,8 +45568,8 @@ const mediaYoutubePlayerYVP1 = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Youtube Player::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>Youtube Player::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <script src="/js/modernizr.custom.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="/js/jquery.cookie.js"></script>
@@ -45652,11 +45686,11 @@ const htmlWidgetBrowserA = `
 <html lang="en-US">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-  <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
-  <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-  <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
-  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+  <title>golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+  <link rel="shortcut icon" href="/img/favicon.ico"/>
+  <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+  <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
+  <link rel="shortcut icon" href="/img/favicon.ico"/>
   <link rel="stylesheet" type="text/css" media="all" href="/css/searchbar-style.css">
   <script type="text/javascript" src="/js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="/js/jquery.autocomplete.min.js"></script>
@@ -45678,11 +45712,11 @@ const htmlWidgetBrowserH = `
 <html lang="en-US">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-  <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
-  <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-  <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
-  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+  <title>golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+  <link rel="shortcut icon" href="/img/favicon.ico"/>
+  <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+  <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
+  <link rel="shortcut icon" href="/img/favicon.ico"/>
   <link rel="stylesheet" type="text/css" media="all" href="/css/searchbar-style.css">
   <script type="text/javascript" src="/js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="/js/jquery.autocomplete.min.js"></script>
@@ -45704,11 +45738,11 @@ const htmlWidgetBrowserC1 = `
 <html lang="en-US">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-  <title>Loading ULAPPH Cloud Desktop::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
-  <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-  <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
-  <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+  <title>Loading ULAPPH Cloud Desktop::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+  <link rel="shortcut icon" href="/img/favicon.ico"/>
+  <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+  <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
+  <link rel="shortcut icon" href="/img/favicon.ico"/>
   <meta http-equiv="refresh" content="{{.}}" />
   <style type="text/css">
 	 body  {
@@ -45734,7 +45768,7 @@ const htmlWidgetBrowserAB = `
   <div id="w">
     <div id="content">
 	{{if eq .STR_FILLER1 "ULAPPH Cloud Desktop" }}
-		<h1><a href="#" onclick="clearLocalIndex();return false;" title="https://ulapph-public-1.appspot.com">{{.STR_FILLER1}}</a></h1>
+		<h1><a href="#" onclick="clearLocalIndex();return false;" title="https://golang-programming.appspot.com">{{.STR_FILLER1}}</a></h1>
 	{{else}}
 		<h1><a href="{{.STR_FILLER2}}" title="View JSON Source">{{.STR_FILLER1}}</a></h1>
 	{{end}}
@@ -45786,7 +45820,7 @@ const htmlWidgetBrowserMobileUI = `
     <div class="o-container">
 	  <div id="w">
 		<div id="content">
-		  <h1><a href="#" onclick="clearLocalIndex();return false;" title="https://ulapph-public-1.appspot.com">{{.STR_FILLER1}}</a></h1>
+		  <h1><a href="#" onclick="clearLocalIndex();return false;" title="https://golang-programming.appspot.com">{{.STR_FILLER1}}</a></h1>
 	
 		  <div id="searchfield">
 			<form action="/tools?FUNC=WIDGET&t=MiniBrowserPost" method="POST" enctype="multipart/form-data"><input type="text" name="url" class="biginput" id="autocomplete" autofocus="autofocus"></form>
@@ -45960,8 +45994,8 @@ const htmlWidgetBrowserAUF = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MiniBrowser::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>MiniBrowser::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
 	
@@ -45980,8 +46014,8 @@ const htmlWidgetRanGenTool = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Random Generator::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>Random Generator::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 </head>
  
 <body>
@@ -45999,8 +46033,8 @@ const htmlWidgetFamTreeTool = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Family Tree::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>Family Tree::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 </head>
  
 <body>
@@ -46018,8 +46052,8 @@ const htmlUrlFetcherA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>URL Fetcher::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>URL Fetcher::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
 	
@@ -46040,8 +46074,8 @@ const htmlUwmSharingA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>UWM Sharing::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>UWM Sharing::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link href="/css/bootstrap.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/css/switch.css">
 </head>
@@ -46097,8 +46131,8 @@ const htmlDrivesA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>My Drives::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>My Drives::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/buttons/buttons.css">
 <link rel="stylesheet" href="/lib/css/animate/animate.css">	
 <link rel="stylesheet" href="/lib/css/text-input/text-input.css">	
@@ -46127,9 +46161,9 @@ const htmlDrivesA = `
 	<h3>Google Drive</h3>
 	<span class="button-wrap"><a href="/tools?FUNC=DRIVES&t=MYDRIVE_GOOGLE&ACT=A" target="auth-drive" class="button button-pill">Auth</a></span>
 	<br>
-	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Google Drive@888@/tools?FUNC=DRIVES&t=MYDRIVE_GOOGLE&ACT=S', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
+	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Google Drive@888@/tools?FUNC=DRIVES&t=MYDRIVE_GOOGLE&ACT=S', 'https://golang-programming.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
 	<br>
-	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Google Drive@888@https://drive.google.com', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-pill button-raised button-primary">Open</a></span>
+	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Google Drive@888@https://drive.google.com', 'https://golang-programming.appspot.com'); return false;" class="button button-pill button-raised button-primary">Open</a></span>
 	<br>
 	<span class="button-wrap"><a href="https://drive.google.com" target="gd" class="button button-pill">Login</a></span>
  
@@ -46138,7 +46172,7 @@ const htmlDrivesA = `
 	<h3>Microsoft OneDrive</h3>
 	<!--span class="button-wrap"><a href="/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=A" target="auth-onedrive" class="button button-pill">Auth</a></span>
 	<br>
-	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@MS OneDrive@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
+	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@MS OneDrive@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://golang-programming.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
 	<br-->
 	<span class="button-wrap"><a href="https://onedrive.live.com/" target="ms" class="button button-pill">Open</a></span>
 	<!--br>
@@ -46149,7 +46183,7 @@ const htmlDrivesA = `
 	<h3>Amazon Drive</h3>
 	<!--span class="button-wrap"><a href="/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=A" target="auth-onedrive" class="button button-pill">Auth</a></span>
 	<br>
-	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Amazon@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
+	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Amazon@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://golang-programming.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
 	<br-->
 	<span class="button-wrap"><a href="https://www.amazon.com/clouddrive" target="aws" class="button button-pill">Open</a></span>
 	<!--br>
@@ -46160,7 +46194,7 @@ const htmlDrivesA = `
 	<h3>Dropbox</h3>
 	<!--span class="button-wrap"><a href="/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=A" target="auth-onedrive" class="button button-pill">Auth</a></span>
 	<br>
-	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Dropbox@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
+	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Dropbox@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://golang-programming.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
 	<br-->
 	<span class="button-wrap"><a href="https://www.dropbox.com/home" target="db" class="button button-pill">Open</a></span>
 	<!--br>
@@ -46171,7 +46205,7 @@ const htmlDrivesA = `
 	<h3>Hubic</h3>
 	<!--span class="button-wrap"><a href="/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=A" target="auth-onedrive" class="button button-pill">Auth</a></span>
 	<br>
-	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Hubic@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
+	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Hubic@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://golang-programming.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
 	<br-->
 	<span class="button-wrap"><a href="https://hubic.com/home/browser/" class="button button-pill button-raised button-primary">Open</a></span>
 	<!--br>
@@ -46182,7 +46216,7 @@ const htmlDrivesA = `
 	<h3>Yandex</h3>
 	<!--span class="button-wrap"><a href="/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=A" target="auth-onedrive" class="button button-pill">Auth</a></span>
 	<br>
-	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Yandex@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
+	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Yandex@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://golang-programming.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
 	<br-->
 	<span class="button-wrap"><a href="https://disk.yandex.com/client/disk" class="button button-pill button-raised button-primary">Open</a></span>
 	<!--br>
@@ -46193,7 +46227,7 @@ const htmlDrivesA = `
 	<h3>pCloud</h3>
 	<!--span class="button-wrap"><a href="/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=A" target="auth-onedrive" class="button button-pill">Auth</a></span>
 	<br>
-	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@pCloud@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
+	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@pCloud@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://golang-programming.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
 	<br-->
 	<span class="button-wrap"><a href="https://my.pcloud.com/" class="button button-pill button-raised button-primary">Open</a></span>
 	<!--br>
@@ -46204,7 +46238,7 @@ const htmlDrivesA = `
 	<h3>Sync</h3>
 	<!--span class="button-wrap"><a href="/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=A" target="auth-onedrive" class="button button-pill">Auth</a></span>
 	<br>
-	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Sync@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
+	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Sync@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://golang-programming.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
 	<br-->
 	<span class="button-wrap"><a href="https://cp.sync.com/files/" class="button button-pill button-raised button-primary">Open</a></span>
 	<!--br>
@@ -46215,7 +46249,7 @@ const htmlDrivesA = `
 	<h3>Box</h3>
 	<!--span class="button-wrap"><a href="/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=A" target="auth-onedrive" class="button button-pill">Auth</a></span>
 	<br>
-	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Box@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
+	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Box@888@/tools?FUNC=DRIVES&t=MYDRIVE_MICROSOFT&ACT=S', 'https://golang-programming.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
 	<br-->
 	<span class="button-wrap"><a href="https://app.box.com/folder/0" class="button button-pill button-raised button-primary">Open</a></span>
 	<!--br>
@@ -46236,7 +46270,7 @@ const htmlDrivesA = `
 	</form>
 	<span class="button-wrap"><a href="/tools?FUNC=DRIVES&t=MYDRIVE_GITHUB&ACT=A" target="auth-github" class="button button-pill">Auth</a></span>
 	<br>
-	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Github@888@/tools?FUNC=DRIVES&t=MYDRIVE_GITHUB&ACT=S', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
+	<span class="button-wrap"><a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@Github@888@/tools?FUNC=DRIVES&t=MYDRIVE_GITHUB&ACT=S', 'https://golang-programming.appspot.com'); return false;" class="button button-pill button-raised button-primary">Sync</a></span>
 	<br>
 	<span class="button-wrap"><a href="https://github.com/explore" target="github-explore" class="button button-pill">Open</a></span>
 	<br>
@@ -46252,8 +46286,8 @@ const htmlDriveJSONtoTableA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>JSON to Table::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>JSON to Table::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
 <script src="/lib/js/json2table/jquery.columns.min.js"></script>
@@ -46270,7 +46304,7 @@ const htmlDriveJSONtoTableA = `
 	  schema: [
 		  {"header":"Icon", "key":"iconLink", "template":'<img src="{{"{{"}}iconLink{{"}}"}}"/>'},
 		  {"header":"Name", "key":"name"},
-		  {"header":"Link", "key":"webViewLink", "template":'<a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}webViewLink{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\">{{"{{"}}webViewLink{{"}}"}}</a>'}
+		  {"header":"Link", "key":"webViewLink", "template":'<a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}webViewLink{{"}}"}}\', \'https://golang-programming.appspot.com\'); return false;\">{{"{{"}}webViewLink{{"}}"}}</a>'}
 	  ]
     });
   });
@@ -46287,8 +46321,8 @@ const htmlDesktopsJSONtoTableA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>All Desktops::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>All Desktops::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
 <script src="/lib/js/json2table/jquery.columns.min.js"></script>
@@ -46312,8 +46346,8 @@ const htmlDesktopsJSONtoTableA = `
 		  {"header":"Name", "key":"name", "template":'<a href=\'#\' onClick=\"openDesktop(\'{{"{{"}}uLink{{"}}"}}\', \'UWM-{{"{{"}}name{{"}}"}}\', \'{{"{{"}}id{{"}}"}}\'); return false;\" target=\'UWM-{{"{{"}}name{{"}}"}}\' title=\'Open UWM in new tab\'>{{"{{"}}name{{"}}"}}</a>'},
 		  {"header":"Search", "key":"rLink", "template":'<a href=\'{{"{{"}}rLink{{"}}"}}\' target=\'T-{{"{{"}}name{{"}}"}}\' title=\'Click to run topics search\'><img src=\'/img/run.png\' width=32 height=32></a>'},
 		  {"header":"ChatBot", "key":"bLink", "template":'<a href=\'{{"{{"}}bLink{{"}}"}}\' target=\'B-{{"{{"}}name{{"}}"}}\' title=\'Click to bot for this desktop\'><img src=\'/img/robot.png\' width=32 height=32></a>'},
-		  {"header":"Desktop", "key":"dLink", "template":'<a href=\'{{"{{"}}dLink{{"}}"}}\' target=\'D-{{"{{"}}name{{"}}"}}\'><img src=\'/img/ext-con.png\' width=32 height=32></a> <a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}dLink{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\"><img src=\'/img/uwm-mini.png\' width=32 height=32></a>'},
-		  {"header":"UWM", "key":"uLink", "template":'<a href=\'{{"{{"}}uLink{{"}}"}}\' target=\'UWM-{{"{{"}}name{{"}}"}}\'><img src=\'/img/ext-con.png\' width=32 height=32></a> <a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}uLink{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\"><img src=\'/img/uwm-mini.png\' width=32 height=32></a>'},
+		  {"header":"Desktop", "key":"dLink", "template":'<a href=\'{{"{{"}}dLink{{"}}"}}\' target=\'D-{{"{{"}}name{{"}}"}}\'><img src=\'/img/ext-con.png\' width=32 height=32></a> <a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}dLink{{"}}"}}\', \'https://golang-programming.appspot.com\'); return false;\"><img src=\'/img/uwm-mini.png\' width=32 height=32></a>'},
+		  {"header":"UWM", "key":"uLink", "template":'<a href=\'{{"{{"}}uLink{{"}}"}}\' target=\'UWM-{{"{{"}}name{{"}}"}}\'><img src=\'/img/ext-con.png\' width=32 height=32></a> <a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}uLink{{"}}"}}\', \'https://golang-programming.appspot.com\'); return false;\"><img src=\'/img/uwm-mini.png\' width=32 height=32></a>'},
 		  {"header":"Desktop", "key":"dsLink", "template":'<a href=\'{{"{{"}}dsLink{{"}}"}}\' target=\'dsLink-{{"{{"}}name{{"}}"}}\'><img src=\'/img/settings.png\' width=32 height=32></a>'},
 		  {"header":"UWM", "key":"usLink", "template":'<a href=\'{{"{{"}}usLink{{"}}"}}\' target=\'usLink-{{"{{"}}name{{"}}"}}\'><img src=\'/img/settings.png\' width=32 height=32></a>'},
 		  {"header":"Topics", "key":"tLink", "template":'<a href=\'{{"{{"}}tLink{{"}}"}}\' target=\'tLink-{{"{{"}}name{{"}}"}}\'><img src=\'/img/settings.png\' width=32 height=32></a>'},
@@ -46399,8 +46433,8 @@ const htmlIconsJSONtoTableA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>All Icons::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>All Icons::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
 <script src="/lib/js/json2table/jquery.columns.min.js"></script>
@@ -46423,7 +46457,7 @@ const htmlIconsJSONtoTableA = `
 		  {"header":"Logo", "key":"iLogo", "template":'<img src="{{"{{"}}iLogo{{"}}"}}" width=32 height=32/>'},
 		  {"header":"Link", "key":"iUrl", "template":'<a href=\'{{"{{"}}iUrl{{"}}"}}\' target=\'S-{{"{{"}}iUrl{{"}}"}}\' title=\'open tab - {{"{{"}}iUrl{{"}}"}}\'>{{"{{"}}iUrl{{"}}"}}</a>'},
 		  {"header":"Title", "key":"iName", "template":'{{"{{"}}iName{{"}}"}}'},
-		  {"header":"Launch", "key":"iUrl", "template":'<a href=\'{{"{{"}}iUrl{{"}}"}}\' target=\'S-{{"{{"}}name{{"}}"}}\' title=\'open tab - {{"{{"}}name{{"}}"}}\'><img src=\'/img/ext-con.png\' width=32 height=32></a> <a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}iUrl{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\" title=\'open window - {{"{{"}}name{{"}}"}}\'><img src=\'/img/uwm-mini.png\' width=32 height=32></a>'}
+		  {"header":"Launch", "key":"iUrl", "template":'<a href=\'{{"{{"}}iUrl{{"}}"}}\' target=\'S-{{"{{"}}name{{"}}"}}\' title=\'open tab - {{"{{"}}name{{"}}"}}\'><img src=\'/img/ext-con.png\' width=32 height=32></a> <a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}iUrl{{"}}"}}\', \'https://golang-programming.appspot.com\'); return false;\" title=\'open window - {{"{{"}}name{{"}}"}}\'><img src=\'/img/uwm-mini.png\' width=32 height=32></a>'}
 	  ]
     });
   });
@@ -46439,8 +46473,8 @@ const htmlNotesJSONtoTableA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>All Notes::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>All Notes::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
 <script src="/lib/js/json2table/jquery.columns.min.js"></script>
@@ -46478,8 +46512,8 @@ const htmlGithubJSONtoTableA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>JSON to Table::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>JSON to Table::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
 <script src="/lib/js/json2table/jquery.columns.min.js"></script>
@@ -46494,7 +46528,7 @@ const htmlGithubJSONtoTableA = `
       data:json,
 	  schema: [
 	      {"header":"Icon", "key":"icon", "template":'<img src="{{"{{"}}icon{{"}}"}}" width=50 height=50/>'},
-		  {"header":"Name", "key":"name", "template":'<a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@https://ulapph-public-1.appspot.com/tools?FUNC=DRIVES&t=MYDRIVE_GITHUB&ACT=B&repo={{"{{"}}name{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\"><b>{{"{{"}}name{{"}}"}}</b></a>'},
+		  {"header":"Name", "key":"name", "template":'<a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@https://golang-programming.appspot.com/tools?FUNC=DRIVES&t=MYDRIVE_GITHUB&ACT=B&repo={{"{{"}}name{{"}}"}}\', \'https://golang-programming.appspot.com\'); return false;\"><b>{{"{{"}}name{{"}}"}}</b></a>'},
 		  {"header":"Full Name", "key":"full_name"},
 		  {"header":"Description", "key":"description"},
 		  {"header":"Language", "key":"language"},
@@ -46503,7 +46537,7 @@ const htmlGithubJSONtoTableA = `
 		  {"header":"Forks", "key":"forks_count"},
 		  {"header":"Issues", "key":"open_issues_count"},
 		  {"header":"Size", "key":"size"},
-		  {"header":"Link", "key":"html_url", "template":'<a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}html_url{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\">{{"{{"}}html_url{{"}}"}}</a>'}
+		  {"header":"Link", "key":"html_url", "template":'<a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}name{{"}}"}}@888@{{"{{"}}html_url{{"}}"}}\', \'https://golang-programming.appspot.com\'); return false;\">{{"{{"}}html_url{{"}}"}}</a>'}
 	  ]
     });
   });
@@ -46519,8 +46553,8 @@ const htmlGithubJSONtoTableAB = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>JSON to Table::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>JSON to Table::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/lib/css/json2table/classic.css">
 <script src="/js/jquery.min.js"></script>
 <script src="/lib/js/json2table/jquery.columns.min.js"></script>
@@ -46535,7 +46569,7 @@ const htmlGithubJSONtoTableAB = `
       data:json,
 	  schema: [
 	      {"header":"Icon", "key":"icon", "template":'<img src="{{"{{"}}icon{{"}}"}}" width=50 height=50/>'},
-		  {"header":"Path", "key":"path", "template":'<a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}path{{"}}"}}@888@https://ulapph-public-1.appspot.com/tools?FUNC=DRIVES&t=MYDRIVE_GITHUB&ACT=C&bra={{"{{"}}branch{{"}}"}}&repo={{"{{"}}repo{{"}}"}}&path={{"{{"}}path{{"}}"}}&sha={{"{{"}}sha{{"}}"}}&sha2={{"{{"}}sha2{{"}}"}}\', \'https://ulapph-public-1.appspot.com\'); return false;\"><b>{{"{{"}}path{{"}}"}}</b></a>'},
+		  {"header":"Path", "key":"path", "template":'<a href=\'#\' onClick=\"parent.postMessage(\'ULAPPH-SYS-UPD@888@{{"{{"}}path{{"}}"}}@888@https://golang-programming.appspot.com/tools?FUNC=DRIVES&t=MYDRIVE_GITHUB&ACT=C&bra={{"{{"}}branch{{"}}"}}&repo={{"{{"}}repo{{"}}"}}&path={{"{{"}}path{{"}}"}}&sha={{"{{"}}sha{{"}}"}}&sha2={{"{{"}}sha2{{"}}"}}\', \'https://golang-programming.appspot.com\'); return false;\"><b>{{"{{"}}path{{"}}"}}</b></a>'},
 		  {"header":"Size", "key":"size"},
 		  {"header":"Repo", "key":"repo"},
 		  {"header":"Branch", "key":"branch"},
@@ -46555,8 +46589,8 @@ const htmlWidgetMyLocalNotesA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Local Notes::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>Local Notes::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>	
 <link href="/css/bootstrap.css" rel="stylesheet">
@@ -46605,8 +46639,8 @@ const htmlWidgetDefaultSlideA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Default Slide::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>Default Slide::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>	
 <link href="/css/bootstrap.css" rel="stylesheet">
@@ -46750,8 +46784,8 @@ const htmlWidgetMyPreferencesA = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>My Preferences::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>My Preferences::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link href="/css/bootstrap.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/css/spectrum.css">
 <link rel="stylesheet" type="text/css" href="/css/switch.css">
@@ -46988,49 +47022,49 @@ const htmlWidgetMyPreferencesAMOTD = `
 <h3>My MOTDs</h3>
 Press button to get random quotes. You can edit/update your MOTD files.
 <br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER1}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER1}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER1}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER1}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER1}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER1}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER1}}&SID=TDSMEDIA-{{.NUM_FILLER1}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER2}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER2}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER2}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER2}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER2}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER2}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER2}}&SID=TDSMEDIA-{{.NUM_FILLER2}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER3}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER3}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER3}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER3}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER3}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER3}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER3}}&SID=TDSMEDIA-{{.NUM_FILLER3}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER4}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER4}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER4}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER4}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER4}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER4}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER4}}&SID=TDSMEDIA-{{.NUM_FILLER4}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER5}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER5}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER5}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER5}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER5}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER5}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER5}}&SID=TDSMEDIA-{{.NUM_FILLER5}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER6}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER6}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER6}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER6}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER6}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER6}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER6}}&SID=TDSMEDIA-{{.NUM_FILLER6}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER7}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER7}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER7}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER7}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER7}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER7}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER7}}&SID=TDSMEDIA-{{.NUM_FILLER7}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER8}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER8}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER8}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER8}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER8}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER8}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER8}}&SID=TDSMEDIA-{{.NUM_FILLER8}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER9}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER9}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER9}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER9}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER9}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER9}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER9}}&SID=TDSMEDIA-{{.NUM_FILLER9}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER10}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER10}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER10}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER10}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER10}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER10}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER10}}&SID=TDSMEDIA-{{.NUM_FILLER10}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER11}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER11}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER11}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER11}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER11}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER11}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER11}}&SID=TDSMEDIA-{{.NUM_FILLER11}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER12}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER12}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER12}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER12}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER12}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER12}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER12}}&SID=TDSMEDIA-{{.NUM_FILLER12}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER13}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER13}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER13}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER13}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER13}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER13}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER13}}&SID=TDSMEDIA-{{.NUM_FILLER13}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER14}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER14}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER14}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER14}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER14}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER14}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER14}}&SID=TDSMEDIA-{{.NUM_FILLER14}}" class="button button-raised button-pill button-inverse">Edit</a>
 		<br>
-<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER15}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER15}}', 'https://ulapph-public-1.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER15}}</a>
+<a href="#" onClick="parent.postMessage('ULAPPH-SYS-UPD@888@{{.STR_FILLER15}}@888@/tools?FUNC=WIDGET&t=RandomMotd&MEDIA_ID={{.NUM_FILLER15}}', 'https://golang-programming.appspot.com'); return false;" class="button button-raised button-primary button-pill">{{.STR_FILLER15}}</a>
 		<a href="/editor?MEDIA_ID={{.NUM_FILLER15}}&SID=TDSMEDIA-{{.NUM_FILLER15}}" class="button button-raised button-pill button-inverse">Edit</a>
 `
  
@@ -47041,8 +47075,8 @@ const htmlEscSearchACR = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Search::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>Search::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 	
 </head>
@@ -47057,8 +47091,8 @@ const htmlWidgetBrowserACR = `
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Join Chat::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>Join Chat::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
 	
@@ -47091,9 +47125,9 @@ const iconsSettingsTemplateHeaderHTML = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Settings::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>Settings::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
     <link rel="stylesheet" media="screen,projection,tv" href="/css/pulldown-tabzilla-min.css" />
 	<script src="/js/pulldown-site-min.js"></script>
@@ -47146,9 +47180,9 @@ const genericTableDispHdr2 = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>{{.STR_FILLER3}}::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>{{.STR_FILLER3}}::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -47222,9 +47256,9 @@ const genericTableDispHdrNC2 = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>{{.STR_FILLER3}}::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>{{.STR_FILLER3}}::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -47316,9 +47350,9 @@ const infoDBTemplateHeaderHTMLSlidesAdmin = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Slides::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>Slides::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47403,9 +47437,9 @@ const infoDBTemplateHeaderHTMLSlidesDirectory = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Directory::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>Directory::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47455,9 +47489,9 @@ const showTrendingRecs = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>ULAPPH Trending Contents::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>ULAPPH Trending Contents::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47498,9 +47532,9 @@ const showPeopleDirRecs = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>ULAPPH People Directory::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>ULAPPH People Directory::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47539,9 +47573,9 @@ const showSitesDirRecs = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>ULAPPH Cloud Desktop Directory::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>ULAPPH Cloud Desktop Directory::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47581,9 +47615,9 @@ const showWhatsNewRecs = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>ULAPPH Whats New Contents::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>ULAPPH Whats New Contents::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47625,9 +47659,9 @@ const showDiscussionsRecs = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>ULAPPH Recent Discussions::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>ULAPPH Recent Discussions::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47671,9 +47705,9 @@ const showAllRecentsRecs = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>ULAPPH Recents::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>ULAPPH Recents::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -47712,9 +47746,9 @@ const infoDBTemplateHeaderHTMLArticlesAdmin = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Articles::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>Articles::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47797,9 +47831,9 @@ const iconsSettingsTemplateHeaderHTMLAds = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>AdminAds::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>AdminAds::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -47839,9 +47873,9 @@ const iconsSettingsTemplateHeaderHTMLSL = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>AdminSlides::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>AdminSlides::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47884,9 +47918,9 @@ const iconsSettingsTemplateHeaderHTMLAL = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>AdminArticles::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>AdminArticles::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css" />
@@ -47927,9 +47961,9 @@ const iconsSettingsTemplateHeaderHTMLMD = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Media Gallery::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>Media Gallery::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -48043,9 +48077,9 @@ const iconsSettingsTemplateHeaderHTMLMDAdmin = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Media Gallery::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>Media Gallery::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -48161,9 +48195,9 @@ const iconsSettingsTemplateHeaderHTMLMDUAdmin = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Media Gallery::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>Media Gallery::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -48235,9 +48269,9 @@ const iconsSettingsTemplateHeaderHTMLSLU = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Admin Slides::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>Admin Slides::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -48292,9 +48326,9 @@ const iconsSettingsTemplateHeaderHTMLSLA = `
 	<meta http-equiv="Content-type" content="text/html; charset=us-ascii">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
  
-	<title>Admin Articles::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>Admin Articles::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.datatables.net/rss.xml">
 	<link rel="stylesheet" type="text/css" href="/css/table-jquery.dataTables.css">
 	<link rel="stylesheet" type="text/css" href="/css/table-site.css">
@@ -48407,11 +48441,11 @@ const mediaSimpleGal1A = `
 		<meta charset="UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Photo Gallery::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-        <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-        <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+        <title>Photo Gallery::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+        <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+        <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
         <meta name="author" content="Codrops"/>
-        <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+        <link rel="shortcut icon" href="/img/favicon.ico"/>
         <link rel="stylesheet" type="text/css" href="/css/style-gamma.css"/>
 		<script src="/js/modernizr.custom.70736.js"></script>
 		<noscript><link rel="stylesheet" type="text/css" href="/css/noJS-gamma.css"/></noscript>
@@ -49148,16 +49182,16 @@ const peopleDirectoryListHTML = `
 Online
 </td>
 <td class="cbc">
-<a href="https://ulapph-public-1.appspot.com/guestbook?UID={{.UID}}"><img src="/img/guestbook.png" width=40 height=40/></img></a><g:hangout render="createhangout" invites="[{ id : '{{.UID}}', invite_type : 'EMAIL' }]" widget_size="72"></g:hangout>
+<a href="https://golang-programming.appspot.com/guestbook?UID={{.UID}}"><img src="/img/guestbook.png" width=40 height=40/></img></a><g:hangout render="createhangout" invites="[{ id : '{{.UID}}', invite_type : 'EMAIL' }]" widget_size="72"></g:hangout>
 </td>
 <td class="id">
-<a href="https://ulapph-public-1.appspot.com/people-edit?EditPeopleFunc=EditPeople&UID={{.UID}}&SID={{.UID}}"></img><img src="{{.PICTURE}}" width=40 height=40></img></a><img src="/img/flags/{{.COUNTRY}}.gif" width=48 height=30>
+<a href="https://golang-programming.appspot.com/people-edit?EditPeopleFunc=EditPeople&UID={{.UID}}&SID={{.UID}}"></img><img src="{{.PICTURE}}" width=40 height=40></img></a><img src="/img/flags/{{.COUNTRY}}.gif" width=48 height=30>
 </td>
 <td data-order="{{.UID}}">
-<a href="https://ulapph-public-1.appspot.com/chat?CHAT_FUNC=newChatRoom&INVITE={{.UID}}"><img src="/img/chat.png" title="chat"  width=40 height=40></img></a> {{.UID}}
+<a href="https://golang-programming.appspot.com/chat?CHAT_FUNC=newChatRoom&INVITE={{.UID}}"><img src="/img/chat.png" title="chat"  width=40 height=40></img></a> {{.UID}}
 </td>
-<td data-order="https://ulapph-public-1.appspot.com">
-<a href="https://ulapph-public-1.appspot.com">https://ulapph-public-1.appspot.com</a>
+<td data-order="https://golang-programming.appspot.com">
+<a href="https://golang-programming.appspot.com">https://golang-programming.appspot.com</a>
 </td>
 <td data-order="{{.PROFESSION}}">
 {{.PROFESSION}}
@@ -49650,8 +49684,8 @@ Offline
 <td data-order="{{.UID}}">
 {{.UID}}
 </td>
-<td data-order="https://ulapph-public-1.appspot.com">
-<a href="https://ulapph-public-1.appspot.com">https://ulapph-public-1.appspot.com</a>
+<td data-order="https://golang-programming.appspot.com">
+<a href="https://golang-programming.appspot.com">https://golang-programming.appspot.com</a>
 </td>
 <td data-order="{{.PROFESSION}}">
 {{.PROFESSION}}
@@ -51408,7 +51442,7 @@ func settingsDisplayScreen(w http.ResponseWriter, r *http.Request) {
 			
 			deskNumVal := str2int(r.FormValue("dockTarget"))
 			
-			//DOCKS_LIST_desktop0_demo.ulapph@gmail.com
+			//DOCKS_LIST_desktop0_ulapph@gmail.com
 			cKey := fmt.Sprintf("DOCKS_LIST_%v_%s", deskName, USER_EMAIL_ID)
 			DOCKS_LIST_desktop := ""
 			DOCKS_LIST := ""
@@ -52515,7 +52549,7 @@ func settingsDisplayScreen(w http.ResponseWriter, r *http.Request) {
 			
 			if uid == uid2 {
 				//send email of the link to be shared
-				MESSAGE := fmt.Sprintf("https://ulapph-public-1.appspot.com/settings-display-screen?loadIcons=ShareDesktopIcons&desktop-name=desktop0&CFG_DESC=%v&uid=%v&LOAD_DATA=%v", CFG_DESC, uid, TXT_VAL)
+				MESSAGE := fmt.Sprintf("https://golang-programming.appspot.com/settings-display-screen?loadIcons=ShareDesktopIcons&desktop-name=desktop0&CFG_DESC=%v&uid=%v&LOAD_DATA=%v", CFG_DESC, uid, TXT_VAL)
 				SENDSHARED0MAIL(c, uid, ADMMAIL, MESSAGE)
 
 				//notify all users of this event via channels					
@@ -54409,7 +54443,7 @@ func updateMyULAPPHLoc(w http.ResponseWriter, r *http.Request, uid, latlon strin
 	for s.Scan() {
 		//fmt.Fprintf(w, "%v", s.Text())
 		//find the record & update
-		//demo.ulapph@gmail.com|https://christine-cunanan.appspot.com|lat,lon|timestamp
+		//ulapph@gmail.com|https://christine-cunanan.appspot.com|lat,lon|timestamp
 		if s.Text() != "" {
 			thisStr := fmt.Sprintf("%v", s.Text())
 			if string(thisStr[0]) != "#" && FL_FOUND == false {
@@ -54485,7 +54519,7 @@ func getMyULAPPH(w http.ResponseWriter, r *http.Request, mode string) (url []str
 	scanner := bufio.NewScanner(strings.NewReader(HOST_LIST2))
 	for scanner.Scan() {
 		if scanner.Text() != "" {
-			//demo.ulapph@gmail.com|https://ulapph-installer.appspot.com
+			//ulapph@gmail.com|https://ulapph-installer.appspot.com
 			SPL := strings.Split(scanner.Text(), "|")
 			if len(SPL) >= 2 {
 				//tURL := SPL[1]
@@ -54842,72 +54876,145 @@ func procBroadcastPresence2(w http.ResponseWriter, r *http.Request) {
 			//}
 		}
 	}
-	
 }
 
 //process trending contents in this cloud desktop
 func procTrending(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
-	
+    //D0083
+    mode := r.FormValue("t")
+    var td []UlapphSources
 	q := datastore.NewQuery("TDSSLIDE").Order("-NUM_VIEWS").Limit(DEFAULT_NUM_TREN_NEW)
 	//c.Errorf("[S0454]")
 	slides := make([]TDSSLIDE, 0, DEFAULT_NUM_TREN_NEW)
 	if _, err := q.GetAll(c, &slides); err != nil {
 		 panic(err)
 	}
-	
-	if err := slidesTrending.Execute(w, slides); err != nil {
-	  panic(err)
+	//D0083
+	if mode == "html" || mode == "" {
+		if err := slidesTrending.Execute(w, slides); err != nil {
+		  panic(err)
+		}
+	} else {
+		//D0083
+		for _, p := range slides {
+			reqStr := fmt.Sprintf("%vslides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%v&SID=TDSSLIDE-%v&MUSIC_ID=%v&GET_NEXT=%v&SOUND=%v&FL_COUNTRY_SPECIFIC=%v", getSchemeUrl(w,r), p.DOC_ID, p.DOC_ID, p.MUSIC_ID, p.GET_NEXT, SLIDE_SOUND_SET, p.FL_COUNTRY_SPECIFIC)
+			g :=  UlapphSources {
+				Source: SYS_SERVER_NAME,
+				Author: p.AUTHOR,
+				Title: p.TITLE,
+				Description: p.DESC,
+				URL: reqStr,
+				Image: p.TAGS,
+				PublishedAt: p.DT_UPLOAD,
+				Content: "",
+			}
+			td = append(td, g)
+		}
+		//data,_ := json.Marshal(td)
+		//w.Write(data)
 	}
- 
 	q = datastore.NewQuery("TDSARTL").Order("-NUM_VIEWS").Limit(DEFAULT_NUM_TREN_NEW)
 	//c.Errorf("[S0455]")
 	articles := make([]TDSARTL, 0, DEFAULT_NUM_TREN_NEW)
 	if _, err := q.GetAll(c, &articles); err != nil {
 		 panic(err)
 	}
-	
-	if err := articlesTrending.Execute(w, articles); err != nil {
-	  panic(err)
-	}	
-	
+	//D0083
+	if mode == "html" || mode == "" {
+		if err := articlesTrending.Execute(w, articles); err != nil {
+		  panic(err)
+		}
+	} else {
+		//D0083
+		for _, p := range articles {
+			reqStr := fmt.Sprintf("%varticles?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v&MUSIC_ID=%v&FL_COUNTRY_SPECIFIC=%v", getSchemeUrl(w,r), p.DOC_ID, p.DOC_ID, p.MUSIC_ID, p.FL_COUNTRY_SPECIFIC)
+			g :=  UlapphSources {
+				Source: SYS_SERVER_NAME,
+				Author: p.AUTHOR,
+				Title: p.TITLE,
+				Description: p.DESC,
+				URL: reqStr,
+				Image: p.TAGS,
+				PublishedAt: p.DT_UPLOAD,
+				Content: "",
+			}
+			td = append(td, g)
+		}
+		data,_ := json.Marshal(td)
+		w.Write(data)
+	}
 }
-
 //process whats new contents in this cloud desktop 
 func procWhatsNew(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
-	
+    //D0083
+    mode := r.FormValue("t")
+    var td []UlapphSources
 	q := datastore.NewQuery("TDSSLIDE").Order("-DOC_ID").Limit(DEFAULT_NUM_TREN_NEW)
 	//c.Errorf("[S0456]")
 	slides := make([]TDSSLIDE, 0, DEFAULT_NUM_TREN_NEW)
 	if _, err := q.GetAll(c, &slides); err != nil {
 		 panic(err)
 	}
-	
-	if err := slidesWhatsNew.Execute(w, slides); err != nil {
-	  panic(err)
+	//D0083
+	if mode == "html" || mode == "" {
+		if err := slidesWhatsNew.Execute(w, slides); err != nil {
+		  panic(err)
+		}
+	} else {
+		//D0083
+		for _, p := range slides {
+			reqStr := fmt.Sprintf("%vslides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%v&SID=TDSSLIDE-%v&MUSIC_ID=%v&GET_NEXT=%v&SOUND=%v&FL_COUNTRY_SPECIFIC=%v", getSchemeUrl(w,r), p.DOC_ID, p.DOC_ID, p.MUSIC_ID, p.GET_NEXT, SLIDE_SOUND_SET, p.FL_COUNTRY_SPECIFIC)
+			g :=  UlapphSources {
+				Source: SYS_SERVER_NAME,
+				Author: p.AUTHOR,
+				Title: p.TITLE,
+				Description: p.DESC,
+				URL: reqStr,
+				Image: p.TAGS,
+				PublishedAt: p.DT_UPLOAD,
+				Content: "",
+			}
+			td = append(td, g)
+		}
 	}
- 
 	q = datastore.NewQuery("TDSARTL").Order("-DOC_ID").Limit(DEFAULT_NUM_TREN_NEW)
 	//c.Errorf("[S0457]")
 	articles := make([]TDSARTL, 0, DEFAULT_NUM_TREN_NEW)
 	if _, err := q.GetAll(c, &articles); err != nil {
 		 panic(err)
 	}
-	
-	if err := articlesWhatsNew.Execute(w, articles); err != nil {
-	  panic(err)
+	//D0083
+	if mode == "html" || mode == "" {
+		if err := articlesWhatsNew.Execute(w, articles); err != nil {
+		  panic(err)
+		}
+	} else {
+		//D0083
+		for _, p := range articles {
+			reqStr := fmt.Sprintf("%varticles?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v&MUSIC_ID=%v&FL_COUNTRY_SPECIFIC=%v", getSchemeUrl(w,r), p.DOC_ID, p.DOC_ID, p.MUSIC_ID, p.FL_COUNTRY_SPECIFIC)
+			g :=  UlapphSources {
+				Source: SYS_SERVER_NAME,
+				Author: p.AUTHOR,
+				Title: p.TITLE,
+				Description: p.DESC,
+				URL: reqStr,
+				Image: p.TAGS,
+				PublishedAt: p.DT_UPLOAD,
+				Content: "",
+			}
+			td = append(td, g)
+		}
+		data,_ := json.Marshal(td)
+		w.Write(data)
 	}
-	
 }
 
 //D0042
 //Gets the newly discussed contents
 //it process comments index
 func procDiscussions(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
 	// 20170708191743
 	// 20170708191743
@@ -54915,7 +55022,7 @@ func procDiscussions(w http.ResponseWriter, r *http.Request) {
 	// 1
 	// TDSARTL-4
 	// ["My","comments","on","your","MIS","UPOU","course"]
-	// demo.ulapph@gmail.com
+	// ulapph@gmail.com
 	//	DT_FIRST	DT_UPDATE	IID	NUM_COMMENTS	SID	TAGS	USERS
 	rt := time.Now().AddDate(0, 0, -30)
 	timestamp := fmt.Sprintf("%v", rt.Format("20060102150405"))
@@ -54926,10 +55033,8 @@ func procDiscussions(w http.ResponseWriter, r *http.Request) {
 	if _, err := q.GetAll(c, &cidx); err != nil {
 		 panic(err)
 	}
-	  
 	//For each record populate struct
 	var cx []Discussions
-	
 	for _, p := range cidx{
 		//get content record
 		//D0042
@@ -54947,7 +55052,7 @@ func procDiscussions(w http.ResponseWriter, r *http.Request) {
 		var buf bytes.Buffer
 		comu := p.USERS
 		for i:=0; i < len(comu); i++ {
-			buf.WriteString(fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/social?SO_FUNC=ViewPeople&UID=%v\"><img src=\"%v\" class=\"img-circle\" width=50 height=50 title=\"Chat with %v\"> ", comu[i], getProfilePic(w, r, comu[i]), comu[i]))
+			buf.WriteString(fmt.Sprintf("<a href=\"https://golang-programming.appspot.com/social?SO_FUNC=ViewPeople&UID=%v\"><img src=\"%v\" class=\"img-circle\" width=50 height=50 title=\"Chat with %v\"> ", comu[i], getProfilePic(w, r, comu[i]), comu[i]))
 		}
 		USERS := template.HTML(buf.String())
 		ACTIVITY := stmpHumanize(p.DT_UPDATE)
@@ -54962,44 +55067,38 @@ func procDiscussions(w http.ResponseWriter, r *http.Request) {
 		switch TARGET {
 			case "TDSSLIDE":
 				_, DOC_STAT, FL_SHARED, _, _, TITLE, IMAGE, _, MUSIC_ID, GET_NEXT = getTDSSLIDEBlobKey(w, r, docID)
-				URL_DIS = fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=%v&TITLE=%v", SID, TITLE)
-				URL_CON = fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&DOC_ID=%v&SID=%v&FORCE=%v&MODE=%v&PARM=%v&SECS=%v&TITLE=%v&MUSIC_ID=%v&GET_NEXT=%v&SOUND=ON", DOC_ID, SID, "N", "NORMAL", "LOOP", "8", TITLE, MUSIC_ID, GET_NEXT)
-			
+				URL_DIS = fmt.Sprintf("https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=%v&TITLE=%v", SID, TITLE)
+				URL_CON = fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&DOC_ID=%v&SID=%v&FORCE=%v&MODE=%v&PARM=%v&SECS=%v&TITLE=%v&MUSIC_ID=%v&GET_NEXT=%v&SOUND=ON", DOC_ID, SID, "N", "NORMAL", "LOOP", "8", TITLE, MUSIC_ID, GET_NEXT)
 			case "TDSARTL":
 				_, DOC_STAT, FL_SHARED, _, _, TITLE, _, IMAGE, MUSIC_ID = getTDSARTLBlobKey(w, r, docID)
-				URL_DIS = fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=%v&TITLE=%v", SID, TITLE)
-				URL_CON = fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=%v&FORCE=%v&TITLE=%v&MUSIC_ID=%v", DOC_ID, SID, "N", TITLE, MUSIC_ID)
-				
+				URL_DIS = fmt.Sprintf("https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=%v&TITLE=%v", SID, TITLE)
+				URL_CON = fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=%v&FORCE=%v&TITLE=%v&MUSIC_ID=%v", DOC_ID, SID, "N", TITLE, MUSIC_ID)
 			case "TDSMEDIA":
 				_, _, TITLE, _, DOC_STAT, FL_SHARED, IMAGE, _, _, _, _ = getTDSMEDIABlobKey(w, r, docID)
-				URL_DIS = fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=%v&TITLE=%v", SID, TITLE)
-				URL_CON = fmt.Sprintf("https://ulapph-public-1.appspot.com/media?FUNC_CODE=PLAY&MEDIA_ID=%v&SID=TDSMEDIA-%v", docID, docID)
+				URL_DIS = fmt.Sprintf("https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=%v&TITLE=%v", SID, TITLE)
+				URL_CON = fmt.Sprintf("https://golang-programming.appspot.com/media?FUNC_CODE=PLAY&MEDIA_ID=%v&SID=TDSMEDIA-%v", docID, docID)
 		}
- 
 		g := Discussions{
-			IMAGE: IMAGE, 	
-			TITLE: TITLE, 	 			
-			USERS: USERS, 			
-			ACTIVITY: ACTIVITY,	
+			IMAGE: IMAGE,
+			TITLE: TITLE,
+			USERS: USERS,
+			ACTIVITY: ACTIVITY,
 			DT_UPDATE: DT_UPDATE,
-			COMMENTS: COMMENTS,	
+			COMMENTS: COMMENTS,
 			URL_DIS: URL_DIS,
 			URL_CON: URL_CON,
 			FL_SHARED: FL_SHARED,
 			DOC_STAT: DOC_STAT,
 		}
-		
 		cx = append(cx, g)
 	}
 	if err := recentDiscussions.Execute(w, cx); err != nil {
 	  panic(err)
 	}
-	
 }
 
 //process the people directory for this cloud desktop 
 func procPeopleDir(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
 	//billing fix
 	q := datastore.NewQuery("TDSUSERS").Filter("LOGGED_IN =", 1)
@@ -55172,7 +55271,7 @@ func showOverallMap(w http.ResponseWriter, r *http.Request) {
 					XPIC = SPL[4]
 					}
 					//buf.WriteString("")
-					//demo.ulapph@gmail.com|https://|14.7391207,121.0501458|2017-07-01 00:40:15.926259213 +0000 UTC
+					//ulapph@gmail.com|https://|14.7391207,121.0501458|2017-07-01 00:40:15.926259213 +0000 UTC
 					p := UlapphDesktops {
 						PK:				ctr,
 						Lat:			lat,
@@ -55388,26 +55487,46 @@ func showOverallSites(w http.ResponseWriter, r *http.Request, FL_BOT bool) {
 		fmt.Fprintf(w, "Sorry, no cache available at this time. <a href=\"/m\">Click here</a> to open quick search.")
 	}
 }
-
 //shows overall trending contents 
 func showOverallTrending(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
-	
+    //D0083
+    mode := r.FormValue("t")
 	updateUserActiveData(w, r, c, "", "showOverallTrending")
-	
 	IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "N" {
 		//redirect
-		redURL := fmt.Sprintf("%v/social?SO_FUNC=show-trending", getSchemeNewUrl(w,r,SEARCH_SERVER))
-		http.Redirect(w, r, redURL, http.StatusFound)
-		return		
+		//D0083
+		if mode != "json" {
+			redURL := fmt.Sprintf("%v/social?SO_FUNC=show-trending", getSchemeNewUrl(w,r,SEARCH_SERVER))
+			http.Redirect(w, r, redURL, http.StatusFound)
+		} else {
+			urlStr := fmt.Sprintf("%v/social?SO_FUNC=show-trending&t=json", SEARCH_SERVER)
+			client := urlfetch.Client(c)
+			if err := r.ParseForm(); err != nil {
+				panic(err)
+			}
+			resp, err := client.Get(urlStr)
+			if err != nil {
+				panic(err)
+			}
+			bodyBytes, _ := ioutil.ReadAll(resp.Body)
+			w.Write(bodyBytes)
+		}
+		return
 	}
-	
 	cKey := fmt.Sprintf("OVERALL_TRENDING")
+	//D0083
+	if mode == "json" {
+		cKey = fmt.Sprintf("OVERALL_TRENDING_JSON")
+	}
 	OVERALL_TRENDING := ""
 	OVERALL_TRENDING = getStrMemcacheValueByKey(w,r,cKey)
-	if OVERALL_TRENDING != "" {	
+	if OVERALL_TRENDING != "" {
+		if mode == "json" {
+			w.Write([]byte(OVERALL_TRENDING))
+			return
+		}
 		if err := showTrending.Execute(w, ""); err != nil {
 			 panic(err)
 		}
@@ -55417,35 +55536,54 @@ func showOverallTrending(w http.ResponseWriter, r *http.Request) {
 		//show cache
 		//fmt.Fprintf(w, "SOC_FUNC: %s<br>", SOC_FUNC)
 		w.Write([]byte(OVERALL_TRENDING))
-		
 		if err := showTrendingFooter.Execute(w, ""); err != nil {
 			 panic(err)
 		}
 	} else {
 		fmt.Fprintf(w, "Sorry, no cache available at this time.")
 	}
-	
 }
 
 //shows overall whats new 
 func showOverallWhatsNew(w http.ResponseWriter, r *http.Request) {
-	
     c := appengine.NewContext(r)
-	
+    //D0083
+    mode := r.FormValue("t")
 	updateUserActiveData(w, r, c, "", "showOverallWhatsNew")
-	
 	IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "N" {
 		//redirect
-		redURL := fmt.Sprintf("%v/social?SO_FUNC=show-whats-new", getSchemeNewUrl(w,r,SEARCH_SERVER))
-		http.Redirect(w, r, redURL, http.StatusFound)
-		return		
+		//D0083
+		if mode != "json" {
+			redURL := fmt.Sprintf("%v/social?SO_FUNC=show-whats-new&t=%v", getSchemeNewUrl(w,r,SEARCH_SERVER),mode)
+			http.Redirect(w, r, redURL, http.StatusFound)
+		} else {
+			urlStr := fmt.Sprintf("%v/social?SO_FUNC=show-whats-new&t=json", SEARCH_SERVER)
+			client := urlfetch.Client(c)
+			if err := r.ParseForm(); err != nil {
+				panic(err)
+			}
+			resp, err := client.Get(urlStr)
+			if err != nil {
+				panic(err)
+			}
+			bodyBytes, _ := ioutil.ReadAll(resp.Body)
+			w.Write(bodyBytes)
+		}
+		return
 	}
-	
 	cKey := fmt.Sprintf("OVERALL_WHATS_NEW")
+	//D0083
+	if mode == "json" {
+		cKey = fmt.Sprintf("OVERALL_WHATS_NEW_JSON")
+	}
 	OVERALL_WHATS_NEW := ""
 	OVERALL_WHATS_NEW = getStrMemcacheValueByKey(w,r,cKey)
-	if OVERALL_WHATS_NEW != "" {	
+	if OVERALL_WHATS_NEW != "" {
+		if mode == "json" {
+			w.Write([]byte(OVERALL_WHATS_NEW))
+			return
+		}
 		if err := showWhatsNew.Execute(w, ""); err != nil {
 			 panic(err)
 		}
@@ -55455,14 +55593,12 @@ func showOverallWhatsNew(w http.ResponseWriter, r *http.Request) {
 		//show cache
 		//fmt.Fprintf(w, "SOC_FUNC: %s<br>", SOC_FUNC)
 		w.Write([]byte(OVERALL_WHATS_NEW))
-		
 		if err := showTrendingFooter.Execute(w, SYS_ADD_THIS_PUB_ID); err != nil {
 			 panic(err)
 		}
 	} else {
 		fmt.Fprintf(w, "Sorry, no cache available at this time.")
 	}
-	
 }
 
 //D0042
@@ -56912,7 +57048,7 @@ func queueSocial(w http.ResponseWriter, r *http.Request) {
 								putStrToMemcacheWithoutExp(w,r,sKey,cData)
  
 								thisIdxKey := fmt.Sprintf("TDSSLIDE-%d", p.DOC_ID)
-								thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, 0)
+								thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, 0)
 								
 								//t := time.Now().Local()
 								//tstamp := t.Format("20060102150405")
@@ -56965,7 +57101,7 @@ func queueSocial(w http.ResponseWriter, r *http.Request) {
 							}
 							
 							//notify all users of this event via channels
-							reqStr := fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&DOC_ID=%v&SID=TDSSLIDE-%v", DOC_ID, DOC_ID)
+							reqStr := fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&DOC_ID=%v&SID=TDSSLIDE-%v", DOC_ID, DOC_ID)
 							msgDtl3 := fmt.Sprintf("UID:%v has liked Slide (%v) %v <a href=\"%v\">%v</a>",  UID, TITLE, DOC_ID, reqStr, reqStr)
 							sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,UID,reqStr,SID),SID)
 				
@@ -57004,7 +57140,7 @@ func queueSocial(w http.ResponseWriter, r *http.Request) {
 								//tstamp := t.Format("20060102150405")
 								tstamp := getTimestamp()
 								thisIdxKey := fmt.Sprintf("TDSARTL-%d", p.DOC_ID)
-								thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
+								thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
 								blobChan := make(chan string)
 								go getBlobTextChan(w, r,blobChan, p.BLOB_URL)
 								blobText := <- blobChan
@@ -57047,7 +57183,7 @@ func queueSocial(w http.ResponseWriter, r *http.Request) {
 							}
 							
 							//notify all users of this event via channels
-							reqStr := fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v", DOC_ID, DOC_ID)
+							reqStr := fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v", DOC_ID, DOC_ID)
 							msgDtl3 := fmt.Sprintf("UID:%v has liked Article (%v) %v <a href=\"%v\">%v</a>.",  UID, TITLE, DOC_ID, reqStr, reqStr)
 							sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,UID,reqStr,SID),SID)
 					}
@@ -57087,7 +57223,7 @@ func queueSocial(w http.ResponseWriter, r *http.Request) {
 								}
 								//update index
 								thisIdxKey := fmt.Sprintf("TDSSLIDE-%d", p.DOC_ID)
-								thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, 0)
+								thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, 0)
 								
 								
 								//update stats
@@ -57143,7 +57279,7 @@ func queueSocial(w http.ResponseWriter, r *http.Request) {
 							}
 							
 							//notify all users of this event via channels
-							reqStr := fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v", DOC_ID, DOC_ID)
+							reqStr := fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v", DOC_ID, DOC_ID)
 							msgDtl3 := fmt.Sprintf("UID:%v has dis-liked Slide %v <a href=\"%v\">%v</a>",  UID, DOC_ID, reqStr, reqStr)
 							sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,UID,reqStr,SID),SID)
 						
@@ -57176,7 +57312,7 @@ func queueSocial(w http.ResponseWriter, r *http.Request) {
 								//tstamp := t.Format("20060102150405")
 								tstamp := getTimestamp()
 								thisIdxKey := fmt.Sprintf("TDSARTL-%d", p.DOC_ID)
-								thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
+								thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
 								blobChan := make(chan string)
 								go getBlobTextChan(w, r,blobChan, p.BLOB_URL)
 								blobText := <- blobChan
@@ -57219,7 +57355,7 @@ func queueSocial(w http.ResponseWriter, r *http.Request) {
 							}
 							
 							//notify all users of this event via channels
-							reqStr := fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v", DOC_ID, DOC_ID)
+							reqStr := fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=TDSARTL-%v", DOC_ID, DOC_ID)
 							msgDtl3 := fmt.Sprintf("UID:%v has dis-liked Article %v <a href=\"%v\">%v</a>",  UID, DOC_ID, reqStr, reqStr)
 							sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,UID,reqStr,SID),SID)
 					}
@@ -57268,7 +57404,7 @@ func queueSocial(w http.ResponseWriter, r *http.Request) {
 								tstamp := getTimestamp()
 								
 								thisIdxKey := fmt.Sprintf("TDSMEDIA-%d", p.MEDIA_ID)
-								thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", p.MEDIA_ID, p.IMG_URL)
+								thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", p.MEDIA_ID, p.IMG_URL)
 								TITLE := strings.Replace(p.TITLE, "_", " ", -1)
 								DESC := strings.Replace(p.DESC, "_", " ", -1)
 								thisCont := ""
@@ -57341,7 +57477,7 @@ func queueSocial(w http.ResponseWriter, r *http.Request) {
 								
 								//update index
 								thisIdxKey := fmt.Sprintf("TDSSLIDE-%d", p.DOC_ID)
-								thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, 0)
+								thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, 0)
 								
 								//t := time.Now().Local()
 								//tstamp := t.Format("20060102150405")
@@ -57420,7 +57556,7 @@ func queueSocial(w http.ResponseWriter, r *http.Request) {
 								//tstamp := t.Format("20060102150405")
 								tstamp := getTimestamp()
 								thisIdxKey := fmt.Sprintf("TDSARTL-%d", p.DOC_ID)
-								thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
+								thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
 								blobChan := make(chan string)
 								go getBlobTextChan(w, r,blobChan, p.BLOB_URL)
 								blobText := <- blobChan
@@ -57467,7 +57603,7 @@ func queueSocial(w http.ResponseWriter, r *http.Request) {
 			}
 	
 		case SOC_FUNC == "SO_NOTIFY":
-			msgDtl := fmt.Sprintf("[U00087] New comment posted on: %v by %s. LINK: %v", SID, UID, ShortenUrl(w,r,fmt.Sprintf("https://ulapph-public-1.appspot.com/social?SO_FUNC=SO_VIEW&SID=%s", SID)))
+			msgDtl := fmt.Sprintf("[U00087] New comment posted on: %v by %s. LINK: %v", SID, UID, ShortenUrl(w,r,fmt.Sprintf("https://golang-programming.appspot.com/social?SO_FUNC=SO_VIEW&SID=%s", SID)))
 			data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "USER-COMMENT", msgDtl)
 			ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
 			SPL := strings.Split(COMMENTS_BY,",")
@@ -57476,14 +57612,14 @@ func queueSocial(w http.ResponseWriter, r *http.Request) {
 				if SPL[i] != "" {
 					
 					//notify all users of this event via channels
-					msgDtl3 := fmt.Sprintf("UID:%v has posted a comment on: %v >>> LINK: <a href=\"https://ulapph-public-1.appspot.com/social?SO_FUNC=SO_VIEW&SID=%s\">Click here</a>", UID, SID, SID)
-					reqStr := fmt.Sprintf("https://ulapph-public-1.appspot.com/social?SO_FUNC=SO_VIEW&SID=%s", SID)
+					msgDtl3 := fmt.Sprintf("UID:%v has posted a comment on: %v >>> LINK: <a href=\"https://golang-programming.appspot.com/social?SO_FUNC=SO_VIEW&SID=%s\">Click here</a>", UID, SID, SID)
+					reqStr := fmt.Sprintf("https://golang-programming.appspot.com/social?SO_FUNC=SO_VIEW&SID=%s", SID)
 					sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,UID,reqStr,SID),SID)
 					laterNotifyGB.Call(c, "autoNotifyPeopleGB", thisEmail, msgDtl, ADMMAIL)
 				}
 			}
 			//also send message to the author
-			msgDtl = fmt.Sprintf("[U00122] Your document %v has new comments by %s >>> LINK: https://ulapph-public-1.appspot.com/social?SO_FUNC=SO_VIEW&SID=%s", SID, UID, SID)
+			msgDtl = fmt.Sprintf("[U00122] Your document %v has new comments by %s >>> LINK: https://golang-programming.appspot.com/social?SO_FUNC=SO_VIEW&SID=%s", SID, UID, SID)
 			docID := 0
 			TARGET := ""
 			SPL = strings.Split(SID,"-")
@@ -57916,7 +58052,7 @@ func adhocWebLoadTDSUSERS(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	keysBody := []byte(`[
 {"SYS_VER":1,
-"USER":"demo.ulapph@gmail.com",
+"USER":"ulapph@gmail.com",
 "COMPANY_ID":"BSIEDV",
 "CLOUD_NAME":"ULAPPH",
 "GROUP_ID":"GRP_ADMIN",
@@ -58379,7 +58515,7 @@ func adhocWebLoadTDSSLIDE(w http.ResponseWriter, r *http.Request) {
 "DOC_STAT":"Personal",
 "TITLE":"Sample Title",
 "DESC":"This is a sample description",
-"AUTHOR":"demo.ulapph@gmail.com",
+"AUTHOR":"ulapph@gmail.com",
 "YEAR":"2014",
 "CATEGORY":"desktop1",
 "TAGS":"sdd dsds sdsd",
@@ -58424,7 +58560,7 @@ func adhocWebLoadTDSARTL(w http.ResponseWriter, r *http.Request) {
 "DOC_STAT":"Personal",
 "TITLE":"Sample Title",
 "DESC":"This is a sample description",
-"AUTHOR":"demo.ulapph@gmail.com",
+"AUTHOR":"ulapph@gmail.com",
 "YEAR":"2014",
 "CATEGORY":"desktop1",
 "TAGS":"sdd dsds sdsd",
@@ -58470,7 +58606,7 @@ func adhocWebLoadTDSMEDIA(w http.ResponseWriter, r *http.Request) {
 "PROP":"120x120",
 "TITLE":"Sample Title",
 "DESC":"This is a sample description",
-"AUTHOR":"demo.ulapph@gmail.com",
+"AUTHOR":"ulapph@gmail.com",
 "YEAR":"2014",
 "CATEGORY":"desktop0",
 "FL_SHARED":"Y",
@@ -59205,16 +59341,16 @@ const slidesTrendingRec = `
 {{if eq .FL_SHARED "Y"}}
 {{if ne .DOC_STAT "Personal"}}
 	<tr>
-	<td><a href="https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">
+	<td><a href="https://golang-programming.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">
 	<img src="{{.TAGS}}" height="100" width="100"></img></a></td>
 	<td data-order="{{.TITLE}}">
-		<a href="https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&SECS=8&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
+		<a href="https://golang-programming.appspot.com/slides?TYPE=SLIDE&SECS=8&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
 	</td>
 	<td>{{.DESC}} [TDSSLIDE-{{.DOC_ID}}]</td>
 	<td>{{.AUTHOR}}</td>
 	<td class="id">{{.DOC_ID}}</td>
 	<td>{{.NUM_VIEWS}}</td>
-	<td data-order="{{.NUM_COMMENTS}}"><a href="https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSSLIDE-{{.DOC_ID}}&TITLE={{.TITLE}}" target="str">{{.NUM_COMMENTS}}</a></td>
+	<td data-order="{{.NUM_COMMENTS}}"><a href="https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSSLIDE-{{.DOC_ID}}&TITLE={{.TITLE}}" target="str">{{.NUM_COMMENTS}}</a></td>
 	</tr>
 {{end}}
 {{end}}
@@ -59228,16 +59364,16 @@ const slidesWhatsNewRec = `
 {{if eq .FL_SHARED "Y"}}
 {{if ne .DOC_STAT "Personal"}}
 	<tr>
-	<td><a href="https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">
+	<td><a href="https://golang-programming.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">
 	<img src="{{.TAGS}}" height="100" width="100"></img></a></td>
 	<td data-order="{{.TITLE}}">
-		<a href="https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&SECS=8&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
+		<a href="https://golang-programming.appspot.com/slides?TYPE=SLIDE&SECS=8&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSSLIDE-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&GET_NEXT={{.GET_NEXT}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
 	</td>
 	<td>{{.DESC}} [TDSSLIDE-{{.DOC_ID}}]</td>
 	<td>{{.AUTHOR}}</td>
 	<td data-order="{{.DT_UPLOAD}}">{{.DT_UPLOAD}}</td>
 	<td>{{.NUM_VIEWS}}</td>
-	<td data-order="{{.NUM_COMMENTS}}"><a href="https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSSLIDE-{{.DOC_ID}}&TITLE={{.TITLE}}" target="swn">{{.NUM_COMMENTS}}</a></td>
+	<td data-order="{{.NUM_COMMENTS}}"><a href="https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSSLIDE-{{.DOC_ID}}&TITLE={{.TITLE}}" target="swn">{{.NUM_COMMENTS}}</a></td>
 	</tr>
 {{end}}
 {{end}}
@@ -59382,16 +59518,16 @@ const articlesTrendingRec = `
 {{if eq .FL_SHARED "Y"}}
 {{if ne .DOC_STAT "Personal"}}
 	<tr>
-	<td><a href="https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">
+	<td><a href="https://golang-programming.appspot.com/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">
 	<img src="{{.TAGS}}" height="100" width="100"></img></a></td>
 	<td data-order="{{.TITLE}}">
-		<a href="https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
+		<a href="https://golang-programming.appspot.com/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
 	</td>
 	<td>{{.DESC}} [TDSARTL-{{.DOC_ID}}]</td>
 	<td>{{.AUTHOR}}</td>
 	<td class="id">{{.DOC_ID}}</td>
 	<td>{{.NUM_VIEWS}}</td>
-	<td data-order="{{.NUM_COMMENTS}}"><a href="https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSARTL-{{.DOC_ID}}&TITLE={{.TITLE}}" target="atr">{{.NUM_COMMENTS}}</a></td>
+	<td data-order="{{.NUM_COMMENTS}}"><a href="https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSARTL-{{.DOC_ID}}&TITLE={{.TITLE}}" target="atr">{{.NUM_COMMENTS}}</a></td>
 	</tr>
 {{end}}
 {{end}}
@@ -59405,16 +59541,16 @@ const articlesWhatsNewRec = `
 {{if eq .FL_SHARED "Y"}}
 {{if ne .DOC_STAT "Personal"}}
 	<tr>
-	<td><a href="https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">
+	<td><a href="https://golang-programming.appspot.com/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">
 	<img src="{{.TAGS}}" height="100" width="100"></img></a></td>
 	<td data-order="{{.TITLE}}">
-		<a href="https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
+		<a href="https://golang-programming.appspot.com/articles?TYPE=ARTICLE&TITLE={{.TITLE}}&DOC_ID={{.DOC_ID}}&BLOB_KEY={{.BLOB_URL}}&SID=TDSARTL-{{.DOC_ID}}&CATEGORY={{.CATEGORY}}&MUSIC_ID={{.MUSIC_ID}}&FL_COUNTRY_SPECIFIC={{.FL_COUNTRY_SPECIFIC}}">{{.TITLE}}</a><br>
 	</td>
 	<td>{{.DESC}}</td>
 	<td>{{.AUTHOR}}</td>
 	<td data-order="{{.DT_UPLOAD}}">{{.DT_UPLOAD}}</td>
 	<td>{{.NUM_VIEWS}}</td>
-	<td data-order="{{.NUM_COMMENTS}}"><a href="https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSARTL-{{.DOC_ID}}&TITLE={{.TITLE}}" target="awn" >{{.NUM_COMMENTS}}</a></td>
+	<td data-order="{{.NUM_COMMENTS}}"><a href="https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=TDSARTL-{{.DOC_ID}}&TITLE={{.TITLE}}" target="awn" >{{.NUM_COMMENTS}}</a></td>
 	</tr>
 {{end}}
 {{end}}
@@ -60074,7 +60210,7 @@ func usersProcessor(w http.ResponseWriter, r *http.Request, auth, USER_EMAIL_ID 
 					//cache user data first time
 					var buffer3 bytes.Buffer
 					//SYS_VER	USER	COMPANY_ID	CLOUD_NAME	GROUP_ID	LOGGED_IN	LAST_LOGIN	USER_ACC_OPT	FL_QUOTA	FL_BILLED	FL_WORK	FL_WF_ID
-					//1	demo.ulapph@gmail.com	BSIEDV	ULAPPH	GRP_ADMIN	1	20141110193058	Normal	Y	Y	Y	Y
+					//1	ulapph@gmail.com	BSIEDV	ULAPPH	GRP_ADMIN	1	20141110193058	Normal	Y	Y	Y	Y
 					buffer3.WriteString(fmt.Sprintf("%d,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s", p.SYS_VER,	p.USER,	p.COMPANY_ID,	p.CLOUD_NAME,	p.GROUP_ID,	p.LOGGED_IN,	p.LAST_LOGIN,	p.USER_ACC_OPT,	p.FL_QUOTA,	p.FL_BILLED,	p.FL_WORK,	p.FL_WF_ID, p.USER_ACC_TYP))
 					TDSUSER_CACHE := buffer3.String()
 					putStrToMemcacheWithoutExp(w,r,usersProcessor_CACHE_KEY,TDSUSER_CACHE)
@@ -60123,7 +60259,7 @@ func TASK_MEMCACHER_usersProcessor(w http.ResponseWriter, r *http.Request) {
 				//cache user data first time
 				var buffer3 bytes.Buffer
 				//SYS_VER	USER	COMPANY_ID	CLOUD_NAME	GROUP_ID	LOGGED_IN	LAST_LOGIN	USER_ACC_OPT	FL_QUOTA	FL_BILLED	FL_WORK	FL_WF_ID
-				//1	demo.ulapph@gmail.com	BSIEDV	ULAPPH	GRP_ADMIN	1	20141110193058	Normal	Y	Y	Y	Y
+				//1	ulapph@gmail.com	BSIEDV	ULAPPH	GRP_ADMIN	1	20141110193058	Normal	Y	Y	Y	Y
 				buffer3.WriteString(fmt.Sprintf("%d,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s", p.SYS_VER,	p.USER,	p.COMPANY_ID,	p.CLOUD_NAME,	p.GROUP_ID,	p.LOGGED_IN,	p.LAST_LOGIN,	p.USER_ACC_OPT,	p.FL_QUOTA,	p.FL_BILLED,	p.FL_WORK,	p.FL_WF_ID, p.USER_ACC_TYP))
 				TDSUSER_CACHE := buffer3.String()
 				usersProcessor_CACHE_KEY := fmt.Sprintf("usersProcessor_CACHE_%s", p.USER)
@@ -60787,7 +60923,7 @@ func handleClickUrl(w http.ResponseWriter, r *http.Request) {
 		//c.Errorf("[S0538]")
 
 		//notify all users of this event via channels
-		shareMe := fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", ICON_NAME, ShortenUrl(w,r,URL_ADD), ICON_NAME)
+		shareMe := fmt.Sprintf("<a href=\"https://golang-programming.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", ICON_NAME, ShortenUrl(w,r,URL_ADD), ICON_NAME)
 		msgDtl3 := fmt.Sprintf("UID:%v has visited <a href=\"%v\">%v</a> %v LINK: %v from %v", uid, URL_ADD, ICON_NAME, shareMe, URL_ADD, uReferer)
 		msgDtl3b := fmt.Sprintf("UID:%v has visited [%v] [%v] LINK: [%v]", uid, URL_ADD, ICON_NAME, URL_ADD)
 		data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "WEBSITE", msgDtl3b)
@@ -61906,15 +62042,15 @@ var userAccessTemplateMobileRootSearch = template.Must(template.New("userAccessT
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Search::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Search::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="/css/home1.css">
     <![endif]-->
@@ -61977,15 +62113,15 @@ var userAccessTemplateMobileRootAll = template.Must(template.New("userAccessTemp
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />   	
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="/css/home1.css">
     <![endif]-->
@@ -62053,15 +62189,15 @@ var userAccessTemplateMobileDesktop0 = template.Must(template.New("userAccessTem
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Desktop0::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." /> 	
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="/css/home1.css">
     <![endif]-->
@@ -62119,14 +62255,14 @@ var userAccessTemplateDesktop0Head1 = template.Must(template.New("userAccessTemp
 <!DOCTYPE HTML>
 <html manifest="/cache?q=desktop0&uid={{.}}" lang="en-US" class="no-js" >
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Desktop0::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
     <meta name="author" content="ULAPPH Cloud Desktop" />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/> 	
+    <link rel="shortcut icon" href="/img/favicon.ico"/> 	
 `))
  
  
@@ -62134,14 +62270,14 @@ var userAccessTemplateDesktopNHead1 = template.Must(template.New("userAccessTemp
 <!DOCTYPE HTML>
 <html manifest="/cache?q=desktopN&d={{.}}" lang="en-US" class="no-js" >
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Desktop0::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/> 	
+    <link rel="shortcut icon" href="/img/favicon.ico"/> 	
 `))
  
 //cache files
@@ -62202,7 +62338,7 @@ var userAccessCacheDesktop0Part2 = template.Must(template.New("userAccessCacheDe
 /css/modalWindow.css
 /css/msgs.css
 /img/wireless-icon.png
-ULAPPH_DEFAULT_FAVICON
+/img/favicon.ico
 /img/background.gif
 /img/banaosystems-boot.png
 /img/spinnerSmall.gif
@@ -62244,14 +62380,14 @@ var userAccessTemplateDesktop0Part1 = template.Must(template.New("userAccessTemp
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Desktop0::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" type="text/css" media="screen" href="{{.}}"/>
 `))
  
@@ -62259,14 +62395,14 @@ var userAccessTemplateDesktop0Part1a = template.Must(template.New("userAccessTem
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Desktop0::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
 `))
  
 var userAccessTemplateDesktop0Part2 = template.Must(template.New("userAccessTemplateDesktop0Part2").Parse(`
@@ -62562,14 +62698,14 @@ var htmlHeaderModal = template.Must(template.New("htmlHeaderModal").Parse(`
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -62594,14 +62730,14 @@ var htmlWidgetWeather = template.Must(template.New("htmlWidgetWeather").Parse(`
 var mobileControl = template.Must(template.New("mobileControl").Parse(`
 <html>
 <head>
-    <title>MC::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>MC::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link href='https://fonts.googleapis.com/css?family=Sansita+One' rel='stylesheet' type='text/css'>
 	<link href='/css/mobileControl.css' rel='stylesheet' type='text/css'>
 </head>
@@ -62728,14 +62864,14 @@ var htmlHeaderModalProfile = template.Must(template.New("htmlHeaderModalProfile"
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Profile::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Profile::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -62788,14 +62924,14 @@ var htmlEditorHeader = template.Must(template.New("htmlEditorHeader").Parse(`
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Editor::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Editor::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" href="/css/ace-styles.css" type="text/css" media="screen" charset="utf-8">
     <script async="true" src="/js/ace-source-code-pro.js"></script>
     <link rel="stylesheet" href="/css/editor-style.css" type="text/css" media="screen" charset="utf-8">
@@ -63276,14 +63412,14 @@ var htmlEditorHeaderReader = template.Must(template.New("htmlEditorHeaderReader"
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Editor::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Editor::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" href="/css/ace-stylesReader.css" type="text/css" media="screen" charset="utf-8">
     <script async="true" src="/js/ace-source-code-pro.js"></script>	
 	<link rel="stylesheet" href="/css/ace-slider-reset.css"> <!-- CSS reset -->
@@ -63654,14 +63790,14 @@ var htmlHeaderModalAds = template.Must(template.New("htmlHeaderModalAds").Parse(
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Ads::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Ads::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -63677,14 +63813,14 @@ var htmlHeaderAdmin = template.Must(template.New("htmlHeaderAdmin").Parse(`
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Admin::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Admin::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/style-search.css"/>
 	<link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
@@ -63706,14 +63842,14 @@ var htmlHeaderSearchGlow = template.Must(template.New("htmlHeaderSearchGlow").Pa
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Search::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Search::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
 	<link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -63727,13 +63863,13 @@ var htmlHeaderFB = template.Must(template.New("htmlHeaderFB").Parse(`
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
   </head>
   <body>
 <div id="fb-root"></div>
@@ -63752,8 +63888,8 @@ var htmlQuickSearchTool = template.Must(template.New("htmlQuickSearchTool").Pars
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Quick Launch::- ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>Quick Launch::- golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" media="screen,projection" href="/css/mobiSearch.css" />
 <link rel="stylesheet" media="screen,projection,tv" href="/css/search_glowing.css"/>
 </head>
@@ -64092,14 +64228,14 @@ var htmlHeaderGB = template.Must(template.New("htmlHeaderGB").Parse(`
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Guestbook::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Guestbook::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="/css/home1.css">
     <![endif]-->
@@ -64142,11 +64278,11 @@ var htmlHeaderGBSocial = template.Must(template.New("htmlHeaderGBSocial").Parse(
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Discussion::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Discussion::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
 	<script src="/lib/js/commento/commento.js"></script>
@@ -64228,14 +64364,14 @@ var htmlHeaderGBChannel = template.Must(template.New("htmlHeaderGBChannel").Pars
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Guestbook::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Guestbook::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="/css/home1.css">
     <![endif]-->
@@ -64283,15 +64419,15 @@ var htmlHeaderModalRefresh = template.Must(template.New("htmlHeaderModalRefresh"
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -64307,14 +64443,14 @@ var htmlHeaderModalRefreshNo = template.Must(template.New("htmlHeaderModalRefres
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -64329,14 +64465,14 @@ var htmlHeaderModalRefreshNoHome = template.Must(template.New("htmlHeaderModalRe
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
 	<link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -64358,15 +64494,15 @@ var htmlHeaderModalBlink = template.Must(template.New("htmlHeaderModalBlink").Pa
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -64415,15 +64551,15 @@ var htmlHeaderModalBlinkColor = template.Must(template.New("htmlHeaderModalBlink
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -64476,15 +64612,15 @@ const htmlHeaderGoogleMapsC = `
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Google Maps::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Google Maps::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
 	<script type='text/javascript' src='https://code.jquery.com/jquery-1.4.4.min.js'></script>
 `
  
@@ -64548,15 +64684,15 @@ var htmlHeaderModalBlinkColorLinkify = template.Must(template.New("htmlHeaderMod
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
 	<meta http-equiv="refresh" content="{{.}}" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/modalWindow.css"/>
     <link rel="stylesheet" media="screen,projection,tv" href="/css/msgs.css" />
 	<link rel="stylesheet" href="/css/calendarview.css" type="text/css" />
@@ -64682,8 +64818,8 @@ var textCSSBody = template.Must(template.New("textCSSBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>Text Formatter::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+		<title>Text Formatter::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+		<link rel="shortcut icon" href="/img/favicon.ico"/>
 	</head>
 	<body>
 			<form action="/editor?EDIT_FUNC=TEXT-CSS" method="post">
@@ -64729,8 +64865,8 @@ var textCountdownGet = template.Must(template.New("textCountdownGet").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>Countdown Timer::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+		<title>Countdown Timer::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+		<link rel="shortcut icon" href="/img/favicon.ico"/>
 	</head>
 	<body onload="addMinutes(0);">
 			<form action="/tools?FUNC=WIDGET&t=CountDownWidget" method="post">
@@ -64762,8 +64898,8 @@ var textCryptoBody = template.Must(template.New("textCryptoBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>ULAPPH Encryption::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+		<title>ULAPPH Encryption::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+		<link rel="shortcut icon" href="/img/favicon.ico"/>
 	</head>
 	<body>
 			<form name="text-css" action="/editor?EDIT_FUNC=CRYPTO" method="post" enctype="multipart/form-data">
@@ -64795,7 +64931,7 @@ var textTimelineBodyRaw = template.Must(template.New("textDrawBodyRaw").Parse(`
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>ULAPPH Timeline::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>ULAPPH Timeline::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta charset="utf-8">
     <meta name="description" content="TimelineJS Embed">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -64838,7 +64974,7 @@ var textTimelineBody = template.Must(template.New("textDrawBody").Parse(`
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>ULAPPH Timeline::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>ULAPPH Timeline::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta charset="utf-8">
     <meta name="description" content="TimelineJS Embed">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -64880,8 +65016,8 @@ var textDrawBody = template.Must(template.New("textDrawBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-	<title>ULAPPH Drawing::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<title>ULAPPH Drawing::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" href="/draw/better.css" type="text/css" />
     <link rel="stylesheet" href="/draw/pygments.css" type="text/css" />
  
@@ -64943,14 +65079,14 @@ var textToSpeechBody = template.Must(template.New("textToSpeechBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>Text To Speech::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+		<title>Text To Speech::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta charset="UTF-8">
-		<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-		<meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+		<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+		<meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
 		<meta name="author" content="ULAPPH Cloud Desktop">
 		<meta name="copyright" content="ULAPPH Cloud Desktop">
-		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+		<link rel="shortcut icon" href="/img/favicon.ico"/>
 		
 		<link rel="stylesheet" href="/css/jquery.mobile-1.4.5.min.css"/>
 		
@@ -65047,8 +65183,8 @@ var textSemaphoreBody = template.Must(template.New("textSemaphoreBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>SemaphoreSMS::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+		<title>SemaphoreSMS::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+		<link rel="shortcut icon" href="/img/favicon.ico"/>
 		<link rel="stylesheet" href="/css/chat-style.css">
 		<script type="text/javascript" src="/js/jquery-2.1.1.js"></script>
 		<link rel="stylesheet" href="/css/sol.css">
@@ -65081,8 +65217,8 @@ var textStartBody = template.Must(template.New("textStartBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>Start Menu::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+		<title>Start Menu::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+		<link rel="shortcut icon" href="/img/favicon.ico"/>
 		<link rel="stylesheet" href="/css/chat-style.css">
 		<script type="text/javascript" src="/js/jquery-2.1.1.js"></script>
 		<link rel="stylesheet" href="/css/sol.css">
@@ -65133,8 +65269,8 @@ var playGoBody = template.Must(template.New("playGoBody").Parse(`
 <!doctype html>
 <html>
 	<head>
-		<title>ULAPPH Go Playground::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-		<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+		<title>ULAPPH Go Playground::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+		<link rel="shortcut icon" href="/img/favicon.ico"/>
 		<link rel="stylesheet" href="/css/style-play.css">
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 		<script src="/js/jquery-linedtextarea.js"></script>
@@ -65255,9 +65391,9 @@ var htmlToolsConnection = template.Must(template.New("htmlToolsConnection").Pars
 <head>
 <meta charset=utf-8>
 <meta name="viewport" content="width=620">
-<title>Monitor::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>Monitor::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <link rel="stylesheet" href="/css/html5demos.css">
 <script src="/js/h5utils.js"></script></head>
 <body>
@@ -65292,7 +65428,7 @@ var htmlMirror = template.Must(template.New("htmlMirror").Parse(`
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>WebcamJS MirrorB - ULAPPH Cloud Desktop</title>
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="stylesheet" href="/lib/css/buttons/buttons.css">
 	<style type="text/css">
 		body { font-family: Helvetica, sans-serif; }
@@ -65399,7 +65535,7 @@ var htmlMirror2 = template.Must(template.New("htmlMirror2").Parse(`
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>WebcamJS MirrorS - ULAPPH Cloud Desktop</title>
-	<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+	<link rel="shortcut icon" href="/img/favicon.ico"/>
 	<link rel="stylesheet" href="/lib/css/buttons/buttons.css">
 	<style type="text/css">
 		body { font-family: Helvetica, sans-serif; }
@@ -65543,14 +65679,14 @@ var userAccessTemplateDesktopNPart1 = template.Must(template.New("userAccessTemp
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Desktop0::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
     <link rel="stylesheet" type="text/css" media="screen" href="{{.}}"/>
  
 `))
@@ -65559,28 +65695,28 @@ var userAccessTemplateDesktopNPart1a = template.Must(template.New("userAccessTem
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>Desktop0::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>Desktop0::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
 `))
  
 var userAccessTemplateUWMPart1 = template.Must(template.New("userAccessTemplateUWMPart1").Parse(`
 <!DOCTYPE HTML>
 <html lang="en-US" class="no-js">
   <head>
-    <title>UWM::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
+    <title>UWM::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
+    <meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
     <meta name="copyright" content="Copyright 2014-2019 ULAPPH Cloud Desktop. All Rights Reserved." />
-    <meta name="keywords" content="ULAPPH_META_KEYWORDS_CONTENT" />
+    <meta name="keywords" content="ULAPPH Cloud Desktop, Golang, Go, Programming" />
     <meta name="author" content="ULAPPH Cloud Desktop" />
     <link rel="os-touch-icon" href="images/custom_icon.ico"/>
-    <link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+    <link rel="shortcut icon" href="/img/favicon.ico"/>
 	<meta name="theme-color" content="{{.STR_FILLER1}}">
 	<link rel="icon" sizes="192x192" href="/img/banaosystems-login.png">
     <link rel="stylesheet" media="screen,projection,tv" href="/css/mobitouch.css" />
@@ -65869,7 +66005,7 @@ var mobileBodyTemplateContentB = template.Must(template.New("mobileBodyTemplateC
 	<input type="hidden" id="ringtone" value="{{.STR_FILLER3}}">
  
     <div class="hero-cta">
-      <pre class="code code-wrap" data-language="html"><a href="/"><code>&quot;https://ulapph-public-1.appspot.com&quot;</code></a></pre>
+      <pre class="code code-wrap" data-language="html"><a href="/"><code>&quot;https://golang-programming.appspot.com&quot;</code></a></pre>
  
         <p>
             <a class="button-cta pure-button" href="#invite">Invite your friend!</a>
@@ -66184,7 +66320,7 @@ var mobileBodyTemplateContent0b = template.Must(template.New("mobileBodyTemplate
     </div>
  
     <div class="hero-cta">
-      <pre class="code code-wrap" data-language="html"><a href="/"><code>&quot;https://ulapph-public-1.appspot.com&quot;</code></a></pre>
+      <pre class="code code-wrap" data-language="html"><a href="/"><code>&quot;https://golang-programming.appspot.com&quot;</code></a></pre>
  
         <p>
             <a class="button-cta pure-button" href="#invite">Invite your friend!</a>
@@ -66269,7 +66405,7 @@ var mobileBodyTemplateContent120b = template.Must(template.New("mobileBodyTempla
     </div>
  
     <div class="hero-cta">
-      <pre class="code code-wrap" data-language="html"><a href="/"><code>&quot;https://ulapph-public-1.appspot.com&quot;</code></a></pre>
+      <pre class="code code-wrap" data-language="html"><a href="/"><code>&quot;https://golang-programming.appspot.com&quot;</code></a></pre>
  
         <p>
             <a class="button-cta pure-button" href="#invite">Invite your friend!</a>
@@ -68110,7 +68246,7 @@ var profileEditTemplate = template.Must(template.New("profileEditTemplate").Pars
 <div class="toggle8">
 		<h3>Ringtone:</h3>
  
-		<div class="info2">Ringtone: <textarea rows="4" cols="50" name="RINGTONE" maxlength="500">{{.RINGTONE}}</textarea>Sample: https://ulapph-public-1.appspot.com/audio/newmsg.ogg<br></div>
+		<div class="info2">Ringtone: <textarea rows="4" cols="50" name="RINGTONE" maxlength="500">{{.RINGTONE}}</textarea>Sample: https://golang-programming.appspot.com/audio/newmsg.ogg<br></div>
 		<div class="info2">Play Ringtone: <audio controls>
 									<source src="{{.RINGTONE}}" type="audio/wav">
 									<source src="{{.RINGTONE}}" type="audio/mp3">
@@ -68210,7 +68346,7 @@ var profileEditTemplateNew2 = template.Must(template.New("profileEditTemplateNew
 <div class="toggle8">
 		<h3>Ringtone:</h3>
  
-		<div class="info2">Ringtone: <input type="text" name="RINGTONE" value="" maxlength="500"/>Sample: https://ulapph-public-1.appspot.com/audio/newmsg.ogg <br></div>
+		<div class="info2">Ringtone: <input type="text" name="RINGTONE" value="" maxlength="500"/>Sample: https://golang-programming.appspot.com/audio/newmsg.ogg <br></div>
 </div>
 </div>
 		<input type="hidden" name="EditPeopleFunc" value="SaveProfile"/>
@@ -68613,9 +68749,9 @@ var multiUploaderImagesHdr = template.Must(template.New("multiUploaderImagesHdr"
  
 <meta charset="utf-8">
  
-<title>Dropzone::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>Dropzone::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <script src="/js/dropzone.js"></script>
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/dropzone.css">
@@ -68663,9 +68799,9 @@ var multiUploaderImagesHdr2 = template.Must(template.New("multiUploaderImagesHdr
  
 <meta charset="utf-8">
  
-<title>Dropzone::ulapph-public-1.appspot.com - ULAPPH Cloud Desktop</title>
-<meta name="description" content="ULAPPH_META_DESCRIPTION_CONTENT" />
-<link rel="shortcut icon" href="ULAPPH_DEFAULT_FAVICON"/>
+<title>Dropzone::golang-programming.appspot.com - ULAPPH Cloud Desktop</title>
+<meta name="description" content="This is website of Golang-programming for Go programmers. The Go programming language was conceived in late 2007 in Google designed for multicore processors, networked systems, massive computation clusters, and the web programming." />
+<link rel="shortcut icon" href="/img/favicon.ico"/>
 <script src="/js/dropzone.js"></script>
 <link rel="stylesheet" href="/css/dropzone.css">
 <body>
@@ -69563,7 +69699,7 @@ func checkReferrer(w http.ResponseWriter, r *http.Request) {
 		
 		if (myRefGenG == false && myRefGenS == false && myRefGoogleG == false && myRefGoogleS == false && myRefOauth == false)  {
 			
-			msgDtl := fmt.Sprintf("[U00098] ERROR: Apologies, this URL/page cannot be accessed directly. It has to be referred/accessed from ulapph-public-1.appspot.com. Referer: %v", uReferer)
+			msgDtl := fmt.Sprintf("[U00098] ERROR: Apologies, this URL/page cannot be accessed directly. It has to be referred/accessed from golang-programming.appspot.com. Referer: %v", uReferer)
 			msgTyp := "error"
 			msgURL := "/?q=home"
 			action := "U00098"
@@ -70570,7 +70706,7 @@ func handleServeSlides(w http.ResponseWriter, r *http.Request) {
 
 		//insert slide into search idx
 		thisIdxKey := fmt.Sprintf("TDSSLIDE-%d", thisID)
-		thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", thisID, thisIdxKey, CATEGORY, 0)
+		thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", thisID, thisIdxKey, CATEGORY, 0)
 
 		blobChan := make(chan string)
 		go getBlobTextChan(w, r,blobChan, blobkey)
@@ -70769,7 +70905,7 @@ func handleServeArticles(w http.ResponseWriter, r *http.Request) {
 		
 		//insert article into search idx
 		thisIdxKey := fmt.Sprintf("TDSARTL-%d", thisID)
-		thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", thisID, thisIdxKey, CATEGORY, 0)
+		thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", thisID, thisIdxKey, CATEGORY, 0)
 		//blobText := getBlobText(w, r, blobkey)
 		blobChan := make(chan string)
 		go getBlobTextChan(w, r,blobChan, blobkey)
@@ -71148,7 +71284,7 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 
 		//insert media into search idx
 		thisIdxKey := fmt.Sprintf("TDSMEDIA-%d", thisID)
-		thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", thisID, thisURL)
+		thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", thisID, thisURL)
 		TITLE = strings.Replace(TITLE, "_", " ", -1)
 		DESC = strings.Replace(DESC, "_", " ", -1)
 		thisCont := ""
@@ -71527,7 +71663,7 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 					go sendBroadcastsUpdSlide(w,r,uid,DOC_STAT, SID, TITLE, p.DESC, TAGS, p.CATEGORY)
 					//update slide in existing search idx
 					thisIdxKey := fmt.Sprintf("TDSSLIDE-%d", thisID)
-					thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", thisID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
+					thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", thisID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
 					//use go routine
 					//blobText = getBlobText(w, r, blobkey)
 					blobChan := make(chan string)
@@ -71654,7 +71790,7 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 					//t := time.Now().Local()
 					//tstamp := t.Format("20060102150405")
 					thisIdxKey := fmt.Sprintf("TDSSLIDE-%d", thisID)
-					thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", thisID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
+					thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", thisID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
 					//blobText := ""
 					//blobText = getBlobText(w, r, blobkey)
 					blobChan := make(chan string)
@@ -71851,7 +71987,7 @@ func handleUploadSlides(w http.ResponseWriter, r *http.Request) {
 			//update slide in existing search idx
 			tstamp := getTimestamp()
 			thisIdxKey := fmt.Sprintf("TDSSLIDE-%d", thisID)
-			thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", thisID, thisIdxKey, CATEGORY, MUSIC_ID)
+			thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&MODE=NORMAL&PARM=LOOP&SECS=8&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", thisID, thisIdxKey, CATEGORY, MUSIC_ID)
 			//blobText := ""
 			//blobText = getBlobText(w, r, blobkey)
 			blobChan := make(chan string)
@@ -72096,7 +72232,7 @@ func handleUploadArticles(w http.ResponseWriter, r *http.Request) {
 					
 					//update article in existing search idx
 					thisIdxKey := fmt.Sprintf("TDSARTL-%d", p.DOC_ID)
-					thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
+					thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
 					//blobText := ""
 					//blobText = getBlobText(w, r, blobkey)
 					blobChan := make(chan string)
@@ -72234,7 +72370,7 @@ func handleUploadArticles(w http.ResponseWriter, r *http.Request) {
 					//t := time.Now().Local()
 					//tstamp := t.Format("20060102150405")
 					thisIdxKey := fmt.Sprintf("TDSARTL-%d", p.DOC_ID)
-					thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
+					thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", p.DOC_ID, thisIdxKey, p.CATEGORY, p.MUSIC_ID)
 					blobChan := make(chan string)
 					go getBlobTextChan(w, r,blobChan, blobkey)
 					blobText := <- blobChan
@@ -72409,7 +72545,7 @@ func handleUploadArticles(w http.ResponseWriter, r *http.Request) {
 			//update article in existing search idx
 			tstamp := getTimestamp()
 			thisIdxKey := fmt.Sprintf("TDSARTL-%d", DOC_ID)
-			thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", DOC_ID, thisIdxKey, CATEGORY, MUSIC_ID)
+			thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%d&SID=%v&CATEGORY=%v&MUSIC_ID=%v", DOC_ID, thisIdxKey, CATEGORY, MUSIC_ID)
 			//blobText := ""
 			//blobText = getBlobText(w, r, blobkey)
 			blobChan := make(chan string)
@@ -72869,7 +73005,7 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 					//tstamp := t.Format("20060102150405")
 					//insert media into search idx
 					thisIdxKey := fmt.Sprintf("TDSMEDIA-%d", p.MEDIA_ID)
-					thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", p.MEDIA_ID, p.IMG_URL)
+					thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", p.MEDIA_ID, p.IMG_URL)
 					searchIdx := &IDX_TDSMEDIA{
 						DOC_KEY: 			thisIdxKey,
 						SEARCH_TYPE: 		"MEDIA",
@@ -73085,7 +73221,7 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 					cKey := fmt.Sprintf("TDSMEDIA_MEDID_CACHE_%v", p.MEDIA_ID)
 					putStrToMemcacheWithoutExp(w,r,cKey,"")
 					thisIdxKey := fmt.Sprintf("TDSMEDIA-%d", p.MEDIA_ID)
-					thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", p.MEDIA_ID, p.IMG_URL)
+					thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", p.MEDIA_ID, p.IMG_URL)
 					//TITLE := strings.Replace(p.TITLE, "_", " ", -1)
 					//DESC := strings.Replace(p.DESC, "_", " ", -1)
 					//thisCont := fmt.Sprintf("%v - %v", TITLE, DESC)
@@ -73242,7 +73378,7 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 
 				//insert media into search idx
 				thisIdxKey := fmt.Sprintf("TDSMEDIA-%d", p.MEDIA_ID)
-				thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", p.MEDIA_ID, thisURL)
+				thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", p.MEDIA_ID, thisURL)
 				TITLE := strings.Replace(p.TITLE, "_", " ", -1)
 				DESC := strings.Replace(p.DESC, "_", " ", -1)
 				//thisCont := fmt.Sprintf("%v - %v", TITLE, DESC)
@@ -73362,7 +73498,7 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 				tstamp := getTimestamp()
 				//insert media into search idx
 				thisIdxKey := fmt.Sprintf("TDSMEDIA-%d", p.MEDIA_ID)
-				thisIdxURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", p.MEDIA_ID, thisURL)
+				thisIdxURL := fmt.Sprintf("https://golang-programming.appspot.com/media?FUNC_CODE=VIEW&MEDIA_ID=%d&IMG_URL=%v", p.MEDIA_ID, thisURL)
 				thisCont := ""
 				if DATA_TYPE == "text" {
 					//thisCont = getBlobText(w, r, p.BLOB_KEY)
@@ -73866,19 +74002,17 @@ func getBasicColors(w http.ResponseWriter, r *http.Request) *TEMPSTRUCT {
 
 //checks if user specified to randomized colors 
 func isRandomColors(w http.ResponseWriter, r *http.Request, uid string) string {
-	
 	if SYS_UWM_RAN_COLORS == true {
 		return "Y"
 	}
-	
 	cfgName := "SYS_UWM_RAN_COLORS_"+uid
 	sysConf := getStrMemcacheValueByKey(w,r,cfgName)
 	if sysConf == "Y" {
-		return sysConf	
+		return sysConf
 	} else {
 		if sysConf == "" {
 			//get from config
-			sysConf, _ = getTDSCNFG(w,r,0,cfgName)			
+			sysConf, _ = getTDSCNFG(w,r,0,cfgName)
 		}
 	}
 	return sysConf
@@ -73891,30 +74025,25 @@ func getStartColor(w http.ResponseWriter, r *http.Request) string {
 
 	if isRandomColors(w,r,uid) == "Y" {
 		color1, _, _ := getRandomColors()
-		return color1	
+		return color1
 	}
-	
 	cKey := fmt.Sprintf("START_MENU_COLOR_%v", uid)
 	color := ""
 	color = getStrMemcacheValueByKey(w,r,cKey)
-	
 	if strings.TrimSpace(color) == "" {
 		cfgName := fmt.Sprintf("PERSONAL_StartMenu_Color_%v", uid)
 		color, _ = getTDSCNFG(w,r,0,cfgName)
 		cKey := fmt.Sprintf("START_MENU_COLOR_%v", uid)
 		putStrToMemcacheWithoutExp(w,r,cKey,color)
 	}
-	
 	if color == "" {
 		color = fmt.Sprintf("#%v", SYS_SLIDE_COLOR)
 	}
-	
 	return color
 }
 
 //renders custom style css template 
 func renderStyleCssTemplates2(w http.ResponseWriter, r *http.Request) {
- 
 	color := getStartColor(w,r)
 	t := presentTemplates[path.Ext(".style-css2")]
 	if t == nil {
@@ -75407,14 +75536,14 @@ func slides(w http.ResponseWriter, r *http.Request) {
 	_, uid := checkSession(w,r)
 	if uid == "" {
 		msg = getGeoString(w,r)
-		reqStr = fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&DOC_ID=%v&SID=%v&FORCE=%v&MODE=%v&PARM=%v&SECS=%v&TITLE=%v&MUSIC_ID=%v&GET_NEXT=%v&SOUND=ON", DOC_ID, SID, FORCE, MODE, PARM, SECS, TITLE, MUSIC_ID, GET_NEXT)
-		shareMe := fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"SLIDE-%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", TITLE, ShortenUrl(w,r,reqStr), TITLE)
+		reqStr = fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&DOC_ID=%v&SID=%v&FORCE=%v&MODE=%v&PARM=%v&SECS=%v&TITLE=%v&MUSIC_ID=%v&GET_NEXT=%v&SOUND=ON", DOC_ID, SID, FORCE, MODE, PARM, SECS, TITLE, MUSIC_ID, GET_NEXT)
+		shareMe := fmt.Sprintf("<a href=\"https://golang-programming.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"SLIDE-%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", TITLE, ShortenUrl(w,r,reqStr), TITLE)
 		msgDtl3 = fmt.Sprintf("UID:%v has viewed SLIDE (<a href=\"%v\" target=\"preview\">%v <img src=\"%v\" width=100 height=70></a>) %v %v [%v]", msg, reqStr, TITLE, IMG_URL, shareMe, SID, viaStr)
 		msgDtl3b = fmt.Sprintf("UID:%v has viewed SLIDE %v entitled \"%v\" [%v] LINK: %v", msg, SID, TITLE, viaStr, ShortenUrl(w,r,reqStr))
 	}else{
 		msg = uid
-		reqStr = fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=SLIDE&DOC_ID=%v&SID=%v&FORCE=%v&MODE=%v&PARM=%v&SECS=%v&TITLE=%v&MUSIC_ID=%v&GET_NEXT=%v&SOUND=ON", DOC_ID, SID, FORCE, MODE, PARM, SECS, TITLE, MUSIC_ID, GET_NEXT)
-		shareMe := fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"SLIDE-%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", TITLE, ShortenUrl(w,r,reqStr), TITLE)
+		reqStr = fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=SLIDE&DOC_ID=%v&SID=%v&FORCE=%v&MODE=%v&PARM=%v&SECS=%v&TITLE=%v&MUSIC_ID=%v&GET_NEXT=%v&SOUND=ON", DOC_ID, SID, FORCE, MODE, PARM, SECS, TITLE, MUSIC_ID, GET_NEXT)
+		shareMe := fmt.Sprintf("<a href=\"https://golang-programming.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"SLIDE-%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", TITLE, ShortenUrl(w,r,reqStr), TITLE)
 		msgDtl3 = fmt.Sprintf("UID:%v has viewed SLIDE (<a href=\"%v\" target=\"preview\">%v <img src=\"%v\" width=100 height=70></a>) %v %v [%v]", msg, reqStr, TITLE, IMG_URL, shareMe, SID, viaStr)
 		msgDtl3b = fmt.Sprintf("UID:%v has viewed SLIDE %v entitled \"%v\" [%v] LINK: %v", msg, SID, TITLE, viaStr, ShortenUrl(w,r,reqStr))
 	}
@@ -75611,14 +75740,14 @@ func articles(w http.ResponseWriter, r *http.Request) {
 	_, uid := checkSession(w,r)
 	if uid == "" {
 		msg := getGeoString(w,r)
-		reqStr = fmt.Sprintf("https://ulapph-public-1.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=%v&FORCE=%v&TITLE=%v&MUSIC_ID=%v", DOC_ID, SID, FORCE, TITLE, MUSIC_ID)
-		shareMe := fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"ARTICLE-%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", TITLE, ShortenUrl(w,r,reqStr), TITLE)
+		reqStr = fmt.Sprintf("https://golang-programming.appspot.com/articles?TYPE=ARTICLE&DOC_ID=%v&SID=%v&FORCE=%v&TITLE=%v&MUSIC_ID=%v", DOC_ID, SID, FORCE, TITLE, MUSIC_ID)
+		shareMe := fmt.Sprintf("<a href=\"https://golang-programming.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"ARTICLE-%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", TITLE, ShortenUrl(w,r,reqStr), TITLE)
 		msgDtl3 = fmt.Sprintf("UID:%v has viewed ARTICLE (<a href=\"%v\" target=\"preview\">%v <img src=\"%v\" width=100 height=70></a>) %v %v [%v]", msg, reqStr, TITLE, IMG_URL, shareMe, SID, viaStr)
 		msgDtl3b = fmt.Sprintf("UID:%v has viewed ARTICLE %v entitled \"%v\" [%v] LINK: %v", msg, SID, TITLE, viaStr, ShortenUrl(w,r,reqStr))
 	}else{
 		msg = uid
-		reqStr = fmt.Sprintf("https://ulapph-public-1.appspot.com/slides?TYPE=ARTICLE&DOC_ID=%v&SID=%v&FORCE=%v&TITLE=%v", DOC_ID, SID, FORCE, TITLE)
-		shareMe := fmt.Sprintf("<a href=\"https://ulapph-public-1.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"ARTICLE-%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", TITLE, ShortenUrl(w,r,reqStr), TITLE)
+		reqStr = fmt.Sprintf("https://golang-programming.appspot.com/slides?TYPE=ARTICLE&DOC_ID=%v&SID=%v&FORCE=%v&TITLE=%v", DOC_ID, SID, FORCE, TITLE)
+		shareMe := fmt.Sprintf("<a href=\"https://golang-programming.appspot.com/share?SH_FUNC=all&title=%v&url=%v\" target=\"ARTICLE-%v\" title=\"Share to social networks!\"><img src=\"/img/sharethis.png\" width=40 height=40></a>", TITLE, ShortenUrl(w,r,reqStr), TITLE)
 		msgDtl3 = fmt.Sprintf("UID:%v has viewed ARTICLE (<a href=\"%v\" target=\"preview\">%v <img src=\"%v\" width=100 height=70></a>) %v %v [%v]", msg, reqStr, TITLE, IMG_URL, shareMe, SID, viaStr)
 		msgDtl3b = fmt.Sprintf("UID:%v has viewed ARTICLE %v entitled \"%v\" [%v] LINK: %v", msg, SID, TITLE, viaStr, ShortenUrl(w,r,reqStr))
 	 }
@@ -79576,11 +79705,11 @@ func API_utube(w http.ResponseWriter, r *http.Request) {
 			}
 			fmt.Fprintf(w, "<ul class=\"able-playlist\" data-player=\"video1\" data-embedded>")
 			for id, title := range videos {
-					fmt.Fprintf(w, "<li><a href=\"https://www.youtube.com/watch?v=%v\" target=\"yt\"><img src=\"/img/Youtube.png\" width=20 height=20 title=\"Play on Youtube\"></a><a href=\"#\" onClick=\"parent.postMessage('ULAPPH-SYS-UPD@888@%v@888@https://www.youtube.com/embed/%v?rel=0&modestbranding=1&autohide=1&mute=1&showinfo=0&controls=1&autoplay=1', 'https://ulapph-public-1.appspot.com'); return false;\"><br>%v (VID)</a></li>", id, "Video", id, title)
+					fmt.Fprintf(w, "<li><a href=\"https://www.youtube.com/watch?v=%v\" target=\"yt\"><img src=\"/img/Youtube.png\" width=20 height=20 title=\"Play on Youtube\"></a><a href=\"#\" onClick=\"parent.postMessage('ULAPPH-SYS-UPD@888@%v@888@https://www.youtube.com/embed/%v?rel=0&modestbranding=1&autohide=1&mute=1&showinfo=0&controls=1&autoplay=1', 'https://golang-programming.appspot.com'); return false;\"><br>%v (VID)</a></li>", id, "Video", id, title)
 					
 			}
 			for id, title := range playlists {
-					fmt.Fprintf(w, "<li><a href=\"https://www.youtube.com/embed/videoseries?list=%v\" target=\"yt\"><img src=\"/img/Youtube.png\" width=20 height=20 title=\"Play on Youtube\"></a><a href=\"#\" onClick=\"parent.postMessage('ULAPPH-SYS-UPD@888@%v@888@https://www.youtube.com/embed/videoseries?list=%v&rel=0&modestbranding=1&autohide=1&mute=1&showinfo=0&controls=1&autoplay=1', 'https://ulapph-public-1.appspot.com'); return false;\"><br>%v (PL)</a></li>", id, "Playlist", id, title)
+					fmt.Fprintf(w, "<li><a href=\"https://www.youtube.com/embed/videoseries?list=%v\" target=\"yt\"><img src=\"/img/Youtube.png\" width=20 height=20 title=\"Play on Youtube\"></a><a href=\"#\" onClick=\"parent.postMessage('ULAPPH-SYS-UPD@888@%v@888@https://www.youtube.com/embed/videoseries?list=%v&rel=0&modestbranding=1&autohide=1&mute=1&showinfo=0&controls=1&autoplay=1', 'https://golang-programming.appspot.com'); return false;\"><br>%v (PL)</a></li>", id, "Playlist", id, title)
 			}
  
 	}
@@ -79756,9 +79885,9 @@ func handlerOuath2GoogleCallback(w http.ResponseWriter, r *http.Request) {
 		values := url.Values{
 		 "code": {code},
 		 "client_id": {GOOGLE_OAUTH2_CLIENTID},
-		 //"client_id": {"demo.ulapph@gmail.com"},
+		 //"client_id": {"ulapph@gmail.com"},
 		 "client_secret": {GOOGLE_OAUTH2_SECRET},
-		 "redirect_uri": {"https://ulapph-public-1.appspot.com/oauth2/google/callback"},
+		 "redirect_uri": {"https://golang-programming.appspot.com/oauth2/google/callback"},
 		 "grant_type": {"authorization_code"},
 		}
 		
@@ -79831,7 +79960,7 @@ func handlerOuath2GithubCallback(w http.ResponseWriter, r *http.Request) {
 		 "state": {state},
 		 "client_id": {GITHUB_CLIENT_ID},
 		 "client_secret": {GITHUB_CLIENT_SECRET},
-		 "redirect_uri": {"https://ulapph-public-1.appspot.com/oauth2/github/callback"},
+		 "redirect_uri": {"https://golang-programming.appspot.com/oauth2/github/callback"},
 		}
 		
 		req, _ := http.NewRequest("POST", turl, strings.NewReader(values.Encode()))
@@ -79919,7 +80048,7 @@ func handlerOuath2MicrosoftCallback(w http.ResponseWriter, r *http.Request) {
 		 "state": {state},
 		 "client_id": {MICROSOFT_CLIENT_ID},
 		 "client_secret": {MICROSOFT_CLIENT_SECRET},
-		 "redirect_uri": {"https://ulapph-public-1.appspot.com/oauth2/microsoft/callback"},
+		 "redirect_uri": {"https://golang-programming.appspot.com/oauth2/microsoft/callback"},
 		}
 		
 		req, _ := http.NewRequest("POST", turl, strings.NewReader(values.Encode()))
@@ -80888,7 +81017,7 @@ func contentCheckSid(w http.ResponseWriter, r *http.Request, sid string) (blobKe
 				msgDtl := fmt.Sprintf("[U00167] ERROR: This document ID (%s) is accessible only by the author (%v) or by admin.", sid, AUTHOR)
 				//sendEvent(w,r, FDBKMAIL, msgDtl)
 				msgTyp := "error"
-				msgURL := fmt.Sprintf("https://ulapph-public-1.appspot.com/infodb?DB_FUNC=MEDIA&CATEGORY=")
+				msgURL := fmt.Sprintf("https://golang-programming.appspot.com/infodb?DB_FUNC=MEDIA&CATEGORY=")
 				action := fmt.Sprintf("Apologies for this issue! <a href=\"%v\">Click here</a> to proceed to view other media.", msgURL)
 				sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, msgURL, action)
 				http.Redirect(w, r, sysReq, http.StatusFound)
@@ -81886,7 +82015,7 @@ func getGithubBranches(w http.ResponseWriter, r *http.Request, repo string) {
 				fmt.Fprintf(w, "<h3>github.com/%v/%v</h3>", GITHUB_USER_NAME, repo)
 				fmt.Fprintf(w, "<h4>Select Branch:</h4>")
 				for _, br := range repos {
-					fmt.Fprintf(w, "<h4><a href=\"#\" onClick=\"parent.postMessage('ULAPPH-SYS-UPD@888@%v@888@/tools?FUNC=DRIVES&t=MYDRIVE_GITHUB&ACT=R&bra=%v&repo=%v&sha=%v', 'https://ulapph-public-1.appspot.com'); return false;\">%v (SHA=%v)</a></h4>", repo, *br.Name, repo, *br.Commit.SHA, *br.Name, *br.Commit.SHA)
+					fmt.Fprintf(w, "<h4><a href=\"#\" onClick=\"parent.postMessage('ULAPPH-SYS-UPD@888@%v@888@/tools?FUNC=DRIVES&t=MYDRIVE_GITHUB&ACT=R&bra=%v&repo=%v&sha=%v', 'https://golang-programming.appspot.com'); return false;\">%v (SHA=%v)</a></h4>", repo, *br.Name, repo, *br.Commit.SHA, *br.Name, *br.Commit.SHA)
 				}	
 			} else {
 				//redirect to content
@@ -82056,7 +82185,7 @@ func oauth2GaeAdminCall(w http.ResponseWriter, r *http.Request, target string) {
 	//////c.Infof("oauth2GaeAdminCall()...")
 	switch target {
 		case "auth":
-			redURL := fmt.Sprintf("https://accounts.google.com/o/oauth2/v2/auth?response_type=token&client_id=176777409325-vj412ou1mgrjcn9175aaspjusbufeacc.apps.googleusercontent.com&redirect_uri=https://ulapph-public-1.appspot.com/oauth2/admin/callback&scope=https://www.googleapis.com/auth/cloud-platform")
+			redURL := fmt.Sprintf("https://accounts.google.com/o/oauth2/v2/auth?response_type=token&client_id=176777409325-vj412ou1mgrjcn9175aaspjusbufeacc.apps.googleusercontent.com&redirect_uri=https://golang-programming.appspot.com/oauth2/admin/callback&scope=https://www.googleapis.com/auth/cloud-platform")
 			//////c.Infof("redURL: %v", redURL)
 			http.Redirect(w, r, redURL, http.StatusFound)
 	}
@@ -82069,7 +82198,7 @@ func oauth2GoogleCall(w http.ResponseWriter, r *http.Request, uid, target string
 	//c := appengine.NewContext(r)
 	switch target {
 		case "drive":
-			redURL := fmt.Sprintf("%v?client_id=%v&redirect_uri=https://ulapph-public-1.appspot.com/oauth2/google/callback&response_type=code&scope=https://www.googleapis.com/auth/drive&access_type=offline&state=%v&login_hint=%v", GOOGLE_OAUTH2_AUTH, GOOGLE_OAUTH2_CLIENTID, GOOGLE_OAUTH2_STATE, uid)
+			redURL := fmt.Sprintf("%v?client_id=%v&redirect_uri=https://golang-programming.appspot.com/oauth2/google/callback&response_type=code&scope=https://www.googleapis.com/auth/drive&access_type=offline&state=%v&login_hint=%v", GOOGLE_OAUTH2_AUTH, GOOGLE_OAUTH2_CLIENTID, GOOGLE_OAUTH2_STATE, uid)
 			http.Redirect(w, r, redURL, http.StatusFound)
 	}
 }
@@ -82080,7 +82209,7 @@ func oauth2GithubCall(w http.ResponseWriter, r *http.Request, uid, target string
 	//c := appengine.NewContext(r)
 	switch target {
 		case "github":
-			redURL := fmt.Sprintf("%v?client_id=%v&redirect_uri=https://ulapph-public-1.appspot.com/oauth2/github/callback&scope=user repo&state=%v&allow_signup=true", GITHUB_AUTH_URL, GITHUB_CLIENT_ID, GITHUB_OAUTH2_STATE)	
+			redURL := fmt.Sprintf("%v?client_id=%v&redirect_uri=https://golang-programming.appspot.com/oauth2/github/callback&scope=user repo&state=%v&allow_signup=true", GITHUB_AUTH_URL, GITHUB_CLIENT_ID, GITHUB_OAUTH2_STATE)	
 			http.Redirect(w, r, redURL, http.StatusFound)
 	}
 }
@@ -82107,9 +82236,9 @@ func handlerOuath2MicrosoftCall(w http.ResponseWriter, r *http.Request) {
 	redURL := ""	
 	switch {
 		case client_id == "" && redirect_uri == "" && scope == "":
-			redURL = fmt.Sprintf("%v?client_id=%v&response_type=code&response_mode=query&redirect_uri=https://ulapph-public-1.appspot.com/oauth2/microsoft/callback&scope=%v&state=%v", MICROSOFT_AUTH_URL, MICROSOFT_CLIENT_ID, MICROSOFT_OAUTH2_SCOPE, MICROSOFT_OAUTH2_STATE)	
+			redURL = fmt.Sprintf("%v?client_id=%v&response_type=code&response_mode=query&redirect_uri=https://golang-programming.appspot.com/oauth2/microsoft/callback&scope=%v&state=%v", MICROSOFT_AUTH_URL, MICROSOFT_CLIENT_ID, MICROSOFT_OAUTH2_SCOPE, MICROSOFT_OAUTH2_STATE)	
 		default:
-			redURL = fmt.Sprintf("%v?client_id=%v&response_type=%v&response_mode=%v&redirect_uri=https://ulapph-public-1.appspot.com/oauth2/microsoft/callback&scope=%v&state=%v", MICROSOFT_AUTH_URL, client_id, response_type, response_mode, scope, state)	
+			redURL = fmt.Sprintf("%v?client_id=%v&response_type=%v&response_mode=%v&redirect_uri=https://golang-programming.appspot.com/oauth2/microsoft/callback&scope=%v&state=%v", MICROSOFT_AUTH_URL, client_id, response_type, response_mode, scope, state)	
 			
 	}
 	//////c.Infof("redURL: %v", redURL)
@@ -82175,7 +82304,7 @@ func createComment(w http.ResponseWriter, r *http.Request, url, name, res, uid, 
 				 panic(err)
 			}
 			//broadcast event in chat world
-			msgDtl := fmt.Sprintf("New comment posted on: %v at %v by %v. LINK: %v", SID, SYS_SERVER_NAME, uid, ShortenUrl(w,r,fmt.Sprintf("https://ulapph-public-1.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=%v&TITLE=", SID, "")))
+			msgDtl := fmt.Sprintf("New comment posted on: %v at %v by %v. LINK: %v", SID, SYS_SERVER_NAME, uid, ShortenUrl(w,r,fmt.Sprintf("https://golang-programming.appspot.com/captcha?CC_FUNC=DISP&R=COMMENT&SID=%v&TITLE=", SID, "")))
 			data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "USER-COMMENT", msgDtl)
 			ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
 			//signal sites server to refresh the recent discussions page
@@ -82773,7 +82902,6 @@ func Shuffle(slice interface{}) {
     }
 }
 
-//edwinxxx
 func processDialogflowNLP(w http.ResponseWriter, req *http.Request, deviceID, rawMessage string) string {
 	c := appengine.NewContext(req)
 	c.Infof("processDialogflowNLP")

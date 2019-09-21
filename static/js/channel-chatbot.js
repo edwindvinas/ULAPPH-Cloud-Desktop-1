@@ -19,13 +19,13 @@ function procMessage(obj) {
 		return;
 	}
 	console.log("procMessage...");
-    console.log("obj: "+obj);
+    	console.log("obj: "+obj);
  	var res = obj.message;
 	var sysUpd = res.indexOf("ULAPPH-SYS-UPD@888@");
-    var danger = res.indexOf("danger-cat.png");
+    	var danger = res.indexOf("danger-cat.png");
 	var str = res; 
 	var resp = str.split(":");
-    if (res != "CHANNEL CONNECTED." && res != "CHANNEL ERROR." && res != "CHANNEL DISCONNECTED." && res != undefined) {
+    	if (res != "CHANNEL CONNECTED." && res != "CHANNEL ERROR." && res != "CHANNEL DISCONNECTED." && res != undefined) {
         chatWindow.talk(
             {
                 "procMessageRes": {
