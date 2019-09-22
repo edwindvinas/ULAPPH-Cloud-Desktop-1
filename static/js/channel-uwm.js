@@ -267,6 +267,27 @@ function procMessage(obj) {
 					rn.value = "pause";
                         	}
 				break;
+			//D0083
+			case "SYS_STRUWM_DESKTOP":
+				console.log("SYS_STRUWM_DESKTOP");
+				var server = cmdata[3];
+				console.log("server: "+server);
+               	 		var smatch = root.indexOf(server);
+                		console.log("smatch: "+smatch);
+				var desktop = "uwm"+cmdata[4];
+				console.log("desktop: "+desktop);
+				var src = cmdata[5];
+				console.log("src: "+src);
+				var uwm = document.getElementById("desktop").value;
+				console.log("uwm: "+uwm);
+		        	if (smatch > 0 && desktop === uwm) {
+					if (ValidURL(bgImgUrl) == true) {
+                                		document.getElementById('page').style.backgroundImage = "url(" + src + ")";
+						var rn = document.getElementById("ranid")
+						rn.value = "pause";
+                        		}
+				}
+				break;
 			//D0071
 			case "SYS_STRUWM_ALARM":
 			console.log("SYS_STRUWM_ALARM");

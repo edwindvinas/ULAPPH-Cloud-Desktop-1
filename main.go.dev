@@ -20557,21 +20557,17 @@ func ranAdsGen(w http.ResponseWriter, r *http.Request) {
 	xCountry := h.Get("X-AppEngine-Country")
 	xRegion  := h.Get("X-AppEngine-Region")
 	xCity    := h.Get("X-AppEngine-City")
- 
 	uag := r.UserAgent()
 	ua := user_agent.New(uag)
-	uaPlatform := ua.OS()	
+	uaPlatform := ua.OS()
 	nameb, _ := ua.Browser()
-	
 	var bLine bytes.Buffer
-	
 	///rag?d=desktop0&n=1
 	deskName := r.FormValue("d")
 	adNum := r.FormValue("n")
 	view := r.FormValue("f")
 	adSeq := str2int(adNum)
 	cKey := fmt.Sprintf("TASK_MEMCACHER_adslotsProcessor_AdsID")
- 
 	//get ads memcache
 	TASK_MEMCACHER_adslotsProcessor_AdsID_CACHE := ""
 	thisDesktop := fmt.Sprintf("%s", deskName)
@@ -20587,19 +20583,15 @@ func ranAdsGen(w http.ResponseWriter, r *http.Request) {
 	} else {
 		AdsID = TASK_MEMCACHER_adslotsProcessor_AdsID_CACHE
 	}
- 
 	//get ads
 	indAds := strings.Split(AdsID,",")
 	FL_DESKTOP := checkDesktop(w,r)
-	
 	for i := 0; i < len(indAds) && i <= 2; i++ {
 		seqNum := i + 1
-		
 		switch {
 			case adSeq == seqNum:
 				thisAdId := str2int(indAds[i])
 				ADM := fmt.Sprintf("AD%s", adNum)
-				
 				FL_ADS_FOUND, _, IMG_URL, ADS_LINK, ADS_DEST, ADS_TITLE := getAds2(w, r, ADM, thisAdId, thisDesktop, xCountry, xRegion, xCity, uaPlatform, nameb, uReferer)
 				if FL_ADS_FOUND == false {
 					switch {
@@ -56397,6 +56389,7 @@ func queueWgetUrl(w http.ResponseWriter, r *http.Request) {
 	return
 }
 //D0074
+//update cctv list
 func struwmUpdateCCTVList(w http.ResponseWriter, r *http.Request, uid, CATEGORY string) {
 	c := appengine.NewContext(r)
 	////c.Infof("struwmUpdateCCTVList...")
@@ -56442,9 +56435,9 @@ func struwmUpdateCCTVList(w http.ResponseWriter, r *http.Request, uid, CATEGORY 
 		}
 	}
 }
+//edwinxxx
 //D0066
 //process taskqueue to stream mirror to UWM 
-//func queueStreamMirrorToUwm(w http.ResponseWriter, r *http.Request) {
 func struwmStreamMirrorToUwm(w http.ResponseWriter, r *http.Request, uid, STRUWM, CATEGORY, SRC, CAPTION string) {
 	//c := appengine.NewContext(r)
 	////c.Infof("struwmStreamMirrorToUwm: %v", CATEGORY)
@@ -56467,6 +56460,11 @@ func struwmStreamMirrorToUwm(w http.ResponseWriter, r *http.Request, uid, STRUWM
 	sendChannelMessage(w,r,UID,data)
 	//also send to main uwm
 	sendChannelMessage(w,r,uid,data)
+	//edwinxxx
+	//D0083
+	//also send to all users in the site
+	data2 := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_DESKTOP@888@%v@888@%v@888@%v@888@%v", SYS_SERVER_NAME, STRUWM, SRC, CAPTION)
+	sendChannelMessage(w,r,"public",data2)
 	dummyCmd(w,r,uid)
 	//D0071
 	//save this image to memcache

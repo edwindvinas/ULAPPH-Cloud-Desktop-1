@@ -37,15 +37,15 @@ function procMessage(obj) {
 				console.log("SYS_STRUWM_CALL...");
 				var server = cmdata[3];
 				console.log("server: "+server);
-                var smatch = root.indexOf(server);
-                console.log("smatch: "+smatch);
+                		var smatch = root.indexOf(server);
+                		console.log("smatch: "+smatch);
 				var desktop = cmdata[4];
 				console.log("desktop: "+desktop);
 				var room = cmdata[5];
 				console.log("room: "+room);
 				var uwm = "desktop" + document.getElementById("uwm").value;
 				console.log("uwm: "+uwm);
-				if (smatch > 0 && desktop === uwm) {
+		 if (smatch > 0 && desktop === uwm) {
                     var aSound = document.createElement('audio');
                     soundManager.createSound({
                         id: 'mySoundCall',

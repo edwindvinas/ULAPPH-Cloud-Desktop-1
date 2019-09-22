@@ -25,6 +25,14 @@ function procMessage(obj) {
     	var danger = res.indexOf("danger-cat.png");
 	var str = res; 
 	var resp = str.split(":");
+	if (sysUpd > 0) {
+		var cmdata = str.split("@888@");
+		console.log("cmdata: "+cmdata);
+		if (cmdata[2] == "SYS_STRUWM_DESKTOP") {
+			//ignore
+			return;
+		}
+	}
     	if (res != "CHANNEL CONNECTED." && res != "CHANNEL ERROR." && res != "CHANNEL DISCONNECTED." && res != undefined) {
         chatWindow.talk(
             {
