@@ -429,6 +429,11 @@
 //REV DESC:	  	Add trending and whats new in json format 
 //REV AUTH:		Edwin D. Vinas
 /////////////////////////////////////////////////////////////////////////////////////////////////
+//REV ID: 		D0084
+//REV DATE: 		2019-Sep-23
+//REV DESC:	  	Add workforce details 
+//REV AUTH:		Edwin D. Vinas
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------
 //List of firebase channels
@@ -1535,6 +1540,8 @@ type OttoAwareness struct {
 	OttoUserCountry string `json:"ottoUserCountry"`
 	OttoUserCity string `json:"ottoUserCity"`
 	OttoUserDeviceType string `json:"ottoUserDeviceType"`
+	//D0084
+	OttoUserDeviceId string `json:"ottoUserDeviceId"`
 	OttoUserContext string `json:"ottoUserContext"`
 	//dummy fields
 	OttoFillerStr1 string `json:"ottoFillerStr1"`
@@ -2782,24 +2789,26 @@ type TDSRULES struct {
 	BROWSER_VERSION string
 	UID string
 }
+//D0084
 //users datastore
 type TDSUSERS struct {
-	SYS_VER int	
-	USER string	
-	COMPANY_ID string	
-	CLOUD_NAME string	
-	GROUP_ID string	
-	LOGGED_IN int	
-	LAST_LOGIN string
-	LAST_ACTIVE string
-	ACTIVE_DTLS string
-	USER_ACC_OPT string	
-	FL_QUOTA string	
-	FL_BILLED string	
-	FL_WORK string	
-	FL_WF_ID string
-	USER_ACC_TYP string
+	SYS_VER int `json:"sysVer"`
+	USER string `json:"user"`
+	COMPANY_ID string `json:"comanyID"`
+	CLOUD_NAME string `json:"cloudName"`
+	GROUP_ID string `json:"groupID"`
+	LOGGED_IN int `json:"loggedIn"`
+	LAST_LOGIN string `json:"lastLogin"`
+	LAST_ACTIVE string `json:"lastActive"`
+	ACTIVE_DTLS string `json:"activeDetails"`
+	USER_ACC_OPT string `json:"userAccOpt"`
+	FL_QUOTA string `json:"flQuota"`
+	FL_BILLED string `json:"flBilled"`
+	FL_WORK string `json:"flWork"`
+	FL_WF_ID string `json:"flWfId"`
+	USER_ACC_TYP string `json:"userAccTyp"`
 }
+
 //stats datastore
 type TDSSTATS struct {
 	SYS_VER int	
@@ -2807,7 +2816,6 @@ type TDSSTATS struct {
 	DATA_TYPE string	
 	VAL_NUM int
 	VAL_TXT string
- 
 }
 //ads datastore
 type TDSADS struct {
@@ -2864,7 +2872,6 @@ type TDSADVL struct {
 	URL_DATA string	
 	IP_ADDRESS string
 }
- 
 //config datastore
 type TDSCNFG struct {
 	SYS_VER int	
@@ -2875,7 +2882,6 @@ type TDSCNFG struct {
 	TXT_VAL string
 	CFG_DESC string
 }
- 
 //icons datastore
 type TDSICONS struct {
 	SYS_VER int	
@@ -2887,7 +2893,6 @@ type TDSICONS struct {
 	DESKTOP string
 	BLOB_KEY string
 }
- 
 //urlc datastore
 type TDSURLC struct {
 	SYS_VER int	
@@ -2902,13 +2907,12 @@ type TDSURLC struct {
 	REC_TYPE string
 	UID string
 }
- 
 //prof datastore
 type TDSPROF struct {
-	SYS_VER int	
+	SYS_VER int
 	UID	string
 	PICTURE	string
-	BIRTH_DAY string	
+	BIRTH_DAY string
 	ELEM_SCHOOL	string
 	HIGH_SCHOOL	string
 	COLLEGE	string
@@ -2916,13 +2920,13 @@ type TDSPROF struct {
 	PROFESSION	string
 	COMPANY	string
 	CONTACT_NUM	string
-	SOCIAL_1 string	
-	SOCIAL_2 string	
+	SOCIAL_1 string
+	SOCIAL_2 string
 	SOCIAL_3	string
 	COUNTRY	string
 	REGION	string
 	CITY	string
-	MUNICIPALITY string	
+	MUNICIPALITY string
 	BARANGAY	string
 	SUBDIVISION	string
 	REG_VOTER	string
@@ -3218,6 +3222,15 @@ type IDX_TDSMEDIA struct {
 ///////////////////////////////////////////////////////////////
 // DELAY FUNCTIONS
 ///////////////////////////////////////////////////////////////
+//D0084
+// send live agents available 
+var laterSendLiveAgents = delay.Func("laterSendLiveAgents", func(c appengine.Context, user, intent, deviceID string) {
+	t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-send-live-agents", map[string][]string{"user": {user}, "intent": {intent}, "did": {deviceID}})
+	if _, err := taskqueue.Add(c, t, ""); err != nil {
+		panic(err)
+	}
+})
+ 
 //D0082
 // save maps locations
 var laterSaveLocations = delay.Func("laterSaveLocations", func(c appengine.Context, mapData string) {
@@ -8644,16 +8657,12 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 				action := fmt.Sprintf("Great! You may now close this tab.")
 				sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, msgURL, action)
 				http.Redirect(w, r, sysReq, http.StatusFound)
-				return	
- 
-			
+				return
 			case "TDSUSERS-ACCOUNT":
 				USER := fmt.Sprintf("%v",r.FormValue("USER"))
-				
 				if err := htmlHeaderModal.Execute(w, getBasicColors(w,r)); err != nil {
 				 panic(err)
 				}
- 
 				q := datastore.NewQuery("TDSUSERS").Filter("USER =", USER).Limit(1)
 				//c.Errorf("[S0048]")
 				users := make([]TDSUSERS, 0, 1)
@@ -8662,29 +8671,27 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					//return
 				 }
 				for _, p := range users{
-					TEMPDATA := TEMPSTRUCT{
+					TEMPDATA := TEMPSTRUCT2{
 						STR_FILLER1: p.USER,
 						STR_FILLER2: p.USER_ACC_TYP,
 						STR_FILLER3: p.GROUP_ID,
+						//D0084
+						STR_FILLER4: p.FL_WORK,
+						STR_FILLER5: p.FL_WF_ID,
 					}
 					if err := accountEditTemplate.Execute(w, &TEMPDATA); err != nil {
 					  panic(err)
 					}
 					break
 				}
- 
 				if err := htmlFooterModal.Execute(w, ""); err != nil {
 				  panic(err)
 				}
 				return
-				
-				
 			case "TDSUSERS-ACCOUNT-REGISTER":
-				
 				if err := htmlHeaderModal.Execute(w, getBasicColors(w,r)); err != nil {
 				 panic(err)
 				}
-				
 				TEMPDATA := TEMPSTRUCT2{
 					STR_FILLER1: "sample@gmail.com",
 					STR_FILLER2: "Free",
@@ -8920,10 +8927,12 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 				USER := fmt.Sprintf("%v",r.FormValue("USER"))
 				ACC_TYP := r.FormValue("ACCOUNT_TYPE")
 				USER_GROUP := r.FormValue("USER_GROUP")
+				//D0084
+				FL_WORK := r.FormValue("WORKFORCE")
+				FL_WF_ID := r.FormValue("WORKFORCE_ID")
 				if strings.TrimSpace(USER) == "" {
 					return
 				}
-				
 				if isExceptionAccount[USER] == true {
 					msgDtl := "[U00014]ERROR: USER CAN ONLY BE MAINTAINED MANUALLY."
 					msgTyp := "error"
@@ -8932,8 +8941,7 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					sysReq := fmt.Sprintf("/sysmsg?msgTyp=%v&message=%v&msgURL=%v&action=%v", msgTyp, msgDtl, msgURL, action)
 					http.Redirect(w, r, sysReq, http.StatusFound)
 					return
-				}	
-				
+				}
 				q := datastore.NewQuery("TDSUSERS").Filter("USER =", USER).Limit(1)
 				//c.Errorf("[S0051]")
 				users := make([]TDSUSERS, 0, 1)
@@ -8944,6 +8952,9 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 				for _, p := range users{
 					p.USER_ACC_TYP = ACC_TYP
 					p.GROUP_ID = USER_GROUP
+					//D0084
+					p.FL_WORK = FL_WORK
+					p.FL_WF_ID = FL_WF_ID
 					key := datastore.NewKey(c, "TDSUSERS", USER, 0, nil)
 					if _, err := datastore.Put(c, key, &p); err != nil {
 						 panic(err)
@@ -8960,6 +8971,9 @@ func adminSetup(w http.ResponseWriter, r *http.Request) {
 					//clear memcache
 					cKey := "ULAPPH-PEOPLE-QUICK-VIEW"
 					putStrToMemcacheWithoutExp(w,r,cKey,"")
+					//D0084
+					//clear users cache
+					_ = memcache.Delete(c, "TDSUSERS_CACHE")
 					
 					fmt.Fprintf(w, "<h3>SUCCESS: USER ACCOUNT HAS BEEN UPDATED!</h3>")
 					
@@ -15313,6 +15327,7 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, FL_
 			OttoUserCountry: "",
 			OttoUserCity: "",
 			OttoUserDeviceType: "",
+			OttoUserDeviceId: devID,
 			OttoUserContext: "",
 			OttoFillerStr1: "",
 			OttoFillerStr2: "",
@@ -15368,7 +15383,7 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, FL_
 	  //c.Infof("ottoFunc: ottoFuncGetIntentDialogflow")
 		// Use NLP
 		nlpDebug(w,r,FL_DEBUG, "info", "Call processDialoflowNLP()")
-		response := processDialogflowNLP(w,r,devID,input)
+		response := processDialogflowNLP(w,r,FL_DEBUG,devID,input)
 		nlpDebug(w,r,FL_DEBUG, "info", "processDialogflowNLP() resp: "+fmt.Sprintf("%v",response))
 		//c.Infof("response: %v", response)
 		w.Header().Set("Content-Type", "application/json")
@@ -18641,6 +18656,42 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 				w.Write([]byte("ok"))
 			}
 			return
+		//D0084
+		case "FLA":
+			//find live agents
+			c.Infof("FLA")
+			intent := r.FormValue("intent")
+			user := r.FormValue("user")
+			deviceID := r.FormValue("did")
+			c.Infof("intent: %v", intent)
+			c.Infof("user: %v", user)
+			c.Infof("deviceID: %v", deviceID)
+			updateUserActiveData(w, r, c, "", "/directory-agents")
+			IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
+			//if this server is not sites server
+			if IS_SEARCH_SERVER != "Y" {
+				URL := fmt.Sprintf("%v/directory?DIR_FUNC=FLA&user=%v&intent=%v&did=%v", getSchemeNewUrl(w,r,SEARCH_SERVER), user, intent, deviceID)
+				c.Infof("URL: %v", URL)
+				client := urlfetch.Client(c)
+				if err := r.ParseForm(); err != nil {
+					panic(err)
+				}
+				resp, err := client.Get(URL)
+				if err != nil {
+					panic(err)
+				}
+				bodyBytes, _ := ioutil.ReadAll(resp.Body)
+				w.Write(bodyBytes)
+				return
+			} else {
+			        intent := r.FormValue("intent")
+			        user := r.FormValue("user")
+			        deviceID := r.FormValue("did")
+				laterSendLiveAgents.Call(c, user, intent, deviceID)
+				//procGetAgents(w,r)
+				return
+			}
+
 	}
 }
 //editor for slides and articles
@@ -28594,6 +28645,10 @@ func social(w http.ResponseWriter, r *http.Request) {
 		case "proc-broadcast-contents":
 			procBroadcastContentsWorldwide(w,r)
 			return
+		//D0084
+		case "get-agents":
+			procShowAgents(w,r)
+			return
 		case "get-trending":
 			procTrending(w,r)
 			return
@@ -31442,6 +31497,9 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 		//D0082
 		case "queue-save-locations":
 			saveLocations(w,r)
+		//D0084
+		case "queue-send-live-agents":
+			procGetAgents(w,r)
 		case "queue-notify-gb":
 			queueNotifyGB(w,r)
 		case "queue-notify-ch":
@@ -32601,6 +32659,7 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 						if cKeyValue != trimValue {
 							if SYS_EQ_MON_MSG == true {
 								c.Infof("thisFrame2: %v", thisFrame2)
+								thisFrame2 = strings.Replace(thisFrame2, "\\", "/", -1)
 								goq, err := goquery.NewDocument(r,thisFrame2)
 								if err != nil {
 									log.Fatal(err)
@@ -32639,7 +32698,7 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 								})
 
 								//msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>][<a href=\"%v\" target=\"eq2\">View All</a>]<hr>Source: PHIVOLCS", thisFrame2, ShortenUrl(w,r,ARLink))
-								msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>] [%v] [%v]<br><img src=\"\" width=100%% height=100%%><hr>Source: PHIVOLCS", thisFrame2, mag, location, iLink)
+								msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>] [%v] [%v]<br><img src=\"\" width=100%% height=250><hr>Source: PHIVOLCS", thisFrame2, mag, location, iLink)
 								//msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago. >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v | Philvolcs URL: %v)", ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,ARLink), ShortenUrl(w,r,UFLink))
 								msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago in %v with magnitude %v >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v)", location, mag, ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,UFLink))
 								//update all sys msg
@@ -33681,15 +33740,12 @@ func peopleEdit(w http.ResponseWriter, r *http.Request) {
 			break
 			//return
 		}
-		
 	case "EditPeople":
 		//get Profile details from DS
 		FL_PROFILE_FOUND := false
-		
 		if UID == "" {
 			UID = uid
 		}
-		
 		q := datastore.NewQuery("TDSPROF").Filter("UID =", UID).Limit(1)
 		//c.Errorf("[S0242]")
 		profile := make([]TDSPROF, 0, 1)
@@ -33723,7 +33779,7 @@ func peopleEdit(w http.ResponseWriter, r *http.Request) {
 			}
 			if err := profileEditTemplateNew2.Execute(w, ""); err != nil {
 			  panic(err)
-			} 				
+			}
 			if err := htmlFooterModal.Execute(w, ""); err != nil {
 			  panic(err)
 			}
@@ -40580,6 +40636,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 				OttoUserCountry: "",
 				OttoUserCity: "",
 				OttoUserDeviceType: "",
+				OttoUserDeviceId: devID,
 				OttoUserContext: "",
 				OttoFillerStr1: "",
 				OttoFillerStr2: "",
@@ -42169,7 +42226,6 @@ func ulapphThings(w http.ResponseWriter, r *http.Request) {
 					} else {
 						jsonstring		= p.PAYLOAD
 					}
-					
 					tstmp = p.TIMESTAMP
 					data := map[string]interface{}{}
 					dec := json.NewDecoder(strings.NewReader(jsonstring))
@@ -45341,8 +45397,10 @@ const htmlBotHdrA = `
 		width: calc(100% - 30px);
 	}
 	</style>
+	<script type="text/javascript" src="/js/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="/js/soundmanager2.js"></script>
 </head>
-<body>
+<body onload="redirectLogin()">
 
 <!-- container element for chat window -->
 <div id="chat"></div>
@@ -54891,7 +54949,137 @@ func procBroadcastPresence2(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
-
+//D0084
+//returns all users table that are tagged workforce
+func getTDSUSERSwf(w http.ResponseWriter, r *http.Request) ([]byte) {
+	c := appengine.NewContext(r)
+	c.Infof("getTDSUSERSwf")
+	cKey := fmt.Sprintf("TDSUSERS_CACHE")
+	FL_PROC_CACHE_OK := true
+	TDSUSERS_CACHE := getBytMemcacheValueByKey(w,r,cKey)
+	c.Infof("TDSUSERS_CACHE: %v", TDSUSERS_CACHE)
+	if TDSUSERS_CACHE != nil {
+	//get from cache
+		c.Infof("TDSUSERS_CACHE: found")
+		return TDSUSERS_CACHE
+	} else {
+		//no cache yet
+		FL_PROC_CACHE_OK = false
+	}
+	if FL_PROC_CACHE_OK == false {
+		c.Infof("TDSUSERS direct call")
+		q := datastore.NewQuery("TDSUSERS").Filter("FL_WORK =", "Y")
+		recCount,_ := q.Count(c)
+		c.Infof("recCount: %v", recCount)
+		users := make([]TDSUSERS, 0, recCount)
+		if _, err := q.GetAll(c, &users); err != nil {
+			//checkError(w,r,err,"CHK_OQ")
+			 panic(err)
+		}
+		c.Infof("saved TDSUSERS to cache")
+		data,_ := json.Marshal(users)
+		putBytesToMemcacheWithExp(w,r,cKey,data,86400)
+		return data
+	}
+	return nil
+}
+//D0084
+//show matching agents from this site
+func procShowAgents(w http.ResponseWriter, r *http.Request) {
+    c := appengine.NewContext(r)
+    c.Infof("procShowAgents")
+    intent := r.FormValue("intent")
+    user := r.FormValue("user")
+    deviceID := r.FormValue("did")
+    c.Infof("intent: %v", intent)
+    c.Infof("user: %v", user)
+    c.Infof("deviceID: %v", deviceID)
+    TDSUSERS_CACHE := getTDSUSERSwf(w,r)
+    //c.Infof("users: %v", len(users))
+    var users []TDSUSERS
+    json.Unmarshal(TDSUSERS_CACHE, &users)
+    for _, p := range users {
+	//for each user, match intent
+	c.Infof("skills: %v", p.FL_WF_ID)
+	if p.FL_WF_ID != "0" && p.FL_WF_ID != "" {
+		scanner := bufio.NewScanner(strings.NewReader(p.FL_WF_ID))
+		for scanner.Scan() {
+			if scanner.Text() != "" {
+				i := strings.Index(scanner.Text(), intent)
+				if i != -1 {
+					c.Infof("FOUND LIVE AGENT...")
+					//send to the user via channel
+					TO_USER := user
+					TO_DEVICE := deviceID
+					PIC := getProfilePic(w, r, p.USER)
+					URL := fmt.Sprintf("%v/chat?CHAT_FUNC=newChatRoom&INVITE=%v", getSchemeUrl(w,r),p.USER)
+					c.Infof("URL: %v", URL)
+					data2 := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_ROUTE_AGENT@888@%v@888@%v@888@%v@888@%v@888@%v@888@%v", SYS_SERVER_NAME, TO_USER, TO_DEVICE, PIC, URL, p.USER)
+					c.Infof("data2: %v", data2)
+					sendChannelMessage(w,r,"public",data2)
+				}
+			}
+		}
+	}
+    }
+    c.Infof("procShowAgents done")
+    return
+}
+//D0084
+//process live agents requests
+func procGetAgents(w http.ResponseWriter, r *http.Request) {
+    c := appengine.NewContext(r)
+    c.Infof("procGetAgents")
+    intent := r.FormValue("intent")
+    user := r.FormValue("user")
+    deviceID := r.FormValue("did")
+	//Trending Contents
+	IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
+	if IS_SEARCH_SERVER == "Y" {
+		//scan host list
+		_, HOST_LIST := getHostList(w,r)
+		//foreach host post presence message
+		temp := strings.Split(HOST_LIST,"\n")
+		if len(temp) > 0 {
+			for j := 0; j < len(temp); j++ {
+				tURL := ""
+				SPL := strings.Split(temp[j], "|")
+				if len(SPL) < 2 {
+					tURL = strings.TrimSpace(temp[j])
+				} else {
+					tURL = strings.TrimSpace(SPL[0])
+				}
+				i := strings.Index(getSchemeUrl(w,r), tURL)
+				thisStr := fmt.Sprintf("%v", temp[j])
+				if tURL != "" && i == -1 && string(thisStr[0]) != "#" {
+					URL := fmt.Sprintf("%v/social?SO_FUNC=get-agents&intent=%v&user=%v&did=%v", tURL, intent, user, deviceID)
+					c.Infof("URL: %v", URL)
+					client := urlfetch.Client(c)
+					if err := r.ParseForm(); err != nil {
+						panic(err)
+					}
+					FL_RESP_OK := true
+					resp, err := client.Get(URL)
+					if err != nil {
+						//panic(err)
+						FL_RESP_OK = false
+					}
+					if FL_RESP_OK == true {
+						bodyBytes, _ := ioutil.ReadAll(resp.Body)
+						c.Infof("bodyBytes: %v", string(bodyBytes))
+						//w.WriteHeader(200)
+						//w.Write([]byte("ok"))
+					} else {
+						//w.WriteHeader(200)
+						//w.Write([]byte("error"))
+						c.Errorf("Error getting agents...")
+					}
+				}
+			}
+		}
+	}
+	return
+}
 //process trending contents in this cloud desktop
 func procTrending(w http.ResponseWriter, r *http.Request) {
     c := appengine.NewContext(r)
@@ -55122,7 +55310,6 @@ func procPeopleDir(w http.ResponseWriter, r *http.Request) {
 	if _, err := q.GetAll(c, &users); err != nil {
 		 panic(err)
 	 }
-	
 	for _, p := range users {
 		isLOGGED_IN := p.LOGGED_IN
 		USER_ACC_OPT := p.USER_ACC_OPT
@@ -55134,9 +55321,7 @@ func procPeopleDir(w http.ResponseWriter, r *http.Request) {
 		}
 		for _, _ = range profile{
 			//FL_PROFILE_FOUND = true
-			
 			if USER_ACC_OPT != "Invisible" {
-				
 				if (isLOGGED_IN == 1) {
 					if err := peopleDirectoryList.Execute(w, profile); err != nil {
 						 panic(err)
@@ -55144,8 +55329,7 @@ func procPeopleDir(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-	}	
-	
+	}
 }
 
 //shows the overall sessions 
@@ -55756,14 +55940,12 @@ func queueStatsDecLoggedIn(w http.ResponseWriter, r *http.Request) {
     c := appengine.NewContext(r)
     uid := fmt.Sprintf("%v",r.FormValue("uid"))
 	from := fmt.Sprintf("%v",r.FormValue("from"))
- 
 	q := datastore.NewQuery("TDSUSERS").Filter("USER =", uid).Limit(1)
 	//c.Errorf("[S0462]")
     users := make([]TDSUSERS, 0, 1)
     if _, err := q.GetAll(c, &users); err != nil {
          panic(err)
       }
-	
 	for _, p := range users{
 			if p.USER == uid && strings.TrimSpace(p.USER) != ""{
 				p.LOGGED_IN = 0
@@ -55777,14 +55959,12 @@ func queueStatsDecLoggedIn(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					 panic(err)
 				}
-		
 				//delete from channel data store
 				//delete old channel here
 				datastore.Delete(c, getKeyChannel(c,p.USER))			
 				//clear autocomps
 				cKeyAll := fmt.Sprintf("AUTOCOMP_CACHE_%v", p.USER)
 				putStrToMemcacheWithoutExp(w,r,cKeyAll,"")
-				
 				//notify all users of this event via channels
 				msgDtl3 := fmt.Sprintf("UID:%v has logged out.",  p.USER)
 				data := fmt.Sprintf("@888@ULAPPH-CHAT@888@%v@888@%v", "LOG-OUT", msgDtl3)
@@ -55792,26 +55972,21 @@ func queueStatsDecLoggedIn(w http.ResponseWriter, r *http.Request) {
 				ulapphChatSender(w,r,"CH_MSG_NOTIFY_CHATS_WORLD", data, "")
 				sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,p.USER,"/logout",""),"")
 				updateUserActiveData(w, r, c, uid, "logged-out")
-				
 				contentMsg := fmt.Sprintf("[ULAPPH] Goodbye %v! >>> Your last login was %v on %v and you were last active %v. >>> Logout initiated from: %v", p.USER, origLL, p.ACTIVE_DTLS, p.LAST_ACTIVE, from)
 				laterNotifyGB.Call(c, "autoNotifyPeopleGB", p.USER, contentMsg, ADMMAIL)
- 
 				//check online cache
 				usersProcessor_CACHE_KEY := fmt.Sprintf("usersProcessor_IS_LOGGED_IN_%s", p.USER)
 				putStrToMemcacheWithoutExp(w,r,usersProcessor_CACHE_KEY,"N")
 				usersProcessor_CACHE_KEY2 := fmt.Sprintf("usersProcessor_IS_LOGGED_IN_TS_%s", p.USER)
 				putStrToMemcacheWithoutExp(w,r,usersProcessor_CACHE_KEY2,lastLog)
 				//------
-				
 				//broadcast
 				msgDtl3 = fmt.Sprintf("UID:%v has logged out at %v >>> <br><img src=\"%v\" width=70 height=70></img>",  p.USER, SYS_SERVER_NAME, getProfilePic(w, r, p.USER))
 				sysReq := fmt.Sprintf("%vguestbook?GB_FUNC=SIGN_ALL&METHOD=CH2&content=%v&uid=%v&geo=%v", domRefMatchS, msgDtl3, p.USER, getGeoString(w,r))
 				_ = fetchURL(w,r,sysReq)
-				
 				break
 			}
 	}
- 
 	//count users online to update stats
 	q = datastore.NewQuery("TDSUSERS").Filter("LOGGED_IN =", 1)
 	//c.Errorf("[S0464]")
@@ -55820,7 +55995,6 @@ func queueStatsDecLoggedIn(w http.ResponseWriter, r *http.Request) {
     if _, err := q.GetAll(c, &users); err != nil {
          panic(err)
       }
-	
 	userCount := 0
 	for _, _ = range users{
 		userCount++
@@ -56435,7 +56609,6 @@ func struwmUpdateCCTVList(w http.ResponseWriter, r *http.Request, uid, CATEGORY 
 		}
 	}
 }
-//edwinxxx
 //D0066
 //process taskqueue to stream mirror to UWM 
 func struwmStreamMirrorToUwm(w http.ResponseWriter, r *http.Request, uid, STRUWM, CATEGORY, SRC, CAPTION string) {
@@ -56460,12 +56633,11 @@ func struwmStreamMirrorToUwm(w http.ResponseWriter, r *http.Request, uid, STRUWM
 	sendChannelMessage(w,r,UID,data)
 	//also send to main uwm
 	sendChannelMessage(w,r,uid,data)
-	//edwinxxx
 	//D0083
 	//also send to all users in the site
 	data2 := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_STRUWM_DESKTOP@888@%v@888@%v@888@%v@888@%v", SYS_SERVER_NAME, STRUWM, SRC, CAPTION)
 	sendChannelMessage(w,r,"public",data2)
-	dummyCmd(w,r,uid)
+	//dummyCmd(w,r,uid)
 	//D0071
 	//save this image to memcache
 	//STRUWM-desktop123-previous = <url>
@@ -67577,19 +67749,27 @@ var accountEditTemplate = template.Must(template.New("accountEditTemplate").Pars
 				  <option value="Gold">Gold</option>
 					<option selected>
 					{{.STR_FILLER2}}
-					</option>					
+					</option>
 				</select><br>
 				User Group: <select name="USER_GROUP">
 				  <option value="GRP_USER">User Privilege</option>
 				  <option value="GRP_ADMIN">Admin Privilege</option>
 					<option selected>
 					{{.STR_FILLER3}}
-					</option>					
-				</select><br>					
+					</option>
+				</select><br>
+				Workforce: <select name="WORKFORCE">
+				  <option value="Y">Yes</option>
+				  <option value="N">No</option>
+					<option selected>
+					{{.STR_FILLER4}}
+					</option>
+				</select><br>
+				Workforce ID: <textarea rows="4" cols="50" name="WORKFORCE_ID" maxlength="500">{{.STR_FILLER5}}</textarea>
 				<input type="submit" name="submit" value="Update Account"/>
 			</form>
 	    </div>
-    </div>	
+    </div>
 `))
  
 var accountAddTemplate = template.Must(template.New("accountAddTemplate").Parse(`
@@ -68180,7 +68360,7 @@ var profileEditTemplate = template.Must(template.New("profileEditTemplate").Pars
 		<div class="success2">
 			<input type="hidden" name="PICTURE" value="{{.PICTURE}}"/>
 			<a href="/people-edit?EditPeopleFunc=ViewPeople&UID={{.UID}}&SID={{.UID}}"><img src={{.PICTURE}} title="Preview Profile" width=120 height=150></img></a>
-			<a href="/people-edit?EditPeopleFunc=EditPic&UID={{.UID}}"><img src="https://lh3.googleusercontent.com/98cLtX1guRe7LpXh5C1WYpWZXC3zAGcWAa7HOviKwnX834Ny0ksqqM5-5d1n0Mz_tXcdP0er52IejJJaIUqt-TqJmZ8Q" title="Upload new picture" height=40 width=40></a><a href="/people-edit?EditPeopleFunc=HideUser&UID={{.UID}}"><img src="https://lh3.googleusercontent.com/Pg3SMYyWeLJ2YusUApJJD2aKp3fan6GdXx9HLEOdm70PElr1VBK4Hbm4ZW5_VuRs_qP2YNVnJEmkbnCv5Mqg-aZKyyLKLg" title="Hide Profile" height=40 width=40></a><a href="/people-edit?EditPeopleFunc=UnhideUser&UID={{.UID}}"><img src="https://lh3.googleusercontent.com/Q8vVJCfQcUcwBeVBusQUelG2Pr27w9cOOGxYOQwZCIEH3MV47HpUBZSjAqXYTyRAxDBWSAkLJnlDDXFAagnSlcLkaIU" title="Unhide Profile" height=40 width=40></a>
+			[<a href="/people-edit?EditPeopleFunc=EditPic&UID={{.UID}}">Upload new picture</a>][<a href="/people-edit?EditPeopleFunc=HideUser&UID={{.UID}}">Hide Profile</a>][<a href="/people-edit?EditPeopleFunc=UnhideUser&UID={{.UID}}">Unhide Profile</a>]
 		</div>
 		<div class="info2">UID: {{.UID}}<input type="hidden" name="UID" value="{{.UID}}" maxlength="200"/><br></div>
   <ul class="menu">
@@ -68251,7 +68431,6 @@ var profileEditTemplate = template.Must(template.New("profileEditTemplate").Pars
 </div>
 <div class="toggle6">
 		<h3>Ratings:</h3>
- 
 		<div class="info2">BADGE: {{.BADGE}}<input type="hidden" name="BADGE" value="{{.BADGE}}" maxlength="500"/> <br></div>
 		<div class="info2">CRED_PTS: {{.CRED_PTS}}<input type="hidden" name="CRED_PTS" value="{{.CRED_PTS}}" maxlength="500"/> <br></div>	
 		<div class="info2">POS_VOTES: {{.POS_VOTES}}<input type="hidden" name="POS_VOTES" value="{{.POS_VOTES}}" maxlength="500"/> <br></div>
@@ -68260,14 +68439,12 @@ var profileEditTemplate = template.Must(template.New("profileEditTemplate").Pars
 </div>
 <div class="toggle7">
 		<h3>Geolocation:</h3>
- 
 		<div class="info2">Geolocation: <textarea rows="4" cols="50" name="FILLER_1" maxlength="500" value="{{.FILLER_1}}">{{.FILLER_1}}</textarea></div>
 		<div class="info2">Latitude: <textarea rows="4" cols="50" name="FILLER_2" maxlength="500" value="{{.FILLER_2}}">{{.FILLER_2}}</textarea></div>	
 		<div class="info2">Longitude: <textarea rows="4" cols="50" name="FILLER_3" maxlength="500" value="{{.FILLER_3}}">{{.FILLER_3}}</textarea></div>	
 </div>
 <div class="toggle8">
 		<h3>Ringtone:</h3>
- 
 		<div class="info2">Ringtone: <textarea rows="4" cols="50" name="RINGTONE" maxlength="500">{{.RINGTONE}}</textarea>Sample: https://ulapph-public-1.appspot.com/audio/newmsg.ogg<br></div>
 		<div class="info2">Play Ringtone: <audio controls>
 									<source src="{{.RINGTONE}}" type="audio/wav">
@@ -68278,9 +68455,8 @@ var profileEditTemplate = template.Must(template.New("profileEditTemplate").Pars
 </div>
 		<input type="hidden" name="EditPeopleFunc" value="SaveProfile"/>
 		<input type="submit" name="submit" value="Save Profile"/>
-	</form>	
+	</form>
 {{end}}
-	
 `))
  
  
@@ -82924,7 +83100,9 @@ func Shuffle(slice interface{}) {
     }
 }
 
-func processDialogflowNLP(w http.ResponseWriter, req *http.Request, deviceID, rawMessage string) string {
+//D0084
+//call Dialogflow API
+func processDialogflowNLP(w http.ResponseWriter, req *http.Request, FL_DEBUG, deviceID, rawMessage string) string {
 	c := appengine.NewContext(req)
 	c.Infof("processDialogflowNLP")
 
@@ -82941,15 +83119,18 @@ func processDialogflowNLP(w http.ResponseWriter, req *http.Request, deviceID, ra
 		return ""
 	}
 	client := conf.Client(ctx)
-	c.Infof("client: %v", client)
+	//c.Infof("client: %v", client)
+	nlpDebug(w,req,FL_DEBUG, "info", "client: "+fmt.Sprintf("%v", client))
 	//call api
 	//dfInput := `{queryInput: {"text": {"text": "test", "languageCode": "en-US"}}}`
 	dfInput := new(DialogflowInput)
 	dfInput.QueryInput.Text.Text = rawMessage
 	dfInput.QueryInput.Text.Language = "en-US" 
-	c.Infof("dfInput: %v", dfInput)
+	//c.Infof("dfInput: %v", dfInput)
+	nlpDebug(w,req,FL_DEBUG, "info", "dfInput: "+fmt.Sprintf("%v",dfInput))
 	data, err := json.Marshal(dfInput)
-	c.Infof("data: %v", string(data))
+	//c.Infof("data: %v", string(data))
+	nlpDebug(w,req,FL_DEBUG, "info", "data: "+string(data))
 	if err != nil {
 		c.Errorf("json.Marshal() Error: %v", err)
 	}
@@ -82964,8 +83145,19 @@ func processDialogflowNLP(w http.ResponseWriter, req *http.Request, deviceID, ra
 		c.Errorf("ERROR: client.Post %v", err)
 		return ""
 	}
-	c.Infof("bodyBytes: %v", string(b))
-	return ""
+	//c.Infof("bodyBytes: %v", string(b))
+	nlpDebug(w,req,FL_DEBUG, "info", "bodyBytes: "+string(b))
+	//process the response & get intent
+	rdata := map[string]interface{}{}
+	dec := json.NewDecoder(bytes.NewReader(b))
+	dec.Decode(&rdata)
+	jq := jsonq.NewQuery(rdata)
+	jqVal, err := jq.String("queryResult", "intent", "displayName")
+	if err != nil {
+		c.Errorf("ERROR: %v", err)
+	}
+	nlpDebug(w,req,FL_DEBUG, "info", "INTENT: "+jqVal)
+	return jqVal
 }
 ////////////////////////////////////////////////////////////////////////////////////
 //TO GOD BE THE GLORY
@@ -82978,4 +83170,3 @@ func processDialogflowNLP(w http.ResponseWriter, req *http.Request, deviceID, ra
 // COPYRIGHT (c) 2017-2019 Accenture, Opensource Version
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //// END OF CODES //////////////////////////
-

@@ -27,9 +27,41 @@ function procMessage(obj) {
 	var resp = str.split(":");
 	if (sysUpd > 0) {
 		var cmdata = str.split("@888@");
-		console.log("cmdata: "+cmdata);
+		//console.log("cmdata: "+cmdata);
 		if (cmdata[2] == "SYS_STRUWM_DESKTOP") {
 			//ignore
+			return;
+		}
+		if (cmdata[2] == "SYS_ROUTE_AGENT") {
+			//display
+			//edwinxxx
+			console.log("SYS_ROUTE_AGENT");
+			var server = cmdata[3];
+			console.log("server: "+server);
+			var smatch = root.indexOf(server);
+			console.log("smatch: "+smatch);
+			var to_user = cmdata[4];
+			console.log("to_user: "+to_user);
+			var to_device = cmdata[5];
+			console.log("to_device: "+to_device);
+			var pic = cmdata[6];
+			console.log("pic: "+pic);
+			var url = cmdata[7];
+			console.log("pic: "+url);
+			var agent = cmdata[8];
+			console.log("agent: "+agent);
+		        if (smatch > 0 && localStorage["fingerprint"] == to_device) {
+				var msg = "<a href=\"" + url + "\" target=\"" + url + "\"><img src=\"" + pic + "\" width=100% height=250><br>" + "Click to chat" + "</a>" + "<br><b>Agent:</b></a>" + agent;
+				chatWindow.talk(
+				    {
+					"procMessageRes": {
+					says: [msg],
+					reply: []
+					}
+				    },
+				    "procMessageRes"
+				)
+			}
 			return;
 		}
 	}
