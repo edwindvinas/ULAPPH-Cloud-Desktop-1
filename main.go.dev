@@ -15403,7 +15403,6 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, FL_
 		//json.NewEncoder(w).Encode(response)
 	})
 	//D0081
-	//edwinxxx
 	vm.Set("ottoFuncSendEmail", func(mode,uid,input string) string {
 	  //c.Infof("ottoFunc: ottoFuncSendEmail")
 		nlpDebug(w,r,FL_DEBUG, "error", "Send email: "+ADMMAIL)
@@ -40613,14 +40612,12 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		fmt.Fprintf(w, "NLP cache deleted!")
 		return
-	//edwinxxx
 	case "nlpLog":
 		nlpDebug(w,r,FL_DEBUG, "info", "case: nlpLog")
 		bodyBytes, _ := ioutil.ReadAll(r.Body)
 		nlpDebug(w,r,FL_DEBUG, "info", "body: "+string(bodyBytes))
 		saveConversations(w,r,string(bodyBytes),uid,bName,devID)
 		return
-	//edwinxxx
 	case "nlpLogShow":
 		nlpDebug(w,r,FL_DEBUG, "info", "case: nlpLogShow")
 		//UID=edwin.d.vinas@gmail.com&BN=ULAPPH%20Routing%20Bot&DID=8110be080c9e00b52aa0d408ae6bbb3b
@@ -41034,7 +41031,6 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		geoStr := getGeoString(w,r)
 		geoAcc := getAccessString(w,r,"")
 		nlpDebug(w,r,FL_DEBUG, "error", "Send email about unknown intent: "+ADMMAIL)
-		//edwinxxx
 		subject := fmt.Sprintf("[ULAPPH] Unknown intent [%v]", uid)
 		MESSAGE := fmt.Sprintf("[ULAPPH] Unknown intent [<b>%v</a>] [%v] [%v] [%v] [%v] [%v]", inpStr, SYS_SERVER_NAME, SID, uid, geoStr, geoAcc)
 		t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-generic-send-email", map[string][]string{"SUBJECT": {subject}, "TO": {ADMMAIL}, "FROM": {uid}, "MESSAGE": {MESSAGE}})
@@ -53074,7 +53070,6 @@ func getImgFromUrl(w http.ResponseWriter, r *http.Request, turl string) (img str
 	}
 	return img
 }
-//edwinxxx
 //updates if the user if current active
 //used to detect the presence of a user 
 func updateUserActiveData(w http.ResponseWriter, r *http.Request, c appengine.Context, uid, content string) {
@@ -73026,7 +73021,6 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 			//c.Errorf("[S0607]")
 			putStrToMemcacheWithoutExp(w,r,cKeySR,blobkey)
 			//c.Infof("save map blobstore")
-		//edwinxxx
 		case "CONVO":
 			//delete existing blob
 			c.Infof("CONVO")

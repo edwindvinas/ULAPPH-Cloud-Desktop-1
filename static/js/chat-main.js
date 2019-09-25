@@ -679,11 +679,14 @@ $(function() {
 		   urlParams[decode(match[1])] = decode(match[2]);
 
 		if (urlParams["logLink"] != "") {
-			var message = "Conversation logs are available for this user. See separate tab opened.";
+			var message = "Conversation logs are available for this session.";
 			log(message, {
 			  prepend: true
 			});
-			window.open(urlParams["logLink"]);
+			var message = urlParams["logLink"];
+			log(message, {
+			  prepend: true
+			});
 		}
 		
 		if (isEdge == true || isIE == true || isSafari == true) {
