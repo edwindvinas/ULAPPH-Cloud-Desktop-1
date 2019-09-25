@@ -678,7 +678,7 @@ $(function() {
 		while (match = search.exec(query))
 		   urlParams[decode(match[1])] = decode(match[2]);
 
-		if (urlParams["logLink"] != "") {
+		if (urlParams["logLink"] != "" && urlParams["logLink"] !=  undefined) {
 			var message = "Conversation logs are available for this session.";
 			log(message, {
 			  prepend: true
