@@ -52,7 +52,7 @@ function procMessage(obj) {
 			console.log("agent: "+agent);
 		        //if (smatch > 0 && localStorage["fingerprint"] == to_device) {
 		        if (localStorage["fingerprint"] == to_device) {
-				var msg = "<a href=\"#\" onclick=\"clickChat('" + url + "','" + to_user +"','" + to_device +"')\"target=\"" + url + "\"><img src=\"" + pic + "\" width=100% height=250><br>" + "Click to chat" + "</a>" + "<br><b>Agent:</b></a>" + agent;
+				var msg = "<a href=\"#\" onclick=\"clickChat('" + url + "','" + to_user +"','" + to_device +"')\" \"target=\"" + url + "\"><img src=\"" + pic + "\" width=100% height=250><br>" + "Click to chat" + "</a>" + "<br><b>Agent:</b></a>" + agent;
 				chatWindow.talk(
 				    {
 					"procMessageRes": {

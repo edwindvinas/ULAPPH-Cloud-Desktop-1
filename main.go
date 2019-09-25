@@ -15527,7 +15527,7 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			}
 			CC_KEY := r.FormValue("cc_key")
 			if CC_KEY != SYS_RECAPTCHA_KEY && isLoggedIn(w,r) != true {
-				redURL := fmt.Sprintf("/captcha?CC_FUNC=DISP2&INVITE=%v&RID=%v", INV, roomID)
+				redURL := fmt.Sprintf("/captcha?CC_FUNC=DISP2&INVITE=%v&RID=%v&logLink=%v", INV, roomID, logLink)
 				http.Redirect(w, r, redURL, http.StatusFound)
 				return
 			}
@@ -17415,6 +17415,7 @@ func ulapphCaptcha(w http.ResponseWriter, r *http.Request) {
 			REDIR := "CHAT"
 			INV := r.FormValue("INVITE")
 			RID := r.FormValue("RID")
+			logLink := r.FormValue("logLink")
 	
 			sitekey := SYS_RECAPTCHA_KEY		
 			TEMPDATA := TEMPSTRUCT2{
@@ -17422,8 +17423,8 @@ func ulapphCaptcha(w http.ResponseWriter, r *http.Request) {
 				STR_FILLER2: sitekey,
 				STR_FILLER3: INV,
 				STR_FILLER4: RID,
+				STR_FILLER5: logLink,
 			}
-					
 			if err := formTemplate2.Execute(w, &TEMPDATA); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
@@ -17476,21 +17477,18 @@ func ulapphCaptcha(w http.ResponseWriter, r *http.Request) {
 //handles redirection of recaptcha 
 func RedirCaptcha(w http.ResponseWriter, r *http.Request) {
 	REDIR := r.FormValue("R")
-	
 	switch REDIR {
 		case "GUEST":
 			CC_KEY := r.FormValue("CC_KEY")	
 			redURL := fmt.Sprintf("/?q=login&LFUNC=guest&TARGET_URL=/login&cc_key=%v", CC_KEY)
 			http.Redirect(w, r, redURL, http.StatusFound)
 			return
-			
 		case "PCHAT":
 			CC_KEY := r.FormValue("CC_KEY")	
 			PCH := r.FormValue("pubchan")	
 			redURL := fmt.Sprintf("/chat?cc_key=%v&pubchan=%v", CC_KEY, PCH)
 			http.Redirect(w, r, redURL, http.StatusFound)
 			return
-			
 		case "SOCIAL":
 			SID := r.FormValue("SID")
 			if SID == "" {
@@ -17505,7 +17503,6 @@ func RedirCaptcha(w http.ResponseWriter, r *http.Request) {
 			redURL := fmt.Sprintf("/social?SO_FUNC=%v&SID=%v&TITLE=%v&REC_TYP=%v&content=%v&cc_key=%v", SO_FUNC, SID, TITLE, REC_TYP, content, CC_KEY)
 			http.Redirect(w, r, redURL, http.StatusFound)
 			return
-		
 		//D0040
 		case "COMMENT":
 			SID := r.FormValue("SID")
@@ -17515,12 +17512,12 @@ func RedirCaptcha(w http.ResponseWriter, r *http.Request) {
 			redURL := fmt.Sprintf("%vsocial?SO_FUNC=SO_VIEW&SID=%v&TITLE=%v&cc_key=%v", getSchemeUrl(w,r), SID, TITLE, CC_KEY)
 			http.Redirect(w, r, redURL, http.StatusFound)
 			return
-			
 		case "CHAT":
 			INV := r.FormValue("INVITE")
 			RID := r.FormValue("RID")
 			CC_KEY := r.FormValue("CC_KEY")	
-			redURL := fmt.Sprintf("/chat?CHAT_FUNC=newChatRoom&INVITE=%v&RID=%v&cc_key=%v", INV, RID, CC_KEY)
+			logLink := r.FormValue("logLink")	
+			redURL := fmt.Sprintf("/chat?CHAT_FUNC=newChatRoom&INVITE=%v&RID=%v&cc_key=%v&logLink=%v", INV, RID, CC_KEY, logLink)
 			http.Redirect(w, r, redURL, http.StatusFound)
 			return
 	}
@@ -46894,6 +46891,7 @@ const formTemplateSrc2 = `<!doctype html>
 			<input type=hidden name="R" value="{{.STR_FILLER1}}">
 			<input type=hidden name="INVITE" value="{{.STR_FILLER3}}">
 			<input type=hidden name="RID" value="{{.STR_FILLER4}}">
+			<input type=hidden name="logLink" value="{{.STR_FILLER5}}">
 			<input type=hidden name="CC_KEY" value="{{.STR_FILLER2}}">
 			<br>
 			<input id="loginSubmit" type="submit">
