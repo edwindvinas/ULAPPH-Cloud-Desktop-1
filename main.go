@@ -875,6 +875,8 @@ const (
     MAX_URL_FETCH_LINES = 1000
 	//Mime types list
 	MIME_TYPES_LIST_URL = "https://golang.org/misc/nacl/testdata/mime.types?m=text"
+	//Pin Key
+    PIN_KEY = ``
 	//Encryption key
     ENCRYPTION_KEY = ``
 	//D0028
@@ -2566,6 +2568,7 @@ var (
 		".tracker-select": parsePresentTemplate2("tracker-select-user.html"),
 		//D0078
 		".news-sources": parsePresentTemplate2("newsapi-sources.html"),
+		".chat-logs": parsePresentTemplate2("chat-bubble-logs.txt"),
 	}
 	contactEmail      = "demo.ulapph@gmail.com"
 	gitHubCredentials = ""
@@ -15398,6 +15401,21 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, FL_
 		nlpDebug(w,r,FL_DEBUG, "info", "json: "+encbuf.String())
 		return encbuf.String()
 		//json.NewEncoder(w).Encode(response)
+	})
+	//D0081
+	vm.Set("ottoFuncSendEmail", func(mode,uid,input string) string {
+	  //c.Infof("ottoFunc: ottoFuncSendEmail")
+		nlpDebug(w,r,FL_DEBUG, "error", "Send email: "+ADMMAIL)
+		geoStr := getGeoString(w,r)
+		geoAcc := getAccessString(w,r,"")
+		subject := fmt.Sprintf("[ULAPPH] %v intent [%v]", mode, uid)
+		MESSAGE := fmt.Sprintf("[ULAPPH] %v intent [<b>%v</a>] [%v] [%v] [%v] [%v] [%v]", mode, input, SYS_SERVER_NAME, SID, uid, geoStr, geoAcc)
+		t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-generic-send-email", map[string][]string{"SUBJECT": {subject}, "TO": {ADMMAIL}, "FROM": {uid}, "MESSAGE": {MESSAGE}})
+		if _, err := taskqueue.Add(c, t, ""); err != nil {
+			 panic(err)
+			//return
+		}
+		return "sent email"
 	})
 
 	cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v_%v", uid, bName, devID)
@@ -32692,15 +32710,16 @@ func TASK_MEMCACHER_URLFETCH_philvolcs_EQ (w http.ResponseWriter, r *http.Reques
 										imgLink, _ = imgTag.Attr("src")
 										if imgLink != "" {
 											dir, _:= filepath.Split(thisFrame2)
-											iLink = fmt.Sprintf("%v%v.jpg", dir, imgLink)
+											//iLink = fmt.Sprintf("%v%v.jpg", dir, imgLink)
+											iLink = fmt.Sprintf("%v%v", dir, strings.TrimSpace(imgLink))
 										}
 									}
 								})
 
 								//msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>][<a href=\"%v\" target=\"eq2\">View All</a>]<hr>Source: PHIVOLCS", thisFrame2, ShortenUrl(w,r,ARLink))
-								msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>] [%v] [%v]<br><img src=\"\" width=100%% height=250><hr>Source: PHIVOLCS", thisFrame2, mag, location, iLink)
+								msgDtl3 = fmt.Sprintf("<img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!!<hr> New earthquake detected! [<a href=\"%v\" target=\"eq\">View Latest</a>] <br>[%v] [%v]<br><img src=\"%v\" width=100%% height=250><hr>Source: PHIVOLCS", thisFrame2, mag, location, iLink)
 								//msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago. >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v | Philvolcs URL: %v)", ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,ARLink), ShortenUrl(w,r,UFLink))
-								msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago in %v with magnitude %v >>> <img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v)", location, mag, ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,UFLink))
+								msgDtl3c := fmt.Sprintf("Alarm, new earthquake detected a while ago in %v with magnitude %v >>> <br><img src=\"/img/earthquake.png\" width=60 height=60></img> DANGER!!! %v latest earthquake! <a href=\"%v\" target=\"eq\">View Latest</a> %v (Ref: Recent Earthquakes: %v)", location, mag, ShortenUrl(w,r,SPL[1]), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,thisFrame2), ShortenUrl(w,r,UFLink))
 								//update all sys msg
 								putStrToMemcacheWithExp(w,r,"ALARM_EQ_MSG",msgDtl3c,30)
 								//sendMessage(w, r, ADMMAIL, "CH_MSG_NOTIFY_EVENTS", msgDtl3, "", getMapLink(w,r,"philvolcs",ARLink,""),"")
@@ -40593,6 +40612,47 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		fmt.Fprintf(w, "NLP cache deleted!")
 		return
+	case "nlpLog":
+		nlpDebug(w,r,FL_DEBUG, "info", "case: nlpLog")
+		bodyBytes, _ := ioutil.ReadAll(r.Body)
+		nlpDebug(w,r,FL_DEBUG, "info", "body: "+string(bodyBytes))
+		saveConversations(w,r,string(bodyBytes),uid,bName,devID)
+		return
+	case "nlpLogShow":
+		nlpDebug(w,r,FL_DEBUG, "info", "case: nlpLogShow")
+		//UID=edwin.d.vinas@gmail.com&BN=ULAPPH%20Routing%20Bot&DID=8110be080c9e00b52aa0d408ae6bbb3b
+		UID := r.FormValue("UID")
+		BOT := r.FormValue("BN")
+		DID := r.FormValue("DID")
+		//cKeySR := fmt.Sprintf("CONVO_BLOB_%v_%v_%v", UID, BOT, DID)
+		//nlpDebug(w,r,FL_DEBUG, "info", "key: "+cKeySR)
+		SR_BLOB := ""
+		var g TDSCNFG
+		//SR_BLOB = getStrMemcacheValueByKey(w,r,cKeySR)
+		//nlpDebug(w,r,FL_DEBUG, "info", "SR_BLOB: "+SR_BLOB)
+		thisKey := fmt.Sprintf("CONVO_REC_%v_%v_%v", UID, BOT, DID)
+		nlpDebug(w,r,FL_DEBUG, "info", "thisKey: "+thisKey)
+		if SR_BLOB == "" {
+			key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
+			if err := datastore.Get(c, key, &g); err != nil {
+				//return
+			}
+			SR_BLOB = g.TXT_VAL
+			nlpDebug(w,r,FL_DEBUG, "info", "g.TXT_VAL: "+g.TXT_VAL)
+			//putStrToMemcacheWithoutExp(w,r,cKeySR,SR_BLOB)
+		}
+		if SR_BLOB != "" {
+			//display convo logs
+			nlpDebug(w,r,FL_DEBUG, "info", "getBlobText: "+SR_BLOB)
+			appText := getBlobText(w,r,SR_BLOB)
+			TEMPDATA := TEMPSTRUCT2{
+				HTM_FILLER1: template.HTML(appText),
+			}
+			renderStaticWithTEMPSTRUCT2(w,r,&TEMPDATA,".chat-logs")
+		} else {
+			w.Write([]byte("data not found"))
+		}
+		return
 	case "nlpProse":
 		nlpDebug(w,r,FL_DEBUG, "info", "case: nlpProse")
 		if err == nil {
@@ -41963,6 +42023,46 @@ func updateScores(w http.ResponseWriter, r *http.Request, mSID, uid string) (str
 	}
 	//c.Infof("resp: %v", resp)
 	return resp
+}
+//edwinxx
+//creates a new blob for conversation logs
+func saveConversations(w http.ResponseWriter, r *http.Request, cdata, uid, bot, did string) {
+	c := appengine.NewContext(r)
+	c.Infof("saveConversations")
+	csn2 := getUpUrlString(w,r,"/upload-media")
+	u, err := blobstore.UploadURL(c, csn2, nil)
+	if err != nil {
+		return
+	}
+	var m bytes.Buffer
+	fw := multipart.NewWriter(&m)
+	file, err := fw.CreateFormFile("file", "CONVO")
+	if err != nil {
+		return
+	}
+	if _, err = file.Write([]byte(cdata)); err != nil {
+		return
+	}
+	_ = fw.WriteField("FUNC_CODE", "CONVO")
+	_ = fw.WriteField("UID", uid)
+	_ = fw.WriteField("BOT", bot)
+	_ = fw.WriteField("DID", did)
+	_ = fw.WriteField("API_KEY", CMD_GEN_KEY)
+	fw.Close()
+	req, err := http.NewRequest("POST", u.String(), &m)
+	if err != nil {
+		return
+	}
+	req.Header.Set("Content-Type", fw.FormDataContentType())
+	client := urlfetch.Client(c)
+	res, err := client.Do(req)
+	if err != nil {
+		return
+	}
+	if res.StatusCode != http.StatusCreated {
+		return
+	}
+	//c.Infof("saved locations")
 }
 //D0082
 //creates a new blob for broadcast locations
@@ -52970,14 +53070,18 @@ func getImgFromUrl(w http.ResponseWriter, r *http.Request, turl string) (img str
 	}
 	return img
 }
-
 //updates if the user if current active
 //used to detect the presence of a user 
 func updateUserActiveData(w http.ResponseWriter, r *http.Request, c appengine.Context, uid, content string) {
 	u := user.Current(c)
 	if u != nil  {
 		if userPrivacy(w,r) == "INCOGNITO" {
-			//dont log
+			usersProcessor_CACHE_KEY := fmt.Sprintf("usersProcessor_IS_LOGGED_IN_%s", uid)
+			putStrToMemcacheWithoutExp(w,r,usersProcessor_CACHE_KEY,"Y")
+			usersProcessor_CACHE_KEY = fmt.Sprintf("usersProcessor_IS_LOGGED_IN_TS_%s", uid)
+			timestamp := getTimestamp()
+			putStrToMemcacheWithoutExp(w,r,usersProcessor_CACHE_KEY,timestamp)
+			//dont log events
 			return
 		}
 	}
@@ -53061,7 +53165,6 @@ func updateUserActiveData(w http.ResponseWriter, r *http.Request, c appengine.Co
 	l := strings.Index(uid, "linkedin")
 	o := strings.Index(uid, "onedrive")
 	if i != -1 || f != -1 || g != -1 || h != -1 || l != -1 || o != -1  {
-		//cache profile pic
 		usersProcessor_CACHE_KEY := fmt.Sprintf("usersProcessor_IS_LOGGED_IN_%s", uid)
 		putStrToMemcacheWithoutExp(w,r,usersProcessor_CACHE_KEY,"Y")
 		usersProcessor_CACHE_KEY = fmt.Sprintf("usersProcessor_IS_LOGGED_IN_TS_%s", uid)
@@ -54076,7 +54179,7 @@ func queueStatsIncLoggedIn(w http.ResponseWriter, r *http.Request) {
 }
  
 //online user checker
-//checks if user is currently active or not
+//checks if user is logged in / currently active or not
 func getActiveStatus(w http.ResponseWriter, r *http.Request, UID string) (IS_ACTIVE string)  {
 	c := appengine.NewContext(r)
 	IS_ACTIVE = "N"
@@ -55008,6 +55111,11 @@ func procShowAgents(w http.ResponseWriter, r *http.Request) {
 				i := strings.Index(scanner.Text(), intent)
 				if i != -1 {
 					c.Infof("FOUND LIVE AGENT...")
+					//check login status
+					IS_ACTIVE := getActiveStatus(w,r,p.USER)
+					if IS_ACTIVE == "N" {
+						continue
+					}
 					//send to the user via channel
 					TO_USER := user
 					TO_DEVICE := deviceID
@@ -56421,6 +56529,8 @@ func queueAutoMLProc(w http.ResponseWriter, r *http.Request) {
 		//c.Infof("IMG: %v", IMG)
 		//LABEL := r.FormValue("LABEL")
 		//c.Infof("LABEL: %v", LABEL)
+		//PINKEY := r.FormValue("PINKEY")
+		//c.Infof("PINKEY: %v", PINKEY)
 		TITLE := r.FormValue("TITLE")
 		//c.Infof("TITLE: %v", TITLE)
 		//STRUWM := r.FormValue("STRUWM")
@@ -65697,9 +65807,9 @@ var htmlMirror = template.Must(template.New("htmlMirror").Parse(`
 		</span>
 		<!--a href="/tools?FUNC=MIRROR2">Small Mirror</a-->
 	</form>
- 
 	<div id="target">
 		ULAPPH User: <input type="text" name="uid" id="uid" value="" maxlength=500>
+		<br>PinKey: <input type="password" name="pinkey" id="pinkey" value="" maxlength=50>
 		<br>Add caption or title: <input type="text" name="title" id="title" value="" maxlength=500>
 		<br>Description: <input type="text" name="desc" id="desc" value="" maxlength=500>
 		<br>Stream as wallpapers in UWM:<input type="text" name="uwm" id="uwm" value="" maxlength=50>
@@ -65802,10 +65912,9 @@ var htmlMirror2 = template.Must(template.New("htmlMirror2").Parse(`
 		</span>
 		<!--a href="/tools?FUNC=MIRROR">Big Mirror</a-->
 	</form>
-	
-	
 	<div id="target">
 		ULAPPH User: <input type="text" name="uid" id="uid" value="" maxlength=500>
+		<br>Key: <input type="password" name="pinkey" id="pinkey" value="" maxlength=50>
 		<br>Add caption or title: <input type="text" name="title" id="title" value="" maxlength=500>
 		<br>Description: <input type="text" name="desc" id="desc" value="" maxlength=500>
 		<br>Stream as wallpapers in UWM:<input type="text" name="uwm" id="uwm" value="" maxlength=50>
@@ -65832,12 +65941,6 @@ var htmlMirror2 = template.Must(template.New("htmlMirror2").Parse(`
  
 var htmlFooterJSWM = template.Must(template.New("htmlFooterJSWM").Parse(`
 	<script type="text/javascript">
-		//D0065
-		//if (document.getElementById("desktop").value == "uwm") {
-			//window.open('/contents?q=home','_blank');
-			//window.open('/tools?FUNC=ALL_DESKTOPS','_blank');
-		//}
-		//default tile
 		uwmArrWin();
 		if ({{.STR_FILLER1}} == "cascade") {
 			//cascade
@@ -65851,11 +65954,18 @@ var htmlFooterJSWM = template.Must(template.New("htmlFooterJSWM").Parse(`
 			rn.value = "pause";
 			var bgImgUrl = "{{.STR_FILLER2}}";
 			document.getElementById("DEFAULT_WALLPAPER").value = bgImgUrl;
-			document.getElementById('page').style.backgroundImage = "url(" + bgImgUrl + ")";    
+			document.getElementById('page').style.backgroundImage = "url(" + bgImgUrl + ")";
 			}, 10000);
 		}
 
-	</script>	
+		if (urlParams["toolbar"] == "cctv") {
+			document.getElementById('menu-dx').style.display = 'none';
+			document.getElementById('menu').style.display = 'none';
+		}
+		//#page bug fix
+		document.getElementById("stm-ranid").click();
+
+	</script>
   </body>
 </html>
 `))
@@ -71195,6 +71305,9 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 		EMBED_R := r.FormValue("EMBED")
 		EMBED_R2 := strings.Replace(EMBED_R, "[", "", -1)
 		EMBED := strings.Replace(EMBED_R2, "]", "", -1)
+		PINKEY_R := r.FormValue("PINKEY")
+		PINKEY_R2 := strings.Replace(PINKEY_R, "[", "", -1)
+		PINKEY := strings.Replace(PINKEY_R2, "]", "", -1)
 		STRUWM_R := r.FormValue("STRUWM")
 		STRUWM_R2 := strings.Replace(STRUWM_R, "[", "", -1)
 		STRUWM := strings.Replace(STRUWM_R2, "]", "", -1)
@@ -71221,7 +71334,10 @@ func handleServeMedia(w http.ResponseWriter, r *http.Request) {
 		DOC_STAT_R := r.FormValue("DOC_STAT")
 		DOC_STAT_R2 := strings.Replace(DOC_STAT_R, "[", "", -1)
 		DOC_STAT := strings.Replace(DOC_STAT_R2, "]", "", -1)
-
+		if PINKEY != PIN_KEY {
+			//ignore
+			return
+		}
 		FL_IMAGE_CHANGED := false
 		if strings.TrimSpace(STRUWM) != "" && DATA_TYPE == "image" {
 			////c.Infof("Struwm checking...")
@@ -72905,6 +73021,57 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 			//c.Errorf("[S0607]")
 			putStrToMemcacheWithoutExp(w,r,cKeySR,blobkey)
 			//c.Infof("save map blobstore")
+		case "CONVO":
+			//delete existing blob
+			c.Infof("CONVO")
+			if API_KEY != CMD_GEN_KEY {
+				return
+			}
+			BOT_R := fmt.Sprintf("%v", pVals["BOT"])
+			BOT_R2 := strings.Replace(BOT_R, "[", "", -1)
+			BOT := strings.Replace(BOT_R2, "]", "", -1)
+			DID_R := fmt.Sprintf("%v", pVals["DID"])
+			DID_R2 := strings.Replace(DID_R, "[", "", -1)
+			DID := strings.Replace(DID_R2, "]", "", -1)
+			//cKeySR := fmt.Sprintf("CONVO_BLOB_%v_%v", UID, BOT, DID)
+			SR_BLOB := ""
+			var g TDSCNFG
+			//SR_BLOB = getStrMemcacheValueByKey(w,r,cKeySR)
+			thisKey := fmt.Sprintf("CONVO_REC_%v_%v_%v", UID, BOT, DID)
+			if SR_BLOB == "" {
+				key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
+				if err := datastore.Get(c, key, &g); err != nil {
+					//return
+				}
+				SR_BLOB = g.TXT_VAL
+				c.Infof("Existing SR_BLOB: %v", SR_BLOB)
+			}
+			//////c.Infof("SR_BLOB: %v", SR_BLOB)
+			if SR_BLOB != "" {
+				c.Infof("Deleting SR_BLOB: %v", SR_BLOB)
+				blobstore.Delete(c, appengine.BlobKey(SR_BLOB))
+			}
+			blobkey := string(file[0].BlobKey)
+			c.Infof("blobkey: %v", blobkey)
+			c.Infof("thisKey: %v", thisKey)
+			g = TDSCNFG{
+					SYS_VER: 1,
+					USER: uid,
+					CFG_ID: thisKey,
+					DAT_TYP: "TXT",
+					NUM_VAL: 0,
+					TXT_VAL: blobkey,
+					CFG_DESC: "Set via code",
+			}
+			key := datastore.NewKey(c, "TDSCNFG", thisKey, 0, nil)
+			if _, err := datastore.Put(c, key, &g); err != nil {
+					panic(err)
+					//return
+			}
+			//c.Errorf("[S0607]")
+			//_ = memcache.Delete(c,cKeySR)
+			//putStrToMemcacheWithoutExp(w,r,cKeySR,blobkey)
+			c.Infof("convo rec saved")
 		case "EDUC":
 			//delete existing blob
 			//////c.Infof("EDUC")
@@ -73751,11 +73918,12 @@ func handleUploadMedia(w http.ResponseWriter, r *http.Request) {
 			STRUWM := pVals["STRUWM"]
 			STRUWMI := pVals["STRUWMI"]
 			AUTOML := pVals["AUTOML"]
+			PINKEY := pVals["PINKEY"]
 
 			OPT := pVals["OPT"]
 			//DESKTOP := pVals["DESKTOP"]
 			bKey := string(file[0].BlobKey)
-			reqStr := fmt.Sprintf("/serve-media/?DATA_TYPE=%s&TITLE=%s&DESC=%s&CATEGORY=%s&blobKey5=%v&FL_SHARED=%v&FILE_NAME=%v&MIME_TYPE=%v&FL_ADD_WP=%v&UID=%v&DOC_STAT=%v&EMBED=%v&OPT=%v&STRUWM=%v&STRUWMI=%v&AUTOML=%v", TYPE, TITLE, DESC, CATEGORY, bKey, FL_SHARED, FILE_NAME, MIME_TYPE, FL_ADD_WP, UID, DOC_STAT, EMBED, OPT, STRUWM, STRUWMI, AUTOML)
+			reqStr := fmt.Sprintf("/serve-media/?DATA_TYPE=%s&TITLE=%s&DESC=%s&CATEGORY=%s&blobKey5=%v&FL_SHARED=%v&FILE_NAME=%v&MIME_TYPE=%v&FL_ADD_WP=%v&UID=%v&DOC_STAT=%v&EMBED=%v&OPT=%v&STRUWM=%v&STRUWMI=%v&AUTOML=%v&PINKEY=%v", TYPE, TITLE, DESC, CATEGORY, bKey, FL_SHARED, FILE_NAME, MIME_TYPE, FL_ADD_WP, UID, DOC_STAT, EMBED, OPT, STRUWM, STRUWMI, AUTOML, PINKEY)
 			http.Redirect(w, r, reqStr, http.StatusFound)
 	}
 }

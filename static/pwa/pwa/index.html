@@ -8,7 +8,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- pwa manifest -->
-    <link rel="manifest" href="/pwa/manifest.json?v=1">
+    <link rel="manifest" href="/pwa/pwa/manifest.json?v=1">
 
 	<!-- stylesheets are conveniently separated into components -->
 	<link rel="stylesheet" media="all" href="/lib/css/chat-bubble/setup.css">
@@ -180,7 +180,7 @@ var botUrl = window.location.href;
 var convo = {
   ice: {
     says: ["Hi, I'm ULAPPH PWA Bot!", 
-    		"<a href=\"" + botUrl + "\" title=\"Click to restart ULAPPH bot!\"><img src=\"/pwa/pwa.gif\"></a>", 
+    		"<a href=\"" + botUrl + "\" title=\"Click to restart ULAPPH bot!\"><img src=\"/pwa/pwa/pwa.gif\"></a>", 
     		"Type any text or click button below."
     	],
 	  reply: [
@@ -238,5 +238,5 @@ setTimeout(function() {funcPWAPlayer()}, 15000)
 chatWindow.talk(convo)
 </script>
 <!--pwa service worker registration-->
-<script src="/pwa/main.js"></script>
+<script src="/pwa/pwa/main.js"></script>
 </body>

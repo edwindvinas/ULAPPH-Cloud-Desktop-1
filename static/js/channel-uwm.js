@@ -233,6 +233,8 @@ function procMessage(obj) {
 	if (sysUpd > 0) {
 		var cmdata = str.split("@888@");
 		switch (cmdata[2]) {
+			case "SYS_ROUTE_AGENT":
+				break;
 			case "SYS_RC_PLAY_MUSIC":
                                 alertifyThis("Playing music...");
                                 var mid = cmdata[3];
@@ -283,8 +285,13 @@ function procMessage(obj) {
 		        	if (smatch > 0 && desktop === uwm) {
 					if (ValidURL(bgImgUrl) == true) {
                                 		document.getElementById('page').style.backgroundImage = "url(" + src + ")";
-						var rn = document.getElementById("ranid")
-						rn.value = "pause";
+						//var rn = document.getElementById("ranid");
+						//rn.value = "pause";
+						if (urlParams["toolbar"] == "cctv") {
+							var d = new Date();
+							var tLink = "/media?FUNC_CODE=VIEW_THUMBS&PROC=Y&RECENT=100&cont_type=TDSMEDIA&cont_cat=desktop" + cmdata[4] + "&cat_name=" + src;
+                                			document.getElementById('head').innerHTML = "<a href=\"" + tLink + "\" target=review" + cmdata[4] + "><img src=/img/logs.png></a>" + d;
+						}
                         		}
 				}
 				break;

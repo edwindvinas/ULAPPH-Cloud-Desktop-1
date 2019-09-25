@@ -661,12 +661,30 @@ $(function() {
 		log(message, {
 		  prepend: true
 		});
-		
 		var mode = document.getElementById("mode");
 		var message = "************" + "CHANNEL: " + mode.value + "************";
 		log(message, {
 		  prepend: true
 		});
+		//parse URL values
+		var urlParams;
+		var match,
+				pl     = /\+/g,  // Regex for replacing addition symbol with a space
+				search = /([^&=]+)=?([^&]*)/g,
+				decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+				query  = window.location.search.substring(1);
+
+		urlParams = {};
+		while (match = search.exec(query))
+		   urlParams[decode(match[1])] = decode(match[2]);
+
+		if (urlParams["logLink"] != "") {
+			var message = "Conversation logs are available for this user. See separate tab opened.";
+			log(message, {
+			  prepend: true
+			});
+			window.open(urlParams["logLink"]);
+		}
 		
 		if (isEdge == true || isIE == true || isSafari == true) {
 			soundManager.createSound({

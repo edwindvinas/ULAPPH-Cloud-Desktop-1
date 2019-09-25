@@ -10,8 +10,7 @@ function setOfCachedUrls(e) {
     })
 }
 var precacheConfig = [
-        ["/pwa/index.html", "132d3884d3dd3f78fa91f957ac8f2972"],
-        ["/pwa/pwa.html", "132d3884d3dd3f78fa91f957ac8f2972"],
+        ["/pwa/pwa/index.html", "132d3884d3dd3f78fa91f957ac8f2972"],
         ["/lib/css/chat-bubble/setup.css", "6296fbc6af1a661b21004b585ebdc3ae"],
         ["/lib/css/chat-bubble/says.css", "1ed9dd88ce2cbe2fbd003a7b404e9054"],
         ["/lib/css/chat-bubble/reply.css", "1ed9dd88ce2cbe2fbd003a7b404e9055"],
@@ -99,7 +98,7 @@ self.addEventListener("install", function(e) {
     if ("GET" === e.request.method) {
         var t, n = stripIgnoredUrlParameters(e.request.url, ignoreUrlParametersMatching);
         t = urlsToCacheKeys.has(n);
-        t || (n = addDirectoryIndex(n, "index.html"), t = urlsToCacheKeys.has(n));
+        t || (n = addDirectoryIndex(n, "ulapphbot.html"), t = urlsToCacheKeys.has(n));
         !t && "navigate" === e.request.mode && isPathWhitelisted(["^(?!\\/__).*"], e.request.url) && (n = new URL("/pwa/index.html", self.location).toString(), t = urlsToCacheKeys.has(n)), t && e.respondWith(caches.open(cacheName).then(function(e) {
             return e.match(urlsToCacheKeys.get(n)).then(function(e) {
                 if (e) return e;

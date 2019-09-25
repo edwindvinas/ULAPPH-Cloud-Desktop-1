@@ -50,8 +50,9 @@ function procMessage(obj) {
 			console.log("pic: "+url);
 			var agent = cmdata[8];
 			console.log("agent: "+agent);
-		        if (smatch > 0 && localStorage["fingerprint"] == to_device) {
-				var msg = "<a href=\"" + url + "\" target=\"" + url + "\"><img src=\"" + pic + "\" width=100% height=250><br>" + "Click to chat" + "</a>" + "<br><b>Agent:</b></a>" + agent;
+		        //if (smatch > 0 && localStorage["fingerprint"] == to_device) {
+		        if (localStorage["fingerprint"] == to_device) {
+				var msg = "<a href=\"#\" onclick=\"clickChat('" + url + "')\"target=\"" + url + "\"><img src=\"" + pic + "\" width=100% height=250><br>" + "Click to chat" + "</a>" + "<br><b>Agent:</b></a>" + agent;
 				chatWindow.talk(
 				    {
 					"procMessageRes": {

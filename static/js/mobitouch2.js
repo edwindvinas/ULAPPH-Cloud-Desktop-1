@@ -104,11 +104,17 @@ function upload_ulapph() {
 			var fd = new FormData(document.forms[0]);
 			fd.append("file", blob);
 
+			var pk = document.getElementById("pinkey").value;
+			if (pk === "" || pk === undefined) {
+                		alert("No ULAPPH PIN KEY!");
+                		return;
+            		}
+			fd.append("PINKEY", pk);
 			var uid = document.getElementById("uid").value;
 			if (uid === "" || uid === undefined) {
-                alert("No ULAPPH user email ID!");
-                return;
-            }
+                		alert("No ULAPPH user email ID!");
+                		return;
+            		}
 			
 			var sid = "";
 			var tgt = document.getElementById("sid").value;
@@ -244,6 +250,10 @@ function loadSettings() {
 	if (uid !== undefined) {
 	document.getElementById("uid").value = uid;
 	}
+	var pk = localStorage["mirror-pk"];
+	if (PerformanceMark !== undefined) {
+	document.getElementById("pinkey").value = pk;
+	}
 	var sid = localStorage["mirror-sid"];
 	if (sid !== undefined) {
 	document.getElementById("sid").value = sid;
@@ -280,6 +290,8 @@ function loadSettings() {
 function saveSettings() {
 	var uid = document.getElementById("uid").value;
 	localStorage["mirror-uid"] = uid;
+	var pk = document.getElementById("pinkey").value;
+	localStorage["mirror-pk"] = pk;
 	var sid = document.getElementById("sid").value;
 	localStorage["mirror-sid"] = sid;
 	var title = document.getElementById("title").value;
