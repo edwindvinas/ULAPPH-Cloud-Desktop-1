@@ -15519,6 +15519,7 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			//invite is populated
 			INV := r.FormValue("INVITE")
 			roomID := r.FormValue("RID")
+			logLink := r.FormValue("logLink")
 			if INV == "SYS_GUEST_CHAT_URL" {
 				redURL := SYS_GUEST_CHAT_URL
 				http.Redirect(w, r, redURL, http.StatusFound)
@@ -15556,7 +15557,7 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			if INV != "" {
 				geoStr := getGeoString(w,r)
 				geoAcc := getAccessString(w,r,"")
-				chatLink := fmt.Sprintf("%vchat?CHAT_FUNC=joinChatRoom&roomID=%v&owner=%v&mode=private", getSchemeUrl(w,r), roomID, uid)
+				chatLink := fmt.Sprintf("%vchat?CHAT_FUNC=joinChatRoom&roomID=%v&owner=%v&mode=private&logLink=%v", getSchemeUrl(w,r), roomID, uid, logLink)
 				chatLink = strings.Replace(chatLink, " ", "%%20", -1)
 				chatURLMessage := fmt.Sprintf("[PRIVATE CHAT] Can we have a chat please? >>> I'm %v %v. Just click this link>>> %v", geoStr, geoAcc, chatLink)
 				//when chat request
