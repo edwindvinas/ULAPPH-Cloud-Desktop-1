@@ -434,6 +434,11 @@
 //REV DESC:	  	Add workforce details 
 //REV AUTH:		Edwin D. Vinas
 /////////////////////////////////////////////////////////////////////////////////////////////////
+//REV ID: 		D0085
+//REV DATE: 		2019-Sep-26
+//REV DESC:	  	Facebook integration  
+//REV AUTH:		Edwin D. Vinas
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------
 //List of firebase channels
@@ -922,6 +927,9 @@ const (
     SOCIAL_LINK_TWITTER = ``
 	//ADD THIS PUB ID
     SYS_ADD_THIS_PUB_ID = ``
+    //D0085
+    FACEBOOK_VERIFY_TOKEN = ``
+    FACEBOOK_ACCESS_TOKEN = ``
 	////////////////////////////////////////////////////////////////
 	// GOOGLE ADSENSE & OTHER ADS
 	////////////////////////////////////////////////////////////////
@@ -1066,6 +1074,8 @@ var FL_SHOW_CMTS = true
 var FL_SHOW_AUTH = true
 var FL_SHOW_ABOUT = true
 var FL_SHOW_SOCIAL = true
+//D0085
+//var developMessegeCounter = 0
 //Youtube API
 var (
 	maxResults = flag.Int64("max-results", 20, "Max YouTube results")
@@ -1532,6 +1542,9 @@ type OttoDataNLP struct {
 
 //D0075
 type OttoAwareness struct {
+	//D0085
+	OttoChannel string `json:"ottoChannel"`
+	OttoReceiver string `json:"ottoReceiver"`
 	OttoBotName string `json:"ottoBotName"`
 	OttoUserStatus string `json:"ottoUserStatus"`
 	OttoUserName string `json:"ottoUserName"`
@@ -1658,6 +1671,50 @@ type UlapphSources struct {
 	Content string `json:"content"`
 }
 
+//D0085
+//edwinxxx
+type FbMessengerInput struct {
+	Entry []struct {
+		Time      uint64 `json:"time,omitempty"`
+		Messaging []FbMessengerMessaging `json:"messaging"`
+	}
+}
+//D0085
+type FbMessengerMessaging struct {
+	Sender FbMessengerMsgSender `json:"sender,omitempty"`
+	Recipient FbMessengerMsgRecipient `json:"recipient,omitempty"`
+	Timestamp uint64 `json:"timestamp,omitempty"`
+	Message FbMessengerMsgMessage `json:"message,omitempty"`
+}
+type FbMessengerMsgSender struct {
+	Id string `json:"id"`
+}
+type FbMessengerMsgRecipient struct {
+	Id string `json:"id"`
+}
+type FbMessengerMsgMessage struct {
+	Mid  string `json:"mid,omitempty"`
+	Seq  uint64 `json:"seq,omitempty"`
+	Text string `json:"text"`
+}
+//D0085
+type FbMessengerMessagingImage struct {
+	Sender FbMessengerMsgSender `json:"sender,omitempty"`
+	Recipient FbMessengerMsgRecipient `json:"recipient,omitempty"`
+	Timestamp uint64 `json:"timestamp,omitempty"`
+	Message FbMessengerMsgMessageImage `json:"message,omitempty"`
+}
+type FbMessengerMsgMessageImage struct {
+	Attachment FbMessengerMsgAttachment `json:"attachment,omitempty"`
+}
+type FbMessengerMsgAttachment struct {
+	Type string `json:"type,omitempty"`
+	Payload FbMessengerMsgPayload `json:"payload,omitempty"`
+}
+type FbMessengerMsgPayload struct {
+	URL string `json:"url,omitempty"`
+	IsReusable bool `json:"is_reusable,omitempty"`
+}
 ///////////////////////////////////////////////////////////////	
 ///////////////////////////////////////////////////////////////
 // RANDOMIZERS
@@ -3225,10 +3282,19 @@ type IDX_TDSMEDIA struct {
 ///////////////////////////////////////////////////////////////
 // DELAY FUNCTIONS
 ///////////////////////////////////////////////////////////////
+//D0085
+// call ulapph routing bot 
+//edwinxxx
+var laterRoutingBot = delay.Func("laterRoutingBot", func(c appengine.Context, sender, recipient, botUrl string) {
+	t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-routing-bot", map[string][]string{"SENDER":{sender},"RECIPIENT":{recipient},"URL": {botUrl}})
+	if _, err := taskqueue.Add(c, t, ""); err != nil {
+		panic(err)
+	}
+})
 //D0084
 // send live agents available 
-var laterSendLiveAgents = delay.Func("laterSendLiveAgents", func(c appengine.Context, user, intent, deviceID string) {
-	t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-send-live-agents", map[string][]string{"user": {user}, "intent": {intent}, "did": {deviceID}})
+var laterSendLiveAgents = delay.Func("laterSendLiveAgents", func(c appengine.Context, cType, user, recipient, intent, deviceID string) {
+	t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-send-live-agents", map[string][]string{"ch":{cType},"user": {user}, "recipient":{recipient}, "intent": {intent}, "did": {deviceID}})
 	if _, err := taskqueue.Add(c, t, ""); err != nil {
 		panic(err)
 	}
@@ -15179,8 +15245,9 @@ func ulapphOtto(w http.ResponseWriter, r *http.Request) {
 
 
 }
+//edwinxxx
 //D0075
-func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, FL_DEBUG, key, val string) (resp string) {
+func execOtto(w http.ResponseWriter, r *http.Request, cType, uid,uid_rx,SID, bName, devID, FL_DEBUG, key, val string) (resp string) {
 	c := appengine.NewContext(r)
 	//DEBUG = "Y"
 	//check first if SID or SID URL
@@ -15234,7 +15301,7 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, FL_
 		}
 		justString := strings.Join(thisResp,"@888@")
 		//c.Infof("Executing OttoJS: %v", kb)
-		resp := execOtto(w,r, uid, kb, bName, devID, "N", "input", justString)
+		resp := execOtto(w,r, cType, uid, uid_rx, kb, bName, devID, "N", "input", justString)
 		//c.Infof("resp: %v", resp)
 		return []string{resp}
 	})
@@ -15320,6 +15387,8 @@ func execOtto(w http.ResponseWriter, r *http.Request, uid,SID, bName, devID, FL_
 		cKeyA := fmt.Sprintf("ULAPPH_NLP_KVO_%v_%v_%v", uid, bName, devID)
 		//c.Infof("cKeyA: %v", cKeyA)
 		g := OttoAwareness {
+			OttoChannel: cType,
+			OttoReceiver: uid_rx,
 			OttoBotName: bName,
 			OttoUserStatus: "",
 			OttoUserName: "",
@@ -15520,6 +15589,7 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			INV := r.FormValue("INVITE")
 			roomID := r.FormValue("RID")
 			logLink := r.FormValue("logLink")
+			intent := r.FormValue("intent")
 			if INV == "SYS_GUEST_CHAT_URL" {
 				redURL := SYS_GUEST_CHAT_URL
 				http.Redirect(w, r, redURL, http.StatusFound)
@@ -15527,7 +15597,7 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			}
 			CC_KEY := r.FormValue("cc_key")
 			if CC_KEY != SYS_RECAPTCHA_KEY && isLoggedIn(w,r) != true {
-				redURL := fmt.Sprintf("/captcha?CC_FUNC=DISP2&INVITE=%v&RID=%v&logLink=%v", INV, roomID, logLink)
+				redURL := fmt.Sprintf("/captcha?CC_FUNC=DISP2&INVITE=%v&RID=%v&logLink=%v&intent=%v", INV, roomID, logLink,intent)
 				http.Redirect(w, r, redURL, http.StatusFound)
 				return
 			}
@@ -15557,7 +15627,7 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			if INV != "" {
 				geoStr := getGeoString(w,r)
 				geoAcc := getAccessString(w,r,"")
-				chatLink := fmt.Sprintf("%vchat?CHAT_FUNC=joinChatRoom&roomID=%v&owner=%v&mode=private&logLink=%v", getSchemeUrl(w,r), roomID, uid, logLink)
+				chatLink := fmt.Sprintf("%vchat?CHAT_FUNC=joinChatRoom&roomID=%v&owner=%v&mode=private&logLink=%v&intent=%v", getSchemeUrl(w,r), roomID, uid, logLink, intent)
 				chatLink = strings.Replace(chatLink, " ", "%%20", -1)
 				chatURLMessage := fmt.Sprintf("[PRIVATE CHAT] Can we have a chat please? >>> I'm %v %v. Just click this link>>> %v", geoStr, geoAcc, chatLink)
 				//when chat request
@@ -17379,58 +17449,48 @@ func format(enc []byte, mime string) string {
 //handles the recaptcha processing 
 func ulapphCaptcha(w http.ResponseWriter, r *http.Request) {
 	CC_FUNC := r.FormValue("CC_FUNC")
-	
 	switch CC_FUNC {
 		case "DISP3":
 			REDIR := "GUEST"
- 
 			sitekey := SYS_RECAPTCHA_KEY		
-			
 			TEMPDATA := TEMPSTRUCT{
 				STR_FILLER1: REDIR,
 				STR_FILLER2: sitekey,
 			}
-					
 			if err := formTemplate3.Execute(w, &TEMPDATA); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
-			
 		case "DISP4":
 			REDIR := "PCHAT"
 			PCH := r.FormValue("pubchan")
-			
 			sitekey := SYS_RECAPTCHA_KEY		
-			
 			TEMPDATA := TEMPSTRUCT{
 				STR_FILLER1: REDIR,
 				STR_FILLER2: sitekey,
 				STR_FILLER3: PCH,
 			}
-					
 			if err := formTemplate3.Execute(w, &TEMPDATA); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
-			
 		case "DISP2":
 			REDIR := "CHAT"
 			INV := r.FormValue("INVITE")
 			RID := r.FormValue("RID")
 			logLink := r.FormValue("logLink")
-	
-			sitekey := SYS_RECAPTCHA_KEY		
+			intent := r.FormValue("intent")
+			sitekey := SYS_RECAPTCHA_KEY
 			TEMPDATA := TEMPSTRUCT2{
 				STR_FILLER1: REDIR,
 				STR_FILLER2: sitekey,
 				STR_FILLER3: INV,
 				STR_FILLER4: RID,
 				STR_FILLER5: logLink,
+				STR_FILLER6: intent,
 			}
 			if err := formTemplate2.Execute(w, &TEMPDATA); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
-			
 		case "DISP":
- 
 			//skip checking if logged in
 			//https://edwin-daen-vinas.appspot.com/social?SO_FUNC=SO_VIEW&SID=TDSSLIDE-578&TITLE=Oracle%20FMW%20Administration%20Training%20-%20Post-Assessment&cc_key=6LcvMwoUAAAAAPsrpukBmQ5vocDI7y1K7-iSTRCM
 			REDIR := r.FormValue("R")
@@ -17445,7 +17505,6 @@ func ulapphCaptcha(w http.ResponseWriter, r *http.Request) {
 				http.Redirect(w, r, redURL, http.StatusFound)
 				return
 			} else {
-	
 			sitekey := SYS_RECAPTCHA_KEY		
 			TEMPDATA := TEMPSTRUCT2{
 				STR_FILLER1: REDIR,
@@ -17456,12 +17515,10 @@ func ulapphCaptcha(w http.ResponseWriter, r *http.Request) {
 				STR_FILLER6: content,
 				STR_FILLER7: REC_TYP,
 			}
-					
 			if err := formTemplate.Execute(w, &TEMPDATA); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 			}
-		
 		case "CHECK":
 			isValid, err := VerifyCaptcha(w,r)
 			if isValid {
@@ -17469,9 +17526,8 @@ func ulapphCaptcha(w http.ResponseWriter, r *http.Request) {
 			} else {
 				fmt.Fprintf(w, "Invalid captcha! ERROR: %v", err)
 			}
- 
 	}
-	return	
+	return
 }
 
 //handles redirection of recaptcha 
@@ -18678,7 +18734,10 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			c.Infof("FLA")
 			intent := r.FormValue("intent")
 			user := r.FormValue("user")
+			recipient := r.FormValue("recipient")
 			deviceID := r.FormValue("did")
+			//D0085
+			cType := r.FormValue("CH")
 			c.Infof("intent: %v", intent)
 			c.Infof("user: %v", user)
 			c.Infof("deviceID: %v", deviceID)
@@ -18686,7 +18745,7 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			IS_SEARCH_SERVER, SEARCH_SERVER, _ := getSitesServer(w,r)
 			//if this server is not sites server
 			if IS_SEARCH_SERVER != "Y" {
-				URL := fmt.Sprintf("%v/directory?DIR_FUNC=FLA&user=%v&intent=%v&did=%v", getSchemeNewUrl(w,r,SEARCH_SERVER), user, intent, deviceID)
+				URL := fmt.Sprintf("%v/directory?DIR_FUNC=FLA&user=%v&intent=%v&did=%v&ch=%v&recipient=%v", getSchemeNewUrl(w,r,SEARCH_SERVER), user, intent, deviceID, cType, recipient)
 				c.Infof("URL: %v", URL)
 				client := urlfetch.Client(c)
 				if err := r.ParseForm(); err != nil {
@@ -18703,7 +18762,9 @@ func ulapphDirectory(w http.ResponseWriter, r *http.Request) {
 			        intent := r.FormValue("intent")
 			        user := r.FormValue("user")
 			        deviceID := r.FormValue("did")
-				laterSendLiveAgents.Call(c, user, intent, deviceID)
+			        cType := r.FormValue("ch")
+			        uid_rx := r.FormValue("recipient")
+				laterSendLiveAgents.Call(c, cType, user, uid_rx, intent, deviceID)
 				//procGetAgents(w,r)
 				return
 			}
@@ -31516,6 +31577,10 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 		//D0084
 		case "queue-send-live-agents":
 			procGetAgents(w,r)
+		//D0085
+		//edwinxxx
+		case "queue-routing-bot":
+			procRoutingBot(w,r)
 		case "queue-notify-gb":
 			queueNotifyGB(w,r)
 		case "queue-notify-ch":
@@ -40474,6 +40539,16 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 	//c.Infof("BN: %v", bName)
 	devID := r.FormValue("DID")
 	//c.Infof("devID: %v", devID)
+	//edwinxxx
+	//D0085
+	cType := r.FormValue("CH")
+	c.Infof("CH: %v", cType)
+	uid_rx := ""
+	if cType == "fb" {
+		uid_rx = r.FormValue("UIDR")
+	}
+	c.Infof("UIDR: %v", uid_rx)
+	//c.Infof("cType: %v", cType)
 	FL_DEBUG := r.FormValue("DEBUG")
 	c.Infof("FL_DEBUG: %v", FL_DEBUG)
 	//Getting current user KVO data
@@ -40667,7 +40742,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 				if defOttoJS != "" {
 					//c.Infof("Executing default OttoJS: %v", defOttoJS)
 					nlpDebug(w,r,FL_DEBUG, "info", "Execute OttoJS: "+defOttoJS)
-					resp := execOtto(w,r, uid, defOttoJS, bName, devID, FL_DEBUG, "input", inpStr)
+					resp := execOtto(w,r, cType, uid, uid_rx, defOttoJS, bName, devID, FL_DEBUG, "input", inpStr)
 					nlpDebug(w,r,FL_DEBUG, "info", "OttoJS Response: "+resp)
 					//c.Infof("resp: %v", resp)
 					err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
@@ -40684,6 +40759,8 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 			nlpDebug(w,r,FL_DEBUG, "error", "kvo unmarshal error: "+fmt.Sprintf("%v",err))
 			//c.Infof("cKeyA: %v", cKeyA)
 			g := OttoAwareness {
+				OttoChannel: cType,
+				OttoReceiver: uid_rx,
 				OttoBotName: bName,
 				OttoUserStatus: "",
 				OttoUserName: "",
@@ -40826,7 +40903,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 							//call Otto API
 							nlpDebug(w,r,FL_DEBUG, "info", "entry.IsAnsOtto: "+entry.IsAnsOtto)
 							nlpDebug(w,r,FL_DEBUG, "info", "call Otto API")
-							resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", tok.Text)
+							resp := execOtto(w,r, cType, uid,uid_rx,entry.Answer, bName, devID, FL_DEBUG, "input", tok.Text)
 							nlpDebug(w,r,FL_DEBUG, "info", "resp: "+resp)
 							//w.Write([]byte(resp))
 							err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
@@ -40853,7 +40930,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 								//call Otto API
 								nlpDebug(w,r,FL_DEBUG, "info", "entry.IsAnsOtto: "+entry.IsAnsOtto)
 								nlpDebug(w,r,FL_DEBUG, "info", "call Otto API")
-								resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", tok.Text)
+								resp := execOtto(w,r, cType, uid,uid_rx, entry.Answer, bName, devID, FL_DEBUG, "input", tok.Text)
 								nlpDebug(w,r,FL_DEBUG, "info", "resp: "+resp)
 								//w.Write([]byte(resp))
 								err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
@@ -40919,7 +40996,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 							//call Otto API
 							nlpDebug(w,r,FL_DEBUG, "info", "entry.IsAnsOtto: "+entry.IsAnsOtto)
 							nlpDebug(w,r,FL_DEBUG, "info", "call Otto API")
-							resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", sent.Text)
+							resp := execOtto(w,r, cType, uid,uid_rx,entry.Answer, bName, devID, FL_DEBUG, "input", sent.Text)
 							//w.Write([]byte(resp))
 							err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
 							if err != nil {
@@ -40945,7 +41022,7 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 								//call Otto API
 								nlpDebug(w,r,FL_DEBUG, "info", "entry.IsAnsOtto: "+entry.IsAnsOtto)
 								nlpDebug(w,r,FL_DEBUG, "info", "call Otto API")
-								resp := execOtto(w,r, uid,entry.Answer, bName, devID, FL_DEBUG, "input", sent.Text)
+								resp := execOtto(w,r, cType, uid,uid_rx,entry.Answer, bName, devID, FL_DEBUG, "input", sent.Text)
 								//w.Write([]byte(resp))
 								err := nlpProseFormatTemplateResponse(w,r,bName,resp,kvo)
 								if err != nil {
@@ -40985,14 +41062,18 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 			nlpDebug(w,r,FL_DEBUG, "info", "defOttoJS: "+defOttoJS)
 			//c.Infof("Attemp conversation... Executing default OttoJS: %v", defOttoJS)
 			nlpDebug(w,r,FL_DEBUG, "info", "If first time to chat: "+defOttoJS)
-			resp := execOtto(w,r, uid, defOttoJS, bName, devID, FL_DEBUG, "input", inpStr)
+			resp := execOtto(w,r, cType, uid, uid_rx,defOttoJS, bName, devID, FL_DEBUG, "input", inpStr)
 			nlpDebug(w,r,FL_DEBUG, "info", "resp: "+resp)
 			thisResp = append(thisResp, resp)
 			respString := ""
 			if resp == "" {
 				respString = strings.Join(thisResp,"")
 			} else {
+				if cType != "fb" {
 				respString = strings.Join(thisResp,"@888@")
+				} else {
+				respString = strings.Join(thisResp," ")
+				}
 			}
 			if respString != "" {
 				//c.Infof("respString: %v", respString)
@@ -41007,7 +41088,11 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 		} else {
 			respString := ""
 			if len(thisResp) > 0 {
+				if cType != "fb" {
 				respString = strings.Join(thisResp,"@888@")
+				} else {
+				respString = strings.Join(thisResp," ")
+				}
 			} else {
 				respString = strings.Join(thisResp,"")
 			}
@@ -41291,12 +41376,83 @@ func nlpUpdate(w http.ResponseWriter, r *http.Request, nr *ulapphBotNlpRes) (str
 	}
 	return "Sorry, we can't update the content!"
 }
-
+//edwinxxx
+//D0085
+func sendFacebook(w http.ResponseWriter, r *http.Request, mode, sender, recipient,  msg, img string) {
+	c := appengine.NewContext(r)
+	c.Infof("sendFacebook()")
+	b := []byte("")
+	switch mode {
+	case "text":
+		c.Infof("mode: %v", mode)
+		fbs := FbMessengerMsgSender{
+			Id: sender,
+		}
+		fbr := FbMessengerMsgRecipient{
+			Id: recipient,
+		}
+		fbm := FbMessengerMsgMessage{
+			Mid: "",
+			Seq: uint64(0),
+			Text: msg,
+		}
+		reply := FbMessengerMessaging{
+			Sender: fbs,
+			Recipient: fbr,
+			Timestamp: uint64(time.Now().Unix()),
+			Message: fbm,
+		}
+		b, _ = json.Marshal(reply)
+		c.Infof("reply: %v", string(b))
+	case "image":
+		c.Infof("mode: %v", mode)
+		fbs := FbMessengerMsgSender{
+			Id: sender,
+		}
+		fbr := FbMessengerMsgRecipient{
+			Id: recipient,
+		}
+		fbp := FbMessengerMsgPayload{
+			URL: img,
+			IsReusable: false,
+		}
+		fba := FbMessengerMsgAttachment{
+			Type: "image",
+			Payload: fbp,
+		}
+		fbm := FbMessengerMsgMessageImage{
+			Attachment: fba,
+		}
+		reply := FbMessengerMessagingImage{
+			Sender: fbs,
+			Recipient: fbr,
+			Timestamp: uint64(time.Now().Unix()),
+			Message: fbm,
+		}
+		b, _ = json.Marshal(reply)
+		c.Infof("reply: %v", string(b))
+	}
+	client := urlfetch.Client(c)
+	resp,err := client.Post(fmt.Sprintf("https://graph.facebook.com/v2.6/me/messages?access_token=%v", FACEBOOK_ACCESS_TOKEN),
+		"application/json",
+		bytes.NewReader(b))
+	if err != nil {
+		c.Errorf("ERROR: %v", err)
+		panic(err)
+	}
+	defer resp.Body.Close()
+	c.Infof("response Status: %v", resp.Status)
+	//c.Infof("response Headers: %v", resp.Header)
+	//body, _ := ioutil.ReadAll(resp.Body)
+	//c.Infof("response Body: %v", string(body))
+}
+//edwinxx
+//D0084
 //D0066
 //D0062
-//Handles bot messaging via dialogflow
+//Handles bot messaging via different integrations 
 func ulapphBot(w http.ResponseWriter, r *http.Request) {
-	//c := appengine.NewContext(r)
+	c := appengine.NewContext(r)
 
 	if FL_PROC_OK := countryChecker(w,r); FL_PROC_OK != true {return}
 	//checkReferrer(w,r)
@@ -41407,6 +41563,75 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 			}
 			w.WriteHeader(200)
 			w.Write([]byte(resp))
+			return
+		//edwinxxx
+		//D0085
+		case "facebook":
+			c.Infof("facebook endpoint...")
+			//c.Infof("r: %v", r)
+			//bodyBytes, _ := ioutil.ReadAll(r.Body)
+			//c.Infof("bodyBytes: %v", string(bodyBytes))
+			//attempt verify token
+			if r.Method == "GET" {
+				if r.FormValue("hub.verify_token") == FACEBOOK_VERIFY_TOKEN {
+					c.Infof("Verifying FB token...OK")
+					fmt.Fprintln(w, r.FormValue("hub.challenge"))
+					return
+				} else {
+					c.Errorf("Verifying FB token...FAILED")
+					fmt.Fprintln(w, "Incorrect verify token.")
+				}
+				return
+			} else if r.Method == "POST" {
+				defer r.Body.Close()
+				input := new(FbMessengerInput)
+				if err := json.NewDecoder(r.Body).Decode(input); err == nil {
+					c.Infof("Sender ID : %v", input.Entry[0].Messaging[0].Sender.Id)
+					c.Infof("Message : %v", input.Entry[0].Messaging[0].Message.Text)
+					inpStr := input.Entry[0].Messaging[0].Message.Text
+					//echo test mode
+					reply := input.Entry[0].Messaging[0]
+					//reply.Sender, reply.Recipient = reply.Recipient, reply.Sender
+					rSender := reply.Recipient.Id
+					rRecipient := reply.Sender.Id
+					if input.Entry[0].Messaging[0].Message.Text == "echo" {
+						c.Infof("reply: %v", reply)
+						c.Infof("reply.Sender: %v", reply.Sender)
+						c.Infof("reply.Recipient: %v", reply.Recipient)
+						msg := ""
+						if input.Entry[0].Messaging[0].Sender.Id == strconv.Itoa(2161009354004362) {
+							//developMessegeCounter++
+							//reply.Message.Text = "(DEV)" + input.Entry[0].Messaging[0].Message.Text
+							msg = "(DEV)" + input.Entry[0].Messaging[0].Message.Text
+							//c.Infof("reply.Message.Text: %v", reply.Message.Text)
+						} else {
+							//reply.Message.Text = input.Entry[0].Messaging[0].Message.Text
+							msg = input.Entry[0].Messaging[0].Message.Text
+							//c.Infof("reply.Message.Text: %v", reply.Message.Text)
+						}
+						//send to facebook
+						sendFacebook(w,r,"text",rSender,rRecipient,msg,"")
+					} else {
+						//pass to chatbot
+						//edwinxxx
+						FL_DEBUG := "Y"
+						//uid := input.Entry[0].Messaging[0].Sender.Id
+						uid := rSender
+						//uid_rx := input.Entry[0].Messaging[0].Recipient.Id
+						uid_rx := rRecipient
+						deviceID := uid
+						BOT_NAME := "ULAPPH Routing Bot"
+						KNOWLEDGE_BASE := "TDSMEDIA-24"
+						CHANNEL := "fb"
+						botUrl := fmt.Sprintf("%v/nlp?nlpFunc=nlpProse&p=%v&SID=%v&DEBUG=%v&UID=%v&BN=%v&DID=%v&CH=%v&UIDR=%v", getSchemeUrl(w,r), inpStr, KNOWLEDGE_BASE, FL_DEBUG, uid, BOT_NAME, deviceID, CHANNEL, uid_rx)
+						c.Infof("Bot Call: %v", botUrl)
+						laterRoutingBot.Call(c, rSender,rRecipient,botUrl)
+
+					}
+					return
+				}
+
+			}
 			return
 		/*
 		case bFunc == "open" || bFunc == "view" || bFunc == "edit" || bFunc == "update":
@@ -46892,6 +47117,7 @@ const formTemplateSrc2 = `<!doctype html>
 			<input type=hidden name="INVITE" value="{{.STR_FILLER3}}">
 			<input type=hidden name="RID" value="{{.STR_FILLER4}}">
 			<input type=hidden name="logLink" value="{{.STR_FILLER5}}">
+			<input type=hidden name="intent" value="{{.STR_FILLER6}}">
 			<input type=hidden name="CC_KEY" value="{{.STR_FILLER2}}">
 			<br>
 			<input id="loginSubmit" type="submit">
@@ -55059,7 +55285,7 @@ func getTDSUSERSwf(w http.ResponseWriter, r *http.Request) ([]byte) {
 	cKey := fmt.Sprintf("TDSUSERS_CACHE")
 	FL_PROC_CACHE_OK := true
 	TDSUSERS_CACHE := getBytMemcacheValueByKey(w,r,cKey)
-	c.Infof("TDSUSERS_CACHE: %v", TDSUSERS_CACHE)
+	//c.Infof("TDSUSERS_CACHE: %v", TDSUSERS_CACHE)
 	if TDSUSERS_CACHE != nil {
 	//get from cache
 		c.Infof("TDSUSERS_CACHE: found")
@@ -55093,9 +55319,14 @@ func procShowAgents(w http.ResponseWriter, r *http.Request) {
     intent := r.FormValue("intent")
     user := r.FormValue("user")
     deviceID := r.FormValue("did")
+    //D0085
+    cType := r.FormValue("ch")
+    fbSrc := r.FormValue("recipient")
     c.Infof("intent: %v", intent)
     c.Infof("user: %v", user)
     c.Infof("deviceID: %v", deviceID)
+    c.Infof("cType: %v", cType)
+    c.Infof("recipient: %v", fbSrc)
     TDSUSERS_CACHE := getTDSUSERSwf(w,r)
     //c.Infof("users: %v", len(users))
     var users []TDSUSERS
@@ -55119,11 +55350,18 @@ func procShowAgents(w http.ResponseWriter, r *http.Request) {
 					TO_USER := user
 					TO_DEVICE := deviceID
 					PIC := getProfilePic(w, r, p.USER)
-					URL := fmt.Sprintf("%v/chat?CHAT_FUNC=newChatRoom&INVITE=%v", getSchemeUrl(w,r),p.USER)
+					URL := fmt.Sprintf("%v/chat?CHAT_FUNC=newChatRoom&INVITE=%v&intent=%v", getSchemeUrl(w,r),p.USER,intent)
 					c.Infof("URL: %v", URL)
-					data2 := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_ROUTE_AGENT@888@%v@888@%v@888@%v@888@%v@888@%v@888@%v", SYS_SERVER_NAME, TO_USER, TO_DEVICE, PIC, URL, p.USER)
-					c.Infof("data2: %v", data2)
-					sendChannelMessage(w,r,"public",data2)
+					if cType == "bubble-chat" {
+						data2 := fmt.Sprintf("@888@ULAPPH-SYS-UPD@888@SYS_ROUTE_AGENT@888@%v@888@%v@888@%v@888@%v@888@%v@888@%v", SYS_SERVER_NAME, TO_USER, TO_DEVICE, PIC, URL, p.USER)
+						c.Infof("data2: %v", data2)
+						sendChannelMessage(w,r,"public",data2)
+					} else if cType == "fb" {
+						//D0085
+						dataf := fmt.Sprintf("You can clik below to connect with live agent. %v", URL)
+						sendFacebook(w,r,"text",TO_USER,fbSrc,dataf,"")
+						sendFacebook(w,r,"image",TO_USER,fbSrc,"",PIC)
+					}
 				}
 			}
 		}
@@ -55131,6 +55369,28 @@ func procShowAgents(w http.ResponseWriter, r *http.Request) {
     }
     c.Infof("procShowAgents done")
     return
+}
+//edwinxxx
+//D0085
+//process routing bot
+func procRoutingBot(w http.ResponseWriter, r *http.Request) {
+    c := appengine.NewContext(r)
+    c.Infof("procRoutingBot")
+    URL := r.FormValue("URL")
+    SENDER := r.FormValue("SENDER")
+    RECIPIENT := r.FormValue("RECIPIENT")
+    c.Infof("URL: %v", URL)
+	client := urlfetch.Client(c)
+	resp,err := client.Post(URL,"application/json",nil)
+	if err != nil {
+		c.Errorf("ERROR: %v", err)
+		panic(err)
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	c.Infof("response Body: %v", string(body))
+	sendFacebook(w,r,"text",SENDER,RECIPIENT,string(body),"")
+	return
 }
 //D0084
 //process live agents requests
@@ -55140,6 +55400,9 @@ func procGetAgents(w http.ResponseWriter, r *http.Request) {
     intent := r.FormValue("intent")
     user := r.FormValue("user")
     deviceID := r.FormValue("did")
+    //D0085
+    cType := r.FormValue("ch")
+    recipient := r.FormValue("recipient")
 	//Trending Contents
 	IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "Y" {
@@ -55159,7 +55422,7 @@ func procGetAgents(w http.ResponseWriter, r *http.Request) {
 				i := strings.Index(getSchemeUrl(w,r), tURL)
 				thisStr := fmt.Sprintf("%v", temp[j])
 				if tURL != "" && i == -1 && string(thisStr[0]) != "#" {
-					URL := fmt.Sprintf("%v/social?SO_FUNC=get-agents&intent=%v&user=%v&did=%v", tURL, intent, user, deviceID)
+					URL := fmt.Sprintf("%v/social?SO_FUNC=get-agents&intent=%v&user=%v&did=%v&ch=%v&recipient=%v", tURL, intent, user, deviceID, cType, recipient)
 					c.Infof("URL: %v", URL)
 					client := urlfetch.Client(c)
 					if err := r.ParseForm(); err != nil {
@@ -69928,6 +70191,15 @@ func checkInBoundAppidAllowed(w http.ResponseWriter, r *http.Request) bool {
 	c := appengine.NewContext(r)
 	u := user.Current(c)
 	h := r.Header
+
+	//D0085
+	//allow fb
+	if r.FormValue("bFunc") == "facebook" {
+		ua := r.Header.Get("User-Agent")
+		if strings.Index(ua, "facebook") != -1 {
+			return true
+		}
+	}
 
 	if u != nil {
 		//uid = uid
