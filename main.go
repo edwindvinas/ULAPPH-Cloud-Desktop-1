@@ -55301,7 +55301,8 @@ func getTDSUSERSwf(w http.ResponseWriter, r *http.Request) ([]byte) {
 		}
 		c.Infof("saved TDSUSERS to cache")
 		data,_ := json.Marshal(users)
-		putBytesToMemcacheWithExp(w,r,cKey,data,86400)
+		//putBytesToMemcacheWithExp(w,r,cKey,data,86400)
+		putBytesToMemcacheWithExp(w,r,cKey,data,180)
 		return data
 	}
 	return nil
@@ -55451,13 +55452,13 @@ func procGetAgents(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	if agAvail > 0 {
+	if agAvail <= 0 {
 		//send to facebook
 		msg := "Apologies, there are no available live agents now. Please check again later."
 		sendFacebook(w,r,"text",user,recipient,msg,"")
 	} else {
 		//send to facebook
-		msg := fmt.Sprintf("Great! I've found %v agents all in all. You may repeat the request so we can search for new agents.")
+		msg := fmt.Sprintf("Great! I've found %v agents all in all. You may repeat the request so we can search for new agents.", agAvail)
 		sendFacebook(w,r,"text",user,recipient,msg,"")
 	}
 	return

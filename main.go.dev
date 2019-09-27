@@ -55367,7 +55367,7 @@ func procShowAgents(w http.ResponseWriter, r *http.Request) {
     }
     c.Infof("procShowAgents done")
     w.WriteHeader(200)
-    w.Write([]byte(agCtr))
+    w.Write([]byte(fmt.Sprintf("%v",agCtr)))
     return
 }
 //D0085
@@ -55457,7 +55457,7 @@ func procGetAgents(w http.ResponseWriter, r *http.Request) {
 		sendFacebook(w,r,"text",user,recipient,msg,"")
 	} else {
 		//send to facebook
-		msg := fmt.Sprintf("Great! I've found %v agents all in all. You may repeat the request so we can search for new agents.")
+		msg := fmt.Sprintf("Great! I've found %v agents all in all. You may repeat the request so we can search for new agents.", agAvail)
 		sendFacebook(w,r,"text",user,recipient,msg,"")
 	}
 	return
