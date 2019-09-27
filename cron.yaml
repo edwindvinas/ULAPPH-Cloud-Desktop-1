@@ -3,13 +3,13 @@ cron:
   url: /ulapph-router?RTR_FUNC=TASK_DWEETIO
   schedule: every 6 hours
 
-- description: regular updates of STATS.ACCESS stats
-  url: /ulapph-router?RTR_FUNC=TASK_UPDATE_ACCESS
-  schedule: every 6 hours
+#- description: regular updates of STATS.ACCESS stats
+  #url: /ulapph-router?RTR_FUNC=TASK_UPDATE_ACCESS
+  #schedule: every 6 hours
 
-- description: regular updates of STATS.DESKTOP stats
-  url: /ulapph-router?RTR_FUNC=TASK_UPDATE_DESKTOP
-  schedule: every 6 hours
+#- description: regular updates of STATS.DESKTOP stats
+  #url: /ulapph-router?RTR_FUNC=TASK_UPDATE_DESKTOP
+  #schedule: every 6 hours
   
 - description: regular updates of STATS.OS / STATS.BROWSER stats
   url: /ulapph-router?RTR_FUNC=TASK_UPDATE_OSBR

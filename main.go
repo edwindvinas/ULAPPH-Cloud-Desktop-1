@@ -586,7 +586,6 @@ import (
 	"github.com/edwindvinas/closestmatch"
 	//"github.com/mvdan/xurls"
 	"github.com/edwindvinas/xurls"
-
 )
 //contants configs
 const (
@@ -15448,25 +15447,28 @@ func execOtto(w http.ResponseWriter, r *http.Request, cType, uid,uid_rx,SID, bNa
 	  return string(b)
 	})
 	//D0081
-	vm.Set("ottoFuncGetIntentDialogflow", func(user,input string) string {
+	vm.Set("ottoFuncGetIntentDialogflow", func(user,input string) (string,string) {
 	  //c.Infof("ottoFunc: ottoFuncGetIntentDialogflow")
 		// Use NLP
 		nlpDebug(w,r,FL_DEBUG, "info", "Call processDialoflowNLP()")
-		response := processDialogflowNLP(w,r,FL_DEBUG,devID,input)
+		response,response2 := processDialogflowNLP(w,r,FL_DEBUG,devID,input)
 		nlpDebug(w,r,FL_DEBUG, "info", "processDialogflowNLP() resp: "+fmt.Sprintf("%v",response))
+		nlpDebug(w,r,FL_DEBUG, "info", "processDialogflowNLP() resp2: "+fmt.Sprintf("%v",response2))
 		//c.Infof("response: %v", response)
-		w.Header().Set("Content-Type", "application/json")
+		/*w.Header().Set("Content-Type", "application/json")
 		//json.NewEncoder(w).Encode(response)
 		var encbuf bytes.Buffer
 		enc := json.NewEncoder(&encbuf)
 		err := enc.Encode(response)
 		if err != nil {
 			c.Errorf("enc.Encode err: %v", err)
-			return "" 
+			return ""
 		}
 		nlpDebug(w,r,FL_DEBUG, "info", "json: "+encbuf.String())
 		return encbuf.String()
+		*/
 		//json.NewEncoder(w).Encode(response)
+		return response, response2
 	})
 	//D0081
 	vm.Set("ottoFuncSendEmail", func(mode,uid,input string) string {
@@ -32060,7 +32062,6 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 			}
 	}
 }
-
 //POSTs a JSON data to dweet.io
 //an integration to dweet.io 
 func TASK_Dweetio (w http.ResponseWriter, r *http.Request) {
@@ -55459,6 +55460,9 @@ func procGetAgents(w http.ResponseWriter, r *http.Request) {
 	} else {
 		//send to facebook
 		msg := fmt.Sprintf("Great! I've found %v agents all in all. You may repeat the request so we can search for new agents.", agAvail)
+		if agAvail == 1 {
+			msg = fmt.Sprintf("Great! I've found 1 agent for you. You may repeat the request so we can search for new agents.", agAvail)
+		}
 		sendFacebook(w,r,"text",user,recipient,msg,"")
 	}
 	return
@@ -75569,18 +75573,6 @@ func (t transport2) RoundTrip(r *http.Request) (*http.Response, error) {
 	}
 	return t.rt.RoundTrip(r)
 }
-
-//returns an http client
-func httpClient(r *http.Request) *http.Client {
-	c := appengine.NewContext(r)
-	return &http.Client{
-		Transport: &transport2{
-			rt: &urlfetch.Transport{Context: c, Deadline: 10 * time.Second},
-			ua: fmt.Sprintf("%s (+http://%s/bot.html)", appengine.AppID(c), r.Host),
-		},
-	}
-}
-
 //returns media details given a media id
 func getTDSMEDIABlobKey(w http.ResponseWriter, r *http.Request, MEDIA_ID int) (BLOB_KEY, PROP, TITLE, AUTHOR, DOC_STAT, FL_SHARED, IMG_URL, DATA_TYPE, MIME_TYPE, DESC, SHARED_TO string) {
 	//billing fix
@@ -83554,7 +83546,7 @@ func Shuffle(slice interface{}) {
 
 //D0084
 //call Dialogflow API
-func processDialogflowNLP(w http.ResponseWriter, req *http.Request, FL_DEBUG, deviceID, rawMessage string) string {
+func processDialogflowNLP(w http.ResponseWriter, req *http.Request, FL_DEBUG, deviceID, rawMessage string) (string,string) {
 	c := appengine.NewContext(req)
 	c.Infof("processDialogflowNLP")
 
@@ -83562,13 +83554,13 @@ func processDialogflowNLP(w http.ResponseWriter, req *http.Request, FL_DEBUG, de
 	DIALOGFLOW_KEY_JSON, err := ioutil.ReadAll(rdr)
 	if err != nil {
 		c.Errorf("[ioutil.ReadAll] ERROR: %v", err)
-		return ""
+		return "",""
 	}
 	ctx := newappengine.NewContext(req)
 	conf, err := google.JWTConfigFromJSON(DIALOGFLOW_KEY_JSON, "https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/dialogflow")
 	if err != nil {
 		c.Errorf("[google.JWTConfigFromJSON] ERROR: %v", err)
-		return ""
+		return "",""
 	}
 	client := conf.Client(ctx)
 	//c.Infof("client: %v", client)
@@ -83590,12 +83582,12 @@ func processDialogflowNLP(w http.ResponseWriter, req *http.Request, FL_DEBUG, de
 	if err != nil {
 		//return
 		c.Errorf("ERROR: client.Post %v", err)
-		return ""
+		return "",""
 	}
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		c.Errorf("ERROR: client.Post %v", err)
-		return ""
+		return "",""
 	}
 	//c.Infof("bodyBytes: %v", string(b))
 	nlpDebug(w,req,FL_DEBUG, "info", "bodyBytes: "+string(b))
@@ -83604,12 +83596,19 @@ func processDialogflowNLP(w http.ResponseWriter, req *http.Request, FL_DEBUG, de
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.Decode(&rdata)
 	jq := jsonq.NewQuery(rdata)
+	//get intent
 	jqVal, err := jq.String("queryResult", "intent", "displayName")
 	if err != nil {
 		c.Errorf("ERROR: %v", err)
 	}
 	nlpDebug(w,req,FL_DEBUG, "info", "INTENT: "+jqVal)
-	return jqVal
+	//get additional message
+	jqVal2, err := jq.String("queryResult", "fulfillmentMessages", "0", "text", "text", "0")
+	if err != nil {
+		c.Errorf("ERROR: %v", err)
+	}
+	nlpDebug(w,req,FL_DEBUG, "info", "fMessage: "+jqVal2)
+	return jqVal,jqVal2
 }
 ////////////////////////////////////////////////////////////////////////////////////
 //TO GOD BE THE GLORY
