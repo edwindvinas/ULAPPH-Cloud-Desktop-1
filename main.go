@@ -55461,7 +55461,7 @@ func procGetAgents(w http.ResponseWriter, r *http.Request) {
 		//send to facebook
 		msg := fmt.Sprintf("Great! I've found %v agents all in all. You may repeat the request so we can search for new agents.", agAvail)
 		if agAvail == 1 {
-			msg = fmt.Sprintf("Great! I've found 1 agent for you. You may repeat the request so we can search for new agents.", agAvail)
+			msg = fmt.Sprintf("Great! I've found 1 agent for you. You may repeat the request so we can search for new agents.")
 		}
 		sendFacebook(w,r,"text",user,recipient,msg,"")
 	}
