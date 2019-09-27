@@ -1672,7 +1672,6 @@ type UlapphSources struct {
 }
 
 //D0085
-//edwinxxx
 type FbMessengerInput struct {
 	Entry []struct {
 		Time      uint64 `json:"time,omitempty"`
@@ -3284,7 +3283,6 @@ type IDX_TDSMEDIA struct {
 ///////////////////////////////////////////////////////////////
 //D0085
 // call ulapph routing bot 
-//edwinxxx
 var laterRoutingBot = delay.Func("laterRoutingBot", func(c appengine.Context, sender, recipient, botUrl string) {
 	t := taskqueue.NewPOSTTask("/ulapph-router?RTR_FUNC=queue-routing-bot", map[string][]string{"SENDER":{sender},"RECIPIENT":{recipient},"URL": {botUrl}})
 	if _, err := taskqueue.Add(c, t, ""); err != nil {
@@ -15245,7 +15243,6 @@ func ulapphOtto(w http.ResponseWriter, r *http.Request) {
 
 
 }
-//edwinxxx
 //D0075
 func execOtto(w http.ResponseWriter, r *http.Request, cType, uid,uid_rx,SID, bName, devID, FL_DEBUG, key, val string) (resp string) {
 	c := appengine.NewContext(r)
@@ -15740,11 +15737,10 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 					updateUserActiveData(w, r, c, uid, fmt.Sprintf("newChatRoom-active-%v", INV))
 				}
 			}
-			
 			http.Redirect(w, r, appRTC, http.StatusFound)
-			return	
-			
+			return
 		case "joinChatRoom":
+			c.Infof("joinChatRoom")
 			mode := r.FormValue("mode")
 			roomID := r.FormValue("roomID")
 			owner := r.FormValue("owner")
@@ -15769,6 +15765,8 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			} else {
 				_, token = createToken(w,r,ukey,"PC")
 			}
+			c.Infof("uid: %v", uid)
+			c.Infof("token: %v", token)
 			updateUserActiveData(w, r, c, uid, fmt.Sprintf("joinChatRoom(%v)", mode))
 			uag := r.UserAgent()
 			ua := user_agent.New(uag)
@@ -15804,6 +15802,7 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 				STR_FILLER14: SYS_SERVER_NAME,
 				STR_FILLER15: getSitesServerName(w,r),
 			}
+			c.Infof("TEMPDATA: %#v", TEMPDATA)
 			if err := chatTemplateA1.Execute(w, ""); err != nil {
 			  panic(err)
 			}
@@ -15812,6 +15811,7 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			if err := chatTemplateA2.Execute(w, &TEMPDATA); err != nil {
 			  panic(err)
 			}
+			c.Infof("chatTemplateA2 rendered")
 		case "isTyping":
 			mode := r.FormValue("mode")
 			roomID := r.FormValue("roomID")
@@ -31578,7 +31578,6 @@ func ulapphRouter (w http.ResponseWriter, r *http.Request) {
 		case "queue-send-live-agents":
 			procGetAgents(w,r)
 		//D0085
-		//edwinxxx
 		case "queue-routing-bot":
 			procRoutingBot(w,r)
 		case "queue-notify-gb":
@@ -40539,7 +40538,6 @@ func ulapphNlp(w http.ResponseWriter, r *http.Request) {
 	//c.Infof("BN: %v", bName)
 	devID := r.FormValue("DID")
 	//c.Infof("devID: %v", devID)
-	//edwinxxx
 	//D0085
 	cType := r.FormValue("CH")
 	c.Infof("CH: %v", cType)
@@ -41376,7 +41374,6 @@ func nlpUpdate(w http.ResponseWriter, r *http.Request, nr *ulapphBotNlpRes) (str
 	}
 	return "Sorry, we can't update the content!"
 }
-//edwinxxx
 //D0085
 func sendFacebook(w http.ResponseWriter, r *http.Request, mode, sender, recipient,  msg, img string) {
 	c := appengine.NewContext(r)
@@ -41564,7 +41561,6 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(200)
 			w.Write([]byte(resp))
 			return
-		//edwinxxx
 		//D0085
 		case "facebook":
 			c.Infof("facebook endpoint...")
@@ -41613,8 +41609,7 @@ func ulapphBot(w http.ResponseWriter, r *http.Request) {
 						sendFacebook(w,r,"text",rSender,rRecipient,msg,"")
 					} else {
 						//pass to chatbot
-						//edwinxxx
-						FL_DEBUG := "Y"
+						FL_DEBUG := "N"
 						//uid := input.Entry[0].Messaging[0].Sender.Id
 						uid := rSender
 						//uid_rx := input.Entry[0].Messaging[0].Recipient.Id
@@ -55327,6 +55322,8 @@ func procShowAgents(w http.ResponseWriter, r *http.Request) {
     c.Infof("deviceID: %v", deviceID)
     c.Infof("cType: %v", cType)
     c.Infof("recipient: %v", fbSrc)
+    //count agents
+    agCtr := 0
     TDSUSERS_CACHE := getTDSUSERSwf(w,r)
     //c.Infof("users: %v", len(users))
     var users []TDSUSERS
@@ -55362,15 +55359,17 @@ func procShowAgents(w http.ResponseWriter, r *http.Request) {
 						sendFacebook(w,r,"text",TO_USER,fbSrc,dataf,"")
 						sendFacebook(w,r,"image",TO_USER,fbSrc,"",PIC)
 					}
+					agCtr++
 				}
 			}
 		}
 	}
     }
     c.Infof("procShowAgents done")
+    w.WriteHeader(200)
+    w.Write([]byte(agCtr))
     return
 }
-//edwinxxx
 //D0085
 //process routing bot
 func procRoutingBot(w http.ResponseWriter, r *http.Request) {
@@ -55403,6 +55402,8 @@ func procGetAgents(w http.ResponseWriter, r *http.Request) {
     //D0085
     cType := r.FormValue("ch")
     recipient := r.FormValue("recipient")
+    //count agents
+    agAvail := 0
 	//Trending Contents
 	IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "Y" {
@@ -55439,6 +55440,8 @@ func procGetAgents(w http.ResponseWriter, r *http.Request) {
 						c.Infof("bodyBytes: %v", string(bodyBytes))
 						//w.WriteHeader(200)
 						//w.Write([]byte("ok"))
+						thisCount := str2int(string(bodyBytes))
+						agAvail = agAvail + thisCount
 					} else {
 						//w.WriteHeader(200)
 						//w.Write([]byte("error"))
@@ -55447,6 +55450,15 @@ func procGetAgents(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
+	}
+	if agAvail > 0 {
+		//send to facebook
+		msg := "Apologies, there are no available live agents now. Please check again later."
+		sendFacebook(w,r,"text",user,recipient,msg,"")
+	} else {
+		//send to facebook
+		msg := fmt.Sprintf("Great! I've found %v agents all in all. You may repeat the request so we can search for new agents.")
+		sendFacebook(w,r,"text",user,recipient,msg,"")
 	}
 	return
 }

@@ -15737,11 +15737,10 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 					updateUserActiveData(w, r, c, uid, fmt.Sprintf("newChatRoom-active-%v", INV))
 				}
 			}
-			
 			http.Redirect(w, r, appRTC, http.StatusFound)
-			return	
-			
+			return
 		case "joinChatRoom":
+			c.Infof("joinChatRoom")
 			mode := r.FormValue("mode")
 			roomID := r.FormValue("roomID")
 			owner := r.FormValue("owner")
@@ -15766,6 +15765,8 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			} else {
 				_, token = createToken(w,r,ukey,"PC")
 			}
+			c.Infof("uid: %v", uid)
+			c.Infof("token: %v", token)
 			updateUserActiveData(w, r, c, uid, fmt.Sprintf("joinChatRoom(%v)", mode))
 			uag := r.UserAgent()
 			ua := user_agent.New(uag)
@@ -15801,6 +15802,7 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 				STR_FILLER14: SYS_SERVER_NAME,
 				STR_FILLER15: getSitesServerName(w,r),
 			}
+			c.Infof("TEMPDATA: %#v", TEMPDATA)
 			if err := chatTemplateA1.Execute(w, ""); err != nil {
 			  panic(err)
 			}
@@ -15809,6 +15811,7 @@ func ulapphChat(w http.ResponseWriter, r *http.Request) {
 			if err := chatTemplateA2.Execute(w, &TEMPDATA); err != nil {
 			  panic(err)
 			}
+			c.Infof("chatTemplateA2 rendered")
 		case "isTyping":
 			mode := r.FormValue("mode")
 			roomID := r.FormValue("roomID")
@@ -55319,6 +55322,8 @@ func procShowAgents(w http.ResponseWriter, r *http.Request) {
     c.Infof("deviceID: %v", deviceID)
     c.Infof("cType: %v", cType)
     c.Infof("recipient: %v", fbSrc)
+    //count agents
+    agCtr := 0
     TDSUSERS_CACHE := getTDSUSERSwf(w,r)
     //c.Infof("users: %v", len(users))
     var users []TDSUSERS
@@ -55354,12 +55359,15 @@ func procShowAgents(w http.ResponseWriter, r *http.Request) {
 						sendFacebook(w,r,"text",TO_USER,fbSrc,dataf,"")
 						sendFacebook(w,r,"image",TO_USER,fbSrc,"",PIC)
 					}
+					agCtr++
 				}
 			}
 		}
 	}
     }
     c.Infof("procShowAgents done")
+    w.WriteHeader(200)
+    w.Write([]byte(fmt.Sprintf("%v",agCtr)))
     return
 }
 //D0085
@@ -55394,6 +55402,8 @@ func procGetAgents(w http.ResponseWriter, r *http.Request) {
     //D0085
     cType := r.FormValue("ch")
     recipient := r.FormValue("recipient")
+    //count agents
+    agAvail := 0
 	//Trending Contents
 	IS_SEARCH_SERVER, _, _ := getSitesServer(w,r)
 	if IS_SEARCH_SERVER == "Y" {
@@ -55430,6 +55440,8 @@ func procGetAgents(w http.ResponseWriter, r *http.Request) {
 						c.Infof("bodyBytes: %v", string(bodyBytes))
 						//w.WriteHeader(200)
 						//w.Write([]byte("ok"))
+						thisCount := str2int(string(bodyBytes))
+						agAvail = agAvail + thisCount
 					} else {
 						//w.WriteHeader(200)
 						//w.Write([]byte("error"))
@@ -55438,6 +55450,15 @@ func procGetAgents(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
+	}
+	if agAvail > 0 {
+		//send to facebook
+		msg := "Apologies, there are no available live agents now. Please check again later."
+		sendFacebook(w,r,"text",user,recipient,msg,"")
+	} else {
+		//send to facebook
+		msg := fmt.Sprintf("Great! I've found %v agents all in all. You may repeat the request so we can search for new agents.")
+		sendFacebook(w,r,"text",user,recipient,msg,"")
 	}
 	return
 }
