@@ -237,7 +237,9 @@ function sendPingRequest(){
 			chkBM();
 		}
 		//check knock msgs
-		chkKN();
+		if (isActive == true) {
+			chkKN();
+		}
 		//check motds
 		if (isActive == true) {
 			chkMOTD();

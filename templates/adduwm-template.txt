@@ -11,7 +11,12 @@
 	<script type="text/javascript" src="/js/sol.js"></script>
 </head>
 <body>
-
+{{if eq .STR_FILLER4 "Y"}}
+<img src="/img/users-online.png" width="25" height="25" title="You are Online">
+{{else}}
+<img src="/img/users-offline.png" width="25" height="25" title="You are Offline">
+{{end}}
+<hr>
 <!--p>Enter URL and title:</p-->
 <!--span class="button-wrap">
 <a href="#" onclick="editUWMSettings(); return false;" class="button button-pill button-raised button-highlight">Edit Desktop: {{.STR_FILLER1}}</a>
